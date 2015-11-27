@@ -1,3 +1,5 @@
+var webpack = require('webpack')
+
 module.exports = {
   entry: ['./src/revue.js'],
   output: {
@@ -14,5 +16,16 @@ module.exports = {
       { test: /\.js$/, loaders: ['babel'], exclude: [/node_modules/] }
     ]
   },
-  plugins: []
+  plugins: [
+    new webpack.optimize.OccurenceOrderPlugin(),
+    new webpack.DefinePlugin({
+      'process.env.NODE_ENV': JSON.stringify('production')
+    }),
+    new webpack.optimize.UglifyJsPlugin({
+      compressor: {
+        screw_ie8: true,
+        warnings: false
+      }
+    })
+  ]
 }
