@@ -8,17 +8,16 @@ new Vue({
   el: '#app',
   data () {
     return {
-      counter: this.$revue.getState().counter,
       todos: this.$revue.getState().todos,
       todo: ''
     }
   },
   ready () {
-    this.$subscribe('counter', 'todos')
+    this.$subscribe('todos')
   },
   methods: {
-    handleClick () {
-      this.$revue.dispatch({type: 'INCREMENT'})
+    toggleTodo (index) {
+      this.$revue.dispatch({type: 'TOGGLE_TODO', index})
     },
     addTodo () {
       if (!this.todo)
@@ -26,9 +25,5 @@ new Vue({
       this.$revue.dispatch({type: 'ADD_TODO', text: this.todo})
       this.todo = ''
     },
-    handleDestroy () {
-      this.$destroy()
-    },
-
   }
 })
