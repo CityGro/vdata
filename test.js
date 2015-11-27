@@ -13,15 +13,15 @@ describe('main', () => {
     const vm = new Vue({
       data () {
         return {
-          counter: this.$revue.getState().counter
+          todos: this.$revue.getState().todos
         }
       },
       created () {
-        this.$subscribe('counter')
-        this.$revue.dispatch({type: 'INCREMENT'})
+        this.$subscribe('todos')
+        this.$revue.dispatch({type: 'ADD_TODO', text: 'hi'})
       }
     })
-    vm.$data.counter.should.equal(1)
+    vm.$data.todos[0].text.should.equal('hi')
     done()
   })
 })
