@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Revue</title>
+    <style>
+      body {
+        font: 14px/1.4 Helvetica, serif;
+      }
+      #app {
+        padding-top: 100px;
+        max-width: 500px;
+        margin: 0 auto;
+      }
+      .counter {
+        text-align: center;
+        border: none;
+        background-color: #fff;
+        font-size: 60px;
+        display: block;
+        width: 100%;
+        padding: 30px 0;
+        cursor: pointer;
+      }
+      .counter:hover {
+        background-color: #f9f9f9;
+      }
+      .add,.input-todo {
+        padding: 10px;
+        border: 1px solid #e2e2e2;
+        border-radius: 2px;
+        background-color: #fff;
+        font-size: 15px;
+        margin-right: 10px;
+        outline: none;
+      }
+      .input-todo:focus {
+        border-color: #ccc;
+      }
+      .add {
+        cursor: pointer;
+      }
+      .add:hover {
+        background-color: #f9f9f9;
+        border-color: #ccc;
+      }
+      .todos {
+        list-style: none;
+        padding-left: 0;
+        margin: 0;
+        border: 1px solid #e2e2e2;
+        margin-top: 20px;
+        border-radius: 2px;
+      }
+      .todo {
+        padding: 10px;
+      }
+      .todo:hover {
+        cursor: pointer;
+      }
+      .todo:nth-child(2n) {
+        background-color: #f9f9f9;
+      }
+      .todo.del {
+        text-decoration: line-through;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="app">
+      <input type="text" class="input-todo" v-model="todo"><button class="add" @click="addTodo">add todo</button>
+      <ul class="todos" v-if="todos && todos.length > 0">
+        <li class="todo" :class="{del: todo.done}" v-for="todo in todos" track-by="$index" v-text="todo.text" @click="toggleTodo($index)"></li>
+      </ul>
+    </div>
+    <script src="./build/bundle.js?v=14234"></script>
+  </body>
+</html>
