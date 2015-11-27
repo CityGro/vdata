@@ -4,11 +4,10 @@ export default function (Vue, options) {
   // bring redux to revue
   _.defineReactive(Vue.prototype, '$revue', store)
   // listen for state changes
-  _.defineReactive(Vue.prototype, '$subscribe', function () {
+  _.defineReactive(Vue.prototype, '$subscribe', function (...args) {
     const self = this
     self.unsubscriber = []
-    const props = [].slice.call(arguments)
-    props.forEach(prop => {
+    args.forEach(prop => {
       let currentValue
       function handleChange() {
         let previousValue = currentValue
