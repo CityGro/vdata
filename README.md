@@ -30,8 +30,7 @@ new Vue({
   el: '#app',
   data () {
     return {
-      counter: this.$revue.getState().counter,
-      todo: ''
+      counter: this.$revue.getState().counter
     }
   },
   ready () {

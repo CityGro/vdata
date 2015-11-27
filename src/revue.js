@@ -5,19 +5,17 @@ export default function (Vue, options) {
   _.defineReactive(Vue.prototype, '$revue', store)
   // listen for state changes
   _.defineReactive(Vue.prototype, '$subscribe', function (...args) {
-    const self = this
-    self.unsubscriber = []
+    this.unsubscriber = []
     args.forEach(prop => {
       let currentValue
-      function handleChange() {
+      const handleChange = () => {
         let previousValue = currentValue
         currentValue = store.getState()[prop]
-
         if (previousValue !== currentValue) {
-          self.$set(prop, currentValue)
+          this.$set(prop, currentValue)
         }
       }
-      self.unsubscriber.push(store.subscribe(handleChange))
+      this.unsubscriber.push(store.subscribe(handleChange))
     })
   })
   _.defineReactive(Vue.prototype, '$unsubscribe', function () {
