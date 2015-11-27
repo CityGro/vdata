@@ -7,7 +7,7 @@ export default function todos(state = [], action) {
         if (i === action.index) {
           return {
             text: s.text,
-            done: s.done ? false : true
+            done: !s.done
           }
         }
         return s
