@@ -1,16 +1,16 @@
 {
   "name": "revue",
-  "version": "1.0.24",
-  "description": "",
+  "version": "1.0.3",
+  "description": "Redux binding for Vue.",
   "main": "index.js",
   "scripts": {
     "test": "npm run babel:all && mocha --compilers js:babel-core/register --require should test.js",
-    "babel": "babel src/revue.js -o index.js",
+    "umd": "webpack --config webpack.config.umd.js",
     "babel:all": "babel src --out-dir lib",
-    "start": "npm run babel && node lib/App.js",
+    "start": "npm run umd && node lib/App.js",
     "webpack": "webpack -p",
     "watch": "webpack --watch",
-    "prepublish": "npm run babel && npm test",
+    "prepublish": "npm run umd && npm test",
     "demo": "npm run webpack && surge -d revue.surge.sh -p ./"
   },
   "author": "EGOIST",

@@ -9,7 +9,7 @@ Vue.use(revue, {
 })
 
 describe('main', () => {
-  it('should dispatch INCREMENT', done => {
+  it('should dispatch ADD_TODO', done => {
     const vm = new Vue({
       data () {
         return {
