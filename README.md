@@ -1,6 +1,8 @@
 # Revue
 
-Redux binding for Vue.
+[![NPM version](https://img.shields.io/npm/v/revue.svg?style=flat-square)](https://www.npmjs.com/package/revue)
+[![NPM download](https://img.shields.io/npm/dm/revue.svg?style=flat-square)](https://www.npmjs.com/package/revue)
+[![Build Status](https://img.shields.io/circleci/project/egoist/revue/master.svg?style=flat-square)](https://circleci.com/gh/egoist/revue/tree/master)
 
 ## Usage
 

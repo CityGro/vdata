@@ -1,4 +1,5 @@
 /src
 /build
+/lib
 /webpack.config.js
 /index.html
