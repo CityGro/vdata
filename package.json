@@ -1,6 +1,6 @@
 {
   "name": "revue",
-  "version": "1.0.0",
+  "version": "1.0.11",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -10,7 +10,7 @@
     "webpack": "webpack -p",
     "watch": "webpack --watch",
     "beforePublish": "npm run babel",
-    "demo": "surge -d revue.surge.sh -p ./"
+    "demo": "npm run webpack && surge -d revue.surge.sh -p ./"
   },
   "author": "EGOIST",
   "license": "MIT",

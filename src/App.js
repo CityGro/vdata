@@ -25,6 +25,10 @@ new Vue({
         return
       this.$revue.dispatch({type: 'ADD_TODO', text: this.todo})
       this.todo = ''
-    }
+    },
+    handleDestroy () {
+      this.$destroy()
+    },
+
   }
 })
