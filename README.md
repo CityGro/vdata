@@ -35,7 +35,7 @@ new Vue({
     }
   },
   ready () {
-    // listen state changes
+    // subscribe state changes
     this.$subscribe('counter')
   },
   methods: {
