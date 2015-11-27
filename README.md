@@ -8,11 +8,13 @@
 
 Obviously it works with Redux, install via NPM: `npm i -D redux revue`
 
+You can also hot-link the CDN version: https://npmcdn.com/revue, `Revue` is exposed to `window` object.
+
 ```javascript
 // App.js
-import revue from 'revue'
+import Revue from 'revue'
 import store from './store'
-Vue.use(revue, {
+Vue.use(Revue, {
   store
 })
 

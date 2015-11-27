@@ -6,7 +6,7 @@ module.exports = {
     path: __dirname,
     filename: 'index.js',
     libraryTarget: 'umd',
-    library: 'revue'
+    library: 'Revue'
   },
   resolve: {
     extensions: ['', '.js']

@@ -1,7 +1,7 @@
 import Vue from 'vue'
-import revue from './revue'
+import Revue from './revue'
 import store from './store'
-Vue.use(revue, {
+Vue.use(Revue, {
   store
 })
 new Vue({
