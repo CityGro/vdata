@@ -50,6 +50,39 @@ new Vue({
 
 [**More detailed usages**](/src)
 
+## Hot-reload reducers
+
+Just change your `store.js` like this:
+
+Before:
+
+```javascript
+import { createStore } from 'redux'
+import rootReducer from './reducers'
+
+export default createStore(rootReducer)
+```
+
+After:
+
+```javascript
+import { createStore } from 'redux'
+import rootReducer from './reducers'
+
+function configureStore() {
+  const store = createStore(rootReducer)
+  if (module.hot) {
+    module.hot.accept('./reducers', () => {
+      const nextRootReducer = require('./reducers').default
+      store.replaceReducer(nextRootReducer)
+    })
+  }
+  return store
+}
+
+export default configureStore()
+```
+
 ## License
 
-MIT.
+MIT &copy; [EGOIST](https://github.com/egoist)
