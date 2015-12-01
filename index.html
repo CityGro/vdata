@@ -7,7 +7,7 @@
       body {
         font: 14px/1.4 Helvetica, serif;
       }
-      #app {
+      #app,.read {
         padding-top: 100px;
         max-width: 500px;
         margin: 0 auto;
@@ -64,13 +64,30 @@
       .todo.del {
         text-decoration: line-through;
       }
+      .read .todos {
+        background-color: #f9f9f9;
+        color: #999;
+        border-color: #eee;
+      }
+      .read .todos .todo {
+        cursor: default;
+      }
     </style>
   </head>
   <body>
     <div id="app">
       <input type="text" class="input-todo" v-model="todo"><button class="add" @click="addTodo">add todo</button>
+      <h2>Writable todos</h2>
       <ul class="todos" v-if="todos && todos.length > 0">
         <li class="todo" :class="{del: todo.done}" v-for="todo in todos" track-by="$index" v-text="todo.text" @click="toggleTodo($index)"></li>
+      </ul>
+
+
+    </div>
+    <div class="read">
+      <h2>{{title}}</h2> <a @click="handleDestroy" href="#;">destroy</a> {{ lifesong }}
+      <ul class="todos" v-if="rtodos && rtodos.length > 0">
+        <li class="todo" :class="{del: todo.done}" v-for="todo in rtodos" track-by="$index" v-text="todo.text"></li>
       </ul>
     </div>
     <script src="./build/bundle.js?v=14234"></script>

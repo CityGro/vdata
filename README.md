@@ -38,6 +38,8 @@ new Vue({
   ready () {
     // subscribe state changes
     this.$subscribe('counter')
+    // if your name the 'counter' to 'temp_counter' in data()
+    // you can use this.$subscribe('counter as temp_counter')
   },
   methods: {
     handleClickCounter () {

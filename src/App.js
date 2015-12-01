@@ -27,3 +27,25 @@ new Vue({
     },
   }
 })
+
+new Vue({
+  el: '.read',
+  data () {
+    return {
+      rtodos: [],
+      title: 'read only todos',
+      lifesong: 'I\'m alive'
+    }
+  },
+  ready () {
+    this.$subscribe('todos as rtodos')
+  },
+  methods: {
+    handleDestroy () {
+      this.lifesong = 'I\'m dead'
+      setTimeout(() => {
+        this.$destroy()
+      }, 200)
+    }
+  }
+})
