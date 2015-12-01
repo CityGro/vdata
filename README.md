@@ -4,6 +4,8 @@
 [![NPM download](https://img.shields.io/npm/dm/revue.svg?style=flat-square)](https://www.npmjs.com/package/revue)
 [![Build Status](https://img.shields.io/circleci/project/egoist/revue/master.svg?style=flat-square)](https://circleci.com/gh/egoist/revue/tree/master)
 
+**New** [Time to use Redux-devtools in non-React apps!](https://github.com/egoist/redux-devtools-script)
+
 ## Usage
 
 Obviously it works with Redux, install via NPM: `npm i -D redux revue`
