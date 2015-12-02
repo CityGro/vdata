@@ -4,7 +4,9 @@
 [![NPM download](https://img.shields.io/npm/dm/revue.svg?style=flat-square)](https://www.npmjs.com/package/revue)
 [![Build Status](https://img.shields.io/circleci/project/egoist/revue/master.svg?style=flat-square)](https://circleci.com/gh/egoist/revue/tree/master)
 
-**New** [Time to use Redux-devtools in non-React apps!](https://github.com/egoist/redux-devtools-script)
+**New:** [Time to use Redux-devtools in non-React apps!](https://github.com/egoist/redux-devtools-script)
+
+![](https://ooo.0o0.ooo/2015/12/01/565e513fc6d4a.png)
 
 ## Usage
 
