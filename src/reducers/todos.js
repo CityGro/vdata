@@ -1,18 +1,33 @@
-export default function todos(state = [], action) {
+const defaultTodos = [
+  {
+    text: 'Rule the web',
+    done: true
+  },
+  {
+    text: 'Conquer the world',
+    done: false
+  },
+  {
+    text: 'Meet a girl',
+    done: false
+  }
+]
+
+export default function todos(todos = defaultTodos, action) {
   switch (action.type) {
     case 'ADD_TODO':
-      return state.concat([{ text: action.text, done: false }])
+      return todos.concat([{ text: action.text, done: false }])
     case 'TOGGLE_TODO':
-      return state.map((s, i) => {
+      return todos.map((todo, i) => {
         if (i === action.index) {
           return {
-            text: s.text,
-            done: !s.done
+            text: todo.text,
+            done: !todo.done
           }
         }
-        return s
+        return todo
       })
     default:
-      return state
+      return todos
   }
 }

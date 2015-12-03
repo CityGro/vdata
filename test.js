@@ -21,7 +21,7 @@ describe('main', () => {
         this.$revue.dispatch({type: 'ADD_TODO', text: 'hi'})
       }
     })
-    vm.$data.todos[0].text.should.equal('hi')
+    vm.$data.todos.reverse()[0].text.should.equal('hi')
     done()
   })
 })

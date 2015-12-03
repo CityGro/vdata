@@ -85,7 +85,8 @@
 
     </div>
     <div class="read">
-      <h2>{{title}}</h2> <a @click="handleDestroy" href="#;">destroy</a> {{ lifesong }}
+      <h2>{{title}}</h2>
+      <a @click="handleSubcribe" href="#;">subscribe</a>
       <a @click="handleUnsubcribe" href="#;">unsubscribe</a>
       <ul class="todos" v-if="rtodos && rtodos.length > 0">
         <li class="todo" :class="{del: todo.done}" v-for="todo in rtodos" track-by="$index" v-text="todo.text"></li>

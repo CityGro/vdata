@@ -36,24 +36,29 @@ new Vue({
   el: '.read',
   data () {
     return {
-      rtodos: [],
-      title: 'read only todos',
+      rtodos: this.$revue.getState().todos,
+      title: 'Read only todos',
       lifesong: 'I\'m alive'
     }
   },
   ready () {
-    this.$subscribe('todos as rtodos')
+    this.handleSubcribe()
   },
   methods: {
     // this is just for test, no need in production
     handleUnsubcribe () {
       this.$unsubscribe()
     },
+    handleSubcribe () {
+      this.$subscribe('todos as rtodos')
+    },
+    /*
     handleDestroy () {
       this.lifesong = 'I\'m dead'
       setTimeout(() => {
         this.$destroy()
       }, 200)
     }
+    */
   }
 })

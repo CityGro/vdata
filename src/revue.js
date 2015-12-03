@@ -9,6 +9,8 @@ export default function (Vue, options) {
     },
     '$subscribe': {
       value (...args) {
+        // unsubscribe old listeners if ever subscribed
+        this.$unsubscribe()
         this.unsubscriber = []
         args.forEach(prop => {
           let realProp = prop, storeProp = prop
@@ -31,16 +33,16 @@ export default function (Vue, options) {
     },
     '$unsubscribe': {
       value () {
-        this.unsubscriber.forEach(un => un())
+        if (this.unsubscriber && this.unsubscriber.length > 0) {
+          this.unsubscriber.forEach(un => un())
+        }
       }
     }
   })
   // global mixin
   Vue.mixin({
     beforeDestroy () {
-      if (this.unsubscriber && this.unsubscriber.length > 0) {
-        this.$unsubscribe()
-      }
+      this.$unsubscribe()
     }
   })
 }
