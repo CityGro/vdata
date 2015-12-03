@@ -1,3 +1,5 @@
+var webpack = require('webpack')
+
 module.exports = {
   entry: ['./src/App.js'],
   output: {
@@ -12,5 +14,10 @@ module.exports = {
       { test: /\.js$/, loaders: ['babel'], exclude: [/node_modules/] }
     ]
   },
-  plugins: []
+  plugins: [
+    new webpack.DefinePlugin({
+      'process.env.NODE_ENV': JSON.stringify('development'),
+      '__DEV__': true
+    }),
+  ]
 }

@@ -4,6 +4,10 @@ import store from './store'
 Vue.use(Revue, {
   store
 })
+if (__DEV__) {
+  window.Vue = Vue
+  window.ReduxStore = store
+}
 new Vue({
   el: '#app',
   data () {
@@ -41,6 +45,10 @@ new Vue({
     this.$subscribe('todos as rtodos')
   },
   methods: {
+    // this is just for test, no need in production
+    handleUnsubcribe () {
+      this.$unsubscribe()
+    },
     handleDestroy () {
       this.lifesong = 'I\'m dead'
       setTimeout(() => {
