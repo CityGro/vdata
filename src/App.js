@@ -20,6 +20,9 @@ new Vue({
     this.$subscribe('todos')
   },
   methods: {
+    reset () {
+      this.$revue.dispatch({type: 'RESET'})
+    },
     toggleTodo (index) {
       this.$revue.dispatch({type: 'TOGGLE_TODO', index})
     },

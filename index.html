@@ -78,6 +78,7 @@
     <div id="app">
       <input type="text" class="input-todo" v-model="todo"><button class="add" @click="addTodo">add todo</button>
       <h2>Writable todos</h2>
+      <a @click="reset" href="#;">reset data</a>
       <ul class="todos" v-if="todos && todos.length > 0">
         <li class="todo" :class="{del: todo.done}" v-for="todo in todos" track-by="$index" v-text="todo.text" @click="toggleTodo($index)"></li>
       </ul>

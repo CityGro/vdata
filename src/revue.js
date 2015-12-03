@@ -1,3 +1,5 @@
+import shallowEqual from './utils/shallowEqual'
+
 export default function (Vue, options) {
   // const _ = Vue.util
   const store = options.store
@@ -19,11 +21,11 @@ export default function (Vue, options) {
             realProp = match[2]
             storeProp = match[1]
           }
-          let currentValue
+          let currentValue = store.getState()[storeProp]
           const handleChange = () => {
             let previousValue = currentValue
             currentValue = store.getState()[storeProp]
-            if (previousValue !== currentValue) {
+            if (!shallowEqual(previousValue, currentValue)) {
               this._data[realProp] = currentValue
             }
           }
