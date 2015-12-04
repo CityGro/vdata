@@ -1,6 +1,6 @@
 {
   "name": "revue",
-  "version": "1.2.3",
+  "version": "1.2.31",
   "description": "Redux binding for Vue.",
   "main": "index.js",
   "scripts": {

@@ -10,7 +10,7 @@ Vue.use(revue, {
 })
 
 describe('main', () => {
-  it('should dispatch ADD_TODO', done => {
+  it('should dispatch ADDED_TODO', done => {
     const vm = new Vue({
       data () {
         return {
@@ -19,10 +19,10 @@ describe('main', () => {
       },
       created () {
         this.$subscribe('todos')
-        this.$revue.dispatch({type: 'ADD_TODO', text: 'hi'})
+        this.$revue.dispatch({type: 'ADDED_TODO', text: 'hi'})
       }
     })
-    vm.$data.todos.reverse()[0].text.should.equal('hi')
+    vm.$data.todos.items[vm.$data.todos.items.length - 1].text.should.equal('hi')
     done()
   })
   it('test thunk', done => {
@@ -37,7 +37,9 @@ describe('main', () => {
         this.$revue.dispatch(addTodo('meet a girl'))
       }
     })
-    vm.$data.todos.reverse()[0].text.should.equal('meet a girl')
-    done()
+    setTimeout(() => {
+      vm.$data.todos.items[vm.$data.todos.items.length - 1].text.should.equal('meet a girl')
+      done()
+    }, 1000)
   })
 })
