@@ -13,21 +13,33 @@ const defaultTodos = [
   }
 ]
 
-export default function todos(todos = defaultTodos, action) {
+export default function todos(state = {
+  isPosting: false,
+  items: defaultTodos
+}, action) {
   switch (action.type) {
-    case 'ADD_TODO':
-      return todos.concat([{ text: action.text, done: false }])
+    case 'ADDED_TODO':
+      return Object.assign({}, state, {
+        isPosting: false,
+        items: state.items.concat([{ text: action.text, done: false }])
+      })
+    case 'ADDING_TODO':
+      return Object.assign({}, state, {
+        isPosting: true
+      })
     case 'TOGGLE_TODO':
-      return todos.map((todo, i) => {
-        if (i === action.index) {
-          return {
-            text: todo.text,
-            done: !todo.done
+      return Object.assign({}, state, {
+        items: state.items.map((todo, i) => {
+          if (i === action.index) {
+            return {
+              text: todo.text,
+              done: !todo.done
+            }
           }
-        }
-        return todo
+          return todo
+        })
       })
     default:
-      return todos
+      return state
   }
 }

@@ -3,8 +3,8 @@
     <h2>Read only todos</h2>
     <button @click="handleSubcribe">subscribe</button>
     <button @click="handleUnsubcribe">unsubscribe</button>
-    <ul class="todos" v-if="todos && todos.length > 0">
-      <li class="todo" :class="{del: todo.done}" v-for="todo in todos" track-by="$index" v-text="todo.text"></li>
+    <ul class="todos" v-if="todos.items && todos.items.length > 0">
+      <li class="todo" :class="{del: todo.done}" v-for="todo in todos.items" track-by="$index" v-text="todo.text"></li>
     </ul>
   </div>
 </template>
