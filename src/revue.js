@@ -24,6 +24,8 @@ export default function (Vue, options) {
         this.$unsubscribe()
         this.unsubscriber = []
         args.forEach(prop => {
+          // realProp: property name in your instance
+          // storeProp: property name in Redux store
           let realProp = prop, storeProp = prop
           if (re.test(prop)) {
             const match = prop.match(re)
