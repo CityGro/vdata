@@ -25,6 +25,21 @@ describe('main', () => {
     vm.$data.todos.items[vm.$data.todos.items.length - 1].text.should.equal('hi')
     done()
   })
+  it('should test native value', done => {
+    const vm = new Vue({
+      data () {
+        return {
+          count: this.$revue.getState().counter
+        }
+      },
+      created () {
+        this.$subscribe('counter as count')
+        this.$revue.dispatch({type: 'INCREMENT'})
+      }
+    })
+    vm.$data.count.should.equal(1)
+    done()
+  })
   it('test thunk', done => {
     const vm = new Vue({
       data () {
