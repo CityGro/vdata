@@ -1,6 +1,6 @@
 {
   "name": "revue",
-  "version": "1.2.31",
+  "version": "1.2.32",
   "description": "Redux binding for Vue.",
   "main": "index.js",
   "scripts": {
@@ -26,6 +26,7 @@
     "jsdom": "^7.1.0",
     "mocha": "^2.3.4",
     "redux": "^3.0.4",
+    "redux-thunk": "^1.0.0",
     "should": "^7.1.1",
     "style-loader": "^0.13.0",
     "vue": "^1.0.10",

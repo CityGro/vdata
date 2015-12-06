@@ -7,16 +7,7 @@ export default function (Vue, options) {
   // bring redux to revue
   Object.defineProperties(Vue.prototype, {
     '$revue': {
-      value: {
-        dispatch (action) {
-          if (typeof action === 'function') {
-            action.call(null, store.dispatch, store.getState)
-          } else {
-            store.dispatch(action)
-          }
-        },
-        getState: store.getState
-      }
+      value: store
     },
     '$subscribe': {
       value (...args) {
