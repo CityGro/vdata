@@ -1,8 +1,8 @@
 # Revue
 
-[![NPM version](https://img.shields.io/npm/v/revue.svg?style=flat-square)](https://www.npmjs.com/package/revue)
-[![NPM download](https://img.shields.io/npm/dm/revue.svg?style=flat-square)](https://www.npmjs.com/package/revue)
-[![Build Status](https://img.shields.io/circleci/project/egoist/revue/master.svg?style=flat-square)](https://circleci.com/gh/egoist/revue/tree/master)
+[![NPM version](https://img.shields.io/npm/v/revue.svg)](https://www.npmjs.com/package/revue)
+[![NPM download](https://img.shields.io/npm/dm/revue.svg)](https://www.npmjs.com/package/revue)
+[![Build Status](https://semaphoreci.com/api/v1/projects/9869d89f-1621-4813-8c16-6cf0e74eb8bb/633082/badge.svg)](https://semaphoreci.com/egoist/revue)
 
 **New:** [Time to use Redux-devtools in non-React apps!](https://github.com/egoist/redux-devtools-script)
 
