@@ -1,14 +1,25 @@
-# Revue
+<h1 align="center">Revue</h1>
 
-[![NPM version](https://img.shields.io/npm/v/revue.svg)](https://www.npmjs.com/package/revue)
-[![NPM download](https://img.shields.io/npm/dm/revue.svg)](https://www.npmjs.com/package/revue)
-[![Build Status](https://semaphoreci.com/api/v1/projects/9869d89f-1621-4813-8c16-6cf0e74eb8bb/633082/badge.svg)](https://semaphoreci.com/egoist/revue)
+<p align="center">
+  <a href="https://www.npmjs.com/package/revue">
+    <img src="https://camo.githubusercontent.com/b145895dcb12693255d3b4b371446ea6b73fa357/68747470733a2f2f696d672e736869656c64732e696f2f6e706d2f762f72657675652e737667" alt="NPM version" style="max-width:100%;">
+  </a>
+  <a href="https://www.npmjs.com/package/revue">
+    <img src="https://camo.githubusercontent.com/49a99ffd8da7a0793e1d648f859792e9b1db45fa/68747470733a2f2f696d672e736869656c64732e696f2f6e706d2f646d2f72657675652e737667" alt="NPM download" style="max-width:100%;"></a>
+  <a href="https://semaphoreci.com/egoist/revue">
+    <img src="https://camo.githubusercontent.com/76d2c0872d04fb30683774e965ed8c717959ef77/68747470733a2f2f73656d6170686f726563692e636f6d2f6170692f76312f70726f6a656374732f39383639643839662d313632312d343831332d386331362d3663663065373465623862622f3633333038322f62616467652e737667" alt="Build Status" style="max-width:100%;">
+  </a>
+</p>
 
-**New:** [Time to use Redux-devtools in non-React apps!](https://github.com/egoist/redux-devtools-script)
-
-![](https://ooo.0o0.ooo/2015/12/01/565e513fc6d4a.png)
+<p align="center">
+  <a href="https://github.com/egoist/vuepack">
+    <img src="https://cloud.githubusercontent.com/assets/8784712/11776407/cb9d0838-a281-11e5-8d75-c6b2a7c9978f.png" alt="vuepack">
+  </a>
+</p>
 
 ## Usage
+
+**New:** [Time to use Redux-devtools in non-React apps!](https://github.com/egoist/redux-devtools-script)
 
 Obviously it works with Redux, install via NPM: `npm i -D redux revue`
 
