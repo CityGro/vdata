@@ -4,7 +4,7 @@ module.exports = {
   entry: ['./src/revue.js'],
   output: {
     path: __dirname,
-    filename: 'index.js',
+    filename: 'revue.js',
     libraryTarget: 'umd',
     library: 'Revue'
   },
@@ -23,6 +23,7 @@ module.exports = {
       '__DEV__': false
     }),
     new webpack.optimize.UglifyJsPlugin({
+      comments: false,
       compressor: {
         screw_ie8: true,
         warnings: false

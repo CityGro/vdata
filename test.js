@@ -2,7 +2,7 @@ import { jsdom } from 'jsdom'
 global.document = jsdom('<!doctype html><html><body></body></html>')
 global.window = document.defaultView
 import Vue from 'vue'
-import revue from './src/revue'
+import revue from './revue.common'
 import store from './example/store'
 import { addTodo } from './example/actions/todos'
 Vue.use(revue, {

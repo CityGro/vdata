@@ -1,11 +1,12 @@
 {
   "name": "revue",
-  "version": "1.2.4",
+  "version": "1.2.41",
   "description": "Redux binding for Vue.",
-  "main": "index.js",
+  "main": "revue.common.js",
   "scripts": {
-    "test": "mocha --compilers js:babel-core/register --require should test.js --recursive",
+    "test": "npm run cjs && mocha --compilers js:babel-core/register --require should test.js --recursive",
     "umd": "webpack --config webpack.config.umd.js",
+    "cjs": "webpack --config webpack.config.common.js",
     "start": "npm run umd && node lib/App.js",
     "webpack": "webpack -p",
     "watch": "webpack --watch",
