@@ -103,6 +103,14 @@ function configureStore() {
 export default configureStore()
 ```
 
+## FAQ
+
+**Do I have to use `this.$subscribe`? It's so verbose.**
+
+No, not always if you don't care about mutating states in reducers. And also because Vue states are mutable and observable, it's ok for you to modify data directly like `state.foo = 'bar'`, then it becomes so similar to the Vue Flux implementation [Vuex](https://github.com/vuejs/vuex), it allows to you mutate data. However what the best part of Redux is states are immutable which means you can't make direct operations on states so that you have less chance to make mistakes.
+
+`this.$subscribe` is only needed if you don't mutate states directly. And you're recommended to do so.
+
 ## License
 
 MIT &copy; [EGOIST](https://github.com/egoist)
