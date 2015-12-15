@@ -1,6 +1,6 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-import Revue from './revue'
+import Revue from '../src/revue'
 import store from './store'
 import App from './app'
 Vue.use(Revue, {
