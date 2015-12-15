@@ -1,9 +1,10 @@
+import objectPath from 'object-path'
 import shallowEqual from './utils/shallowEqual'
 
 export default function (Vue, options) {
   // const _ = Vue.util
   const store = options.store
-  const re = /([a-zA-Z0-9_-]+)\s{1,2}as\s{1,2}([a-zA-Z0-9_-]+)/i
+  const re = /([a-zA-Z0-9\._-]+)\s{1,2}as\s{1,2}([a-zA-Z0-9\._-]+)/i
   // bring redux to revue
   Object.defineProperties(Vue.prototype, {
     '$revue': {
@@ -15,20 +16,18 @@ export default function (Vue, options) {
         this.$unsubscribe()
         this.unsubscriber = []
         args.forEach(prop => {
-          // realProp: property name in your instance
-          // storeProp: property name in Redux store
+          // realProp: property name/path in your instance
+          // storeProp: property name/path in Redux store
           let realProp = prop, storeProp = prop
           if (re.test(prop)) {
-            const match = prop.match(re)
-            realProp = match[2]
-            storeProp = match[1]
+            [, storeProp, realProp] = prop.match(re)
           }
           let currentValue = store.getState()[storeProp]
           const handleChange = () => {
             let previousValue = currentValue
-            currentValue = store.getState()[storeProp]
+            currentValue = objectPath.get(store.getState(), storeProp)
             if (!shallowEqual(previousValue, currentValue)) {
-              this._data[realProp] = currentValue
+              objectPath.set(this._data, realProp, currentValue)
             }
           }
           this.unsubscriber.push(store.subscribe(handleChange))

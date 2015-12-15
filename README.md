@@ -55,6 +55,9 @@ new Vue({
     this.$subscribe('counter')
     // if your name the 'counter' to 'temp_counter' in data()
     // you can use this.$subscribe('counter as temp_counter')
+    // if you want to subscribe a deep property
+    // this.$subscribe('top.middle.counter as counter')
+    // or even this.$subscribe('something.in.reduxStore.counter as instance.somewhere.counter')
   },
   methods: {
     handleClickCounter () {

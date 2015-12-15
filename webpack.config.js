@@ -1,10 +1,11 @@
 var webpack = require('webpack')
+var HtmlWebpackPlugin = require('html-webpack-plugin')
 
 module.exports = {
   entry: ['./example/index'],
   output: {
     path: __dirname + '/build',
-    filename: 'bundle.js'
+    filename: 'bundle.[hash].js'
   },
   resolve: {
     extensions: ['', '.js', '.vue']
@@ -20,5 +21,9 @@ module.exports = {
       'process.env.NODE_ENV': JSON.stringify('development'),
       '__DEV__': true
     }),
+    new HtmlWebpackPlugin({
+      title: 'Revue',
+      template: './example/index.tpl'
+    })
   ]
 }

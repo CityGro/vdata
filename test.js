@@ -10,7 +10,7 @@ Vue.use(revue, {
 })
 
 describe('main', () => {
-  it('should dispatch ADDED_TODO', done => {
+  it('dispatch ADDED_TODO', done => {
     const vm = new Vue({
       data () {
         return {
@@ -25,7 +25,7 @@ describe('main', () => {
     vm.$data.todos.items[vm.$data.todos.items.length - 1].text.should.equal('hi')
     done()
   })
-  it('should test native value', done => {
+  it('test native value', done => {
     const vm = new Vue({
       data () {
         return {
@@ -56,5 +56,20 @@ describe('main', () => {
       vm.$data.todos.items[vm.$data.todos.items.length - 1].text.should.equal('meet a girl')
       done()
     }, 1000)
+  })
+  it('test deep property', done => {
+    const vm = new Vue({
+      data () {
+        return {
+          fakeAdmin: this.$revue.getState().admin
+        }
+      },
+      created () {
+        this.$subscribe('admin.info.name as fakeAdmin.info.name')
+        this.$revue.dispatch({type: 'CHANGE_NAME', name: 'sox'})
+      }
+    })
+    vm.$data.fakeAdmin.info.name.should.equal('sox')
+    done()
   })
 })

@@ -1,8 +1,14 @@
 <!DOCTYPE html>
-<html>
+<html{% if(o.htmlWebpackPlugin.files.manifest) { %} manifest="{%= o.htmlWebpackPlugin.files.manifest %}"{% } %}>
   <head>
-    <meta charset="utf-8">
-    <title>Revue</title>
+    <meta charset="UTF-8">
+    <title>{%=o.htmlWebpackPlugin.options.title || 'Webpack App'%}</title>
+    {% if (o.htmlWebpackPlugin.files.favicon) { %}
+    <link rel="shortcut icon" href="{%=o.htmlWebpackPlugin.files.favicon%}">
+    {% } %}
+    {% for (var css in o.htmlWebpackPlugin.files.css) { %}
+    <link href="{%=o.htmlWebpackPlugin.files.css[css] %}" rel="stylesheet">
+    {% } %}
     <style>
       body {
         font: 14px/1.4 Helvetica, serif;
@@ -85,6 +91,8 @@
   </head>
   <body>
     <div id="app"></div>
-    <script src="./build/bundle.js?v=14234"></script>
+    {% for (var chunk in o.htmlWebpackPlugin.files.chunks) { %}
+    <script src="{%=o.htmlWebpackPlugin.files.chunks[chunk].entry %}"></script>
+    {% } %}
   </body>
 </html>
