@@ -1,6 +1,6 @@
 {
   "name": "revue",
-  "version": "1.2.41",
+  "version": "1.2.42",
   "description": "Redux binding for Vue.",
   "main": "revue.common.js",
   "scripts": {
@@ -12,8 +12,16 @@
     "watch": "webpack --watch",
     "demo": "rm -rf ./build && npm run webpack && surge -d revue.surge.sh -p ./build"
   },
-  "author": "EGOIST",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/egoist/revue.git"
+  },
+  "author": "EGOIST <0x142857@gmail.com>",
   "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/egoist/revue/issues"
+  },
+  "homepage": "https://github.com/egoist/revue#readme",
   "devDependencies": {
     "babel-loader": "^6.2.0",
     "babel-plugin-transform-runtime": "^6.1.18",
