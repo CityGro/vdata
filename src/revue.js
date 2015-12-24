@@ -1,4 +1,4 @@
-import objectPath from 'object-path'
+import { set as setProp, get as getProp } from 'object-path'
 import shallowEqual from './utils/shallowEqual'
 
 export default function (Vue, options) {
@@ -22,12 +22,12 @@ export default function (Vue, options) {
           if (re.test(prop)) {
             [, storeProp, realProp] = prop.match(re)
           }
-          let currentValue = store.getState()[storeProp]
+          let currentValue = getProp(store.getState(), storeProp)
           const handleChange = () => {
             let previousValue = currentValue
-            currentValue = objectPath.get(store.getState(), storeProp)
+            currentValue = getProp(store.getState(), storeProp)
             if (!shallowEqual(previousValue, currentValue)) {
-              objectPath.set(this._data, realProp, currentValue)
+              setProp(this._data, realProp, currentValue)
             }
           }
           this.unsubscriber.push(store.subscribe(handleChange))
