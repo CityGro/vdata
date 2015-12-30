@@ -6,7 +6,7 @@
   </a>
   <a href="https://www.npmjs.com/package/revue">
     <img src="https://camo.githubusercontent.com/49a99ffd8da7a0793e1d648f859792e9b1db45fa/68747470733a2f2f696d672e736869656c64732e696f2f6e706d2f646d2f72657675652e737667" alt="NPM download" style="max-width:100%;"></a>
-  <a href="https://semaphoreci.com/egoist/revue">
+  <a href="https://travis-ci.org/egoist/revue">
     <img src="https://img.shields.io/travis/egoist/revue/master.svg" alt="Build Status" style="max-width:100%;">
   </a>
 </p>
