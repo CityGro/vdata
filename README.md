@@ -29,8 +29,12 @@ You can also hot-link the CDN version: https://npmcdn.com/revue/revue.js, `Revue
 // App.js
 import Revue from 'revue'
 import store from './store'
+import actions from './actions'
 Vue.use(Revue, {
-  store
+  store,
+  // if you want to call your actions from vm instance
+  // then your vm you can call like `this.$actions.addTodo(todo)`
+  actions
 })
 
 // store.js

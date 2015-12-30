@@ -1,7 +1,7 @@
-import {set as setProp,
+import {
+  set as setProp,
   get as getProp
-}
-from 'object-path'
+} from 'object-path'
 import shallowEqual from './utils/shallowEqual'
 
 export default function(Vue, {
@@ -29,7 +29,6 @@ export default function(Vue, {
       },
       '$subscribe': {
         value(...args) {
-
           if (this._calledOnce) {
             if (process.env.NODE_ENV === 'production') {
               return false
