@@ -10,7 +10,7 @@
 </template>
 
 <script>
-  import { addTodo, toggleTodo } from '../actions/todos'
+  import { addTodo, toggleTodo } from '../actions'
   export default {
     props: ['todos'],
     data () {
@@ -20,18 +20,22 @@
     },
     ready () {
       this.$subscribe('todos')
+      this.$store.dispatch({
+        type: 'ADDED_TODO',
+        text: 'damn'
+      })
     },
     methods: {
       reset () {
-        this.$revue.dispatch({type: 'RESET'})
+        this.$store.dispatch({type: 'RESET'})
       },
       toggleTodo (index) {
-        this.$revue.dispatch(toggleTodo(index))
+        this.$store.dispatch(toggleTodo(index))
       },
-      addTodo () {
-        if (!this.todo)
+      addTodo (todo = this.todo) {
+        if (!todo)
           return
-        this.$revue.dispatch(addTodo(this.todo))
+        this.$store.dispatch(addTodo(todo))
         this.todo = ''
       },
     }

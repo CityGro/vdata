@@ -3,6 +3,7 @@ var HtmlWebpackPlugin = require('html-webpack-plugin')
 
 module.exports = {
   entry: ['./example/index'],
+  devtool: 'cheap-module-eval-source-map',
   output: {
     path: __dirname + '/build',
     filename: 'bundle.[hash].js'

@@ -9,7 +9,7 @@
   export default {
     data () {
       return {
-        todos: this.$revue.getState().todos
+        todos: this.$store.state.todos
       }
     },
     components: {
