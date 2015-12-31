@@ -11,12 +11,6 @@
   </a>
 </p>
 
-<p align="center">
-  <a href="https://github.com/egoist/vuepack">
-    <img src="https://cloud.githubusercontent.com/assets/8784712/11776407/cb9d0838-a281-11e5-8d75-c6b2a7c9978f.png" alt="vuepack">
-  </a>
-</p>
-
 ## Usage
 
 **New:** [Time to use Redux-devtools in non-React apps!](https://github.com/egoist/redux-devtools-script)
