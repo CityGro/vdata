@@ -11,6 +11,10 @@
   </a>
 </p>
 
+## Example
+
+https://github.com/egoist/how-often
+
 ## Usage
 
 **New:** [Time to use Redux-devtools in non-React apps!](https://github.com/egoist/redux-devtools-script)
