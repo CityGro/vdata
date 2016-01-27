@@ -120,6 +120,14 @@ No, not always if you don't care about mutating states in reducers. And also bec
 
 `this.$subscribe` is only needed if you don't mutate states directly. And you're recommended to do so.
 
+## Development
+
+- **npm test** for unit test
+- **npm run watch** to build example
+- **serve example** to view demo
+- **make publish** to publish a new version
+- **npm run demo** to publish demo to surge
+
 ## License
 
 MIT &copy; [EGOIST](https://github.com/egoist)
