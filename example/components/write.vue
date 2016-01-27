@@ -10,7 +10,7 @@
 </template>
 
 <script>
-  import { addTodo, toggleTodo } from '../actions'
+  import { addTodo, toggleTodo } from '../actions/todos'
   export default {
     props: ['todos'],
     data () {
