@@ -1,8 +1,8 @@
 <template>
   <div class="read">
     <h2>Read only todos</h2>
-    <button @click="handleSubcribe">subscribe</button>
-    <button @click="handleUnsubcribe">unsubscribe</button>
+    <button @click="handleSubscribe">subscribe</button>
+    <button @click="handleUnsubscribe">unsubscribe</button>
     <ul class="todos" v-if="todos.items && todos.items.length > 0">
       <li class="todo" :class="{del: todo.done}" v-for="todo in todos.items" track-by="$index" v-text="todo.text"></li>
     </ul>
@@ -10,17 +10,23 @@
 </template>
 
 <script>
+  import {getState} from '../../src/revue'
+
   export default {
-    props: ['todos'],
-    ready () {
-      this.handleSubcribe()
+    data () {
+      return {
+        todos: getState('todos')
+      }
+    },
+    created () {
+      this.handleSubscribe()
     },
     methods: {
       // this is just for test, no need in production
-      handleUnsubcribe () {
+      handleUnsubscribe () {
         this.$unsubscribe()
       },
-      handleSubcribe () {
+      handleSubscribe () {
         this.$subscribe('todos')
       },
       /*

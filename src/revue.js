@@ -4,6 +4,8 @@ import {
   get as getProp
 } from 'object-path'
 
+let revueStore
+
 export default function(Vue, {
   store = null,
   actions = null
@@ -12,19 +14,7 @@ export default function(Vue, {
     throw new TypeError('[Revue] Expected store to be an object')
   }
   const re = /^([a-zA-Z0-9\._-]+)\s{1,2}as\s{1,2}([a-zA-Z0-9\._-]+)$/i
-  // you can bind your actions to vue instance
-  // so you can call them via this.$actions.yourAction in vue instance
-  if (actions) {
-    Object.defineProperty(Vue.prototype, '$actions', {
-      value: actions
-    })
-  }
-  Vue.prototype.$store = {
-    get state() {
-      return store.getState()
-    },
-    dispatch: store.dispatch
-  }
+  revueStore = store
   Vue.prototype.$subscribe = function (...args) {
     if (this._calledOnce) {
       if (process.env.NODE_ENV === 'production') {
@@ -42,15 +32,15 @@ export default function(Vue, {
       if (re.test(prop)) {
         [, storeProp, realProp] = prop.match(re)
       }
-      let currentValue = getProp(store.getState(), storeProp)
+      let currentValue = getProp(revueStore.getState(), storeProp)
       const handleChange = () => {
         let previousValue = currentValue
-        currentValue = getProp(store.getState(), storeProp)
+        currentValue = getProp(revueStore.getState(), storeProp)
         if (!shallowEqual(previousValue, currentValue)) {
           setProp(this._data, realProp, currentValue)
         }
       }
-      this._unsubscribers.push(store.subscribe(handleChange))
+      this._unsubscribers.push(revueStore.subscribe(handleChange))
     })
   }
   Vue.prototype.$unsubscribe = function () {
@@ -65,4 +55,29 @@ export default function(Vue, {
       this.$unsubscribe()
     }
   })
+}
+
+export function wrap(actions) {
+  // a single action
+  if (typeof actions === 'function') {
+    return function (...args) {
+      revueStore.dispatch(actions.apply(this, args))
+    }
+  }
+  // an action tree
+  for (let name in actions) {
+    let action = actions[name]
+    actions[name] = function (...args) {
+      revueStore.dispatch(action.apply(this, args))
+    }
+  }
+  return actions
+}
+
+export function dispatch(args) {
+  revueStore.dispatch.call(this, args)
+}
+
+export function getState(state) {
+  return getProp(revueStore.getState(), state)
 }

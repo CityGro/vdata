@@ -1,6 +1,6 @@
 <template>
   <div class="write">
-    <input type="text" class="input-todo" v-model="todo"><button class="add" @click="addTodo">add todo</button>
+    <input type="text" class="input-todo" v-model="todo"><button class="add" @click="addTodo()">add todo</button>
     <h2>Writable todos</h2>
     <button @click="reset">reset data</button> {{ todos.isPosting ? 'Posting...' : '' }}
     <ul class="todos" v-if="todos.items && todos.items.length > 0">
@@ -10,32 +10,31 @@
 </template>
 
 <script>
-  import { addTodo, toggleTodo } from '../actions/todos'
+  import {wrap, getState, dispatch} from '../../src/revue'
+  import { addTodo, toggleTodo, addedTodo } from '../actions/todos'
+  import store from '../store'
   export default {
-    props: ['todos'],
     data () {
       return {
-        todo: ''
+        todo: '',
+        todos: getState('todos')
       }
     },
     ready () {
       this.$subscribe('todos')
-      this.$store.dispatch({
-        type: 'ADDED_TODO',
-        text: 'damn'
-      })
+      dispatch(addedTodo('damn'))
     },
     methods: {
       reset () {
-        this.$store.dispatch({type: 'RESET'})
+        dispatch({type: 'RESET'})
       },
       toggleTodo (index) {
-        this.$store.dispatch(toggleTodo(index))
+        dispatch(toggleTodo(index))
       },
       addTodo (todo = this.todo) {
         if (!todo)
           return
-        this.$store.dispatch(addTodo(todo))
+        dispatch(addTodo(todo))
         this.todo = ''
       },
     }

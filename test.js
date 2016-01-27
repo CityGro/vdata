@@ -5,7 +5,7 @@ from 'jsdom'
 global.document = jsdom('<!doctype html><html><body></body></html>')
 global.window = document.defaultView
 import Vue from 'vue'
-import revue from './revue.common'
+import revue, {wrap, dispatch, getState} from './revue.common'
 import store from './example/store'
 import {
   addTodo
@@ -19,13 +19,13 @@ describe('main', () => {
     const vm = new Vue({
       data() {
           return {
-            todos: this.$store.state.todos
+            todos: getState('state.todos')
           }
         },
         // do not use ready() here because the test now is not in dom environment
         created() {
           this.$subscribe('todos')
-          this.$store.dispatch({
+          dispatch({
             type: 'ADDED_TODO',
             text: 'hi'
           })
@@ -38,12 +38,12 @@ describe('main', () => {
     const vm = new Vue({
       data() {
           return {
-            count: this.$store.state.counter
+            count: getState('counter')
           }
         },
         created() {
           this.$subscribe('counter as count')
-          this.$store.dispatch({
+          dispatch({
             type: 'INCREMENT'
           })
         }
@@ -55,12 +55,13 @@ describe('main', () => {
     const vm = new Vue({
       data() {
           return {
-            todos: this.$store.state.todos
+            todos: getState('todos')
           }
         },
         created() {
           this.$subscribe('todos')
-          this.$store.dispatch(addTodo('meet a girl'))
+          const addTodoAction = wrap(addTodo)
+          addTodoAction('meet a girl')
         }
     })
     setTimeout(() => {
@@ -72,12 +73,12 @@ describe('main', () => {
     const vm = new Vue({
       data() {
           return {
-            fakeAdmin: this.$store.state.admin
+            fakeAdmin: getState('admin')
           }
         },
         created() {
           this.$subscribe('admin.info.name as fakeAdmin.info.name')
-          this.$store.dispatch({
+          dispatch({
             type: 'CHANGE_NAME',
             name: 'sox'
           })

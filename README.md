@@ -25,15 +25,9 @@ You can also hot-link the CDN version: https://npmcdn.com/revue/revue.js, `Revue
 
 ```javascript
 // App.js
-import Revue from 'revue'
+import Revue, {wrap, dispatch, getState} from 'revue'
 import store from './store'
-import actions from './actions'
-Vue.use(Revue, {
-  store,
-  // if you want to call your actions from vm instance
-  // then your vm you can call like `this.$actions.addTodo(todo)`
-  actions
-})
+Vue.use(Revue, {store})
 
 // store.js
 // just put some reducers in `./reducers` like
@@ -49,10 +43,10 @@ new Vue({
   el: '#app',
   data () {
     return {
-      counter: this.$store.state.counter
+      counter: getState('counter')
     }
   },
-  ready () {
+  created () {
     // subscribe state changes
     this.$subscribe('counter')
     // if your name the 'counter' to 'temp_counter' in data()
@@ -71,13 +65,23 @@ new Vue({
   methods: {
     handleClickCounter () {
       // dispatch events
-      this.$store.dispatch({type: 'INCREMENT'})
+      // could be a plain object or call an action creator
+      dispatch({type: 'INCREMENT'})
+
+      // or wrap your action creator as a thunk
+      // so you implicitly fire `dispatch action`
+      const fire = wrap(actions)
+      // the `actions` accept an actions object or a single action function
+      fire.increment()
+      // equal to  dispatch(actions.increment())
+      fire.addTodo({/* your todo */})
+      // equal to dispatch(actions.addTodo())
     }
   }
 })
 ```
 
-[**More detailed usages**](/src)
+[**More detailed usages**](/example)
 
 ## Hot-reload reducers
 
