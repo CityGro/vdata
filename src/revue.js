@@ -12,7 +12,8 @@ export default function(Vue, {
     throw new TypeError('[Revue] Expected store to be an object')
   }
   const re = /^([a-zA-Z0-9\._-]+)\s{1,2}as\s{1,2}([a-zA-Z0-9\._-]+)$/i
-    // bring redux to revue
+  // you can bind your actions to vue instance
+  // so you can call them via this.$actions.yourAction in vue instance
   if (actions) {
     Object.defineProperty(Vue.prototype, '$actions', {
       value: actions
