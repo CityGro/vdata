@@ -9,7 +9,10 @@
   <a href="https://travis-ci.org/egoist/revue">
     <img src="https://img.shields.io/travis/egoist/revue/master.svg" alt="Build Status" style="max-width:100%;">
   </a>
+  <img src="https://img.shields.io/badge/stablity-experimental-red.svg">
 </p>
+
+Here is 2.0 branch, for version 1.0 please view [master](https://github.com/egoist/revue/tree/master) branch
 
 ## Usage
 
