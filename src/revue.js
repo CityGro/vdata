@@ -7,8 +7,7 @@ import {
 let revueStore
 
 export default function(Vue, {
-  store = null,
-  actions = null
+  store = null
 } = {}) {
   if (process.env.NODE_ENV !== 'production' && typeof store !== 'object') {
     throw new TypeError('[Revue] Expected store to be an object')
