@@ -32,7 +32,7 @@ import Revue from 'revue'
 import { createStore } from 'redux'
 import reducer from './reducers/index'
 // create a redux store
-const reduxStore createStore(reducer)
+const reduxStore = createStore(reducer)
 // create a revueStore which has a binding to Vue
 const store = new Revue(Vue, reduxStore)
 // expost this store instance
