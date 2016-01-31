@@ -35,7 +35,7 @@ import reducer from './reducers/index'
 const reduxStore = createStore(reducer)
 // create a revueStore which has a binding to Vue
 const store = new Revue(Vue, reduxStore)
-// expost this store instance
+// expose this store instance
 export default store
 
 // component.js
@@ -115,7 +115,7 @@ function configureStore() {
   return reduxStore
 }
 
-new Revue(configureStore(), Vue)
+export default new Revue(Vue, configureStore())
 ```
 
 ## FAQ
