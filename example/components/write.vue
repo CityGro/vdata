@@ -10,31 +10,31 @@
 </template>
 
 <script>
-  import {wrap, getState, dispatch} from '../../src/revue'
-  import { addTodo, toggleTodo, addedTodo } from '../actions/todos'
   import store from '../store'
+  import { addTodo, toggleTodo, addedTodo } from '../actions/todos'
+  //import store from '../store'
   export default {
     data () {
       return {
         todo: '',
-        todos: getState('todos')
+        todos: store.state.todos
       }
     },
     ready () {
       this.$subscribe('todos')
-      dispatch(addedTodo('damn'))
+      store.dispatch(addedTodo('damn'))
     },
     methods: {
       reset () {
-        dispatch({type: 'RESET'})
+        store.dispatch({type: 'RESET'})
       },
       toggleTodo (index) {
-        dispatch(toggleTodo(index))
+        store.dispatch(toggleTodo(index))
       },
       addTodo (todo = this.todo) {
         if (!todo)
           return
-        dispatch(addTodo(todo))
+        store.dispatch(addTodo(todo))
         this.todo = ''
       },
     }

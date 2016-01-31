@@ -10,12 +10,12 @@
 </template>
 
 <script>
-  import {getState} from '../../src/revue'
+  import store from '../store'
 
   export default {
     data () {
       return {
-        todos: getState('todos')
+        todos: store.state.todos
       }
     },
     created () {

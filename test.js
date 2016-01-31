@@ -5,27 +5,24 @@ from 'jsdom'
 global.document = jsdom('<!doctype html><html><body></body></html>')
 global.window = document.defaultView
 import Vue from 'vue'
-import revue, {wrap, dispatch, getState} from './revue.common'
 import store from './example/store'
 import {
   addTodo
 } from './example/actions/todos'
-Vue.use(revue, {
-  store
-})
+
 
 describe('main', () => {
   it('dispatch ADDED_TODO', done => {
     const vm = new Vue({
       data() {
           return {
-            todos: getState('state.todos')
+            todos: store.state.todos
           }
         },
         // do not use ready() here because the test now is not in dom environment
         created() {
           this.$subscribe('todos')
-          dispatch({
+          store.dispatch({
             type: 'ADDED_TODO',
             text: 'hi'
           })
@@ -38,12 +35,12 @@ describe('main', () => {
     const vm = new Vue({
       data() {
           return {
-            count: getState('counter')
+            count: store.state.counter
           }
         },
         created() {
           this.$subscribe('counter as count')
-          dispatch({
+          store.dispatch({
             type: 'INCREMENT'
           })
         }
@@ -55,12 +52,12 @@ describe('main', () => {
     const vm = new Vue({
       data() {
           return {
-            todos: getState('todos')
+            todos: store.state.todos
           }
         },
         created() {
           this.$subscribe('todos')
-          const addTodoAction = wrap(addTodo)
+          const addTodoAction = store.wrap(addTodo)
           addTodoAction('meet a girl')
         }
     })
@@ -73,12 +70,12 @@ describe('main', () => {
     const vm = new Vue({
       data() {
           return {
-            fakeAdmin: getState('admin')
+            fakeAdmin: store.state.admin
           }
         },
         created() {
           this.$subscribe('admin.info.name as fakeAdmin.info.name')
-          dispatch({
+          store.dispatch({
             type: 'CHANGE_NAME',
             name: 'sox'
           })

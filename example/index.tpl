@@ -60,6 +60,7 @@
       }
       .todo {
         padding: 10px;
+        -webkit-user-select: none;
       }
       .todo:hover {
         cursor: pointer;

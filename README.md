@@ -23,26 +23,29 @@ Obviously it works with Redux, install via NPM: `npm i -D redux revue`
 You can also hot-link the CDN version: https://npmcdn.com/revue/revue.js, `Revue` is exposed to `window` object.
 
 ```javascript
-// App.js
-import Revue, {wrap, dispatch, getState} from 'revue'
-import store from './store'
-Vue.use(Revue, {store})
-
 // store.js
 // just put some reducers in `./reducers` like
 // what you do in pure Redux
 // and combine them in `./reducers/index.js`
+import Vue from 'vue'
+import Revue from 'revue'
 import { createStore } from 'redux'
 import reducer from './reducers/index'
-export default createStore(reducer)
+// create a redux store
+const reduxStore createStore(reducer)
+// create a revueStore which has a binding to Vue
+const store = new Revue(Vue, reduxStore)
+// expost this store instance
+export default store
 
 // component.js
 // some component using Revue
+import store from './store'
 new Vue({
   el: '#app',
   data () {
     return {
-      counter: getState('counter')
+      counter: store.state.counter
     }
   },
   created () {
@@ -65,16 +68,16 @@ new Vue({
     handleClickCounter () {
       // dispatch events
       // could be a plain object or call an action creator
-      dispatch({type: 'INCREMENT'})
+      store.dispatch({type: 'INCREMENT'})
 
       // or wrap your action creator as a thunk
       // so you implicitly fire `dispatch action`
-      const fire = wrap(actions)
+      const fire = store.wrap(actions)
       // the `actions` accept an actions object or a single action function
       fire.increment()
-      // equal to  dispatch(actions.increment())
+      // equal to store.dispatch(actions.increment())
       fire.addTodo({/* your todo */})
-      // equal to dispatch(actions.addTodo())
+      // equal to store.dispatch(actions.addTodo())
     }
   }
 })
@@ -92,7 +95,7 @@ Before:
 import { createStore } from 'redux'
 import rootReducer from './reducers'
 
-export default createStore(rootReducer)
+export default new Revue(Vue, createStore(rootReducer))
 ```
 
 After:
@@ -102,17 +105,17 @@ import { createStore } from 'redux'
 import rootReducer from './reducers'
 
 function configureStore() {
-  const store = createStore(rootReducer)
+  const reduxStore = createStore(rootReducer)
   if (module.hot) {
     module.hot.accept('./reducers', () => {
       const nextRootReducer = require('./reducers').default
-      store.replaceReducer(nextRootReducer)
+      reduxStore.replaceReducer(nextRootReducer)
     })
   }
-  return store
+  return reduxStore
 }
 
-export default configureStore()
+new Revue(configureStore(), Vue)
 ```
 
 ## FAQ
