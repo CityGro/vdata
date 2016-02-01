@@ -55,7 +55,7 @@ export function toggleTodo(payload) {
 
 ```js
 import store from './store'
-import todoActions from './actions/todo'
+import * as todoActions from './actions/todo'
 
 export default {
   data() {
