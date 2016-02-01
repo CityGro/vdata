@@ -16,8 +16,6 @@ Here is 2.0 branch, for version 1.0 please view [master](https://github.com/egoi
 
 ## Usage
 
-**New:** [Time to use Redux-devtools in non-React apps!](https://github.com/egoist/redux-devtools-script)
-
 Obviously it works with Redux, install via NPM: `npm i -D redux revue`
 
 You can also hot-link the CDN version: https://npmcdn.com/revue/revue.js, `Revue` is exposed to `window` object.
