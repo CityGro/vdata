@@ -22,65 +22,64 @@ Obviously it works with Redux, install via NPM: `npm i -D redux revue`
 
 You can also hot-link the CDN version: https://npmcdn.com/revue/revue.js, `Revue` is exposed to `window` object.
 
-```javascript
-// store.js
-// just put some reducers in `./reducers` like
-// what you do in pure Redux
-// and combine them in `./reducers/index.js`
+## The Gist
+
+**store.js**
+
+```js
 import Vue from 'vue'
 import Revue from 'revue'
-import { createStore } from 'redux'
-import reducer from './reducers/index'
-// create a redux store
-const reduxStore = createStore(reducer)
-// create a revueStore which has a binding to Vue
-const store = new Revue(Vue, reduxStore)
-// expose this store instance
-export default store
+import {createStore} from 'redux'
+// create the logic how you would update the todos
+import todos from './reducers/todos'
 
-// component.js
-// some component using Revue
+// create a redux store
+const reduxStore = createStore(todos)
+// binding the store to Vue instance
+const store = new Revue(Vue, reduxStore)
+// expose the store for your component to use
+export default store
+```
+
+**actions/todos.js**
+
+```js
+// create actionCreators yourself or use `redux-actions`
+export function addTodo(payload) {
+  return {type: 'ADD_TODO', payload}
+}
+export function toggleTodo(payload) {
+  return {type: 'TOGGLE_TODO', payload}
+}
+```
+
+**component.js**
+
+```js
 import store from './store'
-new Vue({
-  el: '#app',
-  data () {
+import todoActions from './actions/todo'
+
+export default {
+  data() {
     return {
-      counter: store.state.counter
+      todo: '',
+      todos: store.state.todos
     }
   },
-  created () {
-    // subscribe state changes
-    this.$subscribe('counter')
-    // if your name the 'counter' to 'temp_counter' in data()
-    // you can use this.$subscribe('counter as temp_counter')
-    // if you want to subscribe a deep property
-    // this.$subscribe('top.middle.counter as counter')
-    // or even this.$subscribe('something.in.reduxStore.counter as instance.somewhere.counter')
-    // you can only $subscribe once, if you want to subscribe multi states at the same time, do this:
-    /*
-    this.$subscribe(
-      'foo',
-      'bar'
-    )
-    */
+  created() {
+    this.$subscribe('todos')
   },
   methods: {
-    handleClickCounter () {
-      // dispatch events
-      // could be a plain object or call an action creator
-      store.dispatch({type: 'INCREMENT'})
-
-      // or wrap your action creator as a thunk
-      // so you implicitly fire `dispatch action`
-      const fire = store.wrap(actions)
-      // the `actions` accept an actions object or a single action function
-      fire.increment()
-      // equal to store.dispatch(actions.increment())
-      fire.addTodo({/* your todo */})
-      // equal to store.dispatch(actions.addTodo())
+    addTodo() {
+      store.dispatch({type: 'ADD_TODO', this.todo})
+      // or use action actionCreator
+      store.dispatch(todoActions.addTodo(this.todo))
+      // or wrap the actionCreator in dispatch first
+      const fire = store.wrap(todoActions)
+      fire.addTodo(this.todo)
     }
   }
-})
+}
 ```
 
 [**More detailed usages**](/example)
