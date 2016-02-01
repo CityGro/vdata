@@ -72,7 +72,7 @@ export default {
   methods: {
     addTodo() {
       store.dispatch({type: 'ADD_TODO', this.todo})
-      // or use action actionCreator
+      // or use the actionCreator
       store.dispatch(todoActions.addTodo(this.todo))
       // or wrap the actionCreator in dispatch first
       const fire = store.wrap(todoActions)
