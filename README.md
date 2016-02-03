@@ -22,6 +22,8 @@ You can also hot-link the CDN version: https://npmcdn.com/revue/revue.js, `Revue
 
 ## The Gist
 
+You can try it online! http://esnextb.in/?gist=b300931ac26da8e9de2f
+
 **store.js**
 
 ```js
