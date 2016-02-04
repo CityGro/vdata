@@ -1,7 +1,7 @@
 var webpack = require('webpack')
 
 module.exports = {
-  entry: ['./src/revue.js'],
+  entry: ['./revue.common.js'],
   output: {
     path: __dirname,
     filename: 'revue.js',
@@ -19,8 +19,7 @@ module.exports = {
   plugins: [
     new webpack.optimize.OccurenceOrderPlugin(),
     new webpack.DefinePlugin({
-      'process.env.NODE_ENV': JSON.stringify('production'),
-      '__DEV__': false
+      'process.env.NODE_ENV': JSON.stringify('production')
     }),
     new webpack.optimize.UglifyJsPlugin({
       comments: false,
@@ -29,5 +28,8 @@ module.exports = {
         warnings: false
       }
     })
-  ]
+  ],
+  babel: {
+    "presets": ["es2015", "stage-0"]
+  }
 }

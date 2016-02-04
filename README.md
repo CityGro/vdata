@@ -32,11 +32,13 @@ import Revue from 'revue'
 import {createStore} from 'redux'
 // create the logic how you would update the todos
 import todos from './reducers/todos'
+// create some redux actions
+import actions from './actions'
 
 // create a redux store
 const reduxStore = createStore(todos)
-// binding the store to Vue instance
-const store = new Revue(Vue, reduxStore)
+// binding the store to Vue instance, actions are optional
+const store = new Revue(Vue, reduxStore, actions)
 // expose the store for your component to use
 export default store
 ```
@@ -74,10 +76,10 @@ export default {
       store.dispatch({type: 'ADD_TODO', this.todo})
       // or use the actionCreator
       store.dispatch(todoActions.addTodo(this.todo))
-      // or wrap the actionCreator in dispatch first
-      const fire = store.wrap(todoActions)
-      fire.addTodo(this.todo)
-    }
+      // also equal to: (if you binded actions when creating the store)
+      store.actions.addTodo(this.todo)
+    },
+    toggleTodo: store.actions.toggleTodo
   }
 }
 ```
@@ -125,10 +127,12 @@ Yes. However the Redux store is a single immutable tree, you can think each prop
 
 ## Development
 
-- **npm test** for unit test
-- **npm run watch** to build example
-- **serve example** to view demo
-- **make publish** to publish a new version
+- **npm test** run unit test
+- **npm run watch** build example
+- **serve example** serve example
+- **make publish** publish a new version
+- **npm run cjs** build in CommonJS format
+- **npm run umd** build in umd format
 - **npm run demo** to publish demo to surge
 
 ## License

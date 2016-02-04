@@ -11,8 +11,8 @@
 
 <script>
   import store from '../store'
-  import { addTodo, toggleTodo, addedTodo } from '../actions/todos'
-  //import store from '../store'
+  import {addTodo as addTodoAction} from '../actions/todos'
+
   export default {
     data () {
       return {
@@ -22,19 +22,19 @@
     },
     ready () {
       this.$subscribe('todos')
-      store.dispatch(addedTodo('damn'))
+      store.actions.addTodo('damn')
     },
     methods: {
       reset () {
         store.dispatch({type: 'RESET'})
       },
       toggleTodo (index) {
-        store.dispatch(toggleTodo(index))
+        store.actions.toggleTodo(index)
       },
       addTodo (todo = this.todo) {
         if (!todo)
           return
-        store.dispatch(addTodo(todo))
+        store.actions.addTodo(todo)
         this.todo = ''
       },
     }

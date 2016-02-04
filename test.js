@@ -1,15 +1,9 @@
-import {
-  jsdom
-}
-from 'jsdom'
+import {jsdom} from 'jsdom'
 global.document = jsdom('<!doctype html><html><body></body></html>')
 global.window = document.defaultView
 import Vue from 'vue'
 import store from './example/store'
-import {
-  addTodo
-} from './example/actions/todos'
-
+import {addTodo} from './example/actions/todos'
 
 describe('main', () => {
   it('dispatch ADDED_TODO', done => {
@@ -22,10 +16,7 @@ describe('main', () => {
         // do not use ready() here because the test now is not in dom environment
         created() {
           this.$subscribe('todos')
-          store.dispatch({
-            type: 'ADDED_TODO',
-            text: 'hi'
-          })
+          store.actions.addedTodo('hi')
         }
     })
     vm.$data.todos.items[vm.$data.todos.items.length - 1].text.should.equal('hi')
@@ -57,8 +48,7 @@ describe('main', () => {
         },
         created() {
           this.$subscribe('todos')
-          const addTodoAction = store.wrap(addTodo)
-          addTodoAction('meet a girl')
+          store.actions.addTodo('meet a girl')
         }
     })
     setTimeout(() => {

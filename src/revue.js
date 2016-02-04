@@ -1,7 +1,10 @@
 import shallowEqual from './utils/shallowEqual'
 import {set as setProp, get as getProp} from 'object-path'
 
+// to valid and match like `a.b.c as x.y.z`
 const re = /^([a-zA-Z0-9\._-]+)\s{1,2}as\s{1,2}([a-zA-Z0-9\._-]+)$/i
+
+const isDev = process.env.NODE_ENV !== 'production'
 
 /**
  * Bind reduxStore to Vue instance
@@ -12,10 +15,10 @@ const re = /^([a-zA-Z0-9\._-]+)\s{1,2}as\s{1,2}([a-zA-Z0-9\._-]+)$/i
 function bindVue(Vue, store) {
   Vue.prototype.$subscribe = function (...args) {
     if (this._calledOnce) {
-      if (process.env.NODE_ENV === 'production') {
-        return false
+      if (isDev) {
+        throw new Error('[Revue] You can only subscribe once, pass multi args to subscribe more than one state.')
       }
-      throw new Error('[Revue] You can only subscribe once, pass multi args to subscribe more than one state.')
+      return false
     }
     this._calledOnce = true
     this._unsubscribers = []
@@ -46,31 +49,45 @@ function bindVue(Vue, store) {
   }
 }
 
+/**
+ * Wrap redux actions (both action creators and async action)
+ *
+ * @param {Redux Store} - store
+ * @param {object} - actions
+ * @returns {Object}
+ */
+function wrap(store, actions) {
+  if (isDev && typeof actions !== 'object') {
+    throw new TypeError('[Revue] Expected an Object')
+  }
+  // an action tree
+  for (const name in actions) {
+    let action = actions[name]
+    actions[name] = (...args) => {
+      store.dispatch(action.apply(null, args))
+    }
+  }
+  return actions
+}
+
 export default class Revue {
-  constructor(Vue, reduxStore) {
+  constructor(Vue, reduxStore, reduxActions) {
     this.store = reduxStore
     bindVue(Vue, this.store)
+    if (reduxActions) {
+      this.reduxActions = wrap(this.store, reduxActions)
+    }
   }
   get state() {
     return this.store.getState()
   }
-  dispatch(...args) {
-    this.store.dispatch.apply(this, args)
+  get actions() {
+    if (isDev && !this.reduxActions) {
+      throw new Error('[Revue] Bind actions to Revue before calling them!')
+    }
+    return this.reduxActions
   }
-  wrap(actions) {
-    // a single action
-    if (typeof actions === 'function') {
-      return (...args) => {
-        this.store.dispatch(actions.apply(this, args))
-      }
-    }
-    // an action tree
-    for (let name in actions) {
-      let action = actions[name]
-      actions[name] = (...args) => {
-        this.store.dispatch(action.apply(this, args))
-      }
-    }
-    return actions
+  dispatch(...args) {
+    this.store.dispatch.apply(null, args)
   }
 }

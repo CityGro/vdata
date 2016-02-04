@@ -3,6 +3,7 @@ import Revue from '../src/revue'
 import { createStore, applyMiddleware } from 'redux'
 import reducer from './reducers/index'
 import thunk from 'redux-thunk'
+import * as actions from './actions/todos'
 
 const createStoreWithMiddleware = applyMiddleware(
   thunk
@@ -10,6 +11,5 @@ const createStoreWithMiddleware = applyMiddleware(
 
 const reduxStore = createStoreWithMiddleware(reducer)
 
-const store = new Revue(Vue, reduxStore)
-
+const store = new Revue(Vue, reduxStore, actions)
 export default store
