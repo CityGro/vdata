@@ -77,9 +77,9 @@ export default {
       // or use the actionCreator
       store.dispatch(todoActions.addTodo(this.todo))
       // also equal to: (if you binded actions when creating the store)
-      store.actions.addTodo(this.todo)
-    },
-    toggleTodo: store.actions.toggleTodo
+      const {addTodo} = store.actions
+      store.dispatch(addTodo(this.todo))
+    }
   }
 }
 ```

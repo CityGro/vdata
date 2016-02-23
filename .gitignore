@@ -3,6 +3,7 @@
 /revue.js
 /lib
 /revue.common.js
+.nyc_output
 
 # Logs
 logs

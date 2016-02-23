@@ -16,7 +16,8 @@ describe('main', () => {
         // do not use ready() here because the test now is not in dom environment
         created() {
           this.$subscribe('todos')
-          store.actions.addedTodo('hi')
+          const {addedTodo} = store.actions
+          store.dispatch(addedTodo('hi'))
         }
     })
     vm.$data.todos.items[vm.$data.todos.items.length - 1].text.should.equal('hi')
@@ -48,7 +49,8 @@ describe('main', () => {
         },
         created() {
           this.$subscribe('todos')
-          store.actions.addTodo('meet a girl')
+          const {addTodo} = store.actions
+          store.dispatch(addTodo('meet a girl'))
         }
     })
     setTimeout(() => {
