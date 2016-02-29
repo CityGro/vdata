@@ -38,7 +38,7 @@ function bindVue(Vue, store) {
 			beforeDestroy() {
 				if (this._unsubscribe) {
 					this._calledOnce = false
-					this.unsubscribe()
+					this._unsubscribe()
 				}
 			}
 		})
