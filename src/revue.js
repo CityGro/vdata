@@ -1,8 +1,5 @@
-import shallowEqual from './utils/shallowEqual'
-import {set as setProp, get as getProp} from 'object-path'
-
 // to valid and match like `a.b.c as x.y.z`
-const re = /^([a-zA-Z0-9\._-]+)\s{1,2}as\s{1,2}([a-zA-Z0-9\._-]+)$/i
+const re = /^([a-zA-Z0-9_-]+)\s{1,2}as\s{1,2}([a-zA-Z0-9\._-]+)$/i
 
 const isDev = process.env.NODE_ENV !== 'production'
 
@@ -21,31 +18,30 @@ function bindVue(Vue, store) {
 			return false
 		}
 		this._calledOnce = true
-		this._unsubscribers = []
-		args.forEach(prop => {
-			// realProp: property name/path in your instance
-			// storeProp: property name/path in Redux store
-			let realProp = prop,
-				storeProp = prop
-			if (re.test(prop)) {
-				[, storeProp, realProp] = prop.match(re)
-			}
-			let currentValue = getProp(store.getState(), storeProp)
-			const handleChange = () => {
-				let previousValue = currentValue
-				currentValue = getProp(store.getState(), storeProp)
-				if (!shallowEqual(previousValue, currentValue)) {
-					setProp(this._data, realProp, currentValue)
+		const handleChange = () => {
+			args.forEach(prop => {
+				// realProp: property name/path in your instance
+				// storeProp: property name/path in Redux store
+				let realProp = prop
+				let storeProp = prop
+				if (re.test(prop)) {
+					[, storeProp, realProp] = prop.match(re)
+				}
+				if (realProp && storeProp) {
+					const currentValue = store.getState()[storeProp]
+					this.$set(realProp, currentValue)
+				}
+			})
+		}
+		this._unsubscribe = store.subscribe(handleChange)
+		Vue.mixin({
+			beforeDestroy() {
+				if (this._unsubscribe) {
+					this._calledOnce = false
+					this.unsubscribe()
 				}
 			}
-			this._unsubscribers.push(store.subscribe(handleChange))
 		})
-	}
-	Vue.prototype.$unsubscribe = function () {
-		if (this._unsubscribers && this._unsubscribers.length > 0) {
-			this._calledOnce = false
-			this._unsubscribers.forEach(un => un())
-		}
 	}
 }
 

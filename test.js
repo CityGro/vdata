@@ -62,18 +62,18 @@ describe('main', () => {
     const vm = new Vue({
       data() {
           return {
-            fakeAdmin: store.state.admin
+            foo: {fakeAdmin: store.state.admin}
           }
         },
         created() {
-          this.$subscribe('admin.info.name as fakeAdmin.info.name')
+          this.$subscribe('admin as foo.fakeAdmin')
           store.dispatch({
             type: 'CHANGE_NAME',
             name: 'sox'
           })
         }
     })
-    vm.$data.fakeAdmin.info.name.should.equal('sox')
+    vm.$data.foo.fakeAdmin.info.name.should.equal('sox')
     done()
   })
 })

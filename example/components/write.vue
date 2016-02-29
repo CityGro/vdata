@@ -29,12 +29,12 @@
         store.dispatch({type: 'RESET'})
       },
       toggleTodo (index) {
-        store.actions.toggleTodo(index)
+        store.dispatch(store.actions.toggleTodo(index))
       },
       addTodo (todo = this.todo) {
         if (!todo)
           return
-        store.actions.addTodo(todo)
+        store.dispatch(store.actions.addTodo(todo))
         this.todo = ''
       },
     }

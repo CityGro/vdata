@@ -24,7 +24,8 @@
     methods: {
       // this is just for test, no need in production
       handleUnsubscribe () {
-        this.$unsubscribe()
+        this._calledOnce = false
+        this._unsubscribe()
       },
       handleSubscribe () {
         this.$subscribe('todos')
