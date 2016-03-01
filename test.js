@@ -10,12 +10,11 @@ describe('main', () => {
     const vm = new Vue({
       data() {
           return {
-            todos: store.state.todos
+            todos: this.$select('todos')
           }
         },
         // do not use ready() here because the test now is not in dom environment
         created() {
-          this.$subscribe('todos')
           const {addedTodo} = store.actions
           store.dispatch(addedTodo('hi'))
         }
@@ -27,11 +26,10 @@ describe('main', () => {
     const vm = new Vue({
       data() {
           return {
-            count: store.state.counter
+            count: this.$select('counter as count')
           }
         },
         created() {
-          this.$subscribe('counter as count')
           store.dispatch({
             type: 'INCREMENT'
           })
@@ -44,11 +42,10 @@ describe('main', () => {
     const vm = new Vue({
       data() {
           return {
-            todos: store.state.todos
+            todos: this.$select('todos')
           }
         },
         created() {
-          this.$subscribe('todos')
           const {addTodo} = store.actions
           store.dispatch(addTodo('meet a girl'))
         }
@@ -62,11 +59,12 @@ describe('main', () => {
     const vm = new Vue({
       data() {
           return {
-            foo: {fakeAdmin: store.state.admin}
+            foo: {
+            	fakeAdmin: this.$select('admin as foo.fakeAdmin')
+            }
           }
         },
         created() {
-          this.$subscribe('admin as foo.fakeAdmin')
           store.dispatch({
             type: 'CHANGE_NAME',
             name: 'sox'

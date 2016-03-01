@@ -65,11 +65,8 @@ export default {
   data() {
     return {
       todo: '',
-      todos: store.state.todos
+      todos: this.$select('todos')
     }
-  },
-  created() {
-    this.$subscribe('todos')
   },
   methods: {
     addTodo() {
@@ -118,12 +115,6 @@ function configureStore() {
 
 export default new Revue(Vue, configureStore())
 ```
-
-## FAQ
-
-**Do I have to use `this.$subscribe`? It's so verbose.**
-
-Yes. However the Redux store is a single immutable tree, you can think each property in the tree as a single store, to subscribe a state is like to subscribe its store (here we can call it a subscriber). I think Revue is kinda like [Alt.js](http://alt.js.org) somehow.
 
 ## Development
 

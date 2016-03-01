@@ -10,38 +10,29 @@ const isDev = process.env.NODE_ENV !== 'production'
  * @param {object} store - redux store
  */
 function bindVue(Vue, store) {
-	Vue.prototype.$subscribe = function (...args) {
-		if (this._calledOnce) {
-			if (isDev) {
-				throw new Error('[Revue] You can only subscribe once, pass multi args to subscribe more than one state.')
+	Vue.mixin({
+		beforeDestroy() {
+			if (this._unsubscribe) {
+				this._unsubscribe()
 			}
-			return false
 		}
-		this._calledOnce = true
+	})
+	Vue.prototype.$select = function (prop) {
+		// realProp: property name/path in your instance
+		// storeProp: property name/path in Redux store
+		let realProp = prop
+		let storeProp = prop
+		if (re.test(prop)) {
+			[, storeProp, realProp] = prop.match(re)
+		}
 		const handleChange = () => {
-			args.forEach(prop => {
-				// realProp: property name/path in your instance
-				// storeProp: property name/path in Redux store
-				let realProp = prop
-				let storeProp = prop
-				if (re.test(prop)) {
-					[, storeProp, realProp] = prop.match(re)
-				}
-				if (realProp && storeProp) {
-					const currentValue = store.getState()[storeProp]
-					this.$set(realProp, currentValue)
-				}
-			})
+			if (realProp && storeProp) {
+				const currentValue = store.getState()[storeProp]
+				this.$set(realProp, currentValue)
+			}
 		}
 		this._unsubscribe = store.subscribe(handleChange)
-		Vue.mixin({
-			beforeDestroy() {
-				if (this._unsubscribe) {
-					this._calledOnce = false
-					this._unsubscribe()
-				}
-			}
-		})
+		return store.getState()[storeProp]
 	}
 }
 
