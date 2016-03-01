@@ -2,7 +2,7 @@
   <div class="write">
     <input type="text" class="input-todo" v-model="todo"><button class="add" @click="addTodo()">add todo</button>
     <h2>Writable todos</h2>
-    <button @click="reset">reset data</button> {{ todos.isPosting ? 'Posting...' : '' }}
+    {{ todos.isPosting ? 'Posting...' : '' }}
     <ul class="todos" v-if="todos.items && todos.items.length > 0">
       <li class="todo" :class="{del: todo.done}" v-for="todo in todos.items" track-by="$index" v-text="todo.text" @click="toggleTodo($index)"></li>
     </ul>
@@ -17,17 +17,13 @@
     data () {
       return {
         todo: '',
-        todos: store.state.todos
+        todos: this.$select('todos')
       }
     },
     ready () {
-      this.$subscribe('todos')
       store.actions.addTodo('damn')
     },
     methods: {
-      reset () {
-        store.dispatch({type: 'RESET'})
-      },
       toggleTodo (index) {
         store.dispatch(store.actions.toggleTodo(index))
       },

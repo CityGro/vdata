@@ -1,8 +1,6 @@
 <template>
   <div class="read">
     <h2>Read only todos</h2>
-    <button @click="handleSubscribe">subscribe</button>
-    <button @click="handleUnsubscribe">unsubscribe</button>
     <ul class="todos" v-if="todos.items && todos.items.length > 0">
       <li class="todo" :class="{del: todo.done}" v-for="todo in todos.items" track-by="$index" v-text="todo.text"></li>
     </ul>
@@ -15,29 +13,8 @@
   export default {
     data () {
       return {
-        todos: store.state.todos
+        todos: this.$select('todos')
       }
-    },
-    created () {
-      this.handleSubscribe()
-    },
-    methods: {
-      // this is just for test, no need in production
-      handleUnsubscribe () {
-        this._calledOnce = false
-        this._unsubscribe()
-      },
-      handleSubscribe () {
-        this.$subscribe('todos')
-      },
-      /*
-      handleDestroy () {
-        this.lifesong = 'I\'m dead'
-        setTimeout(() => {
-          this.$destroy()
-        }, 200)
-      }
-      */
     }
   }
 </script>

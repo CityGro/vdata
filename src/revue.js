@@ -23,16 +23,18 @@ function parseProp(prop) {
 function bindVue(Vue, store) {
 	Vue.mixin({
 		created() {
-			const handleChange = () => {
-				this._bindProps.forEach(prop => {
-					const {storeProp, realProp} = prop
-					if (realProp && storeProp) {
-						const currentValue = store.getState()[storeProp]
-						this.$set(realProp, currentValue)
-					}
-				})
+			if (this._bindProps) {
+				const handleChange = () => {
+					this._bindProps.forEach(prop => {
+						const {storeProp, realProp} = prop
+						if (realProp && storeProp) {
+							const currentValue = store.getState()[storeProp]
+							this.$set(realProp, currentValue)
+						}
+					})
+				}
+				this._unsubscribe = store.subscribe(handleChange)
 			}
-			this._unsubscribe = store.subscribe(handleChange)
 		},
 		beforeDestroy() {
 			if (this._unsubscribe) {
