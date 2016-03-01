@@ -66,6 +66,9 @@ export default {
     return {
       todo: '',
       todos: this.$select('todos')
+      //=> subscribe state.todos to vm.todos
+      // if prop is not in top level
+      // do this.$select('todos as path.to.todos')
     }
   },
   methods: {
