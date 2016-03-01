@@ -3,6 +3,17 @@ const re = /^([a-zA-Z0-9_-]+)\s{1,2}as\s{1,2}([a-zA-Z0-9\._-]+)$/i
 
 const isDev = process.env.NODE_ENV !== 'production'
 
+function parseProp(prop) {
+	// realProp: property name/path in your instance
+	// storeProp: property name/path in Redux store
+	let realProp = prop
+	let storeProp = prop
+	if (re.test(prop)) {
+		[, storeProp, realProp] = prop.match(re)
+	}
+	return {storeProp, realProp}
+}
+
 /**
  * Bind reduxStore to Vue instance
  *
@@ -11,6 +22,18 @@ const isDev = process.env.NODE_ENV !== 'production'
  */
 function bindVue(Vue, store) {
 	Vue.mixin({
+		created() {
+			const handleChange = () => {
+				this._bindProps.forEach(prop => {
+					const {storeProp, realProp} = prop
+					if (realProp && storeProp) {
+						const currentValue = store.getState()[storeProp]
+						this.$set(realProp, currentValue)
+					}
+				})
+			}
+			this._unsubscribe = store.subscribe(handleChange)
+		},
 		beforeDestroy() {
 			if (this._unsubscribe) {
 				this._unsubscribe()
@@ -20,19 +43,10 @@ function bindVue(Vue, store) {
 	Vue.prototype.$select = function (prop) {
 		// realProp: property name/path in your instance
 		// storeProp: property name/path in Redux store
-		let realProp = prop
-		let storeProp = prop
-		if (re.test(prop)) {
-			[, storeProp, realProp] = prop.match(re)
-		}
-		const handleChange = () => {
-			if (realProp && storeProp) {
-				const currentValue = store.getState()[storeProp]
-				this.$set(realProp, currentValue)
-			}
-		}
-		this._unsubscribe = store.subscribe(handleChange)
-		return store.getState()[storeProp]
+		this._bindProps = this._bindProps || []
+		prop = parseProp(prop)
+		this._bindProps.push(prop)
+		return store.getState()[prop.storeProp]
 	}
 }
 

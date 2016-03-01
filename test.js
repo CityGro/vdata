@@ -10,16 +10,21 @@ describe('main', () => {
     const vm = new Vue({
       data() {
           return {
-            todos: this.$select('todos')
+            todos: this.$select('todos'),
+            count: this.$select('counter as count')
           }
         },
         // do not use ready() here because the test now is not in dom environment
         created() {
           const {addedTodo} = store.actions
           store.dispatch(addedTodo('hi'))
+          store.dispatch({
+            type: 'INCREMENT'
+          })
         }
     })
     vm.$data.todos.items[vm.$data.todos.items.length - 1].text.should.equal('hi')
+    vm.$data.count.should.equal(1)
     done()
   })
   it('test native value', done => {
@@ -35,7 +40,7 @@ describe('main', () => {
           })
         }
     })
-    vm.$data.count.should.equal(1)
+    vm.$data.count.should.equal(2)
     done()
   })
   it('test thunk', done => {
