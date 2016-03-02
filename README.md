@@ -12,7 +12,7 @@
   <img src="https://img.shields.io/badge/stablity-experimental-red.svg">
 </p>
 
-Here is 2.0 branch, for version 1.0 please view [master](https://github.com/egoist/revue/tree/master) branch
+> Learn [Redux](http://redux.js.org/) before using Revue. That would help you get rid of JavaScript fatigue, sort of.
 
 ## Usage
 
