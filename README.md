@@ -16,7 +16,7 @@
 
 ## Usage
 
-Obviously it works with Redux, install via NPM: `npm i -D redux revue`
+Obviously it works with Redux, install via NPM: `npm i --save redux revue`
 
 You can also hot-link the CDN version: https://npmcdn.com/revue/revue.js, `Revue` is exposed to `window` object.
 
