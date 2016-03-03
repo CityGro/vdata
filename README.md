@@ -86,38 +86,10 @@ export default {
 
 [**More detailed usages**](/example)
 
-## Hot-reload reducers
+## [Recipes 🍳](https://github.com/revue/revue/issues?q=is%3Aissue+is%3Aclosed+label%3Arecipe)
 
-Just change your `store.js` like this:
-
-Before:
-
-```javascript
-import { createStore } from 'redux'
-import rootReducer from './reducers'
-
-export default new Revue(Vue, createStore(rootReducer))
-```
-
-After:
-
-```javascript
-import { createStore } from 'redux'
-import rootReducer from './reducers'
-
-function configureStore() {
-  const reduxStore = createStore(rootReducer)
-  if (module.hot) {
-    module.hot.accept('./reducers', () => {
-      const nextRootReducer = require('./reducers').default
-      reduxStore.replaceReducer(nextRootReducer)
-    })
-  }
-  return reduxStore
-}
-
-export default new Revue(Vue, configureStore())
-```
+- [Use webpack alias to resolve store.js](https://github.com/revue/revue/issues/8)
+- [Using bindActionCreators](https://github.com/revue/revue/issues/7)
 
 ## Development
 
