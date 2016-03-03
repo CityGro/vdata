@@ -86,7 +86,7 @@ export default {
 
 [**More detailed usages**](/example)
 
-## [Recipes 🍳](https://github.com/revue/revue/issues?q=is%3Aissue+is%3Aclosed+label%3Arecipe)
+## [Recipes](https://github.com/revue/revue/issues?q=is%3Aissue+is%3Aclosed+label%3Arecipe) 🍳
 
 - [Use webpack alias to resolve store.js](https://github.com/revue/revue/issues/8)
 - [Using bindActionCreators](https://github.com/revue/revue/issues/7)
