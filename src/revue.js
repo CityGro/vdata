@@ -70,6 +70,6 @@ export default class Revue {
 		return this.reduxActions
 	}
 	dispatch(...args) {
-		return this.store.dispatch.apply(null, args)
+		return this.store.dispatch(...args)
 	}
 }
