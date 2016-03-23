@@ -4,7 +4,7 @@
   "description": "Redux binding for Vue.",
   "main": "revue.common.js",
   "scripts": {
-    "test": "npm run cjs && BABEL_ENV=test mocha --compilers js:babel-core/register --require should test.js --recursive",
+    "test": "npm run umd && BABEL_ENV=test mocha --compilers js:babel-core/register --require should test.js --recursive",
     "umd": "npm run cjs && webpack --config webpack.config.umd.js",
     "cjs": "rollup -c rollup.config.cjs.js",
     "start": "npm run umd && node lib/App.js",
