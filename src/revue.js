@@ -1,5 +1,5 @@
 // to valid and match like `a as x.y.z`
-const re = /^([a-zA-Z0-9_-]+)\s{1,2}as\s{1,2}([a-zA-Z0-9\._-]+)$/i
+const re = /^([\w\.-]+)\s+as\s+([\w\.-]+)$/i
 
 const isDev = process.env.NODE_ENV !== 'production'
 
@@ -13,6 +13,10 @@ function parseProp(prop) {
 	}
 	return {storeProp, realProp}
 }
+
+function deepProp(obj, path){
+	return path.split('.').reduce((o, p) => o[p], obj);
+};
 
 /**
  * Bind reduxStore to Vue instance
@@ -28,8 +32,7 @@ function bindVue(Vue, store) {
 					this._bindProps.forEach(prop => {
 						const {storeProp, realProp} = prop
 						if (realProp && storeProp) {
-							const currentValue = store.getState()[storeProp]
-							this.$set(realProp, currentValue)
+							this.$set(realProp, deepProp(store.getState(), storeProp))
 						}
 					})
 				}
@@ -48,7 +51,7 @@ function bindVue(Vue, store) {
 		this._bindProps = this._bindProps || []
 		prop = parseProp(prop)
 		this._bindProps.push(prop)
-		return store.getState()[prop.storeProp]
+		return deepProp(store.getState(), prop.storeProp)
 	}
 }
 

@@ -60,7 +60,7 @@ describe('main', () => {
       done()
     }, 1000)
   })
-  it('test deep property', done => {
+  it('test deep vm property', done => {
     const vm = new Vue({
       data() {
           return {
@@ -77,6 +77,23 @@ describe('main', () => {
         }
     })
     vm.$data.foo.fakeAdmin.info.name.should.equal('sox')
+    done()
+  })
+  it('test deep state property', done => {
+    const vm = new Vue({
+      data() {
+          return {
+            name: this.$select('admin.info.name as name')
+          }
+        },
+        created() {
+          store.dispatch({
+            type: 'CHANGE_NAME',
+            name: 'sox'
+          })
+        }
+    })
+    vm.$data.name.should.equal('sox')
     done()
   })
 })
