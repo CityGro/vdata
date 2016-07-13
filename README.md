@@ -56,6 +56,7 @@ export function toggleTodo(payload) {
 ```
 
 **component.js**
+When creating a Vue component that needs to react to data from Redux's store, you must specify the bindings between the data of the component and the data in the store. The following is an example of binding the data `todo` in the component with `store.getState().todos` by using the special function `this.$select('todos')`.
 
 ```js
 import store from './store'
