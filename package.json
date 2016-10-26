@@ -1,8 +1,8 @@
 {
-  "name": "revue",
+  "name": "vdeux",
   "version": "2.2.0",
-  "description": "Redux binding for Vue.",
-  "main": "revue.common.js",
+  "description": "redux-vue binding",
+  "main": "vdeux.common.js",
   "scripts": {
     "test": "npm run umd && BABEL_ENV=test mocha --compilers js:babel-core/register --require should test.js --recursive",
     "umd": "npm run cjs && webpack --config webpack.config.umd.js",
@@ -10,18 +10,15 @@
     "start": "npm run umd && node lib/App.js",
     "webpack": "webpack -p",
     "watch": "webpack --watch",
-    "demo": "rm -rf ./build && npm run webpack && surge -d revue.surge.sh -p ./build"
+    "demo": "rm -rf ./build && npm run webpack && surge -d vdeux.surge.sh -p ./build"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/egoist/revue.git"
-  },
-  "author": "EGOIST <0x142857@gmail.com>",
-  "license": "MIT",
+  "repository": "gitlab.com:citygro/vdeux.git",
+  "author": "Carlos Killpack <carlos@citygro.com>",
+  "license": "Apache-2.0",
   "bugs": {
-    "url": "https://github.com/egoist/revue/issues"
+    "url": "https://gitlab.com/citygro/vdeux/issues"
   },
-  "homepage": "https://github.com/egoist/revue#readme",
+  "homepage": "https://gitlsb.com/citygro/vdeux#readme",
   "devDependencies": {
     "babel-loader": "^6.2.0",
     "babel-plugin-transform-runtime": "^6.1.18",
