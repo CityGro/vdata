@@ -1,6 +1,6 @@
 {
   "name": "vdeux",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "description": "redux-vue binding",
   "main": "vdeux.common.js",
   "scripts": {
@@ -19,7 +19,9 @@
   "babel": {
     "env": {
       "test": {
-        "presets": ["es2015"]
+        "presets": [
+          "es2015"
+        ]
       }
     }
   },
