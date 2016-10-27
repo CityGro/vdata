@@ -4,7 +4,6 @@ global.document = jsdom('<!doctype html><html><body></body></html>')
 global.window = document.defaultView
 
 import Vue from 'vue'
-
 import Vdeux from './src/vdeux'
 
 import store from './example/store'
