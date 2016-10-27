@@ -1,3 +1,6 @@
+[![build status](https://gitlab.com/citygro/vdeux/badges/latest/build.svg)](https://gitlab.com/citygro/vdeux/commits/latest)
+[![coverage report](https://gitlab.com/citygro/vdeux/badges/latest/coverage.svg)](https://gitlab.com/citygro/vdeux/commits/latest)
+
 vdeux(3) -- redux-vue binding
 =============================
 
