@@ -4,7 +4,8 @@
   "description": "redux-vue binding",
   "main": "vdeux.common.js",
   "scripts": {
-    "test": "npm run umd && BABEL_ENV=test mocha --compilers js:babel-core/register --require should test.js --recursive",
+    "pretest": "npm run umd",
+    "test": "BABEL_ENV=test babel-istanbul cover _mocha -- --require should test.js",
     "umd": "npm run cjs && webpack --config webpack.config.umd.js",
     "cjs": "rollup -c rollup.config.cjs.js",
     "start": "npm run umd && node lib/App.js",
@@ -18,9 +19,7 @@
   "babel": {
     "env": {
       "test": {
-        "presets": [
-          "es2015"
-        ]
+        "presets": ["es2015"]
       }
     }
   },
@@ -33,15 +32,17 @@
     "redux"
   ],
   "devDependencies": {
+    "babel-cli": "^6.18.0",
     "babel-core": "^6.18.0",
+    "babel-istanbul": "^0.11.0",
     "babel-loader": "^6.2.0",
     "babel-plugin-transform-runtime": "^6.1.18",
     "babel-preset-es2015": "^6.1.18",
     "babel-preset-es2015-rollup": "^1.1.1",
-    "babel-preset-stage-0": "^6.1.18",
     "babel-runtime": "^6.18.0",
     "css-loader": "^0.25.0",
     "html-webpack-plugin": "^2.24.0",
+    "istanbul": "^0.4.5",
     "jsdom": "^9.8.3",
     "mocha": "^3.1.2",
     "redux": "^3.0.4",
