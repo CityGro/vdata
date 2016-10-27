@@ -1,3 +1,4 @@
+var path = require('path')
 var webpack = require('webpack')
 var HtmlWebpackPlugin = require('html-webpack-plugin')
 
@@ -5,7 +6,7 @@ module.exports = {
   entry: ['./example/index'],
   devtool: 'cheap-module-eval-source-map',
   output: {
-    path: __dirname + '/build',
+    path: path.resolve(__dirname, '/build'),
     filename: 'bundle.[hash].js'
   },
   resolve: {
@@ -14,7 +15,7 @@ module.exports = {
   module: {
     loaders: [
       { test: /\.js$/, loaders: ['babel'], exclude: [/node_modules/] },
-      { test: /\.vue$/, loaders: ['vue'], exclude: [/node_modules/]}
+      { test: /\.vue$/, loaders: ['vue'], exclude: [/node_modules/] }
     ]
   },
   plugins: [
@@ -23,11 +24,11 @@ module.exports = {
       '__DEV__': true
     }),
     new HtmlWebpackPlugin({
-      title: 'Revue',
+      title: 'Vdeux',
       template: './example/index.tpl'
     })
   ],
   babel: {
-    "presets": ["es2015", "stage-0"]
+    presets: ['es2015', 'stage-0']
   }
 }

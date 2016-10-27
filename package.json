@@ -15,32 +15,44 @@
   "repository": "gitlab.com:citygro/vdeux.git",
   "author": "Carlos Killpack <carlos@citygro.com>",
   "license": "Apache-2.0",
+  "babel": {
+    "env": {
+      "test": {
+        "presets": ["es2015"]
+      }
+    }
+  },
   "bugs": {
     "url": "https://gitlab.com/citygro/vdeux/issues"
   },
-  "homepage": "https://gitlsb.com/citygro/vdeux#readme",
+  "homepage": "https://gitlab.com/citygro/vdeux#readme",
   "devDependencies": {
+    "babel-core": "^6.18.0",
     "babel-loader": "^6.2.0",
     "babel-plugin-transform-runtime": "^6.1.18",
     "babel-preset-es2015": "^6.1.18",
     "babel-preset-es2015-rollup": "^1.1.1",
     "babel-preset-stage-0": "^6.1.18",
-    "babel-runtime": "^5.8.0",
-    "css-loader": "^0.23.0",
-    "html-webpack-plugin": "^1.7.0",
-    "jsdom": "^7.1.0",
-    "mocha": "^2.3.4",
+    "babel-runtime": "^6.18.0",
+    "css-loader": "^0.25.0",
+    "html-webpack-plugin": "^2.24.0",
+    "jsdom": "^9.8.3",
+    "mocha": "^3.1.2",
     "redux": "^3.0.4",
-    "redux-thunk": "^1.0.0",
-    "rollup": "^0.25.2",
+    "redux-thunk": "^2.1.0",
+    "rollup": "^0.36.3",
     "rollup-plugin-babel": "^2.3.9",
-    "should": "^7.1.1",
+    "should": "^11.1.1",
     "style-loader": "^0.13.0",
-    "vue": "^1.0.10",
-    "vue-hot-reload-api": "^1.2.2",
+    "vue": "^2.0.3",
+    "vue-hot-reload-api": "^2.0.6",
     "vue-html-loader": "^1.0.0",
-    "vue-loader": "^7.2.0",
-    "vue-router": "^0.7.7",
+    "vue-loader": "^9.7.0",
+    "vue-router": "^2.0.1",
     "webpack": "^1.12.9"
+  },
+  "peerDependencies": {
+    "redux": "^3.0.4",
+    "vue": "^2.0.3"
   }
 }

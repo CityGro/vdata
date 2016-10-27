@@ -1,20 +1,21 @@
-import Vue from 'vue'
-import Revue from '../src/revue'
-import { createStore, applyMiddleware } from 'redux'
-import reducer from './reducers/index'
+/* global __DEV__ */
+import { createStore, combineReducers, applyMiddleware } from 'redux'
 import thunk from 'redux-thunk'
-import * as actions from './actions/todos'
 
-const createStoreWithMiddleware = applyMiddleware(
-  thunk
-)(createStore)
+import todos from './dux/todos'
+import counter from './dux/counter'
+import admin from './dux/admin'
 
-const reduxStore = createStoreWithMiddleware(reducer)
+const rootReducer = combineReducers({
+  todos,
+  admin,
+  counter
+})
 
-const store = new Revue(Vue, reduxStore, actions)
+const store = createStore(rootReducer, applyMiddleware(thunk))
 
 if (typeof __DEV__ !== 'undefined' && __DEV__) {
-	window.store = store
+  window.store = store
 }
 
 export default store

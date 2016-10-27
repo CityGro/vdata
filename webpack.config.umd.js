@@ -1,12 +1,12 @@
 var webpack = require('webpack')
 
 module.exports = {
-  entry: ['./revue.common.js'],
+  entry: ['./vdeux.common.js'],
   output: {
     path: __dirname,
-    filename: 'revue.js',
+    filename: 'vdeux.js',
     libraryTarget: 'umd',
-    library: 'Revue'
+    library: 'Vdeux'
   },
   resolve: {
     extensions: ['', '.js']
@@ -30,6 +30,6 @@ module.exports = {
     })
   ],
   babel: {
-    "presets": ["es2015", "stage-0"]
+    presets: ['es2015', 'stage-0']
   }
 }
