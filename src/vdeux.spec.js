@@ -4,30 +4,45 @@ global.document = jsdom('<!doctype html><html><body></body></html>')
 global.window = document.defaultView
 
 import Vue from 'vue'
-import Vdeux from './src/vdeux'
+import Vdeux from './vdeux'
 
-import store from './example/store'
-import { addTodo } from './example/dux/todos'
-import { increment } from './example/dux/counter'
-import { changeName } from './example/dux/admin'
+import store from '../example/store'
+import { addTodo } from '../example/dux/todos'
+import { increment } from '../example/dux/counter'
+import { changeName } from '../example/dux/admin'
 
 Vue.use(Vdeux)
 
 describe('Vdeux', () => {
-  it('can increment a counter', () => {
+  it('can increment a counter', (done) => {
+    var computed = 0
     const vm = new Vue({
       store,
       computed: {
         count () {
+          computed += 1
           return this.$state.counter
         }
       },
-      created () {
-        this.$dispatch(increment())
-        this.$dispatch(increment())
+      methods: {
+        increment () {
+          this.$dispatch(increment())
+        }
       }
     })
-    vm.count.should.equal(2)
+    vm.$nextTick(() => {
+      computed.should.equal(0)
+      vm.increment()
+      vm.increment()
+      computed.should.equal(0)
+      vm.count.should.equal(2)
+      computed.should.equal(1)
+      vm.$nextTick(() => {
+        vm.count.should.equal(2)
+        computed.should.equal(1)
+        done()
+      })
+    })
   })
   it('can handle asynchronous actions', (done) => {
     const vm = new Vue({

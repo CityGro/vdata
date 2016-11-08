@@ -6,7 +6,7 @@ module.exports = {
   entry: ['./example/index'],
   devtool: 'cheap-module-eval-source-map',
   output: {
-    path: path.resolve(__dirname, '/build'),
+    path: path.resolve(__dirname, 'build'),
     filename: 'bundle.[hash].js'
   },
   resolve: {

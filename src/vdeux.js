@@ -2,7 +2,14 @@ export default {
   install: function (Vue) {
     Object.defineProperty(Vue.prototype, '$state', {
       get () {
-        return this.$root._store.getState()
+        const store = this.$root._store
+        const state = store.getState()
+        this.$nextTick(() => {
+          if (store.getState() !== state) {
+            this.$forceUpdate()
+          }
+        })
+        return state
       }
     })
     Object.defineProperty(Vue.prototype, '$dispatch', {

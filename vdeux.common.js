@@ -4,7 +4,16 @@ var vdeux = {
   install: function install(Vue) {
     Object.defineProperty(Vue.prototype, '$state', {
       get: function get() {
-        return this.$root._store.getState();
+        var _this = this;
+
+        var store = this.$root._store;
+        var state = store.getState();
+        this.$nextTick(function () {
+          if (store.getState() !== state) {
+            _this.$forceUpdate();
+          }
+        });
+        return state;
       }
     });
     Object.defineProperty(Vue.prototype, '$dispatch', {

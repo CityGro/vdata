@@ -3,6 +3,7 @@ export const ADDING_TODO = 'example/todo/ADDING_TODO'
 export const TOGGLE_TODO = 'example/todo/TOGGLE_TODO'
 
 /**
+ * add a todo to the list
  */
 export function addingTodo () {
   return {
@@ -11,6 +12,7 @@ export function addingTodo () {
 }
 
 /**
+ * done: true || false
  */
 export function toggleTodo (index) {
   return {
@@ -20,6 +22,7 @@ export function toggleTodo (index) {
 }
 
 /**
+ * async thunk
  */
 export function addTodo (text) {
   return (dispatch, getState) => {
@@ -49,6 +52,7 @@ const defaultTodos = [
 ]
 
 /**
+ * todos reducer
  */
 export default function reducer (state = {
   isPosting: false,
