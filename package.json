@@ -1,6 +1,6 @@
 {
   "name": "vdeux",
-  "version": "0.1.6",
+  "version": "0.1.7",
   "description": "redux-vue binding",
   "main": "vdeux.common.js",
   "scripts": {
