@@ -1,6 +1,6 @@
 {
   "name": "vdeux",
-  "version": "0.1.8",
+  "version": "1.0.0",
   "description": "redux-vue binding",
   "main": "vdeux.common.js",
   "repository": "gitlab.com:citygro/vdeux.git",
