@@ -6,7 +6,7 @@ module.exports = {
     path: __dirname,
     filename: 'vdeux.js',
     libraryTarget: 'umd',
-    library: 'Vdeux'
+    library: 'vdeux'
   },
   resolve: {
     extensions: ['', '.js']
@@ -28,8 +28,5 @@ module.exports = {
         warnings: false
       }
     })
-  ],
-  babel: {
-    presets: ['es2015']
-  }
+  ]
 }

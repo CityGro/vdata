@@ -5,8 +5,20 @@ export default {
   dest: 'vdeux.common.js',
   plugins: [
     babel({
+      babelrc: false,
       exclude: 'node_modules/**',
-      presets: ['es2015-rollup']
+      presets: [
+        [
+          "es2015",
+          {
+            "modules": false
+          }
+        ],
+        "stage-2"
+      ],
+      plugins: [
+        'external-helpers'
+      ]
     })
   ],
   format: 'cjs'
