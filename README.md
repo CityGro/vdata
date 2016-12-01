@@ -15,21 +15,20 @@ $ npm install --save redux vdeux
 ## usage
 
 ```js
-// from test.js
-
 import Vue from 'vue'
-import Vdeux from 'vdeux'
+import vdeux from 'vdeux'
 
-import store from './store'
-import { increment } from './example/dux/counter'
+import configureStore from './store'
+import {increment} from './store/actions'
 
-Vue.use(Vdeux)
+const store = configureStore()
+
+Vue.use(vdeux(store))
 
 const vm = new Vue({
-  store,
   computed: {
     count () {
-      return this.$state.counter
+      return this.$state
     }
   },
   created () {
@@ -37,11 +36,5 @@ const vm = new Vue({
     this.$dispatch(increment())
   }
 })
-// vm.count.should.equal(2)
+// expect(vm.count).toBe(2)
 ```
-
-## see also
-
-`example/`, [ducks]
-
-[ducks]: https://gitlab.com/citygro/ducks-modular-redux

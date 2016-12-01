@@ -3,15 +3,16 @@ import {jsdom} from 'jsdom'
 global.document = jsdom('<!doctype html><html><body></body></html>')
 global.window = document.defaultView
 
-import Vue from 'vue'
-import Vdeux from './vdeux'
+import vdeux from './vdeux'
 import {createStore, applyMiddleware} from 'redux'
 import thunk from 'redux-thunk'
 
-Vue.use(Vdeux)
-
 describe('Vdeux', () => {
+  beforeEach(() => {
+    jest.resetModules()
+  })
   it('can increment a counter', (done) => {
+    const Vue = require('vue')
     const INCREMENT = 'counter/INCREMENT'
     const increment = () => {
       return {type: INCREMENT}
@@ -24,6 +25,7 @@ describe('Vdeux', () => {
           return state
       }
     })
+    Vue.use(vdeux(store))
     let computed = 0
     const vm = new Vue({
       store,
@@ -54,6 +56,7 @@ describe('Vdeux', () => {
     })
   })
   it('can handle asynchronous actions', (done) => {
+    const Vue = require('vue')
     const ADD_TODO = 'example/todo/ADD_TODO'
     const ADDING_TODO = 'example/todo/ADDING_TODO'
 
@@ -102,8 +105,8 @@ describe('Vdeux', () => {
           return state
       }
     }, applyMiddleware(thunk))
+    Vue.use(vdeux(store))
     const vm = new Vue({
-      store,
       computed: {
         todos () {
           return this.$state.items
@@ -122,6 +125,7 @@ describe('Vdeux', () => {
     }, 10)
   })
   it('can access nested properties', () => {
+    const Vue = require('vue')
     const CHANGE_NAME = 'example/admin/CHANGE_NAME'
     const changeName = (name) => {
       return {
@@ -137,8 +141,8 @@ describe('Vdeux', () => {
           return admin
       }
     })
+    Vue.use(vdeux(store))
     const vm = new Vue({
-      store,
       computed: {
         name () {
           return this.$state.name
