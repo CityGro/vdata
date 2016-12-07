@@ -63,11 +63,10 @@
     "webpack": "^1.12.9"
   },
   "peerDependencies": {
-    "redux": "^3.0.4",
-    "vue": "^2.0.3"
+    "redux": ">=3.0.4",
+    "vue": ">=2.1.0"
   },
   "dependencies": {
-    "lodash": "^4.17.2",
-    "lodash.merge": "^4.6.0"
+    "lodash": "^4.17.2"
   }
 }
