@@ -26,15 +26,16 @@ const store = configureStore()
 Vue.use(vdeux(store))
 
 const vm = new Vue({
-  computed: {
-    count () {
-      return this.$state
+  map (state) {
+    return {
+      count: state
     }
   },
+  actions: {increment},
   created () {
-    this.$dispatch(increment())
-    this.$dispatch(increment())
+    this.$actions.increment()
+    this.$actions.increment()
   }
 })
-// expect(vm.count).toBe(2)
+// expect(vm.$state.count).toBe(2)
 ```

@@ -1,23 +1,22 @@
 /* global describe, it */
-import {jsdom} from 'jsdom'
-global.document = jsdom('<!doctype html><html><body></body></html>')
-global.window = document.defaultView
 
 import vdeux from './vdeux'
 import {createStore, applyMiddleware} from 'redux'
 import thunk from 'redux-thunk'
 
 describe('Vdeux', () => {
+  let Vue
+  let store
+  const INCREMENT = 'counter/INCREMENT'
+  const increment = () => {
+    return {type: INCREMENT}
+  }
+
   beforeEach(() => {
     jest.resetModules()
-  })
-  it('can increment a counter', (done) => {
-    const Vue = require('vue')
-    const INCREMENT = 'counter/INCREMENT'
-    const increment = () => {
-      return {type: INCREMENT}
-    }
-    const store = createStore(function (state = 0, action) {
+    document.body.innerHTML = '<div id="root"></div>'
+    Vue = require('vue')
+    store = createStore(function (state = 0, action) {
       switch (action.type) {
         case INCREMENT:
           return state + 1
@@ -26,36 +25,48 @@ describe('Vdeux', () => {
       }
     })
     Vue.use(vdeux(store))
-    let computed = 0
-    const vm = new Vue({
-      store,
-      computed: {
-        count () {
-          computed += 1
-          return this.$state
-        }
+  })
+  it('can pass data via props', () => {
+    Vue.config.isUnknownElement = function () { return false }
+    const Babby = Vue.component('babby', {
+      render (createElement) {
+        return createElement('p', this.n)
       },
-      methods: {
-        increment () {
-          this.$dispatch(increment())
-        }
+      props: {
+        n: {type: String}
       }
     })
-    vm.$nextTick(() => {
-      expect(computed).toBe(0)
-      vm.increment()
-      vm.increment()
-      expect(computed).toBe(0)
-      expect(vm.count).toBe(2)
-      expect(computed).toBe(1)
-      vm.$nextTick(() => {
-        expect(vm.count).toBe(2)
-        expect(computed).toBe(1)
-        done()
-      })
+    const vm = new Vue({
+      render (createElement) {
+        return createElement(Babby, {
+          props: {
+            n: this.$state.count
+          }
+        })
+      },
+      map (state) {
+        return {
+          count: String(state)
+        }
+      },
+      actions: {increment}
+    }).$mount('#root')
+    expect(vm.$children).toHaveLength(1)
+    expect(vm.$options.map).toBeDefined()
+    expect(vm.$options.actions).toBeDefined()
+    expect(vm.$state).toBeDefined()
+    expect(vm.$actions).toBeDefined()
+    vm.$actions.increment()
+    vm.$actions.increment()
+    vm.$actions.increment()
+    return vm.$nextTick().then(() => {
+      return Promise.all([
+        expect(vm.$state.count).toBe('3'),
+        expect(vm.$el.textContent).toBe('3')
+      ])
     })
   })
-  it('can handle asynchronous actions', (done) => {
+  it('can handle asynchronous actions', () => {
     const Vue = require('vue')
     const ADD_TODO = 'example/todo/ADD_TODO'
     const ADDING_TODO = 'example/todo/ADDING_TODO'
@@ -65,6 +76,7 @@ describe('Vdeux', () => {
         type: ADDING_TODO
       }
     }
+
     function addTodo (text) {
       return (dispatch) => {
         dispatch(addingTodo())
@@ -76,6 +88,7 @@ describe('Vdeux', () => {
         }, 0)
       }
     }
+
     const defaultTodos = [
       {
         text: 'Rule the web',
@@ -107,22 +120,23 @@ describe('Vdeux', () => {
     }, applyMiddleware(thunk))
     Vue.use(vdeux(store))
     const vm = new Vue({
-      computed: {
-        todos () {
-          return this.$state.items
+      map (state) {
+        return {
+          todos: state.items
         }
       },
-      methods: {
-        addTodo (text) {
-          this.$dispatch(addTodo(text))
-        }
-      }
+      actions: {addTodo}
     })
-    vm.addTodo('meet a girl')
-    setTimeout(() => {
-      expect(vm.todos[vm.todos.length - 1].text).toBe('meet a girl')
-      done()
-    }, 10)
+    vm.$actions.addTodo('meet a girl')
+    return new Promise((resolve, reject) => {
+      setTimeout(() => {
+        try {
+          resolve(expect(vm.$state.todos[vm.$state.todos.length - 1].text).toBe('meet a girl'))
+        } catch (e) {
+          reject(e)
+        }
+      }, 10)
+    })
   })
   it('can access nested properties', () => {
     const Vue = require('vue')
@@ -143,15 +157,12 @@ describe('Vdeux', () => {
     })
     Vue.use(vdeux(store))
     const vm = new Vue({
-      computed: {
-        name () {
-          return this.$state.name
-        }
+      map (state) {
+        return {name: state.name}
       },
-      created () {
-        this.$dispatch(changeName('omanizer'))
-      }
+      actions: {changeName}
     })
-    expect(vm.name).toBe('omanizer')
+    vm.$actions.changeName('omanizer')
+    expect(vm.$state.name).toBe('omanizer')
   })
 })
