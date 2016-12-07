@@ -6,6 +6,8 @@
 vdeux(3) -- redux-vue binding
 =============================
 
+> `vdeux` requires `vue>=2.1.0`
+
 ```sh
 $ yarn add redux vdeux
 # or
@@ -26,11 +28,9 @@ const store = configureStore()
 Vue.use(vdeux(store))
 
 const vm = new Vue({
-  map (state) {
-    return {
-      count: state
-    }
-  },
+  map: (state) => ({
+    count: state
+  }),
   actions: {increment},
   created () {
     this.$actions.increment()
@@ -38,4 +38,5 @@ const vm = new Vue({
   }
 })
 // expect(vm.$state.count).toBe(2)
+// expect(vm._store).toBe(store)
 ```

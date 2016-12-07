@@ -6,6 +6,7 @@ import equals from 'lodash/fp/equals'
 export default function (store) {
   return {
     install (Vue) {
+      Vue.prototype._store = store
       Vue.mixin({
         /**
          * bind the store to your vue container.

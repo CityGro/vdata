@@ -238,6 +238,7 @@ var slicedToArray = function () {
 var vdeux = function (store) {
   return {
     install: function install(Vue) {
+      Vue.prototype._store = store;
       Vue.mixin({
         /**
          * bind the store to your vue container.

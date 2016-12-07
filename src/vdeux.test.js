@@ -26,6 +26,10 @@ describe('Vdeux', () => {
     })
     Vue.use(vdeux(store))
   })
+  it('makes the store directly accessible', () => {
+    const vm = new Vue()
+    expect(vm._store).toBeDefined()
+  })
   it('can pass data via props', () => {
     Vue.config.isUnknownElement = function () { return false }
     const Babby = Vue.component('babby', {
