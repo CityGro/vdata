@@ -33,7 +33,13 @@ export default function (store) {
             this.$actions = {}
             flow(
               entries,
-              each(([key, action]) => Vue.set(this.$actions, key, (...args) => store.dispatch(action(...args)))
+              each(([key, action]) => Vue.set(this.$actions, key, (...args) => {
+                try {
+                  store.dispatch(action(...args))
+                } catch (e) {
+                  console.error(e)
+                }
+              })
             ))(this.$options.actions)
           }
         },

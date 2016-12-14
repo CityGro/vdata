@@ -275,7 +275,11 @@ var vdeux = function (store) {
                   action = _ref2[1];
 
               return Vue.set(_this.$actions, key, function () {
-                return store.dispatch(action.apply(undefined, arguments));
+                try {
+                  store.dispatch(action.apply(undefined, arguments));
+                } catch (e) {
+                  console.error(e);
+                }
               });
             }))(this.$options.actions);
           }
