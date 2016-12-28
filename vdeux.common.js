@@ -253,7 +253,7 @@ var vdeux = function (store) {
           var _this = this;
 
           if (this.$options.map) {
-            this.$state = this.$options.map(store.getState());
+            this.$state = {};
             this._unsubscribe = store.subscribe(function () {
               var newState = _this.$options.map(store.getState());
               if (!equals(newState)(_this.$state)) {
@@ -279,9 +279,15 @@ var vdeux = function (store) {
                   store.dispatch(action.apply(undefined, arguments));
                 } catch (e) {
                   console.error(e);
+                  console.info('check that the \'actions\' option of <' + _this.name + '> is a map of functions!');
                 }
               });
             }))(this.$options.actions);
+          }
+        },
+        created: function created() {
+          if (this.$options.map) {
+            this.$state = this.$options.map(store.getState());
           }
         },
         beforeDestroy: function beforeDestroy() {

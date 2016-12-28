@@ -19,7 +19,7 @@ export default function (store) {
          */
         beforeCreate () {
           if (this.$options.map) {
-            this.$state = this.$options.map(store.getState())
+            this.$state = {}
             this._unsubscribe = store.subscribe(() => {
               const newState = this.$options.map(store.getState())
               if (!equals(newState)(this.$state)) {
@@ -38,9 +38,15 @@ export default function (store) {
                   store.dispatch(action(...args))
                 } catch (e) {
                   console.error(e)
+                  console.info(`check that the 'actions' option of <${this.name}> is a map of functions!`)
                 }
               })
             ))(this.$options.actions)
+          }
+        },
+        created () {
+          if (this.$options.map) {
+            this.$state = this.$options.map(store.getState())
           }
         },
         beforeDestroy () {
