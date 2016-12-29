@@ -17,9 +17,9 @@ export default function (store) {
          * if `$options.actions` is defined, take the map of action creators and bind them to dispatch. the bound
          * actions are attached to `$actions`.
          */
-        beforeCreate () {
+        created () {
           if (this.$options.map) {
-            this.$state = {}
+            this.$state = this.$options.map(store.getState())
             this._unsubscribe = store.subscribe(() => {
               const newState = this.$options.map(store.getState())
               if (!equals(newState)(this.$state)) {
@@ -42,11 +42,6 @@ export default function (store) {
                 }
               })
             ))(this.$options.actions)
-          }
-        },
-        created () {
-          if (this.$options.map) {
-            this.$state = this.$options.map(store.getState())
           }
         },
         beforeDestroy () {

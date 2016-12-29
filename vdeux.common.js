@@ -249,11 +249,11 @@ var vdeux = function (store) {
          * if `$options.actions` is defined, take the map of action creators and bind them to dispatch. the bound
          * actions are attached to `$actions`.
          */
-        beforeCreate: function beforeCreate() {
+        created: function created() {
           var _this = this;
 
           if (this.$options.map) {
-            this.$state = {};
+            this.$state = this.$options.map(store.getState());
             this._unsubscribe = store.subscribe(function () {
               var newState = _this.$options.map(store.getState());
               if (!equals(newState)(_this.$state)) {
@@ -283,11 +283,6 @@ var vdeux = function (store) {
                 }
               });
             }))(this.$options.actions);
-          }
-        },
-        created: function created() {
-          if (this.$options.map) {
-            this.$state = this.$options.map(store.getState());
           }
         },
         beforeDestroy: function beforeDestroy() {
