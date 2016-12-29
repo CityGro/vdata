@@ -249,7 +249,7 @@ var vdeux = function (store) {
          * if `$options.actions` is defined, take the map of action creators and bind them to dispatch. the bound
          * actions are attached to `$actions`.
          */
-        created: function created() {
+        beforeCreate: function beforeCreate() {
           var _this = this;
 
           if (this.$options.map) {
