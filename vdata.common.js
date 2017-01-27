@@ -8,133 +8,7 @@ var flow = _interopDefault(require('lodash/fp/flow'));
 var entries = _interopDefault(require('lodash/fp/entries'));
 var map = _interopDefault(require('lodash/fp/map'));
 var fromPairs = _interopDefault(require('lodash/fp/fromPairs'));
-
-var asyncGenerator = function () {
-  function AwaitValue(value) {
-    this.value = value;
-  }
-
-  function AsyncGenerator(gen) {
-    var front, back;
-
-    function send(key, arg) {
-      return new Promise(function (resolve, reject) {
-        var request = {
-          key: key,
-          arg: arg,
-          resolve: resolve,
-          reject: reject,
-          next: null
-        };
-
-        if (back) {
-          back = back.next = request;
-        } else {
-          front = back = request;
-          resume(key, arg);
-        }
-      });
-    }
-
-    function resume(key, arg) {
-      try {
-        var result = gen[key](arg);
-        var value = result.value;
-
-        if (value instanceof AwaitValue) {
-          Promise.resolve(value.value).then(function (arg) {
-            resume("next", arg);
-          }, function (arg) {
-            resume("throw", arg);
-          });
-        } else {
-          settle(result.done ? "return" : "normal", result.value);
-        }
-      } catch (err) {
-        settle("throw", err);
-      }
-    }
-
-    function settle(type, value) {
-      switch (type) {
-        case "return":
-          front.resolve({
-            value: value,
-            done: true
-          });
-          break;
-
-        case "throw":
-          front.reject(value);
-          break;
-
-        default:
-          front.resolve({
-            value: value,
-            done: false
-          });
-          break;
-      }
-
-      front = front.next;
-
-      if (front) {
-        resume(front.key, front.arg);
-      } else {
-        back = null;
-      }
-    }
-
-    this._invoke = send;
-
-    if (typeof gen.return !== "function") {
-      this.return = undefined;
-    }
-  }
-
-  if (typeof Symbol === "function" && Symbol.asyncIterator) {
-    AsyncGenerator.prototype[Symbol.asyncIterator] = function () {
-      return this;
-    };
-  }
-
-  AsyncGenerator.prototype.next = function (arg) {
-    return this._invoke("next", arg);
-  };
-
-  AsyncGenerator.prototype.throw = function (arg) {
-    return this._invoke("throw", arg);
-  };
-
-  AsyncGenerator.prototype.return = function (arg) {
-    return this._invoke("return", arg);
-  };
-
-  return {
-    wrap: function (fn) {
-      return function () {
-        return new AsyncGenerator(fn.apply(this, arguments));
-      };
-    },
-    await: function (value) {
-      return new AwaitValue(value);
-    }
-  };
-}();
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+var Q = _interopDefault(require('q'));
 
 var get = function get(object, property, receiver) {
   if (object === null) object = Function.prototype;
@@ -237,6 +111,21 @@ var slicedToArray = function () {
   };
 }();
 
+var mapToPromises = flow(entries, map(function (_ref) {
+  var _ref2 = slicedToArray(_ref, 2),
+      k = _ref2[0],
+      v = _ref2[1];
+
+  return Q.resolve(v);
+}), fromPairs);
+var unbindKeys = flow(entries, map(function (_ref3) {
+  var _ref4 = slicedToArray(_ref3, 2),
+      k = _ref4[0],
+      v = _ref4[1];
+
+  return [k, {}];
+}), fromPairs);
+
 var vdata = function (store) {
   return {
     install: function install(Vue) {
@@ -245,44 +134,45 @@ var vdata = function (store) {
         /**
          * bind the store to your vue container.
          *
-         * if `$options.map(state)` is defined, initialize the components `$state` property. listen for changes on the
-         * store and trigger an update if a change occurred.
+         * if `$options.query()` is defined, initialize the components `$q` and `$q` properties.
+         * listen for changes on the store and trigger an update if a change occurred.
          *
-         * if `$options.actions` is defined, take the map of action creators and bind them to dispatch. the bound
-         * actions are attached to `$actions`.
+         * `$q` is the return value of `$options.query()`
+         * `$qs` is automatically populated with the resolved values of `$q`
+         *
          */
         beforeCreate: function beforeCreate() {
           var _this = this;
 
           if (this.$options.query) {
             (function () {
-              _this.$qs = _this.$options.query(store);
+              _this.$qLoading = false;
+              _this.$q = _this.$options.query(store);
+              _this.$qs = unbindKeys(_this.$q);
               var handler = function handler() {
-                var q = _this.$options.query(store);
-                Promise.all(flow(entries, map(function (_ref) {
-                  var _ref2 = slicedToArray(_ref, 2),
-                      k = _ref2[0],
-                      v = _ref2[1];
+                _this.$qLoading = true;
+                _this.$q = _this.$options.query(store);
+                _this.$qs = unbindKeys(_this.$q);
+                Q.all(mapToPromises(_this.$q)).then(flow(entries, map(function (_ref5) {
+                  var _ref6 = slicedToArray(_ref5, 2),
+                      i = _ref6[0],
+                      value = _ref6[1];
 
-                  return v ? v : new Promise.resolve(v);
-                }))(q)).then(flow(entries, map(function (_ref3) {
-                  var _ref4 = slicedToArray(_ref3, 2),
-                      i = _ref4[0],
-                      value = _ref4[1];
-
-                  return [q[i], value];
+                  return [_this.$q[i], value];
                 }), fromPairs, function (qs) {
                   if (!equals(qs)(_this.$qs)) {
                     _this.$qs = qs;
                     _this.$forceUpdate();
+                    _this.$qLoading = false;
                     each(function (child) {
                       return setTimeout(function () {
                         return child.$forceUpdate();
                       }, 0);
                     })(_this.$children);
                   }
-                }));
+                })).catch(console.log);
               };
+              handler();
               store.on('change', handler);
               _this._unsubscribe = function () {
                 store.off('change', handler);

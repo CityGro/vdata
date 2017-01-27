@@ -1,4 +1,4 @@
-/* global describe, it */
+/* global describe, it, beforeEach, jest, expect, fit */
 
 describe('Vdata', () => {
   let vdata
@@ -32,11 +32,9 @@ describe('Vdata', () => {
     Vue.config.isUnknownElement = () => false
     const Babby = Vue.component('babby', {
       render (createElement) {
-        return createElement('p', this.user.name)
+        return createElement('p', this.user.name || '')
       },
-      props: {
-        user: {type: Object}
-      }
+      props: ['user']
     })
     const vm = new Vue({
       render (createElement) {
@@ -54,8 +52,10 @@ describe('Vdata', () => {
       },
       methods: {
         rename (to) {
-          this.$qs.user.name = to
-          return this.$qs.user.save()
+          return this.$q.user.then((user) => {
+            user.name = to
+            return this.$store.save('user', user.id)
+          })
         }
       }
     }).$mount('#root')
@@ -64,14 +64,20 @@ describe('Vdata', () => {
     expect(vm.$qs).toBeDefined()
     return vm.$nextTick().then(() => {
       expect(vm.$qs.user).toBeDefined()
-      expect(vm.$qs.user.name).toBe('omanizer')
-      expect(vm.$qs.user.DSSave).toBeDefined()
-      return vm.rename('xj9').then((user) => {
-        return Promise.all([
-          expect(vm.$qs.user.name).toBe('xj9'),
-          expect(vm.$el.textContent).toBe('xj9')
-        ])
-      })
+      return Promise.all([
+        vm.$q.user.then((user) => {
+          return Promise.all([
+            expect(user).toBeDefined(),
+            expect(user.name).toBe('omanizer')
+          ])
+        }),
+        vm.rename('xj9').then((user) => {
+          return Promise.all([
+            expect(vm.$qs.user.name).toBe('xj9'),
+            expect(vm.$el.textContent).toBe('xj9')
+          ])
+        })
+      ])
     })
   })
 })
