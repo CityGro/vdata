@@ -8,6 +8,7 @@ var flow = _interopDefault(require('lodash/fp/flow'));
 var entries = _interopDefault(require('lodash/fp/entries'));
 var map = _interopDefault(require('lodash/fp/map'));
 var fromPairs = _interopDefault(require('lodash/fp/fromPairs'));
+var keys = _interopDefault(require('lodash/fp/keys'));
 var Q = _interopDefault(require('q'));
 
 var get = function get(object, property, receiver) {
@@ -117,13 +118,9 @@ var mapToPromises = flow(entries, map(function (_ref) {
       v = _ref2[1];
 
   return Q.resolve(v);
-}), fromPairs);
-var unbindKeys = flow(entries, map(function (_ref3) {
-  var _ref4 = slicedToArray(_ref3, 2),
-      k = _ref4[0],
-      v = _ref4[1];
-
-  return [k, {}];
+}));
+var fakeValues = flow(map(function (field) {
+  return [field, {}];
 }), fromPairs);
 
 var vdata = function (store) {
@@ -148,17 +145,17 @@ var vdata = function (store) {
             (function () {
               _this.$qLoading = false;
               _this.$q = _this.$options.query(store);
-              _this.$qs = unbindKeys(_this.$q);
+              var fields = keys(_this.$q);
+              _this.$qs = fakeValues(fields);
               var handler = function handler() {
                 _this.$qLoading = true;
                 _this.$q = _this.$options.query(store);
-                _this.$qs = unbindKeys(_this.$q);
-                Q.all(mapToPromises(_this.$q)).then(flow(entries, map(function (_ref5) {
-                  var _ref6 = slicedToArray(_ref5, 2),
-                      i = _ref6[0],
-                      value = _ref6[1];
+                Q.all(mapToPromises(_this.$q)).then(flow(entries, map(function (_ref3) {
+                  var _ref4 = slicedToArray(_ref3, 2),
+                      i = _ref4[0],
+                      value = _ref4[1];
 
-                  return [_this.$q[i], value];
+                  return [fields[i], value];
                 }), fromPairs, function (qs) {
                   if (!equals(qs)(_this.$qs)) {
                     _this.$qs = qs;
