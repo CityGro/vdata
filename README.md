@@ -3,8 +3,8 @@
 [![npm downloads](https://img.shields.io/npm/dt/vdata.svg)](https://npmjs.org/package/vdata)
 [![npm version](https://img.shields.io/npm/v/vdata.svg)](https://npmjs.org/package/vdata)
 
-vdata(3) -- redux-vue binding
-=============================
+vdata(3) -- vue-js-data binding
+===============================
 
 > `vdata` requires `vue>=2.1.0`
 
