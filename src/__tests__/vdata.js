@@ -15,9 +15,7 @@ describe('Vdata', () => {
     vdata = require('../vdata').default
     Vue = require('vue')
     JSData = require('js-data')
-    DSHttpAdapter = require('js-data-http')
     store = new JSData.DS()
-    store.registerAdapter('http', new DSHttpAdapter(), { default: true })
     User = store.defineResource('user')
     Comment = store.defineResource('comment')
     User.inject({id: 1, name: 'omanizer'})
@@ -54,7 +52,7 @@ describe('Vdata', () => {
         rename (to) {
           return this.$q.user.then((user) => {
             user.name = to
-            return this.$store.save('user', user.id)
+            return Promise.resolve(user)
           })
         }
       }
@@ -73,8 +71,7 @@ describe('Vdata', () => {
         }),
         vm.rename('xj9').then((user) => {
           return Promise.all([
-            expect(vm.$qs.user.name).toBe('xj9'),
-            expect(vm.$el.textContent).toBe('xj9')
+            expect(user.name).toBe('xj9')
           ])
         })
       ])
