@@ -1,18 +1,18 @@
 {
-  "name": "vdeux",
-  "version": "2.1.4",
-  "description": "redux-vue binding",
-  "main": "vdeux.common.js",
-  "repository": "gitlab.com:citygro/vdeux.git",
+  "name": "@citygro/vdata",
+  "version": "1.0.0",
+  "description": "vue-js-data binding",
+  "main": "vdata.common.js",
+  "repository": "gitlab.com:citygro/vdata.git",
   "author": "Carlos Killpack <carlos@citygro.com>",
   "license": "Apache-2.0",
   "bugs": {
-    "url": "https://gitlab.com/citygro/vdeux/issues"
+    "url": "https://gitlab.com/citygro/vdata/issues"
   },
-  "homepage": "https://gitlab.com/citygro/vdeux#readme",
+  "homepage": "https://gitlab.com/citygro/vdata#readme",
   "keywords": [
     "vue",
-    "redux"
+    "js-data"
   ],
   "scripts": {
     "test": "jest",
@@ -53,9 +53,8 @@
     "babel-preset-stage-2": "^6.18.0",
     "babel-runtime": "^6.18.0",
     "jest": "^17.0.3",
+    "js-data-http": "^2.2.2",
     "jsdom": "^9.8.3",
-    "redux": "^3.6.0",
-    "redux-thunk": "^2.1.0",
     "rollup": "^0.36.3",
     "rollup-plugin-babel": "^2.3.9",
     "should": "^11.1.1",
@@ -63,7 +62,7 @@
     "webpack": "^1.12.9"
   },
   "peerDependencies": {
-    "redux": ">=3.0.4",
+    "js-data": "^2.10.0",
     "vue": ">=2.1.0"
   },
   "dependencies": {

@@ -1,12 +1,12 @@
 var webpack = require('webpack')
 
 module.exports = {
-  entry: ['./vdeux.common.js'],
+  entry: ['./vdata.common.js'],
   output: {
     path: __dirname,
-    filename: 'vdeux.js',
+    filename: 'vdata.js',
     libraryTarget: 'umd',
-    library: 'vdeux'
+    library: 'vdata'
   },
   resolve: {
     extensions: ['', '.js']

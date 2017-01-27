@@ -1,8 +1,8 @@
 import babel from 'rollup-plugin-babel'
 
 export default {
-  entry: './src/vdeux.js',
-  dest: 'vdeux.common.js',
+  entry: './src/vdata.js',
+  dest: 'vdata.common.js',
   plugins: [
     babel({
       babelrc: false,

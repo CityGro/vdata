@@ -1,42 +1,46 @@
-[![build status](https://gitlab.com/citygro/vdeux/badges/latest/build.svg)](https://gitlab.com/citygro/vdeux/commits/latest)
-[![coverage report](https://gitlab.com/citygro/vdeux/badges/latest/coverage.svg)](https://gitlab.com/citygro/vdeux/commits/latest)
-[![npm downloads](https://img.shields.io/npm/dt/vdeux.svg)](https://npmjs.org/package/vdeux)
-[![npm version](https://img.shields.io/npm/v/vdeux.svg)](https://npmjs.org/package/vdeux)
+[![build status](https://gitlab.com/citygro/vdata/badges/latest/build.svg)](https://gitlab.com/citygro/vdata/commits/latest)
+[![coverage report](https://gitlab.com/citygro/vdata/badges/latest/coverage.svg)](https://gitlab.com/citygro/vdata/commits/latest)
+[![npm downloads](https://img.shields.io/npm/dt/vdata.svg)](https://npmjs.org/package/vdata)
+[![npm version](https://img.shields.io/npm/v/vdata.svg)](https://npmjs.org/package/vdata)
 
-vdeux(3) -- redux-vue binding
+vdata(3) -- redux-vue binding
 =============================
 
-> `vdeux` requires `vue>=2.1.0`
+> `vdata` requires `vue>=2.1.0`
 
 ```sh
-$ yarn add redux vdeux
+$ yarn add js-data @citygro/vdata
 # or
-$ npm install --save redux vdeux
+$ npm install --save js-data @citygro/vdata
 ```
 
 ## usage
 
 ```js
 import Vue from 'vue'
-import vdeux from 'vdeux'
+import vdata from '@citygro/vdata'
+import JSData from 'js-data'
 
-import configureStore from './store'
-import {increment} from './store/actions'
+const store = JSData.DS()
+const User = store.defineResource('user')
 
-const store = configureStore()
+User.inject({id: 1, name: 'tokyo_jesus'})
 
-Vue.use(vdeux(store))
+Vue.use(vdata(store))
 
 const vm = new Vue({
-  map: (state) => ({
-    count: state
+  query: (store) => ({
+    count: store.get('user', 1)
   }),
-  actions: {increment},
-  created () {
-    this.$actions.increment()
-    this.$actions.increment()
+  methods: {
+    rename (to) {
+      this.$qs.user.name = 'xj9'
+      return this.$qs.user.save()
+    }
   }
 })
-// expect(vm.$state.count).toBe(2)
-// expect(vm._store).toBe(store)
+
+vm.rename('xj9').then((user) => {
+  expect(user.name).toBe('xj9')
+})
 ```
