@@ -27,11 +27,11 @@ export default function (store) {
          */
         beforeCreate () {
           if (this.$options.query) {
-            this.$qLoading = false
             this.$q = this.$options.query(store)
             const fields = keys(this.$q)
             this.$qs = fakeValues(fields)
-            const handler = () => {
+            this.$qLoading = false
+            this._vdataHandler = () => {
               this.$qLoading = true
               this.$q = this.$options.query(store)
               Q.all(mapToPromises(this.$q)).then(flow(
@@ -47,16 +47,17 @@ export default function (store) {
                   }
                 })).catch(console.log)
             }
-            handler()
-            store.on('change', handler)
-            this._unsubscribe = () => {
-              store.off('change', handler)
-            }
+          }
+        },
+        created () {
+          if (this._vdataHandler) {
+            this._vdataHandler()
+            store.on('change', this._vdataHandler)
           }
         },
         beforeDestroy () {
-          if (this._unsubscribe) {
-            this._unsubscribe()
+          if (this._vdataHandler) {
+            store.off('change', this._vdataHandler)
           }
         }
       })

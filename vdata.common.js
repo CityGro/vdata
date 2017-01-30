@@ -143,11 +143,11 @@ var vdata = function (store) {
 
           if (this.$options.query) {
             (function () {
-              _this.$qLoading = false;
               _this.$q = _this.$options.query(store);
               var fields = keys(_this.$q);
               _this.$qs = fakeValues(fields);
-              var handler = function handler() {
+              _this.$qLoading = false;
+              _this._vdataHandler = function () {
                 _this.$qLoading = true;
                 _this.$q = _this.$options.query(store);
                 Q.all(mapToPromises(_this.$q)).then(flow(entries, map(function (_ref3) {
@@ -169,17 +169,18 @@ var vdata = function (store) {
                   }
                 })).catch(console.log);
               };
-              handler();
-              store.on('change', handler);
-              _this._unsubscribe = function () {
-                store.off('change', handler);
-              };
             })();
           }
         },
+        created: function created() {
+          if (this._vdataHandler) {
+            this._vdataHandler();
+            store.on('change', this._vdataHandler);
+          }
+        },
         beforeDestroy: function beforeDestroy() {
-          if (this._unsubscribe) {
-            this._unsubscribe();
+          if (this._vdataHandler) {
+            store.off('change', this._vdataHandler);
           }
         }
       });
