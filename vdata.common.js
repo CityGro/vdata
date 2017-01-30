@@ -142,34 +142,33 @@ var vdata = function (store) {
           var _this = this;
 
           if (this.$options.query) {
-            (function () {
+            this.$q = {};
+            this.$qs = {};
+            this.$qLoading = false;
+            this._vdataHandler = function () {
+              _this.$qLoading = true;
               _this.$q = _this.$options.query(store);
               var fields = keys(_this.$q);
               _this.$qs = fakeValues(fields);
-              _this.$qLoading = false;
-              _this._vdataHandler = function () {
-                _this.$qLoading = true;
-                _this.$q = _this.$options.query(store);
-                Q.all(mapToPromises(_this.$q)).then(flow(entries, map(function (_ref3) {
-                  var _ref4 = slicedToArray(_ref3, 2),
-                      i = _ref4[0],
-                      value = _ref4[1];
+              Q.all(mapToPromises(_this.$q)).then(flow(entries, map(function (_ref3) {
+                var _ref4 = slicedToArray(_ref3, 2),
+                    i = _ref4[0],
+                    value = _ref4[1];
 
-                  return [fields[i], value];
-                }), fromPairs, function (qs) {
-                  if (!equals(qs)(_this.$qs)) {
-                    _this.$qs = qs;
-                    _this.$forceUpdate();
-                    _this.$qLoading = false;
-                    each(function (child) {
-                      return setTimeout(function () {
-                        return child.$forceUpdate();
-                      }, 0);
-                    })(_this.$children);
-                  }
-                })).catch(console.log);
-              };
-            })();
+                return [fields[i], value];
+              }), fromPairs, function (qs) {
+                if (!equals(qs)(_this.$qs)) {
+                  _this.$qs = qs;
+                  _this.$forceUpdate();
+                  _this.$qLoading = false;
+                  each(function (child) {
+                    return setTimeout(function () {
+                      return child.$forceUpdate();
+                    }, 0);
+                  })(_this.$children);
+                }
+              })).catch(console.log);
+            };
           }
         },
         created: function created() {

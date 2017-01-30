@@ -27,13 +27,14 @@ export default function (store) {
          */
         beforeCreate () {
           if (this.$options.query) {
-            this.$q = this.$options.query(store)
-            const fields = keys(this.$q)
-            this.$qs = fakeValues(fields)
+            this.$q = {}
+            this.$qs = {}
             this.$qLoading = false
             this._vdataHandler = () => {
               this.$qLoading = true
               this.$q = this.$options.query(store)
+              const fields = keys(this.$q)
+              this.$qs = fakeValues(fields)
               Q.all(mapToPromises(this.$q)).then(flow(
                 entries,
                 map(([i, value]) => [fields[i], value]),
