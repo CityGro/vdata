@@ -145,41 +145,47 @@ var vdata = function (store) {
             this.$q = {};
             this.$qs = {};
             this.$qLoading = false;
-            this._vdataHandler = function () {
-              _this.$qLoading = true;
-              _this.$q = _this.$options.query(store);
-              var fields = keys(_this.$q);
-              _this.$qs = fakeValues(fields);
-              Q.all(mapToPromises(_this.$q)).then(flow(entries, map(function (_ref3) {
-                var _ref4 = slicedToArray(_ref3, 2),
-                    i = _ref4[0],
-                    value = _ref4[1];
+            this.$vdata = function () {
+              try {
+                (function () {
+                  _this.$q = _this.$options.query(store);
+                  _this.$qLoading = true;
+                  var fields = keys(_this.$q);
+                  _this.$qs = fakeValues(fields);
+                  Q.all(mapToPromises(_this.$q)).then(flow(entries, map(function (_ref3) {
+                    var _ref4 = slicedToArray(_ref3, 2),
+                        i = _ref4[0],
+                        value = _ref4[1];
 
-                return [fields[i], value];
-              }), fromPairs, function (qs) {
-                if (!equals(qs)(_this.$qs)) {
-                  _this.$qs = qs;
-                  _this.$forceUpdate();
-                  _this.$qLoading = false;
-                  each(function (child) {
-                    return setTimeout(function () {
-                      return child.$forceUpdate();
-                    }, 0);
-                  })(_this.$children);
-                }
-              })).catch(console.log);
+                    return [fields[i], value];
+                  }), fromPairs, function (qs) {
+                    if (!equals(qs)(_this.$qs)) {
+                      _this.$qs = qs;
+                      _this.$forceUpdate();
+                      _this.$qLoading = false;
+                      each(function (child) {
+                        return setTimeout(function () {
+                          return child.$forceUpdate();
+                        }, 0);
+                      })(_this.$children);
+                    }
+                  })).catch(console.log);
+                })();
+              } catch (e) {
+                console.debug(e);
+              }
             };
           }
         },
         beforeMount: function beforeMount() {
-          if (this._vdataHandler) {
-            this._vdataHandler();
-            store.on('change', this._vdataHandler);
+          if (this.$vdata) {
+            this.$vdata();
+            store.on('change', this.$vdata);
           }
         },
         beforeDestroy: function beforeDestroy() {
-          if (this._vdataHandler) {
-            store.off('change', this._vdataHandler);
+          if (this.$vdata) {
+            store.off('change', this.$vdata);
           }
         }
       });

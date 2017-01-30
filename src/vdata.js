@@ -30,35 +30,39 @@ export default function (store) {
             this.$q = {}
             this.$qs = {}
             this.$qLoading = false
-            this._vdataHandler = () => {
-              this.$qLoading = true
-              this.$q = this.$options.query(store)
-              const fields = keys(this.$q)
-              this.$qs = fakeValues(fields)
-              Q.all(mapToPromises(this.$q)).then(flow(
-                entries,
-                map(([i, value]) => [fields[i], value]),
-                fromPairs,
-                (qs) => {
-                  if (!equals(qs)(this.$qs)) {
-                    this.$qs = qs
-                    this.$forceUpdate()
-                    this.$qLoading = false
-                    each((child) => setTimeout(() => child.$forceUpdate(), 0))(this.$children)
-                  }
-                })).catch(console.log)
+            this.$vdata = () => {
+              try {
+                this.$q = this.$options.query(store)
+                this.$qLoading = true
+                const fields = keys(this.$q)
+                this.$qs = fakeValues(fields)
+                Q.all(mapToPromises(this.$q)).then(flow(
+                  entries,
+                  map(([i, value]) => [fields[i], value]),
+                  fromPairs,
+                  (qs) => {
+                    if (!equals(qs)(this.$qs)) {
+                      this.$qs = qs
+                      this.$forceUpdate()
+                      this.$qLoading = false
+                      each((child) => setTimeout(() => child.$forceUpdate(), 0))(this.$children)
+                    }
+                  })).catch(console.log)
+              } catch (e) {
+                console.debug(e)
+              }
             }
           }
         },
         beforeMount () {
-          if (this._vdataHandler) {
-            this._vdataHandler()
-            store.on('change', this._vdataHandler)
+          if (this.$vdata) {
+            this.$vdata()
+            store.on('change', this.$vdata)
           }
         },
         beforeDestroy () {
-          if (this._vdataHandler) {
-            store.off('change', this._vdataHandler)
+          if (this.$vdata) {
+            store.off('change', this.$vdata)
           }
         }
       })
