@@ -1,5 +1,7 @@
 /* global describe, it, beforeEach, jest, expect, fit */
 
+import {waitFor} from '../utils'
+
 describe('Vdata', () => {
   let vdata
   let Vue
@@ -21,6 +23,17 @@ describe('Vdata', () => {
     User.inject({id: 1, name: 'omanizer'})
     Comment.inject({id: 1, userId: 1})
     Vue.use(vdata(store))
+  })
+  describe('utils/waitFor', () => {
+    it('resolves when the value becomes truthy', () => {
+      const o = {value: false}
+      setTimeout(() => {
+        o.value = true
+      }, 50)
+      return waitFor('value', o).then((value) => {
+        return expect(value).toBe(true)
+      })
+    })
   })
   it('makes the store directly accessible', () => {
     const vm = new Vue()

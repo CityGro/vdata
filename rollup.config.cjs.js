@@ -1,7 +1,7 @@
 import babel from 'rollup-plugin-babel'
 
 export default {
-  entry: './src/vdata.js',
+  entry: './src/index.js',
   dest: 'vdata.common.js',
   plugins: [
     babel({

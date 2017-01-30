@@ -18,7 +18,7 @@ $ npm install --save js-data @citygro/vdata
 
 ```js
 import Vue from 'vue'
-import vdata from '@citygro/vdata'
+import {vdata} from '@citygro/vdata'
 import JSData from 'js-data'
 
 const store = JSData.DS()

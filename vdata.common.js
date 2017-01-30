@@ -1,5 +1,7 @@
 'use strict';
 
+Object.defineProperty(exports, '__esModule', { value: true });
+
 function _interopDefault (ex) { return (ex && (typeof ex === 'object') && 'default' in ex) ? ex['default'] : ex; }
 
 var each = _interopDefault(require('lodash/fp/each'));
@@ -9,11 +11,12 @@ var entries = _interopDefault(require('lodash/fp/entries'));
 var map = _interopDefault(require('lodash/fp/map'));
 var fromPairs = _interopDefault(require('lodash/fp/fromPairs'));
 var keys = _interopDefault(require('lodash/fp/keys'));
+var property = _interopDefault(require('lodash/fp/property'));
 var Q = _interopDefault(require('q'));
 
-var get = function get(object, property, receiver) {
+var get = function get(object, property$$1, receiver) {
   if (object === null) object = Function.prototype;
-  var desc = Object.getOwnPropertyDescriptor(object, property);
+  var desc = Object.getOwnPropertyDescriptor(object, property$$1);
 
   if (desc === undefined) {
     var parent = Object.getPrototypeOf(object);
@@ -21,7 +24,7 @@ var get = function get(object, property, receiver) {
     if (parent === null) {
       return undefined;
     } else {
-      return get(parent, property, receiver);
+      return get(parent, property$$1, receiver);
     }
   } else if ("value" in desc) {
     return desc.value;
@@ -52,14 +55,14 @@ var get = function get(object, property, receiver) {
 
 
 
-var set = function set(object, property, value, receiver) {
-  var desc = Object.getOwnPropertyDescriptor(object, property);
+var set = function set(object, property$$1, value, receiver) {
+  var desc = Object.getOwnPropertyDescriptor(object, property$$1);
 
   if (desc === undefined) {
     var parent = Object.getPrototypeOf(object);
 
     if (parent !== null) {
-      set(parent, property, value, receiver);
+      set(parent, property$$1, value, receiver);
     }
   } else if ("value" in desc && desc.writable) {
     desc.value = value;
@@ -146,34 +149,28 @@ var vdata = function (store) {
             this.$qs = {};
             this.$qLoading = false;
             this.$vdata = function () {
-              try {
-                (function () {
-                  _this.$q = _this.$options.query(store);
-                  _this.$qLoading = true;
-                  var fields = keys(_this.$q);
-                  _this.$qs = fakeValues(fields);
-                  Q.all(mapToPromises(_this.$q)).then(flow(entries, map(function (_ref3) {
-                    var _ref4 = slicedToArray(_ref3, 2),
-                        i = _ref4[0],
-                        value = _ref4[1];
+              _this.$q = _this.$options.query(store);
+              _this.$qLoading = true;
+              var fields = keys(_this.$q);
+              _this.$qs = fakeValues(fields);
+              Q.all(mapToPromises(_this.$q)).then(flow(entries, map(function (_ref3) {
+                var _ref4 = slicedToArray(_ref3, 2),
+                    i = _ref4[0],
+                    value = _ref4[1];
 
-                    return [fields[i], value];
-                  }), fromPairs, function (qs) {
-                    if (!equals(qs)(_this.$qs)) {
-                      _this.$qs = qs;
-                      _this.$forceUpdate();
-                      _this.$qLoading = false;
-                      each(function (child) {
-                        return setTimeout(function () {
-                          return child.$forceUpdate();
-                        }, 0);
-                      })(_this.$children);
-                    }
-                  })).catch(console.log);
-                })();
-              } catch (e) {
-                console.debug(e);
-              }
+                return [fields[i], value];
+              }), fromPairs, function (qs) {
+                if (!equals(qs)(_this.$qs)) {
+                  _this.$qs = qs;
+                  _this.$forceUpdate();
+                  _this.$qLoading = false;
+                  each(function (child) {
+                    return setTimeout(function () {
+                      return child.$forceUpdate();
+                    }, 0);
+                  })(_this.$children);
+                }
+              })).catch(console.log);
             };
           }
         },
@@ -193,4 +190,23 @@ var vdata = function (store) {
   };
 };
 
-module.exports = vdata;
+/**
+ * @param {string} prop - dotted path to prop
+ * @param {object} on - the object we are polling
+ */
+var waitFor = function waitFor(prop, on) {
+  return Q.Promise(function (resolve, reject, notify) {
+    (function poll() {
+      var value = property(prop)(on);
+      if (value) {
+        resolve(value);
+      } else {
+        notify(value);
+        setTimeout(poll, 30);
+      }
+    })();
+  });
+};
+
+exports.vdata = vdata;
+exports.waitFor = waitFor;

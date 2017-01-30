@@ -5,6 +5,7 @@ import entries from 'lodash/fp/entries'
 import map from 'lodash/fp/map'
 import fromPairs from 'lodash/fp/fromPairs'
 import keys from 'lodash/fp/keys'
+import property from 'lodash/fp/property'
 import Q from 'q'
 
 const mapToPromises = flow(entries, map(([k, v]) => Q.resolve(v)))
@@ -31,26 +32,22 @@ export default function (store) {
             this.$qs = {}
             this.$qLoading = false
             this.$vdata = () => {
-              try {
-                this.$q = this.$options.query(store)
-                this.$qLoading = true
-                const fields = keys(this.$q)
-                this.$qs = fakeValues(fields)
-                Q.all(mapToPromises(this.$q)).then(flow(
-                  entries,
-                  map(([i, value]) => [fields[i], value]),
-                  fromPairs,
-                  (qs) => {
-                    if (!equals(qs)(this.$qs)) {
-                      this.$qs = qs
-                      this.$forceUpdate()
-                      this.$qLoading = false
-                      each((child) => setTimeout(() => child.$forceUpdate(), 0))(this.$children)
-                    }
-                  })).catch(console.log)
-              } catch (e) {
-                console.debug(e)
-              }
+              this.$q = this.$options.query(store)
+              this.$qLoading = true
+              const fields = keys(this.$q)
+              this.$qs = fakeValues(fields)
+              Q.all(mapToPromises(this.$q)).then(flow(
+                entries,
+                map(([i, value]) => [fields[i], value]),
+                fromPairs,
+                (qs) => {
+                  if (!equals(qs)(this.$qs)) {
+                    this.$qs = qs
+                    this.$forceUpdate()
+                    this.$qLoading = false
+                    each((child) => setTimeout(() => child.$forceUpdate(), 0))(this.$children)
+                  }
+                })).catch(console.log)
             }
           }
         },
