@@ -50,7 +50,7 @@ export default function (store) {
             }
           }
         },
-        created () {
+        beforeMount () {
           if (this._vdataHandler) {
             this._vdataHandler()
             store.on('change', this._vdataHandler)

@@ -171,7 +171,7 @@ var vdata = function (store) {
             };
           }
         },
-        created: function created() {
+        beforeMount: function beforeMount() {
           if (this._vdataHandler) {
             this._vdataHandler();
             store.on('change', this._vdataHandler);
