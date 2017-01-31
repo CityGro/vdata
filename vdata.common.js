@@ -194,15 +194,19 @@ var vdata = function (store) {
  * @param {string} prop - dotted path to prop
  * @param {object} on - the object we are polling
  */
-var waitFor = function waitFor(prop, on) {
+var waitFor = function waitFor(prop, o) {
   return Q.Promise(function (resolve, reject, notify) {
     (function poll() {
-      var value = property(prop)(on);
-      if (value) {
-        resolve(value);
+      if (o) {
+        var value = property(prop)(o);
+        if (value) {
+          resolve(value);
+        } else {
+          notify(value);
+          setTimeout(poll, 30);
+        }
       } else {
-        notify(value);
-        setTimeout(poll, 30);
+        reject(new Error('target object is \'' + o + '\''));
       }
     })();
   });
