@@ -47,9 +47,29 @@ describe('Vdata', () => {
       },
       props: ['user']
     })
-    const vm = new Vue({
+    const Child = Vue.component('child', {
       render (createElement) {
         return createElement(Babby, {
+          props: {
+            user: this.user
+          }
+        })
+      },
+      props: ['user']
+    })
+    const Parent = Vue.component('parent', {
+      render (createElement) {
+        return createElement(Child, {
+          props: {
+            user: this.user
+          }
+        })
+      },
+      props: ['user']
+    })
+    const vm = new Vue({
+      render (createElement) {
+        return createElement(Parent, {
           props: {
             user: this.$qs.user
           }

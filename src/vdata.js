@@ -28,9 +28,9 @@ export default function (store) {
          */
         beforeCreate () {
           if (this.$options.query) {
-            this.$q = {}
-            this.$qs = {}
-            this.$qLoading = false
+            Vue.util.defineReactive(this, '$q', {})
+            Vue.util.defineReactive(this, '$qs', {})
+            Vue.util.defineReactive(this, '$qLoading', false)
             this.$vdata = () => {
               this.$q = this.$options.query(store)
               this.$qLoading = true

@@ -145,9 +145,9 @@ var vdata = function (store) {
           var _this = this;
 
           if (this.$options.query) {
-            this.$q = {};
-            this.$qs = {};
-            this.$qLoading = false;
+            Vue.util.defineReactive(this, '$q', {});
+            Vue.util.defineReactive(this, '$qs', {});
+            Vue.util.defineReactive(this, '$qLoading', false);
             this.$vdata = function () {
               _this.$q = _this.$options.query(store);
               _this.$qLoading = true;
