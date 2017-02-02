@@ -51,7 +51,7 @@ export default function (store) {
             }
           }
         },
-        beforeMount () {
+        created () {
           if (this.$vdata) {
             this.$vdata()
             store.on('change', this.$vdata)

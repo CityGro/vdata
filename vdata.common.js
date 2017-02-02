@@ -174,7 +174,7 @@ var vdata = function (store) {
             };
           }
         },
-        beforeMount: function beforeMount() {
+        created: function created() {
           if (this.$vdata) {
             this.$vdata();
             store.on('change', this.$vdata);
