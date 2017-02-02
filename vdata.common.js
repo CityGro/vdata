@@ -145,15 +145,12 @@ var vdata = function (store) {
           var _this = this;
 
           if (this.$options.query) {
-            Vue.util.defineReactive(this, '$q', {});
-            Vue.util.defineReactive(this, '$qs', {});
-            Vue.util.defineReactive(this, '$qLoading', false);
             this.$vdata = function () {
-              console.log('running $vdata handler');
-              _this.$q = _this.$options.query(store);
-              _this.$qLoading = true;
+              console.log('$vdata: handler running');
+              Vue.util.defineReactive(_this, '$q', _this.$options.query(store));
+              Vue.util.defineReactive(_this, '$qLoading', true);
               var fields = keys(_this.$q);
-              _this.$qs = fakeValues(fields);
+              Vue.util.defineReactive(_this, '$qs', fakeValues(fields));
               Q.all(mapToPromises(_this.$q)).then(flow(entries, map(function (_ref3) {
                 var _ref4 = slicedToArray(_ref3, 2),
                     i = _ref4[0],
@@ -162,14 +159,17 @@ var vdata = function (store) {
                 return [fields[i], value];
               }), fromPairs, function (qs) {
                 if (!equals(qs)(_this.$qs)) {
-                  _this.$qs = qs;
+                  Vue.util.defineReactive(_this, '$qs', qs);
+                  Vue.util.defineReactive(_this, '$qLoading', false);
                   _this.$forceUpdate();
-                  _this.$qLoading = false;
                   each(function (child) {
                     return setTimeout(function () {
                       return child.$forceUpdate();
                     }, 0);
                   })(_this.$children);
+                  console.log('$vdata: updated properties');
+                } else {
+                  console.log('$vdata: no change');
                 }
               })).catch(console.log);
             };

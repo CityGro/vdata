@@ -28,25 +28,25 @@ export default function (store) {
          */
         beforeCreate () {
           if (this.$options.query) {
-            Vue.util.defineReactive(this, '$q', {})
-            Vue.util.defineReactive(this, '$qs', {})
-            Vue.util.defineReactive(this, '$qLoading', false)
             this.$vdata = () => {
-              console.log('running $vdata handler')
-              this.$q = this.$options.query(store)
-              this.$qLoading = true
+              console.log('$vdata: handler running')
+              Vue.util.defineReactive(this, '$q', this.$options.query(store))
+              Vue.util.defineReactive(this, '$qLoading', true)
               const fields = keys(this.$q)
-              this.$qs = fakeValues(fields)
+              Vue.util.defineReactive(this, '$qs', fakeValues(fields))
               Q.all(mapToPromises(this.$q)).then(flow(
                 entries,
                 map(([i, value]) => [fields[i], value]),
                 fromPairs,
                 (qs) => {
                   if (!equals(qs)(this.$qs)) {
-                    this.$qs = qs
+                    Vue.util.defineReactive(this, '$qs', qs)
+                    Vue.util.defineReactive(this, '$qLoading', false)
                     this.$forceUpdate()
-                    this.$qLoading = false
                     each((child) => setTimeout(() => child.$forceUpdate(), 0))(this.$children)
+                    console.log('$vdata: updated properties')
+                  } else {
+                    console.log('$vdata: no change')
                   }
                 })).catch(console.log)
             }
