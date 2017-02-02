@@ -32,6 +32,7 @@ export default function (store) {
             Vue.util.defineReactive(this, '$qs', {})
             Vue.util.defineReactive(this, '$qLoading', false)
             this.$vdata = () => {
+              console.log('running $vdata handler')
               this.$q = this.$options.query(store)
               this.$qLoading = true
               const fields = keys(this.$q)
@@ -49,12 +50,13 @@ export default function (store) {
                   }
                 })).catch(console.log)
             }
+            this.$vdata()
+            store.on('change', this.$vdata)
           }
         },
         created () {
           if (this.$vdata) {
             this.$vdata()
-            store.on('change', this.$vdata)
           }
         },
         beforeDestroy () {

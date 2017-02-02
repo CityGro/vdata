@@ -149,6 +149,7 @@ var vdata = function (store) {
             Vue.util.defineReactive(this, '$qs', {});
             Vue.util.defineReactive(this, '$qLoading', false);
             this.$vdata = function () {
+              console.log('running $vdata handler');
               _this.$q = _this.$options.query(store);
               _this.$qLoading = true;
               var fields = keys(_this.$q);
@@ -172,12 +173,13 @@ var vdata = function (store) {
                 }
               })).catch(console.log);
             };
+            this.$vdata();
+            store.on('change', this.$vdata);
           }
         },
         created: function created() {
           if (this.$vdata) {
             this.$vdata();
-            store.on('change', this.$vdata);
           }
         },
         beforeDestroy: function beforeDestroy() {
