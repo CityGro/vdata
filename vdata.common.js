@@ -159,8 +159,8 @@ var vdata = function (store) {
                 return [fields[i], value];
               }), fromPairs, function (qs) {
                 if (!equals(qs)(_this.$qs)) {
-                  Vue.util.defineReactive(_this, '$qs', qs);
-                  Vue.util.defineReactive(_this, '$qLoading', false);
+                  _this.$qs = qs;
+                  _this.$qLoading = false;
                   _this.$forceUpdate();
                   each(function (child) {
                     return setTimeout(function () {
@@ -175,11 +175,6 @@ var vdata = function (store) {
             };
             this.$vdata();
             store.on('change', this.$vdata);
-          }
-        },
-        created: function created() {
-          if (this.$vdata) {
-            this.$vdata();
           }
         },
         beforeDestroy: function beforeDestroy() {

@@ -40,8 +40,8 @@ export default function (store) {
                 fromPairs,
                 (qs) => {
                   if (!equals(qs)(this.$qs)) {
-                    Vue.util.defineReactive(this, '$qs', qs)
-                    Vue.util.defineReactive(this, '$qLoading', false)
+                    this.$qs = qs
+                    this.$qLoading = false
                     this.$forceUpdate()
                     each((child) => setTimeout(() => child.$forceUpdate(), 0))(this.$children)
                     console.log('$vdata: updated properties')
@@ -52,11 +52,6 @@ export default function (store) {
             }
             this.$vdata()
             store.on('change', this.$vdata)
-          }
-        },
-        created () {
-          if (this.$vdata) {
-            this.$vdata()
           }
         },
         beforeDestroy () {
