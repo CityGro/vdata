@@ -11,8 +11,8 @@ var entries = _interopDefault(require('lodash/fp/entries'));
 var map = _interopDefault(require('lodash/fp/map'));
 var fromPairs = _interopDefault(require('lodash/fp/fromPairs'));
 var keys = _interopDefault(require('lodash/fp/keys'));
-var property = _interopDefault(require('lodash/fp/property'));
 var Q = _interopDefault(require('q'));
+var property = _interopDefault(require('lodash/fp/property'));
 
 var get = function get(object, property$$1, receiver) {
   if (object === null) object = Function.prototype;
@@ -115,16 +115,12 @@ var slicedToArray = function () {
   };
 }();
 
-var mapToPromises = flow(entries, map(function (_ref) {
-  var _ref2 = slicedToArray(_ref, 2),
-      k = _ref2[0],
-      v = _ref2[1];
-
-  return Q.resolve(v);
-}));
-var fakeValues = flow(map(function (field) {
-  return [field, {}];
-}), fromPairs);
+var forceUpdate = each(function (child) {
+  return setTimeout(function () {
+    child.$forceUpdate();
+    forceUpdate(child.$children);
+  }, 0);
+});
 
 var vdata = function (store) {
   return {
@@ -147,26 +143,53 @@ var vdata = function (store) {
           if (this.$options.query) {
             this.$vdata = function () {
               console.log('$vdata: handler running');
-              Vue.util.defineReactive(_this, '$q', _this.$options.query(store));
+              Vue.util.defineReactive(_this, '$q', {});
               Vue.util.defineReactive(_this, '$qLoading', true);
-              var fields = keys(_this.$q);
-              Vue.util.defineReactive(_this, '$qs', fakeValues(fields));
-              Q.all(mapToPromises(_this.$q)).then(flow(entries, map(function (_ref3) {
-                var _ref4 = slicedToArray(_ref3, 2),
-                    i = _ref4[0],
-                    value = _ref4[1];
+              Vue.util.defineReactive(_this, '$qs', {});
+              var createQuery = flow(_this.$options.query,
+              /**
+               * create placeholder fields for queries
+               */
+              function (q) {
+                _this.$q = q;
+                _this.$qs = flow(keys, map(function (field) {
+                  return [field, {}];
+                }), fromPairs)(q);
+                return q;
+              }, entries,
+              /**
+               * map values to promises
+               */
+              map(function (_ref) {
+                var _ref2 = slicedToArray(_ref, 2),
+                    k = _ref2[0],
+                    v = _ref2[1];
 
-                return [fields[i], value];
-              }), fromPairs, function (qs) {
+                return Q(v);
+              }), Q.all);
+              createQuery(store).then(flow(
+              /**
+               * remap resolved values to keys
+               */
+              function (q) {
+                var fields = keys(_this.$qs);
+                return flow(entries, map(function (_ref3) {
+                  var _ref4 = slicedToArray(_ref3, 2),
+                      i = _ref4[0],
+                      value = _ref4[1];
+
+                  return [fields[i], value];
+                }))(q);
+              }, fromPairs,
+              /**
+               * inject resolved query data into component, update component subtree
+               */
+              function (qs) {
                 if (!equals(qs)(_this.$qs)) {
                   _this.$qs = qs;
                   _this.$qLoading = false;
                   _this.$forceUpdate();
-                  each(function (child) {
-                    return setTimeout(function () {
-                      return child.$forceUpdate();
-                    }, 0);
-                  })(_this.$children);
+                  forceUpdate(_this.$children);
                   console.log('$vdata: updated properties');
                 } else {
                   console.log('$vdata: no change');

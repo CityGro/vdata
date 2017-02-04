@@ -5,11 +5,12 @@ import entries from 'lodash/fp/entries'
 import map from 'lodash/fp/map'
 import fromPairs from 'lodash/fp/fromPairs'
 import keys from 'lodash/fp/keys'
-import property from 'lodash/fp/property'
 import Q from 'q'
 
-const mapToPromises = flow(entries, map(([k, v]) => Q.resolve(v)))
-const fakeValues = flow(map((field) => [field, {}]), fromPairs)
+const forceUpdate = each((child) => setTimeout(() => {
+  child.$forceUpdate()
+  forceUpdate(child.$children)
+}, 0))
 
 export default function (store) {
   return {
@@ -30,20 +31,44 @@ export default function (store) {
           if (this.$options.query) {
             this.$vdata = () => {
               console.log('$vdata: handler running')
-              Vue.util.defineReactive(this, '$q', this.$options.query(store))
+              Vue.util.defineReactive(this, '$q', {})
               Vue.util.defineReactive(this, '$qLoading', true)
-              const fields = keys(this.$q)
-              Vue.util.defineReactive(this, '$qs', fakeValues(fields))
-              Q.all(mapToPromises(this.$q)).then(flow(
+              Vue.util.defineReactive(this, '$qs', {})
+              const createQuery = flow(
+                this.$options.query,
+                /**
+                 * create placeholder fields for queries
+                 */
+                (q) => {
+                  this.$q = q
+                  this.$qs = flow(keys, map((field) => [field, {}]), fromPairs)(q)
+                  return q
+                },
                 entries,
-                map(([i, value]) => [fields[i], value]),
+                /**
+                 * map values to promises
+                 */
+                map(([k, v]) => Q(v)),
+                Q.all
+              )
+              createQuery(store).then(flow(
+                /**
+                 * remap resolved values to keys
+                 */
+                (q) => {
+                  const fields = keys(this.$qs)
+                  return flow(entries, map(([i, value]) => [fields[i], value]))(q)
+                },
                 fromPairs,
+                /**
+                 * inject resolved query data into component, update component subtree
+                 */
                 (qs) => {
                   if (!equals(qs)(this.$qs)) {
                     this.$qs = qs
                     this.$qLoading = false
                     this.$forceUpdate()
-                    each((child) => setTimeout(() => child.$forceUpdate(), 0))(this.$children)
+                    forceUpdate(this.$children)
                     console.log('$vdata: updated properties')
                   } else {
                     console.log('$vdata: no change')
