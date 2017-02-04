@@ -1,6 +1,6 @@
 {
   "name": "@citygro/vdata",
-  "version": "3.0.6",
+  "version": "3.0.7",
   "description": "vue-js-data binding",
   "main": "vdata.common.js",
   "repository": "gitlab.com:citygro/vdata.git",
