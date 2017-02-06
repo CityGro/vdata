@@ -87,6 +87,10 @@ export default function (store) {
         beforeDestroy () {
           if (this.$vdata) {
             store.off('change', this.$vdata)
+            delete this.$q
+            delete this.$qs
+            delete this.$qLoading
+            delete this.$vdata
           }
         }
       })
