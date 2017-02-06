@@ -203,9 +203,13 @@ var vdata = function (store) {
                   }
                 })).catch(console.log);
               };
-              _this.$vdata();
               store.on('change', _this.$vdata);
             })();
+          }
+        },
+        created: function created() {
+          if (this.$vdata) {
+            this.$vdata();
           }
         },
         beforeDestroy: function beforeDestroy() {

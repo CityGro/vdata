@@ -80,8 +80,12 @@ export default function (store) {
                   }
                 })).catch(console.log)
             }
-            this.$vdata()
             store.on('change', this.$vdata)
+          }
+        },
+        created () {
+          if (this.$vdata) {
+            this.$vdata()
           }
         },
         beforeDestroy () {
