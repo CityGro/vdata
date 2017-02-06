@@ -193,8 +193,8 @@ var vdata = function (store) {
                  * inject resolved query data into component, update component subtree
                  */
                 function (qs) {
-                  console.log('$vdata: (previous) ' + _this.$qs);
-                  console.log('$vdata: (next) ' + qs);
+                  console.log('$vdata: (previous)', _this.$qs);
+                  console.log('$vdata: (next)', qs);
                   if (!equals(qs)(_this.$qs)) {
                     _this.$qs = qs;
                     _this.$qLoading = false;

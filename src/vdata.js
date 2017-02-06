@@ -70,8 +70,8 @@ export default function (store) {
                  * inject resolved query data into component, update component subtree
                  */
                 (qs) => {
-                  console.log(`$vdata: (previous) ${this.$qs}`)
-                  console.log(`$vdata: (next) ${qs}`)
+                  console.log('$vdata: (previous)', this.$qs)
+                  console.log('$vdata: (next)', qs)
                   if (!equals(qs)(this.$qs)) {
                     this.$qs = qs
                     this.$qLoading = false
