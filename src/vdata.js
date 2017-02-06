@@ -30,6 +30,7 @@ export default function (store) {
          */
         beforeCreate () {
           if (this.$options.query) {
+            const self = this
             Vue.util.defineReactive(this, '$q', {})
             Vue.util.defineReactive(this, '$qLoading', false)
             Vue.util.defineReactive(this, '$qs', {})
@@ -37,7 +38,7 @@ export default function (store) {
               /**
                * create a new query object
                */
-              this.$options.query,
+              this.$options.query.bind(self),
               /**
                * create placeholder fields for queries
                */

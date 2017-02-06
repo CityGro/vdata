@@ -143,6 +143,7 @@ var vdata = function (store) {
 
           if (this.$options.query) {
             (function () {
+              var self = _this;
               Vue.util.defineReactive(_this, '$q', {});
               Vue.util.defineReactive(_this, '$qLoading', false);
               Vue.util.defineReactive(_this, '$qs', {});
@@ -150,7 +151,7 @@ var vdata = function (store) {
               /**
                * create a new query object
                */
-              _this.$options.query,
+              _this.$options.query.bind(self),
               /**
                * create placeholder fields for queries
                */
