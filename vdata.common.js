@@ -130,23 +130,27 @@ var vdata = function (store) {
         /**
          * bind the store to your vue container.
          *
-         * if `$options.query()` is defined, initialize the components `$q` and `$q` properties.
+         * if `$options.query()` is defined, initialize the components `$q` and `$qs` properties.
          * listen for changes on the store and trigger an update if a change occurred.
          *
          * `$q` is the return value of `$options.query()`
          * `$qs` is automatically populated with the resolved values of `$q`
+         * `$qLoading` is true whenever queries are being resolved
          *
          */
         beforeCreate: function beforeCreate() {
           var _this = this;
 
           if (this.$options.query) {
-            this.$vdata = function () {
-              console.log('$vdata: handler running');
+            (function () {
               Vue.util.defineReactive(_this, '$q', {});
-              Vue.util.defineReactive(_this, '$qLoading', true);
+              Vue.util.defineReactive(_this, '$qLoading', false);
               Vue.util.defineReactive(_this, '$qs', {});
-              var createQuery = flow(_this.$options.query,
+              var createQuery = flow(
+              /**
+               * create a new query object
+               */
+              _this.$options.query,
               /**
                * create placeholder fields for queries
                */
@@ -158,46 +162,50 @@ var vdata = function (store) {
                 return q;
               }, entries,
               /**
-               * map values to promises
+               * ensure that all queries are promises
                */
               map(function (_ref) {
                 var _ref2 = slicedToArray(_ref, 2),
-                    k = _ref2[0],
-                    v = _ref2[1];
+                    field = _ref2[0],
+                    query = _ref2[1];
 
-                return Q(v);
+                return Q(query);
               }), Q.all);
-              createQuery(store).then(flow(
-              /**
-               * remap resolved values to keys
-               */
-              function (q) {
-                var fields = keys(_this.$qs);
-                return flow(entries, map(function (_ref3) {
-                  var _ref4 = slicedToArray(_ref3, 2),
-                      i = _ref4[0],
-                      value = _ref4[1];
+              _this.$vdata = function () {
+                console.log('$vdata: handler running');
+                _this.$qLoading = true;
+                createQuery(store).then(flow(
+                /**
+                 * remap resolved values to keys
+                 */
+                function (q) {
+                  var fields = keys(_this.$qs);
+                  var remap = flow(entries, map(function (_ref3) {
+                    var _ref4 = slicedToArray(_ref3, 2),
+                        i = _ref4[0],
+                        value = _ref4[1];
 
-                  return [fields[i], value];
-                }))(q);
-              }, fromPairs,
-              /**
-               * inject resolved query data into component, update component subtree
-               */
-              function (qs) {
-                if (!equals(qs)(_this.$qs)) {
-                  _this.$qs = qs;
-                  _this.$qLoading = false;
-                  _this.$forceUpdate();
-                  forceUpdate(_this.$children);
-                  console.log('$vdata: updated properties');
-                } else {
-                  console.log('$vdata: no change');
-                }
-              })).catch(console.log);
-            };
-            this.$vdata();
-            store.on('change', this.$vdata);
+                    return [fields[i], value];
+                  }));
+                  return remap(q);
+                }, fromPairs,
+                /**
+                 * inject resolved query data into component, update component subtree
+                 */
+                function (qs) {
+                  console.log('$vdata: (previous) ' + _this.$qs);
+                  console.log('$vdata: (next) ' + qs);
+                  if (!equals(qs)(_this.$qs)) {
+                    _this.$qs = qs;
+                    _this.$qLoading = false;
+                    _this.$forceUpdate();
+                    forceUpdate(_this.$children);
+                  }
+                })).catch(console.log);
+              };
+              _this.$vdata();
+              store.on('change', _this.$vdata);
+            })();
           }
         },
         beforeDestroy: function beforeDestroy() {
