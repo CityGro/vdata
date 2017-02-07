@@ -159,9 +159,11 @@ var vdata = function (store) {
                */
               function (q) {
                 _this.$q = q;
-                _this.$qs = flow(keys, map(function (field) {
-                  return [field, {}];
-                }), fromPairs)(q);
+                if (!keys(_this.$qs).length) {
+                  _this.$qs = flow(keys, map(function (field) {
+                    return [field, {}];
+                  }), fromPairs)(q);
+                }
                 return q;
               }, entries,
               /**
@@ -196,9 +198,9 @@ var vdata = function (store) {
                  * inject resolved query data into component, update component subtree
                  */
                 function (qs) {
-                  console.log('$vdata: (previous)', _this.$qs);
-                  console.log('$vdata: (next)', qs);
                   if (!equals(qs)(_this.$qs)) {
+                    console.log('$vdata: (previous)', _this.$qs);
+                    console.log('$vdata: (next)', qs);
                     _this.$qs = qs;
                     _this.$qLoading = false;
                     _this.$forceUpdate();

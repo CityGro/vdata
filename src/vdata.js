@@ -46,7 +46,9 @@ export default function (store) {
                */
               (q) => {
                 this.$q = q
-                this.$qs = flow(keys, map((field) => [field, {}]), fromPairs)(q)
+                if (!keys(this.$qs).length) {
+                  this.$qs = flow(keys, map((field) => [field, {}]), fromPairs)(q)
+                }
                 return q
               },
               entries,
@@ -73,9 +75,9 @@ export default function (store) {
                  * inject resolved query data into component, update component subtree
                  */
                 (qs) => {
-                  console.log('$vdata: (previous)', this.$qs)
-                  console.log('$vdata: (next)', qs)
                   if (!equals(qs)(this.$qs)) {
+                    console.log('$vdata: (previous)', this.$qs)
+                    console.log('$vdata: (next)', qs)
                     this.$qs = qs
                     this.$qLoading = false
                     this.$forceUpdate()
