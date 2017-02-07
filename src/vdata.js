@@ -12,7 +12,7 @@ const forceUpdate = each((child) => setTimeout(() => {
   forceUpdate(child.$children)
 }, 0))
 
-const changeEvents = ['add', 'change', 'remove']
+const changeEvents = ['change', 'remove']
 
 export default function (store) {
   return {
@@ -78,10 +78,10 @@ export default function (store) {
                     console.log('$vdata: (previous)', this.$qs)
                     console.log('$vdata: (next)', qs)
                     this.$qs = qs
-                    this.$qLoading = false
                     this.$forceUpdate()
                     forceUpdate(this.$children)
                   }
+                  this.$qLoading = false
                 })).catch(console.log)
             }
             map((event) => store.on(event, this.$vdata))(changeEvents)

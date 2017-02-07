@@ -122,7 +122,7 @@ var forceUpdate = each(function (child) {
   }, 0);
 });
 
-var changeEvents = ['add', 'change', 'remove'];
+var changeEvents = ['change', 'remove'];
 
 var vdata = function (store) {
   return {
@@ -201,10 +201,10 @@ var vdata = function (store) {
                     console.log('$vdata: (previous)', _this.$qs);
                     console.log('$vdata: (next)', qs);
                     _this.$qs = qs;
-                    _this.$qLoading = false;
                     _this.$forceUpdate();
                     forceUpdate(_this.$children);
                   }
+                  _this.$qLoading = false;
                 })).catch(console.log);
               };
               map(function (event) {
