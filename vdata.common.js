@@ -177,7 +177,6 @@ var vdata = function (store) {
                 return Q(query);
               }), Q.all);
               _this.$vdata = function () {
-                console.log('$vdata: handler running');
                 _this.$qLoading = true;
                 createQuery(store).then(flow(
                 /**

@@ -59,7 +59,6 @@ export default function (store) {
                Q.all
             )
             this.$vdata = () => {
-              console.log('$vdata: handler running')
               this.$qLoading = true
               createQuery(store).then(flow(
                 /**
