@@ -122,6 +122,8 @@ var forceUpdate = each(function (child) {
   }, 0);
 });
 
+var changeEvents = ['add', 'change', 'remove'];
+
 var vdata = function (store) {
   return {
     install: function install(Vue) {
@@ -204,7 +206,9 @@ var vdata = function (store) {
                   }
                 })).catch(console.log);
               };
-              store.on('change', _this.$vdata);
+              map(function (event) {
+                return store.on(event, _this.$vdata);
+              })(changeEvents);
             })();
           }
         },
@@ -214,12 +218,18 @@ var vdata = function (store) {
           }
         },
         beforeDestroy: function beforeDestroy() {
+          var _this2 = this;
+
           if (this.$vdata) {
-            store.off('change', this.$vdata);
-            delete this.$q;
-            delete this.$qs;
-            delete this.$qLoading;
-            delete this.$vdata;
+            map(function (event) {
+              return store.off(event, _this2.$vdata);
+            })(changeEvents);
+            setTimeout(function () {
+              delete _this2.$q;
+              delete _this2.$qs;
+              delete _this2.$qLoading;
+              delete _this2.$vdata;
+            }, 0);
           }
         }
       });

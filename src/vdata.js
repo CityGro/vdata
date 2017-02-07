@@ -12,6 +12,8 @@ const forceUpdate = each((child) => setTimeout(() => {
   forceUpdate(child.$children)
 }, 0))
 
+const changeEvents = ['add', 'change', 'remove']
+
 export default function (store) {
   return {
     install (Vue) {
@@ -81,7 +83,7 @@ export default function (store) {
                   }
                 })).catch(console.log)
             }
-            store.on('change', this.$vdata)
+            map((event) => store.on(event, this.$vdata))(changeEvents)
           }
         },
         created () {
@@ -91,11 +93,13 @@ export default function (store) {
         },
         beforeDestroy () {
           if (this.$vdata) {
-            store.off('change', this.$vdata)
-            delete this.$q
-            delete this.$qs
-            delete this.$qLoading
-            delete this.$vdata
+            map((event) => store.off(event, this.$vdata))(changeEvents)
+            setTimeout(() => {
+              delete this.$q
+              delete this.$qs
+              delete this.$qLoading
+              delete this.$vdata
+            }, 0)
           }
         }
       })
