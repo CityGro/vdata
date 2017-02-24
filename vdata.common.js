@@ -155,6 +155,7 @@ var vdata = function (store) {
               var force = true;
               Vue.util.defineReactive(_this, '$q', {});
               Vue.util.defineReactive(_this, '$qLoading', false);
+              Vue.util.defineReactive(_this, '$qActivity', false);
               Vue.util.defineReactive(_this, '$qs', {});
               var createQuery = flow(
               /**
@@ -194,7 +195,8 @@ var vdata = function (store) {
                 return isPlainObject(query) && query.value ? Q(query.value) : Q(query);
               }), Q.all);
               _this.$vdata = throttle(function () {
-                _this.$qLoading = true;
+                _this.$qLoading = force;
+                _this.$qActivity = true;
                 createQuery({ store: store, force: force }).then(flow(
                 /**
                  * remap resolved values to keys
@@ -217,21 +219,27 @@ var vdata = function (store) {
                   if (!equals(qs)(_this.$qs)) {
                     console.log('$vdata: (previous)', _this.$qs);
                     console.log('$vdata: (next)', qs);
-                    force = false;
                     _this.$qs = qs;
                     _this.$forceUpdate();
                     forceUpdate(_this.$children);
                   }
-                  _this.$qLoading = false;
+                  _this.$qLoading = force = false;
+                  _this.$qActivity = false;
                 })).catch(console.log);
               }, wait, { leading: true });
               map(function (event) {
                 return store.on(event, _this.$vdata);
               })(changeEvents);
+              console.log('$vdata: ready. updates are throttled to one every ' + wait + 'ms');
             })();
           }
         },
         created: function created() {
+          if (this.$vdata) {
+            this.$vdata();
+          }
+        },
+        beforeUpdate: function beforeUpdate() {
           if (this.$vdata) {
             this.$vdata();
           }

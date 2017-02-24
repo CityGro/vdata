@@ -42,6 +42,7 @@ export default function (store) {
             let force = true
             Vue.util.defineReactive(this, '$q', {})
             Vue.util.defineReactive(this, '$qLoading', false)
+            Vue.util.defineReactive(this, '$qActivity', false)
             Vue.util.defineReactive(this, '$qs', {})
             const createQuery = flow(
               /**
@@ -73,7 +74,8 @@ export default function (store) {
                Q.all
             )
             this.$vdata = throttle(() => {
-              this.$qLoading = true
+              this.$qLoading = force
+              this.$qActivity = true
               createQuery({store, force}).then(flow(
                 /**
                  * remap resolved values to keys
@@ -91,18 +93,24 @@ export default function (store) {
                   if (!equals(qs)(this.$qs)) {
                     console.log('$vdata: (previous)', this.$qs)
                     console.log('$vdata: (next)', qs)
-                    force = false
                     this.$qs = qs
                     this.$forceUpdate()
                     forceUpdate(this.$children)
                   }
-                  this.$qLoading = false
+                  this.$qLoading = force = false
+                  this.$qActivity = false
                 })).catch(console.log)
             }, wait, {leading: true})
             map((event) => store.on(event, this.$vdata))(changeEvents)
+            console.log(`$vdata: ready. updates are throttled to one every ${wait}ms`)
           }
         },
         created () {
+          if (this.$vdata) {
+            this.$vdata()
+          }
+        },
+        beforeUpdate () {
           if (this.$vdata) {
             this.$vdata()
           }
