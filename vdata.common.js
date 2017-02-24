@@ -11,6 +11,8 @@ var entries = _interopDefault(require('lodash/fp/entries'));
 var map = _interopDefault(require('lodash/fp/map'));
 var fromPairs = _interopDefault(require('lodash/fp/fromPairs'));
 var keys = _interopDefault(require('lodash/fp/keys'));
+var throttle = _interopDefault(require('lodash/throttle'));
+var isPlainObject = _interopDefault(require('lodash/isPlainObject'));
 var Q = _interopDefault(require('q'));
 var property = _interopDefault(require('lodash/fp/property'));
 
@@ -122,12 +124,16 @@ var forceUpdate = each(function (child) {
   }, 0);
 });
 
-var changeEvents = ['change', 'remove'];
+var changeEvents = ['add', 'change', 'remove'];
 
 var vdata = function (store) {
   return {
-    install: function install(Vue) {
+    install: function install(Vue, options) {
       Vue.prototype.$store = store;
+      if (!options || options.wait === undefined) {
+        options = { wait: 150 };
+      }
+      var wait = options.wait;
       Vue.mixin({
         /**
          * bind the store to your vue container.
@@ -146,6 +152,7 @@ var vdata = function (store) {
           if (this.$options.query) {
             (function () {
               var self = _this;
+              var force = true;
               Vue.util.defineReactive(_this, '$q', {});
               Vue.util.defineReactive(_this, '$qLoading', false);
               Vue.util.defineReactive(_this, '$qs', {});
@@ -153,15 +160,25 @@ var vdata = function (store) {
               /**
                * create a new query object
                */
-              _this.$options.query.bind(self),
+              function (_ref) {
+                var store = _ref.store,
+                    force = _ref.force;
+
+                var query = _this.$options.query.bind(self);
+                return query(store, force);
+              },
               /**
                * create placeholder fields for queries
                */
               function (q) {
                 _this.$q = q;
                 if (!keys(_this.$qs).length) {
-                  _this.$qs = flow(keys, map(function (field) {
-                    return [field, {}];
+                  _this.$qs = flow(entries, map(function (_ref2) {
+                    var _ref3 = slicedToArray(_ref2, 2),
+                        field = _ref3[0],
+                        query = _ref3[1];
+
+                    return isPlainObject(query) && query.type ? [field, query.default] : [field, []];
                   }), fromPairs)(q);
                 }
                 return q;
@@ -169,25 +186,25 @@ var vdata = function (store) {
               /**
                * ensure that all queries are promises
                */
-              map(function (_ref) {
-                var _ref2 = slicedToArray(_ref, 2),
-                    field = _ref2[0],
-                    query = _ref2[1];
+              map(function (_ref4) {
+                var _ref5 = slicedToArray(_ref4, 2),
+                    field = _ref5[0],
+                    query = _ref5[1];
 
-                return Q(query);
+                return isPlainObject(query) && query.value ? Q(query.value) : Q(query);
               }), Q.all);
-              _this.$vdata = function () {
+              _this.$vdata = throttle(function () {
                 _this.$qLoading = true;
-                createQuery(store).then(flow(
+                createQuery({ store: store, force: force }).then(flow(
                 /**
                  * remap resolved values to keys
                  */
                 function (q) {
                   var fields = keys(_this.$qs);
-                  var remap = flow(entries, map(function (_ref3) {
-                    var _ref4 = slicedToArray(_ref3, 2),
-                        i = _ref4[0],
-                        value = _ref4[1];
+                  var remap = flow(entries, map(function (_ref6) {
+                    var _ref7 = slicedToArray(_ref6, 2),
+                        i = _ref7[0],
+                        value = _ref7[1];
 
                     return [fields[i], value];
                   }));
@@ -200,13 +217,14 @@ var vdata = function (store) {
                   if (!equals(qs)(_this.$qs)) {
                     console.log('$vdata: (previous)', _this.$qs);
                     console.log('$vdata: (next)', qs);
+                    force = false;
                     _this.$qs = qs;
                     _this.$forceUpdate();
                     forceUpdate(_this.$children);
                   }
                   _this.$qLoading = false;
                 })).catch(console.log);
-              };
+              }, wait, { leading: true });
               map(function (event) {
                 return store.on(event, _this.$vdata);
               })(changeEvents);

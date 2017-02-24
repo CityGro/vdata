@@ -29,12 +29,16 @@ User.inject({id: 1, name: 'tokyo_jesus'})
 Vue.use(vdata(store))
 
 const vm = new Vue({
-  query: (store) => ({
-    count: store.get('user', 1)
+  query: (store, force) => ({
+    user: {
+      default: {},
+      value: store.get('user', 1, {force})
+    },
+    posts: store.findAll('post', {user: 1})
   }),
   methods: {
     rename (to) {
-      this.$qs.user.name = 'xj9'
+      this.$qs.user.name = to
       return this.$qs.user.save()
     }
   }
@@ -47,14 +51,19 @@ vm.rename('xj9').then((user) => {
 
 ## options
 
-### `vm.$options.query(store: JSData.DataStore): {[key: string]: Promise | any}`
+### `vm.$options.query(store: JSData.DataStore, force: Boolean): {[key: string]: any}`
 
 this function is used by `vm.$@citygro/vdata()` to populate `$vm.$qs` and update it whenever
 the store changes.
 
-queries are resolved using `Q.all()`, nested objects will not be resolved. a `Promise`
+queries are resolved using `Q.all()`, arbitrary nested objects will not be resolved. a `Promise`
 can *return* nested values, but `@citygro/vdata` will only resolve the promises referenced in
 top-level keys.
+
+a query can also be expressed as a plain object with the keys: `default` and `value`. these
+allow you additional control over what is injected into your component.
+
+`force` is true for the initial query and false for all subsequent updates. 
 
 ## properties
 

@@ -5,6 +5,8 @@ import entries from 'lodash/fp/entries'
 import map from 'lodash/fp/map'
 import fromPairs from 'lodash/fp/fromPairs'
 import keys from 'lodash/fp/keys'
+import throttle from 'lodash/throttle'
+import isPlainObject from 'lodash/isPlainObject'
 import Q from 'q'
 
 const forceUpdate = each((child) => setTimeout(() => {
@@ -12,12 +14,16 @@ const forceUpdate = each((child) => setTimeout(() => {
   forceUpdate(child.$children)
 }, 0))
 
-const changeEvents = ['change', 'remove']
+const changeEvents = ['add', 'change', 'remove']
 
 export default function (store) {
   return {
-    install (Vue) {
+    install (Vue, options) {
       Vue.prototype.$store = store
+      if (!options || options.wait === undefined) {
+        options = {wait: 150}
+      }
+      const wait = options.wait
       Vue.mixin({
         /**
          * bind the store to your vue container.
@@ -33,6 +39,7 @@ export default function (store) {
         beforeCreate () {
           if (this.$options.query) {
             const self = this
+            let force = true
             Vue.util.defineReactive(this, '$q', {})
             Vue.util.defineReactive(this, '$qLoading', false)
             Vue.util.defineReactive(this, '$qs', {})
@@ -40,14 +47,21 @@ export default function (store) {
               /**
                * create a new query object
                */
-              this.$options.query.bind(self),
+              ({store, force}) => {
+                const query = this.$options.query.bind(self)
+                return query(store, force)
+              },
               /**
                * create placeholder fields for queries
                */
               (q) => {
                 this.$q = q
                 if (!keys(this.$qs).length) {
-                  this.$qs = flow(keys, map((field) => [field, {}]), fromPairs)(q)
+                  this.$qs = flow(
+                    entries,
+                    map(([field, query]) => (isPlainObject(query) && query.type) ? [field, query.default] : [field, []]),
+                    fromPairs
+                  )(q)
                 }
                 return q
               },
@@ -55,12 +69,12 @@ export default function (store) {
               /**
                * ensure that all queries are promises
                */
-               map(([field, query]) => Q(query)),
+               map(([field, query]) => (isPlainObject(query) && query.value) ? Q(query.value) : Q(query)),
                Q.all
             )
-            this.$vdata = () => {
+            this.$vdata = throttle(() => {
               this.$qLoading = true
-              createQuery(store).then(flow(
+              createQuery({store, force}).then(flow(
                 /**
                  * remap resolved values to keys
                  */
@@ -77,13 +91,14 @@ export default function (store) {
                   if (!equals(qs)(this.$qs)) {
                     console.log('$vdata: (previous)', this.$qs)
                     console.log('$vdata: (next)', qs)
+                    force = false
                     this.$qs = qs
                     this.$forceUpdate()
                     forceUpdate(this.$children)
                   }
                   this.$qLoading = false
                 })).catch(console.log)
-            }
+            }, wait, {leading: true})
             map((event) => store.on(event, this.$vdata))(changeEvents)
           }
         },
