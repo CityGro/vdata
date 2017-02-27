@@ -12,7 +12,7 @@ var map = _interopDefault(require('lodash/fp/map'));
 var fromPairs = _interopDefault(require('lodash/fp/fromPairs'));
 var keys = _interopDefault(require('lodash/fp/keys'));
 var throttle = _interopDefault(require('lodash/throttle'));
-var isPlainObject = _interopDefault(require('lodash/isPlainObject'));
+var isObject = _interopDefault(require('lodash/isObject'));
 var Q = _interopDefault(require('q'));
 var property = _interopDefault(require('lodash/fp/property'));
 
@@ -179,7 +179,7 @@ var vdata = function (store) {
                         field = _ref3[0],
                         query = _ref3[1];
 
-                    return isPlainObject(query) && query.type ? [field, query.default] : [field, []];
+                    return isObject(query) && query.default ? [field, query.default] : [field, []];
                   }), fromPairs)(q);
                 }
                 return q;
@@ -192,7 +192,7 @@ var vdata = function (store) {
                     field = _ref5[0],
                     query = _ref5[1];
 
-                return isPlainObject(query) && query.value ? Q(query.value) : Q(query);
+                return isObject(query) && query.value ? Q(query.value) : Q(query);
               }), Q.all);
               _this.$vdata = throttle(function () {
                 _this.$qLoading = force;
