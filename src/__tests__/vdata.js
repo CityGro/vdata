@@ -77,13 +77,16 @@ describe('Vdata', () => {
       },
       query (store) {
         return {
-          user: store.find('user', 1),
+          user: {
+            default: {name: 'anon'},
+            value: store.find('user', 1)
+          },
           comment: store.filter('comment', {userId: 1})
         }
       },
       methods: {
         rename (to) {
-          return this.$q.user.then((user) => {
+          return this.$q.user.value.then((user) => {
             user.name = to
             return Promise.resolve(user)
           })
@@ -94,9 +97,9 @@ describe('Vdata', () => {
     expect(vm.$options.query).toBeDefined()
     expect(vm.$qs).toBeDefined()
     return vm.$nextTick().then(() => {
-      expect(vm.$qs.user).toBeDefined()
+      expect(vm.$qs.user).toEqual({name: 'anon'})
       return Promise.all([
-        vm.$q.user.then((user) => {
+        vm.$q.user.value.then((user) => {
           return Promise.all([
             expect(user).toBeDefined(),
             expect(user.name).toBe('omanizer')

@@ -6,7 +6,7 @@ import map from 'lodash/fp/map'
 import fromPairs from 'lodash/fp/fromPairs'
 import keys from 'lodash/fp/keys'
 import throttle from 'lodash/throttle'
-import isPlainObject from 'lodash/isPlainObject'
+import isObject from 'lodash/isObject'
 import Q from 'q'
 
 const forceUpdate = each((child) => setTimeout(() => {
@@ -60,7 +60,7 @@ export default function (store) {
                 if (!keys(this.$qs).length) {
                   this.$qs = flow(
                     entries,
-                    map(([field, query]) => (isPlainObject(query) && query.type) ? [field, query.default] : [field, []]),
+                    map(([field, query]) => (isObject(query) && query.default) ? [field, query.default] : [field, []]),
                     fromPairs
                   )(q)
                 }
@@ -70,7 +70,7 @@ export default function (store) {
               /**
                * ensure that all queries are promises
                */
-               map(([field, query]) => (isPlainObject(query) && query.value) ? Q(query.value) : Q(query)),
+               map(([field, query]) => (isObject(query) && query.value) ? Q(query.value) : Q(query)),
                Q.all
             )
             this.$vdata = throttle(() => {
