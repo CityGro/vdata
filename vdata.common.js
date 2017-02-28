@@ -165,7 +165,7 @@ var vdata = function (store) {
                 var store = _ref.store,
                     force = _ref.force;
 
-                var query = _this.$options.query.bind(self);
+                var query = self.$options.query.bind(self);
                 return query(store, force);
               },
               /**
@@ -173,7 +173,7 @@ var vdata = function (store) {
                */
               function (q) {
                 _this.$q = q;
-                if (!keys(_this.$qs).length) {
+                if (!keys(self.$qs).length) {
                   _this.$qs = flow(entries, map(function (_ref2) {
                     var _ref3 = slicedToArray(_ref2, 2),
                         field = _ref3[0],
@@ -195,14 +195,14 @@ var vdata = function (store) {
                 return isObject(query) && query.value ? Q(query.value) : Q(query);
               }), Q.all);
               _this.$vdata = throttle(function () {
-                _this.$qLoading = force;
-                _this.$qActivity = true;
+                self.$qLoading = force;
+                self.$qActivity = true;
                 createQuery({ store: store, force: force }).then(flow(
                 /**
                  * remap resolved values to keys
                  */
                 function (q) {
-                  var fields = keys(_this.$qs);
+                  var fields = keys(self.$qs);
                   var remap = flow(entries, map(function (_ref6) {
                     var _ref7 = slicedToArray(_ref6, 2),
                         i = _ref7[0],
@@ -216,15 +216,15 @@ var vdata = function (store) {
                  * inject resolved query data into component, update component subtree
                  */
                 function (qs) {
-                  if (!equals(qs)(_this.$qs)) {
-                    console.log('$vdata: (previous)', _this.$qs);
+                  if (!equals(qs)(self.$qs)) {
+                    console.log('$vdata: (previous)', self.$qs);
                     console.log('$vdata: (next)', qs);
-                    _this.$qs = qs;
-                    _this.$forceUpdate();
-                    forceUpdate(_this.$children);
+                    self.$qs = qs;
+                    self.$forceUpdate();
+                    forceUpdate(self.$children);
                   }
-                  _this.$qLoading = force = false;
-                  _this.$qActivity = false;
+                  self.$qLoading = force = false;
+                  self.$qActivity = false;
                 })).catch(console.log);
               }, wait, { leading: true });
               map(function (event) {

@@ -38,7 +38,7 @@ export default function (store) {
          */
         beforeCreate () {
           if (this.$options.query) {
-            const self = this
+            let self = this
             let force = true
             Vue.util.defineReactive(this, '$q', {})
             Vue.util.defineReactive(this, '$qLoading', false)
@@ -49,7 +49,7 @@ export default function (store) {
                * create a new query object
                */
               ({store, force}) => {
-                const query = this.$options.query.bind(self)
+                const query = self.$options.query.bind(self)
                 return query(store, force)
               },
               /**
@@ -57,7 +57,7 @@ export default function (store) {
                */
               (q) => {
                 this.$q = q
-                if (!keys(this.$qs).length) {
+                if (!keys(self.$qs).length) {
                   this.$qs = flow(
                     entries,
                     map(([field, query]) => (isObject(query) && query.default) ? [field, query.default] : [field, []]),
@@ -74,14 +74,14 @@ export default function (store) {
                Q.all
             )
             this.$vdata = throttle(() => {
-              this.$qLoading = force
-              this.$qActivity = true
+              self.$qLoading = force
+              self.$qActivity = true
               createQuery({store, force}).then(flow(
                 /**
                  * remap resolved values to keys
                  */
                 (q) => {
-                  const fields = keys(this.$qs)
+                  const fields = keys(self.$qs)
                   const remap = flow(entries, map(([i, value]) => [fields[i], value]))
                   return remap(q)
                 },
@@ -90,15 +90,15 @@ export default function (store) {
                  * inject resolved query data into component, update component subtree
                  */
                 (qs) => {
-                  if (!equals(qs)(this.$qs)) {
-                    console.log('$vdata: (previous)', this.$qs)
+                  if (!equals(qs)(self.$qs)) {
+                    console.log('$vdata: (previous)', self.$qs)
                     console.log('$vdata: (next)', qs)
-                    this.$qs = qs
-                    this.$forceUpdate()
-                    forceUpdate(this.$children)
+                    self.$qs = qs
+                    self.$forceUpdate()
+                    forceUpdate(self.$children)
                   }
-                  this.$qLoading = force = false
-                  this.$qActivity = false
+                  self.$qLoading = force = false
+                  self.$qActivity = false
                 })).catch(console.log)
             }, wait, {leading: true})
             map((event) => store.on(event, this.$vdata))(changeEvents)
