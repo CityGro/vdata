@@ -1,5 +1,5 @@
 import each from 'lodash/fp/each'
-import equals from 'lodash/fp/equals'
+import isEqual from 'lodash/isEqual'
 import flow from 'lodash/fp/flow'
 import entries from 'lodash/fp/entries'
 import map from 'lodash/fp/map'
@@ -101,7 +101,7 @@ export default function (store) {
               }),
               Q.all
             )
-            this.$vdata = throttle(() => {
+            const handler = () => {
               self.$qLoading = force
               self.$qActivity = true
               createQuery({store, force}).then(flow(
@@ -125,7 +125,7 @@ export default function (store) {
                  * inject resolved query data into component, update component subtree
                  */
                 (qs) => {
-                  if (!equals(qs)(self.$qs)) {
+                  if (!isEqual(qs, self.$qs)) {
                     console.log(`$vdata[${self._uid}]: (previous)`, self.$qs)
                     console.log(`$vdata[${self._uid}]: (next)`, qs)
                     self.$qs = qs
@@ -135,8 +135,9 @@ export default function (store) {
                   self.$qLoading = force = false
                   self.$qActivity = false
                 })).catch((err) => console.error(`$vdata[${self._uid}]:`, err))
-            }, options.wait, {leading: true})
-            this.$vdata()
+            }
+            handler()
+            this.$vdata = throttle(handler, options.wait, {leading: true})
             map((event) => store.on(event, this.$vdata))(changeEvents)
             console.log(`$vdata[${self._uid}]: ready. updates are throttled to one every ${options.wait}ms`)
           }

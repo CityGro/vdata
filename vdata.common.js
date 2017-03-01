@@ -5,7 +5,7 @@ Object.defineProperty(exports, '__esModule', { value: true });
 function _interopDefault (ex) { return (ex && (typeof ex === 'object') && 'default' in ex) ? ex['default'] : ex; }
 
 var each = _interopDefault(require('lodash/fp/each'));
-var equals = _interopDefault(require('lodash/fp/equals'));
+var isEqual = _interopDefault(require('lodash/isEqual'));
 var flow = _interopDefault(require('lodash/fp/flow'));
 var entries = _interopDefault(require('lodash/fp/entries'));
 var map = _interopDefault(require('lodash/fp/map'));
@@ -221,7 +221,7 @@ var vdata = function (store) {
                   return Q(query);
                 }
               }), Q.all);
-              _this.$vdata = throttle(function () {
+              var handler = function handler() {
                 self.$qLoading = force;
                 self.$qActivity = true;
                 createQuery({ store: store, force: force }).then(flow(
@@ -247,7 +247,7 @@ var vdata = function (store) {
                  * inject resolved query data into component, update component subtree
                  */
                 function (qs) {
-                  if (!equals(qs)(self.$qs)) {
+                  if (!isEqual(qs, self.$qs)) {
                     console.log('$vdata[' + self._uid + ']: (previous)', self.$qs);
                     console.log('$vdata[' + self._uid + ']: (next)', qs);
                     self.$qs = qs;
@@ -259,8 +259,9 @@ var vdata = function (store) {
                 })).catch(function (err) {
                   return console.error('$vdata[' + self._uid + ']:', err);
                 });
-              }, options.wait, { leading: true });
-              _this.$vdata();
+              };
+              handler();
+              _this.$vdata = throttle(handler, options.wait, { leading: true });
               map(function (event) {
                 return store.on(event, _this.$vdata);
               })(changeEvents);

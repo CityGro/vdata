@@ -10,6 +10,31 @@ ds.defineMapper('users')
 
 Vue.use(vdata(ds))
 
+const Ed = Vue.component('ed', {
+  props: {
+    value: {
+      type: Object,
+      required: true
+    }
+  },
+  render (h) {
+    let self = this
+    return h('input', {
+      domProps: {
+        value: self.value.name
+      },
+      class: {
+        'form-control': true
+      },
+      on: {
+        input (event) {
+          self.$emit('input', event)
+        }
+      }
+    })
+  }
+})
+
 const Ax = Vue.component('ax', {
   props: {
     value: {
@@ -41,16 +66,14 @@ const Ax = Vue.component('ax', {
         'has-error': !self.$q.user.isValid()
       }
     }, [
-      h('input', {
-        domProps: {
-          value: self.$qs.user.name
-        },
-        class: {
-          'form-control': true
+      h(Ed, {
+        props: {
+          value: self.$qs.user
         },
         on: {
           input (event) {
             self.$qs.user.name = event.target.value
+            self.$qs.user.commit()
           }
         }
       })
@@ -89,14 +112,6 @@ new Vue({
     return {
       userId: 1
     }
-  },
-  mounted () {
-    map([
-      {name: 'ann'},
-      {name: 'ramona'}
-    ], (user) => {
-      this.$store.create('users', user)
-    })
   },
   render (h) {
     let self = this
