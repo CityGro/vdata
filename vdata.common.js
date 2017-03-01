@@ -14,6 +14,7 @@ var keys = _interopDefault(require('lodash/fp/keys'));
 var throttle = _interopDefault(require('lodash/throttle'));
 var isObject = _interopDefault(require('lodash/isObject'));
 var Q = _interopDefault(require('q'));
+var validate = _interopDefault(require('validate.js'));
 var property = _interopDefault(require('lodash/fp/property'));
 
 var get = function get(object, property$$1, receiver) {
@@ -130,10 +131,15 @@ var vdata = function (store) {
   return {
     install: function install(Vue, options) {
       Vue.prototype.$store = store;
-      if (!options || options.wait === undefined) {
-        options = { wait: 150 };
+      if (options === undefined) {
+        options = {};
       }
-      var wait = options.wait;
+      if (options.wait === undefined) {
+        options.wait = 150;
+      }
+      if (options.validators === undefined) {
+        options.validators = {};
+      }
       Vue.mixin({
         /**
          * bind the store to your vue container.
@@ -157,13 +163,30 @@ var vdata = function (store) {
               Vue.util.defineReactive(_this, '$qLoading', false);
               Vue.util.defineReactive(_this, '$qActivity', false);
               Vue.util.defineReactive(_this, '$qs', {});
+              var bindIsValid = flow(entries, map(function (_ref) {
+                var _ref2 = slicedToArray(_ref, 2),
+                    field = _ref2[0],
+                    query = _ref2[1];
+
+                if (query.constraints === undefined) {
+                  return [field, query];
+                } else {
+                  query.validate = function () {
+                    return validate(self.$qs[field], query.constraints);
+                  };
+                  query.isValid = function () {
+                    return query.validate() === undefined;
+                  };
+                  return [field, query];
+                }
+              }), fromPairs);
               var createQuery = flow(
               /**
                * create a new query object
                */
-              function (_ref) {
-                var store = _ref.store,
-                    force = _ref.force;
+              function (_ref3) {
+                var store = _ref3.store,
+                    force = _ref3.force;
 
                 var query = self.$options.query.bind(self);
                 return query(store, force);
@@ -172,27 +195,31 @@ var vdata = function (store) {
                * create placeholder fields for queries
                */
               function (q) {
-                _this.$q = q;
                 if (!keys(self.$qs).length) {
-                  _this.$qs = flow(entries, map(function (_ref2) {
-                    var _ref3 = slicedToArray(_ref2, 2),
-                        field = _ref3[0],
-                        query = _ref3[1];
+                  self.$qs = flow(entries, map(function (_ref4) {
+                    var _ref5 = slicedToArray(_ref4, 2),
+                        field = _ref5[0],
+                        query = _ref5[1];
 
-                    return isObject(query) && query.default ? [field, query.default] : [field, []];
+                    return isObject(query) && query.default !== undefined ? [field, query.default] : [field, []];
                   }), fromPairs)(q);
                 }
-                return q;
+                self.$q = bindIsValid(q);
+                return self.$q;
               }, entries,
               /**
                * ensure that all queries are promises
                */
-              map(function (_ref4) {
-                var _ref5 = slicedToArray(_ref4, 2),
-                    field = _ref5[0],
-                    query = _ref5[1];
+              map(function (_ref6) {
+                var _ref7 = slicedToArray(_ref6, 2),
+                    field = _ref7[0],
+                    query = _ref7[1];
 
-                return isObject(query) && query.value ? Q(query.value) : Q(query);
+                if (isObject(query) && query.value !== undefined) {
+                  return Q(query.value);
+                } else {
+                  return Q(query);
+                }
               }), Q.all);
               _this.$vdata = throttle(function () {
                 self.$qLoading = force;
@@ -202,35 +229,42 @@ var vdata = function (store) {
                  * remap resolved values to keys
                  */
                 function (q) {
-                  var fields = keys(self.$qs);
-                  var remap = flow(entries, map(function (_ref6) {
-                    var _ref7 = slicedToArray(_ref6, 2),
-                        i = _ref7[0],
-                        value = _ref7[1];
+                  var fields = keys(self.$q);
+                  return flow(entries, // enables us to use `[i, value]` in the following `map()`
+                  map(function (_ref8) {
+                    var _ref9 = slicedToArray(_ref8, 2),
+                        i = _ref9[0],
+                        value = _ref9[1];
 
-                    return [fields[i], value];
-                  }));
-                  return remap(q);
+                    return [
+                    // key
+                    fields[i],
+                    // value
+                    value === undefined ? self.$q[fields[i]].default : value];
+                  }))(q);
                 }, fromPairs,
                 /**
                  * inject resolved query data into component, update component subtree
                  */
                 function (qs) {
                   if (!equals(qs)(self.$qs)) {
-                    console.log('$vdata: (previous)', self.$qs);
-                    console.log('$vdata: (next)', qs);
+                    console.log('$vdata[' + self._uid + ']: (previous)', self.$qs);
+                    console.log('$vdata[' + self._uid + ']: (next)', qs);
                     self.$qs = qs;
                     self.$forceUpdate();
                     forceUpdate(self.$children);
                   }
                   self.$qLoading = force = false;
                   self.$qActivity = false;
-                })).catch(console.log);
-              }, wait, { leading: true });
+                })).catch(function (err) {
+                  return console.error('$vdata[' + self._uid + ']:', err);
+                });
+              }, options.wait, { leading: true });
+              _this.$vdata();
               map(function (event) {
                 return store.on(event, _this.$vdata);
               })(changeEvents);
-              console.log('$vdata: ready. updates are throttled to one every ' + wait + 'ms');
+              console.log('$vdata[' + self._uid + ']: ready. updates are throttled to one every ' + options.wait + 'ms');
             })();
           }
         },

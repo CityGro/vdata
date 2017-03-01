@@ -9,15 +9,14 @@ module.exports = {
     library: 'vdata'
   },
   resolve: {
-    extensions: ['', '.js']
+    extensions: ['.js']
   },
   module: {
     loaders: [
-      { test: /\.js$/, loaders: ['babel'], exclude: [/node_modules/] }
+      { test: /\.js$/, loaders: ['babel-loader'], exclude: [/node_modules/] }
     ]
   },
   plugins: [
-    new webpack.optimize.OccurenceOrderPlugin(),
     new webpack.DefinePlugin({
       'process.env.NODE_ENV': JSON.stringify('production')
     }),

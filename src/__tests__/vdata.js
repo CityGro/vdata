@@ -6,22 +6,23 @@ describe('Vdata', () => {
   let vdata
   let Vue
   let JSData
-  let DSHttpAdapter
+  let Adapter
   let store
-  let User
-  let Comment
 
   beforeEach(() => {
     jest.resetModules()
     document.body.innerHTML = '<div id="root"></div>'
+    require('localstorage-polyfill')
     vdata = require('../vdata').default
     Vue = require('vue')
     JSData = require('js-data')
-    store = new JSData.DS()
-    User = store.defineResource('user')
-    Comment = store.defineResource('comment')
-    User.inject({id: 1, name: 'omanizer'})
-    Comment.inject({id: 1, userId: 1})
+    Adapter = require('js-data-localstorage').LocalStorageAdapter
+    store = new JSData.DataStore()
+    store.registerAdapter('ls', new Adapter(), {default: true})
+    store.defineMapper('users')
+    store.defineMapper('comments')
+    store.create('users', {id: 1, name: 'omanizer'})
+    store.create('comments', {id: 1, userId: 1})
     Vue.use(vdata(store))
   })
   describe('utils/waitFor', () => {
@@ -43,15 +44,16 @@ describe('Vdata', () => {
     Vue.config.isUnknownElement = () => false
     const Babby = Vue.component('babby', {
       render (createElement) {
-        return createElement('p', this.user.name || '')
+        return createElement('p', this.user.name)
       },
       props: ['user']
     })
     const Child = Vue.component('child', {
       render (createElement) {
+        const self = this
         return createElement(Babby, {
           props: {
-            user: this.user
+            user: self.user
           }
         })
       },
@@ -59,9 +61,10 @@ describe('Vdata', () => {
     })
     const Parent = Vue.component('parent', {
       render (createElement) {
+        const self = this
         return createElement(Child, {
           props: {
-            user: this.user
+            user: self.user
           }
         })
       },
@@ -69,9 +72,10 @@ describe('Vdata', () => {
     })
     const vm = new Vue({
       render (createElement) {
+        const self = this
         return createElement(Parent, {
           props: {
-            user: this.$qs.user
+            user: self.$qs.user
           }
         })
       },
@@ -79,38 +83,44 @@ describe('Vdata', () => {
         return {
           user: {
             default: {name: 'anon'},
-            value: store.find('user', 1)
+            value: store.find('users', 1),
+            constraints: {
+              name: {
+                presence: true
+              }
+            }
           },
-          comment: store.filter('comment', {userId: 1})
+          comment: store.filter('comments', {userId: 1})
         }
       },
       methods: {
         rename (to) {
-          return this.$q.user.value.then((user) => {
-            user.name = to
-            return Promise.resolve(user)
+          return new Promise((resolve) => {
+            this.$qs.user.name = to
+            resolve(this.$qs.user)
           })
         }
       }
     }).$mount('#root')
-    expect(vm.$children).toHaveLength(1)
-    expect(vm.$options.query).toBeDefined()
-    expect(vm.$qs).toBeDefined()
-    return vm.$nextTick().then(() => {
-      expect(vm.$qs.user).toEqual({name: 'anon'})
-      return Promise.all([
-        vm.$q.user.value.then((user) => {
-          return Promise.all([
-            expect(user).toBeDefined(),
-            expect(user.name).toBe('omanizer')
-          ])
-        }),
-        vm.rename('xj9').then((user) => {
-          return Promise.all([
-            expect(user.name).toBe('xj9')
-          ])
-        })
-      ])
-    })
+    return Promise.all([
+      expect(vm.$children).toHaveLength(1),
+      expect(vm.$options.query).toBeDefined(),
+      expect(vm.$qs).toBeDefined(),
+      expect(vm.$q.user.default).toEqual({name: 'anon'}),
+      expect(vm.$q.user.isValid).toBeDefined(),
+      vm.$nextTick().then(() => {
+        return Promise.all([
+          Promise.all([
+            expect(vm.$qs.user).toBeDefined(),
+            expect(vm.$qs.user.name).toBe('anon')
+          ]),
+          vm.rename('xj9').then((user) => {
+            return Promise.all([
+              expect(user.name).toBe('xj9')
+            ])
+          })
+        ])
+      })
+    ])
   })
 })

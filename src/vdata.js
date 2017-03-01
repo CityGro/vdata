@@ -7,7 +7,9 @@ import fromPairs from 'lodash/fp/fromPairs'
 import keys from 'lodash/fp/keys'
 import throttle from 'lodash/throttle'
 import isObject from 'lodash/isObject'
+
 import Q from 'q'
+import validate from 'validate.js'
 
 const forceUpdate = each((child) => setTimeout(() => {
   child.$forceUpdate()
@@ -20,10 +22,15 @@ export default function (store) {
   return {
     install (Vue, options) {
       Vue.prototype.$store = store
-      if (!options || options.wait === undefined) {
-        options = {wait: 150}
+      if (options === undefined) {
+        options = {}
       }
-      const wait = options.wait
+      if (options.wait === undefined) {
+        options.wait = 150
+      }
+      if (options.validators === undefined) {
+        options.validators = {}
+      }
       Vue.mixin({
         /**
          * bind the store to your vue container.
@@ -44,6 +51,21 @@ export default function (store) {
             Vue.util.defineReactive(this, '$qLoading', false)
             Vue.util.defineReactive(this, '$qActivity', false)
             Vue.util.defineReactive(this, '$qs', {})
+            const bindIsValid = flow(
+              entries,
+              map(([field, query]) => {
+                if (query.constraints === undefined) {
+                  return [field, query]
+                } else {
+                  query.validate = () => {
+                    return validate(self.$qs[field], query.constraints)
+                  }
+                  query.isValid = () => query.validate() === undefined
+                  return [field, query]
+                }
+              }),
+              fromPairs
+            )
             const createQuery = flow(
               /**
                * create a new query object
@@ -56,22 +78,28 @@ export default function (store) {
                * create placeholder fields for queries
                */
               (q) => {
-                this.$q = q
                 if (!keys(self.$qs).length) {
-                  this.$qs = flow(
+                  self.$qs = flow(
                     entries,
-                    map(([field, query]) => (isObject(query) && query.default) ? [field, query.default] : [field, []]),
+                    map(([field, query]) => (isObject(query) && query.default !== undefined) ? [field, query.default] : [field, []]),
                     fromPairs
                   )(q)
                 }
-                return q
+                self.$q = bindIsValid(q)
+                return self.$q
               },
               entries,
               /**
                * ensure that all queries are promises
                */
-               map(([field, query]) => (isObject(query) && query.value) ? Q(query.value) : Q(query)),
-               Q.all
+              map(([field, query]) => {
+                if (isObject(query) && query.value !== undefined) {
+                  return Q(query.value)
+                } else {
+                  return Q(query)
+                }
+              }),
+              Q.all
             )
             this.$vdata = throttle(() => {
               self.$qLoading = force
@@ -81,9 +109,16 @@ export default function (store) {
                  * remap resolved values to keys
                  */
                 (q) => {
-                  const fields = keys(self.$qs)
-                  const remap = flow(entries, map(([i, value]) => [fields[i], value]))
-                  return remap(q)
+                  const fields = keys(self.$q)
+                  return flow(
+                    entries, // enables us to use `[i, value]` in the following `map()`
+                    map(([i, value]) => [
+                      // key
+                      fields[i],
+                      // value
+                      (value === undefined) ? self.$q[fields[i]].default : value
+                    ])
+                  )(q)
                 },
                 fromPairs,
                 /**
@@ -91,18 +126,19 @@ export default function (store) {
                  */
                 (qs) => {
                   if (!equals(qs)(self.$qs)) {
-                    console.log('$vdata: (previous)', self.$qs)
-                    console.log('$vdata: (next)', qs)
+                    console.log(`$vdata[${self._uid}]: (previous)`, self.$qs)
+                    console.log(`$vdata[${self._uid}]: (next)`, qs)
                     self.$qs = qs
                     self.$forceUpdate()
                     forceUpdate(self.$children)
                   }
                   self.$qLoading = force = false
                   self.$qActivity = false
-                })).catch(console.log)
-            }, wait, {leading: true})
+                })).catch((err) => console.error(`$vdata[${self._uid}]:`, err))
+            }, options.wait, {leading: true})
+            this.$vdata()
             map((event) => store.on(event, this.$vdata))(changeEvents)
-            console.log(`$vdata: ready. updates are throttled to one every ${wait}ms`)
+            console.log(`$vdata[${self._uid}]: ready. updates are throttled to one every ${options.wait}ms`)
           }
         },
         created () {

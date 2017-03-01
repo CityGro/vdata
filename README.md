@@ -21,7 +21,7 @@ import Vue from 'vue'
 import {vdata} from '@citygro/vdata'
 import JSData from 'js-data'
 
-const store = JSData.DS()
+const store = new JSData.DS()
 const User = store.defineResource('user')
 
 User.inject({id: 1, name: 'tokyo_jesus'})
@@ -31,8 +31,13 @@ Vue.use(vdata(store))
 const vm = new Vue({
   query: (store, force) => ({
     user: {
-      default: {},
-      value: store.get('user', 1, {force})
+      default: {name: null},
+      value: store.get('user', 1, {force}),
+      constraints: {
+        name: {
+          presence: true
+        }
+      }
     },
     posts: store.findAll('post', {user: 1})
   }),
@@ -53,17 +58,20 @@ vm.rename('xj9').then((user) => {
 
 ### `vm.$options.query(store: JSData.DataStore, force: Boolean): {[key: string]: any}`
 
-this function is used by `vm.$@citygro/vdata()` to populate `$vm.$qs` and update it whenever
+this function is used by `vm.$vdata()` to populate `vm.$qs` and update it whenever
 the store changes.
 
 queries are resolved using `Q.all()`, arbitrary nested objects will not be resolved. a `Promise`
 can *return* nested values, but `@citygro/vdata` will only resolve the promises referenced in
 top-level keys.
 
-a query can also be expressed as a plain object with the keys: `default` and `value`. these
-allow you additional control over what is injected into your component.
+a query can also be expressed as a plain object with the keys: `default`, `value`, and (optionally) `constraints`. these
+allow you additional control over what is injected into your component. constraints can be checked by calling
+`vm.$q[field].isValid()`. see [validate.js] docs.
 
 `force` is true for the initial query and false for all subsequent updates. 
+
+[validate.js]: https://validatejs.org/
 
 ## properties
 
