@@ -163,7 +163,7 @@ var vdata = function (store) {
               Vue.util.defineReactive(_this, '$qLoading', false);
               Vue.util.defineReactive(_this, '$qActivity', false);
               Vue.util.defineReactive(_this, '$qs', {});
-              var bindIsValid = flow(entries, map(function (_ref) {
+              var bindMeth = flow(entries, map(function (_ref) {
                 var _ref2 = slicedToArray(_ref, 2),
                     field = _ref2[0],
                     query = _ref2[1];
@@ -204,7 +204,7 @@ var vdata = function (store) {
                     return isObject(query) && query.default !== undefined ? [field, query.default] : [field, []];
                   }), fromPairs)(q);
                 }
-                self.$q = bindIsValid(q);
+                self.$q = bindMeth(q);
                 return self.$q;
               }, entries,
               /**
@@ -259,6 +259,10 @@ var vdata = function (store) {
                 })).catch(function (err) {
                   return console.error('$vdata[' + self._uid + ']:', err);
                 });
+              };
+              handler.commit = function (record) {
+                record.commit();
+                return record;
               };
               handler();
               _this.$vdata = throttle(handler, options.wait, { leading: true });

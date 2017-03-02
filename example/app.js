@@ -73,7 +73,7 @@ const Ax = Vue.component('ax', {
         on: {
           input (event) {
             self.$qs.user.name = event.target.value
-            self.$qs.user.commit()
+            self.$vdata.commit(self.$qs.user)
           }
         }
       })

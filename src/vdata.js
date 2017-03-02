@@ -51,7 +51,7 @@ export default function (store) {
             Vue.util.defineReactive(this, '$qLoading', false)
             Vue.util.defineReactive(this, '$qActivity', false)
             Vue.util.defineReactive(this, '$qs', {})
-            const bindIsValid = flow(
+            const bindMeth = flow(
               entries,
               map(([field, query]) => {
                 if (query.constraints === undefined) {
@@ -85,7 +85,7 @@ export default function (store) {
                     fromPairs
                   )(q)
                 }
-                self.$q = bindIsValid(q)
+                self.$q = bindMeth(q)
                 return self.$q
               },
               entries,
@@ -135,6 +135,10 @@ export default function (store) {
                   self.$qLoading = force = false
                   self.$qActivity = false
                 })).catch((err) => console.error(`$vdata[${self._uid}]:`, err))
+            }
+            handler.commit = (record) => {
+              record.commit()
+              return record
             }
             handler()
             this.$vdata = throttle(handler, options.wait, {leading: true})
