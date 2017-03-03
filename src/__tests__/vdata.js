@@ -25,20 +25,10 @@ describe('Vdata', () => {
     store.create('comments', {id: 1, userId: 1})
     Vue.use(vdata(store))
   })
-  describe('utils/waitFor', () => {
-    it('resolves when the value becomes truthy', () => {
-      const o = {value: false}
-      setTimeout(() => {
-        o.value = true
-      }, 50)
-      return waitFor('value', o).then((value) => {
-        return expect(value).toBe(true)
-      })
-    })
-  })
+
   it('makes the store directly accessible', () => {
     const vm = new Vue()
-    expect(vm.$store).toBeDefined()
+    return expect(vm.$store).toBeDefined()
   })
   it('can pass data via props', () => {
     Vue.config.isUnknownElement = () => false
@@ -75,44 +65,35 @@ describe('Vdata', () => {
         const self = this
         return createElement(Parent, {
           props: {
-            user: self.$qs.user
+            user: self.user
           }
         })
       },
-      query (store) {
+      data () {
         return {
-          user: {
-            default: {name: 'anon'},
-            value: store.find('users', 1),
-            constraints: {
-              name: {
-                presence: true
-              }
-            }
-          },
-          comment: store.filter('comments', {userId: 1})
+          user: {name: 'anon'}
         }
+      },
+      vdata (store) {
+        this.user = store.get('users', 1)
       },
       methods: {
         rename (to) {
           return new Promise((resolve) => {
-            this.$qs.user.name = to
-            resolve(this.$qs.user)
+            this.user.name = to
+            resolve(this.user)
           })
         }
       }
     }).$mount('#root')
     return Promise.all([
       expect(vm.$children).toHaveLength(1),
-      expect(vm.$options.query).toBeDefined(),
-      expect(vm.$qs).toBeDefined(),
-      expect(vm.$q.user.default).toEqual({name: 'anon'}),
-      expect(vm.$q.user.isValid).toBeDefined(),
+      expect(vm.$options.vdata).toBeDefined(),
       vm.$nextTick().then(() => {
         return Promise.all([
           Promise.all([
-            expect(vm.$qs.user).toBeDefined(),
-            expect(vm.$qs.user.name).toBe('anon')
+            expect(vm.user).toBeDefined(),
+            expect(vm.user.name).toBe('anon')
           ]),
           vm.rename('xj9').then((user) => {
             return Promise.all([

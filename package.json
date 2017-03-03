@@ -65,6 +65,8 @@
     "localstorage-polyfill": "^1.0.1",
     "rollup": "^0.36.3",
     "rollup-plugin-babel": "^2.3.9",
+    "rollup-plugin-commonjs": "^7.0.0",
+    "rollup-plugin-node-resolve": "^2.0.0",
     "should": "^11.1.1",
     "vue": "^2.1.4",
     "webpack": "^2.2.1",

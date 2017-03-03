@@ -1,15 +1,9 @@
 import each from 'lodash/fp/each'
-import isEqual from 'lodash/isEqual'
-import flow from 'lodash/fp/flow'
-import entries from 'lodash/fp/entries'
 import map from 'lodash/fp/map'
-import fromPairs from 'lodash/fp/fromPairs'
-import keys from 'lodash/fp/keys'
-import throttle from 'lodash/throttle'
-import isObject from 'lodash/isObject'
+import property from 'lodash/property'
+import concat from 'lodash/fp/concat'
 
-import Q from 'q'
-import validate from 'validate.js'
+import {AsyncDataMixin} from '../lib/vue-async-data/src/main'
 
 const forceUpdate = each((child) => setTimeout(() => {
   child.$forceUpdate()
@@ -18,11 +12,41 @@ const forceUpdate = each((child) => setTimeout(() => {
 
 const changeEvents = ['add', 'change', 'remove']
 
+/**
+ * create VData plugin
+ * @param store - js-data store
+ * @returns {{install: (function(*, options: object))}}
+ */
 export default function (store) {
   return {
     install (Vue, options) {
+      if (options === undefined) {
+        options = {
+          events: changeEvents
+        }
+      }
+
+      if (property('events')(options) === undefined) {
+        options.events = concat(options.events)(changeEvents)
+      }
+
       Vue.prototype.$store = store
+
+      Vue.mixin(AsyncDataMixin)
+
       Vue.mixin({
+        beforeCreate () {
+          if (property('$options.vdata')(this)) {
+            console.log(`vdata[${this._uid}]: ready. listening.`, options.events)
+            this._vdata_handler = (collection) => {
+              this.$options.vdata(store, collection)
+            }
+            map((event) => store.on(event, this._vdata_handler))(options.events)
+          }
+        },
+        beforeDestroy () {
+          map((event) => store.off(event, this._vdata_handler))(options.events)
+        }
       })
     }
   }
