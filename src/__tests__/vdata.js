@@ -1,8 +1,6 @@
 /* global describe, it, beforeEach, jest, expect, fit */
 
-import {waitFor} from '../utils'
-
-describe('Vdata', () => {
+describe('VData', () => {
   let vdata
   let Vue
   let JSData
@@ -26,82 +24,117 @@ describe('Vdata', () => {
     Vue.use(vdata(store))
   })
 
-  it('makes the store directly accessible', () => {
-    const vm = new Vue()
-    return expect(vm.$store).toBeDefined()
+  describe('vdata', () => {
+    it('makes the store directly accessible', () => {
+      const vm = new Vue()
+      return expect(vm.$store).toBeDefined()
+    })
+
+    it('can pass data via props', () => {
+      Vue.config.isUnknownElement = () => false
+      const Babby = Vue.component('babby', {
+        render (createElement) {
+          return createElement('p', this.user.name)
+        },
+        props: ['user']
+      })
+      const Child = Vue.component('child', {
+        render (h) {
+          const self = this
+          return h(Babby, {
+            props: {
+              user: self.user
+            }
+          })
+        },
+        props: ['user']
+      })
+      const Parent = Vue.component('parent', {
+        render (h) {
+          const self = this
+          return h(Child, {
+            props: {
+              user: self.user
+            }
+          })
+        },
+        props: ['user']
+      })
+      const vm = new Vue({
+        render (h) {
+          const self = this
+          return h(Parent, {
+            props: {
+              user: self.user
+            }
+          })
+        },
+        data () {
+          return {
+            user: {name: 'anon'}
+          }
+        },
+        vdata (store) {
+          this.user = store.get('users', 1)
+        },
+        methods: {
+          rename (to) {
+            return new Promise((resolve) => {
+              this.user.name = to
+              resolve(this.user)
+            })
+          }
+        }
+      }).$mount('#root')
+      return Promise.all([
+        expect(vm.$children).toHaveLength(1),
+        expect(vm.$options.vdata).toBeDefined(),
+        vm.$nextTick().then(() => {
+          return Promise.all([
+            Promise.all([
+              expect(vm.user).toBeDefined(),
+              expect(vm.user.name).toBe('anon')
+            ]),
+            vm.rename('xj9').then((user) => {
+              return Promise.all([
+                expect(user.name).toBe('xj9')
+              ])
+            })
+          ])
+        })
+      ])
+    })
   })
-  it('can pass data via props', () => {
-    Vue.config.isUnknownElement = () => false
-    const Babby = Vue.component('babby', {
-      render (createElement) {
-        return createElement('p', this.user.name)
-      },
-      props: ['user']
+
+  describe('asyncData', () => {
+    it('attaches the appropriate methods', () => {
+      const vm = new Vue()
+      return expect(vm.asyncReload).toBeDefined()
     })
-    const Child = Vue.component('child', {
-      render (createElement) {
-        const self = this
-        return createElement(Babby, {
-          props: {
-            user: self.user
+
+    it('indicates loading state for async data resources', () => {
+      const vm = new Vue({
+        render (h) {
+          const self = this
+          return h('p', null, [(self.asyncLoading) ? 'loading' : 'done'])
+        },
+        data () {
+          return {
+            user: {name: 'anon'}
           }
-        })
-      },
-      props: ['user']
-    })
-    const Parent = Vue.component('parent', {
-      render (createElement) {
-        const self = this
-        return createElement(Child, {
-          props: {
-            user: self.user
+        },
+        asyncData: {
+          user () {
+            return this.$store.find('users', 1)
           }
-        })
-      },
-      props: ['user']
-    })
-    const vm = new Vue({
-      render (createElement) {
-        const self = this
-        return createElement(Parent, {
-          props: {
-            user: self.user
-          }
-        })
-      },
-      data () {
-        return {
-          user: {name: 'anon'}
         }
-      },
-      vdata (store) {
-        this.user = store.get('users', 1)
-      },
-      methods: {
-        rename (to) {
-          return new Promise((resolve) => {
-            this.user.name = to
-            resolve(this.user)
-          })
-        }
-      }
-    }).$mount('#root')
-    return Promise.all([
-      expect(vm.$children).toHaveLength(1),
-      expect(vm.$options.vdata).toBeDefined(),
-      vm.$nextTick().then(() => {
+      }).$mount('#root')
+      return vm.$nextTick().then(() => {
         return Promise.all([
-          Promise.all([
-            expect(vm.user).toBeDefined(),
-            expect(vm.user.name).toBe('anon')
-          ]),
-          vm.rename('xj9').then((user) => {
-            return Promise.all([
-              expect(user.name).toBe('xj9')
-            ])
-          })
+          expect(vm.asyncLoading).toBeDefined(),
+          expect(vm.user).toBeDefined()
         ])
       })
-    ])
+    })
   })
 })
