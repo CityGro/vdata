@@ -6,6 +6,11 @@ module.exports = {
   entry: [
     './example/app.js'
   ],
+  resolve: {
+    alias: {
+       'vue': 'vue/dist/vue.js' // 'vue/dist/vue.common.js' for webpack 1
+    }
+  },
   output: {
     path: __dirname,
     filename: 'bundle.js'

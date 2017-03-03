@@ -2,132 +2,99 @@ import Vue from 'vue'
 import {vdata} from '../src/index'
 import * as JSData from 'js-data'
 import * as JSDataHttp from 'js-data-http'
-import map from 'lodash/map'
 
-const ds = new JSData.DataStore()
-ds.registerAdapter('http', new JSDataHttp.HttpAdapter(), {default: true})
-ds.defineMapper('users')
+const store = new JSData.DataStore()
+store.registerAdapter('http', new JSDataHttp.HttpAdapter(), {default: true})
+store.defineMapper('users')
 
-Vue.use(vdata(ds))
+Vue.use(vdata(store))
 
 const Ed = Vue.component('ed', {
+  template: `
+    <input
+      :value="value.name"
+      @input="changeName"
+      class="form-control"
+    />
+  `,
   props: {
     value: {
       type: Object,
       required: true
     }
   },
-  render (h) {
-    let self = this
-    return h('input', {
-      domProps: {
-        value: self.value.name
-      },
-      class: {
-        'form-control': true
-      },
-      on: {
-        input (event) {
-          self.$emit('input', event)
-        }
-      }
-    })
+  methods: {
+    changeName (event) {
+      this.value.name = event.target.value
+      this.$emit('input', this.value)
+    }
   }
 })
 
 const Ax = Vue.component('ax', {
+  template: `
+    <h1 :class="{'form-group': true, 'has-error': !$q.user.isValid()}">
+      <ed v-model="$qs.user"/>
+    </h1>
+  `,
+  components: {Ed},
   props: {
     value: {
       type: Number,
       required: true
     }
   },
-  query (store, force) {
+  data () {
     return {
-      user: {
-        default: {name: 'kek'},
-        value: store.find('users', this.value, {force}),
-        constraints: {
-          name: {
-            presence: true,
-            format: {
-              pattern: /^[a-z0-9]+$/
-            }
-          }
-        }
-      }
+      user: {name: 'top kek'}
     }
   },
-  render (h) {
-    let self = this
-    return h('h1', {
-      class: {
-        'form-group': true,
-        'has-error': !self.$q.user.isValid()
-      }
-    }, [
-      h(Ed, {
-        props: {
-          value: self.$qs.user
-        },
-        on: {
-          input (event) {
-            self.$qs.user.name = event.target.value
-            self.$vdata.commit(self.$qs.user)
-          }
-        }
-      })
-    ])
+  vdata () {
+    this.user = this.$store.get('users', this.value)
+  },
+  asyncData: {
+    user () {
+      return this.$store.find('users', this.value)
+    }
   }
 })
 
 const Bx = Vue.component('bx', {
-  render (h) {
-    let self = this
-    return h('ul', {
-      class: {
-        'btn-group': true
-      }
-    }, map(this.$qs.users, (user) => h('li', {
-      class: {
-        'btn': true,
-        'btn-default': true
-      },
-      on: {
-        click () {
-          self.$emit('input', {target: {value: user.id}})
-        }
-      }
-    }, String(user.name))))
+  template: `
+    <ul>
+      <li
+        v-for="user in users"
+        class="btn btn-default"
+        @click="$emit('input', {event: {target: {value: user.id}}}">
+        {{user.name}}
+      </li> 
+    </ul>
+  `,
+  props: ['value'],
+  data: {
+    users: []
   },
-  query: (store, force) => {
-    return {
-      users: store.findAll('users', null, {force})
+  vdata () {
+    this.users = this.$store.getAll('users')
+  },
+  asyncData: {
+    users () {
+      return this.$store.findAll('users')
     }
   }
 })
 
 new Vue({
+  template: `
+    <div>
+      <ax :value="userId"/>
+      <bx v-model="userId"/>
+    </div>
+  `,
+  components: {Ax, Bx},
   data () {
     return {
       userId: 1
     }
-  },
-  render (h) {
-    let self = this
-    return h('div', null, [
-      h(Ax, {
-        props: {
-          value: self.userId
-        }
-      }),
-      h(Bx, {
-        on: {
-          input (event) {
-            self.userId = event.target.value
-          }
-        }
-      })
-    ])
   }
 }).$mount('#root')
