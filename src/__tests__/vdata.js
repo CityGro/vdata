@@ -77,8 +77,8 @@ describe('VData', () => {
             user: {name: 'anon'}
           }
         },
-        vdata () {
-          this.user = this.$store.get('users', 1)
+        vdata (store) {
+          this.user = store.get('users', 1)
         },
         methods: {
           rename (to) {

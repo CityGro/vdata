@@ -38,7 +38,7 @@ export default function (store) {
             const self = this
             this._vdata_handler = throttle((collection) => {
               console.log('vdata running for', collection)
-              self.$options.vdata.call(self, [store, collection])
+              self.$options.vdata.call(self, store, collection)
             }, options.throttle, {leading: true})
             map((event) => store.on(event, this._vdata_handler))(options.events)
             console.log(`vdata[${this._uid}]: ready. listening.`, options.events)
@@ -46,7 +46,7 @@ export default function (store) {
         },
         beforeUpdate () {
           if (hasVdata(this)) {
-            this.$options.vdata.call(this, [store, 'vue'])
+            this.$options.vdata.call(this, store, 'vue')
           }
         },
         beforeDestroy () {

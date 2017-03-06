@@ -21,30 +21,31 @@ import Vue from 'vue'
 import {vdata} from '@citygro/vdata'
 import JSData from 'js-data'
 
-const store = new JSData.DS()
-const User = store.defineResource('user')
-
-User.inject({id: 1, name: 'tokyo_jesus'})
+const store = new JSData.DataStore()
+// .. register adapter ..
+store.defineMapper('user')
+store.create('user', {id: 1, name: 'tokyo_jesus'})
 
 Vue.use(vdata(store))
 
 const vm = new Vue({
-  query: (store, force) => ({
-    user: {
-      default: {name: null},
-      value: store.get('user', 1, {force}),
-      constraints: {
-        name: {
-          presence: true
-        }
-      }
+  // called on js-data change and onBeforeUpdate
+  vdata (store) {
+    this.user = store.get('user', 1)
+    this.posts = store.getAll('post', {user: 1})
+  },
+  asyncData: {
+    user () {
+      return this.$store.find('user', 1)
     },
-    posts: store.findAll('post', {user: 1})
-  }),
+    posts () {
+      return this.$store.findAll('post', {user: 1})
+    }
+  },
   methods: {
     rename (to) {
-      this.$qs.user.name = to
-      return this.$qs.user.save()
+      this.user.name = to
+      return this.user.save()
     }
   }
 })
@@ -54,43 +55,36 @@ vm.rename('xj9').then((user) => {
 })
 ```
 
-## options
+## install options
 
-### `vm.$options.query(store: JSData.DataStore, force: Boolean): {[key: string]: any}`
+### `[options.events=['change', 'add', 'remove']]: string[]`
 
-this function is used by `vm.$vdata()` to populate `vm.$qs` and update it whenever
-the store changes.
+`JSData.DataStore` events that will trigger state updates
 
-queries are resolved using `Q.all()`, arbitrary nested objects will not be resolved. a `Promise`
-can *return* nested values, but `@citygro/vdata` will only resolve the promises referenced in
-top-level keys.
+### `[options.throttle=150]: number`
 
-a query can also be expressed as a plain object with the keys: `default`, `value`, and (optionally) `constraints`. these
-allow you additional control over what is injected into your component. constraints can be checked by calling
-`vm.$q[field].isValid()`. see [validate.js] docs.
+limit updates to once every `n` milliseconds
 
-`force` is true for the initial query and false for all subsequent updates. 
+## vm options
 
-[validate.js]: https://validatejs.org/
+### `vm.$options.vdata(store: JSData.DataStore, collection: string): void`
+
+run synchronous functions to update component data from the `JSData.DataStore`
+
+### `vm.$options.asyncData: {[key: string]: Function}`
 
 ## properties
 
-### `vm.$q: {[key: string]: Promise | any}`
+### `vm.asyncLoading: boolean`
 
-the return value of the most recent execution `vm.$options.query()`. useful if you need
-to access the raw promises/values of your queries.
+async loading state
 
-### `vm.$qs: {[key: string]: any}`
+### `vm.asyncError: boolean`
 
-the values resulting from resolving `vm.$q`
+async error flag
 
-### `vm.$qLoading: boolean`
+## methods
 
-a flag indicating that `vm.$vdata()` is running
+### `vm.asyncReload(name: string|void)`
 
-### `vm.$vdata: function`
-
-the event handler that manages state updates and resolving promises. called on the `js-data`
-`add`, `change`, and `remove` events and the `created` Vue component lifecycle hook.
-
-this handler can be called any time you need to force an update and data sync.
+refresh data. if `name` is specified, only that field is updated

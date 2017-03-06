@@ -7966,7 +7966,7 @@ var vdata = function (store) {
               var self = _this;
               _this._vdata_handler = throttle_1(function (collection) {
                 console.log('vdata running for', collection);
-                self.$options.vdata.call(self, [store, collection]);
+                self.$options.vdata.call(self, store, collection);
               }, options.throttle, { leading: true });
               map(function (event) {
                 return store.on(event, _this._vdata_handler);
@@ -7977,7 +7977,7 @@ var vdata = function (store) {
         },
         beforeUpdate: function beforeUpdate() {
           if (hasVdata(this)) {
-            this.$options.vdata.call(this, [store, 'vue']);
+            this.$options.vdata.call(this, store, 'vue');
           }
         },
         beforeDestroy: function beforeDestroy() {
