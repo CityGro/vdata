@@ -1,6 +1,6 @@
-import each from 'lodash/fp/each'
 import property from 'lodash/property'
 import defaults from 'lodash/defaults'
+import includes from 'lodash/includes'
 
 import {AsyncDataMixin} from '../lib/vue-async-data/src/main'
 
@@ -27,23 +27,25 @@ export default function (store) {
       Vue.mixin({
         methods: {
           $vdata () {
-            this._vdataHandler('force')
+            this._vdataHandler('change')
           }
         },
         beforeCreate () {
           if (hasVdata(this)) {
             const self = this
             this._vdataHandler = (event) => {
-              console.log(`vdata[${self._uid}] running for`, event)
-              self.$options.vdata.call(self, store, event)
+              if (includes(options.events, event)) {
+                console.log(`vdata[${self._uid}] running for`, event)
+                self.$options.vdata.call(self, store, event)
+              }
             }
-            each((event) => store.on(event, self._vdataHandler))(options.events)
+            store.on('all', self._vdataHandler)
             console.log(`vdata[${self._uid}]: ready. listening.`, options.events)
           }
         },
         beforeDestroy () {
           if (hasVdata(this)) {
-            each((event) => store.off(event, this._vdataHandler))(options.events)
+            store.off('all', this._vdataHandler)
           }
         }
       })

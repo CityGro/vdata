@@ -65,6 +65,11 @@ vm.rename('xj9').then((user) => {
 
 ### `vm.$options.vdata(store: JSData.DataStore, collection: string): void`
 
+> note that `@citygro/vdata` does not react to changes on `vm`, you will need to manually trigger updates if your
+> bindings depend on any `vm` state.
+>
+> see `vm.$vdata()`
+
 run synchronous functions to update component data from the `JSData.DataStore`
 
 ### `vm.$options.asyncData: {[key: string]: Function}`
