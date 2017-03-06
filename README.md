@@ -84,3 +84,7 @@ async error flag
 ### `vm.asyncReload(name: string|void)`
 
 refresh data. if `name` is specified, only that field is updated
+
+### `vm.$vdata(): void`
+
+force state update

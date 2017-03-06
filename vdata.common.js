@@ -7584,6 +7584,11 @@ var vdata = function (store) {
       Vue.mixin(main_2);
 
       Vue.mixin({
+        methods: {
+          $vdata: function $vdata() {
+            this._vdataHandler('force');
+          }
+        },
         beforeCreate: function beforeCreate() {
           var _this = this;
 
@@ -7599,11 +7604,6 @@ var vdata = function (store) {
               })(options.events);
               console.log('vdata[' + self._uid + ']: ready. listening.', options.events);
             })();
-          }
-        },
-        beforeUpdate: function beforeUpdate() {
-          if (hasVdata(this)) {
-            this._vdataHandler('vm[' + this._uid + ']@beforeUpdate');
           }
         },
         beforeDestroy: function beforeDestroy() {

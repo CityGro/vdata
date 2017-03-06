@@ -13,11 +13,14 @@ Vue.use(vdata(store), {
 
 const Ed = Vue.component('ed', {
   template: `
-    <input
-      :value="value.name"
-      @input="changeName"
-      class="form-control"
-    />
+    <div class="input-group">
+      <span class="input-group-addon">id: {{value.id}}</span> 
+      <input
+        :value="value.name"
+        @input="changeName"
+        class="form-control"
+      />
+    </div>
   `,
   props: {
     value: {
@@ -57,36 +60,66 @@ const Ax = Vue.component('ax', {
     user () {
       return this.$store.find('users', this.value)
     }
+  },
+  watch: {
+    value () {
+      this.$vdata()
+    }
   }
 })
 
 const Bx = Vue.component('bx', {
   template: `
-    <ul class="btn-group">
+    <ul class="btn-group" :id="n">
+      <li
+        class="btn btn-info disabled">
+        {{count}} users
+      </li>
       <li
         v-for="user in users"
-        class="btn btn-default"
+        :class="getStatus(user.id)"
         @click="handleClick(user.id)">
         {{user.name}}
       </li> 
+      <li
+        class="btn btn-success"
+        @click="createUser">
+        +
+      </li>
     </ul>
   `,
   props: ['value'],
   data () {
     return {
-      users: []
+      users: [],
+      n: 0
     }
   },
   methods: {
     handleClick (id) {
       this.$emit('input', id)
     },
-    getUsers () {
-      return this.$store.getAll('users')
+    createUser () {
+      this.$store.create('users', {name: 'new user'})
+    },
+    getUsers (store) {
+      return store.getAll('users')
+    },
+    getStatus (id) {
+      return {
+        'btn': true,
+        'btn-default': id != this.value,
+        'btn-primary': id == this.value
+      }
+    }
+  },
+  computed: {
+    count () {
+      return this.users.length
     }
   },
   vdata () {
-    this.user = this.getUsers()
+    this.users = this.getUsers(store)
   },
   asyncData: {
     users () {
@@ -99,7 +132,7 @@ new Vue({
   template: `
     <div>
       <ax :value="userId"/>
-      <bx @input="handleInput"/>
+      <bx :value="userId" @input="handleInput"/>
     </div>
   `,
   components: {Ax, Bx},

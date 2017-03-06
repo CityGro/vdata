@@ -9,12 +9,48 @@
       "name": "xj9"
     },
     {
-      "name": "ann",
+      "name": "sen",
       "id": 3
     },
     {
       "name": "ramona",
       "id": 4
+    },
+    {
+      "name": "darkness",
+      "id": 5
+    },
+    {
+      "name": "hakui",
+      "id": 6
+    },
+    {
+      "name": "maoyu",
+      "id": 7
+    },
+    {
+      "name": "momo",
+      "id": 8
+    },
+    {
+      "name": "akira",
+      "id": 9
+    },
+    {
+      "name": "tetsuo",
+      "id": 10
+    },
+    {
+      "name": "tamura",
+      "id": 11
+    },
+    {
+      "name": "schinichi",
+      "id": 12
+    },
+    {
+      "name": "kurisu",
+      "id": 13
     }
   ]
 }

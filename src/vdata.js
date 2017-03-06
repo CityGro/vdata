@@ -25,6 +25,11 @@ export default function (store) {
       Vue.mixin(AsyncDataMixin)
 
       Vue.mixin({
+        methods: {
+          $vdata () {
+            this._vdataHandler('force')
+          }
+        },
         beforeCreate () {
           if (hasVdata(this)) {
             const self = this
@@ -34,11 +39,6 @@ export default function (store) {
             }
             each((event) => store.on(event, self._vdataHandler))(options.events)
             console.log(`vdata[${self._uid}]: ready. listening.`, options.events)
-          }
-        },
-        beforeUpdate () {
-          if (hasVdata(this)) {
-            this._vdataHandler(`vm[${this._uid}]@beforeUpdate`)
           }
         },
         beforeDestroy () {
