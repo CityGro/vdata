@@ -7541,13 +7541,14 @@ var vdata = function (store) {
           var _this = this;
 
           if (property_1('$options.vdata')(this)) {
-            console.log('vdata[' + this._uid + ']: ready. listening.', options.events);
+            this.$options.vdata.bind(this);
             this._vdata_handler = function (collection) {
               _this.$options.vdata(store, collection);
             };
             map(function (event) {
               return store.on(event, _this._vdata_handler);
             })(options.events);
+            console.log('vdata[' + this._uid + ']: ready. listening.', options.events);
           }
         },
         beforeDestroy: function beforeDestroy() {

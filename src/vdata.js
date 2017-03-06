@@ -37,11 +37,12 @@ export default function (store) {
       Vue.mixin({
         beforeCreate () {
           if (property('$options.vdata')(this)) {
-            console.log(`vdata[${this._uid}]: ready. listening.`, options.events)
+            this.$options.vdata.bind(this)
             this._vdata_handler = (collection) => {
               this.$options.vdata(store, collection)
             }
             map((event) => store.on(event, this._vdata_handler))(options.events)
+            console.log(`vdata[${this._uid}]: ready. listening.`, options.events)
           }
         },
         beforeDestroy () {
