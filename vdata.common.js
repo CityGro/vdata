@@ -6617,13 +6617,13 @@ function property$1(path) {
   return isKey$3(path) ? baseProperty(toKey$4(path)) : basePropertyDeep(path);
 }
 
-var property_1 = property$1;
+var property_1$1 = property$1;
 
 var baseMatches = _baseMatches;
 var baseMatchesProperty = _baseMatchesProperty;
 var identity$3 = identity_1;
 var isArray$5 = isArray_1;
-var property = property_1;
+var property = property_1$1;
 
 /**
  * The base implementation of `_.iteratee`.
@@ -7200,55 +7200,477 @@ var func$1 = convert$2('map', map_1);
 func$1.placeholder = placeholder;
 var map = func$1;
 
-var arrayPush$4 = _arrayPush;
-var baseFlatten$2 = _baseFlatten;
-var copyArray$5 = _copyArray;
-var isArray$15 = isArray_1;
+var root$13 = _root;
 
 /**
- * Creates a new array concatenating `array` with any additional arrays
- * and/or values.
+ * Gets the timestamp of the number of milliseconds that have elapsed since
+ * the Unix epoch (1 January 1970 00:00:00 UTC).
+ *
+ * @static
+ * @memberOf _
+ * @since 2.4.0
+ * @category Date
+ * @returns {number} Returns the timestamp.
+ * @example
+ *
+ * _.defer(function(stamp) {
+ *   console.log(_.now() - stamp);
+ * }, _.now());
+ * // => Logs the number of milliseconds it took for the deferred invocation.
+ */
+var now$1 = function() {
+  return root$13.Date.now();
+};
+
+var now_1 = now$1;
+
+var isObject$10 = isObject_1;
+var now = now_1;
+var toNumber$2 = toNumber_1;
+
+/** Error message constants. */
+var FUNC_ERROR_TEXT$3 = 'Expected a function';
+
+/* Built-in method references for those with the same name as other `lodash` methods. */
+var nativeMax$4 = Math.max;
+var nativeMin$2 = Math.min;
+
+/**
+ * Creates a debounced function that delays invoking `func` until after `wait`
+ * milliseconds have elapsed since the last time the debounced function was
+ * invoked. The debounced function comes with a `cancel` method to cancel
+ * delayed `func` invocations and a `flush` method to immediately invoke them.
+ * Provide `options` to indicate whether `func` should be invoked on the
+ * leading and/or trailing edge of the `wait` timeout. The `func` is invoked
+ * with the last arguments provided to the debounced function. Subsequent
+ * calls to the debounced function return the result of the last `func`
+ * invocation.
+ *
+ * **Note:** If `leading` and `trailing` options are `true`, `func` is
+ * invoked on the trailing edge of the timeout only if the debounced function
+ * is invoked more than once during the `wait` timeout.
+ *
+ * If `wait` is `0` and `leading` is `false`, `func` invocation is deferred
+ * until to the next tick, similar to `setTimeout` with a timeout of `0`.
+ *
+ * See [David Corbacho's article](https://css-tricks.com/debouncing-throttling-explained-examples/)
+ * for details over the differences between `_.debounce` and `_.throttle`.
+ *
+ * @static
+ * @memberOf _
+ * @since 0.1.0
+ * @category Function
+ * @param {Function} func The function to debounce.
+ * @param {number} [wait=0] The number of milliseconds to delay.
+ * @param {Object} [options={}] The options object.
+ * @param {boolean} [options.leading=false]
+ *  Specify invoking on the leading edge of the timeout.
+ * @param {number} [options.maxWait]
+ *  The maximum time `func` is allowed to be delayed before it's invoked.
+ * @param {boolean} [options.trailing=true]
+ *  Specify invoking on the trailing edge of the timeout.
+ * @returns {Function} Returns the new debounced function.
+ * @example
+ *
+ * // Avoid costly calculations while the window size is in flux.
+ * jQuery(window).on('resize', _.debounce(calculateLayout, 150));
+ *
+ * // Invoke `sendMail` when clicked, debouncing subsequent calls.
+ * jQuery(element).on('click', _.debounce(sendMail, 300, {
+ *   'leading': true,
+ *   'trailing': false
+ * }));
+ *
+ * // Ensure `batchLog` is invoked once after 1 second of debounced calls.
+ * var debounced = _.debounce(batchLog, 250, { 'maxWait': 1000 });
+ * var source = new EventSource('/stream');
+ * jQuery(source).on('message', debounced);
+ *
+ * // Cancel the trailing debounced invocation.
+ * jQuery(window).on('popstate', debounced.cancel);
+ */
+function debounce$1(func, wait, options) {
+  var lastArgs,
+      lastThis,
+      maxWait,
+      result,
+      timerId,
+      lastCallTime,
+      lastInvokeTime = 0,
+      leading = false,
+      maxing = false,
+      trailing = true;
+
+  if (typeof func != 'function') {
+    throw new TypeError(FUNC_ERROR_TEXT$3);
+  }
+  wait = toNumber$2(wait) || 0;
+  if (isObject$10(options)) {
+    leading = !!options.leading;
+    maxing = 'maxWait' in options;
+    maxWait = maxing ? nativeMax$4(toNumber$2(options.maxWait) || 0, wait) : maxWait;
+    trailing = 'trailing' in options ? !!options.trailing : trailing;
+  }
+
+  function invokeFunc(time) {
+    var args = lastArgs,
+        thisArg = lastThis;
+
+    lastArgs = lastThis = undefined;
+    lastInvokeTime = time;
+    result = func.apply(thisArg, args);
+    return result;
+  }
+
+  function leadingEdge(time) {
+    // Reset any `maxWait` timer.
+    lastInvokeTime = time;
+    // Start the timer for the trailing edge.
+    timerId = setTimeout(timerExpired, wait);
+    // Invoke the leading edge.
+    return leading ? invokeFunc(time) : result;
+  }
+
+  function remainingWait(time) {
+    var timeSinceLastCall = time - lastCallTime,
+        timeSinceLastInvoke = time - lastInvokeTime,
+        result = wait - timeSinceLastCall;
+
+    return maxing ? nativeMin$2(result, maxWait - timeSinceLastInvoke) : result;
+  }
+
+  function shouldInvoke(time) {
+    var timeSinceLastCall = time - lastCallTime,
+        timeSinceLastInvoke = time - lastInvokeTime;
+
+    // Either this is the first call, activity has stopped and we're at the
+    // trailing edge, the system time has gone backwards and we're treating
+    // it as the trailing edge, or we've hit the `maxWait` limit.
+    return (lastCallTime === undefined || (timeSinceLastCall >= wait) ||
+      (timeSinceLastCall < 0) || (maxing && timeSinceLastInvoke >= maxWait));
+  }
+
+  function timerExpired() {
+    var time = now();
+    if (shouldInvoke(time)) {
+      return trailingEdge(time);
+    }
+    // Restart the timer.
+    timerId = setTimeout(timerExpired, remainingWait(time));
+  }
+
+  function trailingEdge(time) {
+    timerId = undefined;
+
+    // Only invoke if we have `lastArgs` which means `func` has been
+    // debounced at least once.
+    if (trailing && lastArgs) {
+      return invokeFunc(time);
+    }
+    lastArgs = lastThis = undefined;
+    return result;
+  }
+
+  function cancel() {
+    if (timerId !== undefined) {
+      clearTimeout(timerId);
+    }
+    lastInvokeTime = 0;
+    lastArgs = lastCallTime = lastThis = timerId = undefined;
+  }
+
+  function flush() {
+    return timerId === undefined ? result : trailingEdge(now());
+  }
+
+  function debounced() {
+    var time = now(),
+        isInvoking = shouldInvoke(time);
+
+    lastArgs = arguments;
+    lastThis = this;
+    lastCallTime = time;
+
+    if (isInvoking) {
+      if (timerId === undefined) {
+        return leadingEdge(lastCallTime);
+      }
+      if (maxing) {
+        // Handle invocations in a tight loop.
+        timerId = setTimeout(timerExpired, wait);
+        return invokeFunc(lastCallTime);
+      }
+    }
+    if (timerId === undefined) {
+      timerId = setTimeout(timerExpired, wait);
+    }
+    return result;
+  }
+  debounced.cancel = cancel;
+  debounced.flush = flush;
+  return debounced;
+}
+
+var debounce_1 = debounce$1;
+
+var debounce = debounce_1;
+var isObject$9 = isObject_1;
+
+/** Error message constants. */
+var FUNC_ERROR_TEXT$2 = 'Expected a function';
+
+/**
+ * Creates a throttled function that only invokes `func` at most once per
+ * every `wait` milliseconds. The throttled function comes with a `cancel`
+ * method to cancel delayed `func` invocations and a `flush` method to
+ * immediately invoke them. Provide `options` to indicate whether `func`
+ * should be invoked on the leading and/or trailing edge of the `wait`
+ * timeout. The `func` is invoked with the last arguments provided to the
+ * throttled function. Subsequent calls to the throttled function return the
+ * result of the last `func` invocation.
+ *
+ * **Note:** If `leading` and `trailing` options are `true`, `func` is
+ * invoked on the trailing edge of the timeout only if the throttled function
+ * is invoked more than once during the `wait` timeout.
+ *
+ * If `wait` is `0` and `leading` is `false`, `func` invocation is deferred
+ * until to the next tick, similar to `setTimeout` with a timeout of `0`.
+ *
+ * See [David Corbacho's article](https://css-tricks.com/debouncing-throttling-explained-examples/)
+ * for details over the differences between `_.throttle` and `_.debounce`.
+ *
+ * @static
+ * @memberOf _
+ * @since 0.1.0
+ * @category Function
+ * @param {Function} func The function to throttle.
+ * @param {number} [wait=0] The number of milliseconds to throttle invocations to.
+ * @param {Object} [options={}] The options object.
+ * @param {boolean} [options.leading=true]
+ *  Specify invoking on the leading edge of the timeout.
+ * @param {boolean} [options.trailing=true]
+ *  Specify invoking on the trailing edge of the timeout.
+ * @returns {Function} Returns the new throttled function.
+ * @example
+ *
+ * // Avoid excessively updating the position while scrolling.
+ * jQuery(window).on('scroll', _.throttle(updatePosition, 100));
+ *
+ * // Invoke `renewToken` when the click event is fired, but not more than once every 5 minutes.
+ * var throttled = _.throttle(renewToken, 300000, { 'trailing': false });
+ * jQuery(element).on('click', throttled);
+ *
+ * // Cancel the trailing throttled invocation.
+ * jQuery(window).on('popstate', throttled.cancel);
+ */
+function throttle(func, wait, options) {
+  var leading = true,
+      trailing = true;
+
+  if (typeof func != 'function') {
+    throw new TypeError(FUNC_ERROR_TEXT$2);
+  }
+  if (isObject$9(options)) {
+    leading = 'leading' in options ? !!options.leading : leading;
+    trailing = 'trailing' in options ? !!options.trailing : trailing;
+  }
+  return debounce(func, wait, {
+    'leading': leading,
+    'maxWait': wait,
+    'trailing': trailing
+  });
+}
+
+var throttle_1 = throttle;
+
+var identity$5 = identity_1;
+var overRest$2 = _overRest;
+var setToString$3 = _setToString;
+
+/**
+ * The base implementation of `_.rest` which doesn't validate or coerce arguments.
+ *
+ * @private
+ * @param {Function} func The function to apply a rest parameter to.
+ * @param {number} [start=func.length-1] The start position of the rest parameter.
+ * @returns {Function} Returns the new function.
+ */
+function baseRest$2(func, start) {
+  return setToString$3(overRest$2(func, start, identity$5), func + '');
+}
+
+var _baseRest = baseRest$2;
+
+var eq$4 = eq_1;
+var isArrayLike$5 = isArrayLike_1;
+var isIndex$4 = _isIndex;
+var isObject$11 = isObject_1;
+
+/**
+ * Checks if the given arguments are from an iteratee call.
+ *
+ * @private
+ * @param {*} value The potential iteratee value argument.
+ * @param {*} index The potential iteratee index or key argument.
+ * @param {*} object The potential iteratee object argument.
+ * @returns {boolean} Returns `true` if the arguments are from an iteratee call,
+ *  else `false`.
+ */
+function isIterateeCall$1(value, index, object) {
+  if (!isObject$11(object)) {
+    return false;
+  }
+  var type = typeof index;
+  if (type == 'number'
+        ? (isArrayLike$5(object) && isIndex$4(index, object.length))
+        : (type == 'string' && index in object)
+      ) {
+    return eq$4(object[index], value);
+  }
+  return false;
+}
+
+var _isIterateeCall = isIterateeCall$1;
+
+var baseRest$1 = _baseRest;
+var isIterateeCall = _isIterateeCall;
+
+/**
+ * Creates a function like `_.assign`.
+ *
+ * @private
+ * @param {Function} assigner The function to assign values.
+ * @returns {Function} Returns the new assigner function.
+ */
+function createAssigner$1(assigner) {
+  return baseRest$1(function(object, sources) {
+    var index = -1,
+        length = sources.length,
+        customizer = length > 1 ? sources[length - 1] : undefined,
+        guard = length > 2 ? sources[2] : undefined;
+
+    customizer = (assigner.length > 3 && typeof customizer == 'function')
+      ? (length--, customizer)
+      : undefined;
+
+    if (guard && isIterateeCall(sources[0], sources[1], guard)) {
+      customizer = length < 3 ? undefined : customizer;
+      length = 1;
+    }
+    object = Object(object);
+    while (++index < length) {
+      var source = sources[index];
+      if (source) {
+        assigner(object, source, index, customizer);
+      }
+    }
+    return object;
+  });
+}
+
+var _createAssigner = createAssigner$1;
+
+var copyObject$5 = _copyObject;
+var createAssigner = _createAssigner;
+var keysIn$4 = keysIn_1;
+
+/**
+ * This method is like `_.assignIn` except that it accepts `customizer`
+ * which is invoked to produce the assigned values. If `customizer` returns
+ * `undefined`, assignment is handled by the method instead. The `customizer`
+ * is invoked with five arguments: (objValue, srcValue, key, object, source).
+ *
+ * **Note:** This method mutates `object`.
  *
  * @static
  * @memberOf _
  * @since 4.0.0
- * @category Array
- * @param {Array} array The array to concatenate.
- * @param {...*} [values] The values to concatenate.
- * @returns {Array} Returns the new concatenated array.
+ * @alias extendWith
+ * @category Object
+ * @param {Object} object The destination object.
+ * @param {...Object} sources The source objects.
+ * @param {Function} [customizer] The function to customize assigned values.
+ * @returns {Object} Returns `object`.
+ * @see _.assignWith
  * @example
  *
- * var array = [1];
- * var other = _.concat(array, 2, [3], [[4]]);
+ * function customizer(objValue, srcValue) {
+ *   return _.isUndefined(objValue) ? srcValue : objValue;
+ * }
  *
- * console.log(other);
- * // => [1, 2, 3, [4]]
+ * var defaults = _.partialRight(_.assignInWith, customizer);
  *
- * console.log(array);
- * // => [1]
+ * defaults({ 'a': 1 }, { 'b': 2 }, { 'a': 3 });
+ * // => { 'a': 1, 'b': 2 }
  */
-function concat$2() {
-  var length = arguments.length;
-  if (!length) {
-    return [];
-  }
-  var args = Array(length - 1),
-      array = arguments[0],
-      index = length;
+var assignInWith$1 = createAssigner(function(object, source, srcIndex, customizer) {
+  copyObject$5(source, keysIn$4(source), object, customizer);
+});
 
-  while (index--) {
-    args[index - 1] = arguments[index];
+var assignInWith_1 = assignInWith$1;
+
+var eq$5 = eq_1;
+
+/** Used for built-in method references. */
+var objectProto$17 = Object.prototype;
+
+/** Used to check objects for own properties. */
+var hasOwnProperty$14 = objectProto$17.hasOwnProperty;
+
+/**
+ * Used by `_.defaults` to customize its `_.assignIn` use to assign properties
+ * of source objects to the destination object for all destination properties
+ * that resolve to `undefined`.
+ *
+ * @private
+ * @param {*} objValue The destination value.
+ * @param {*} srcValue The source value.
+ * @param {string} key The key of the property to assign.
+ * @param {Object} object The parent object of `objValue`.
+ * @returns {*} Returns the value to assign.
+ */
+function customDefaultsAssignIn$1(objValue, srcValue, key, object) {
+  if (objValue === undefined ||
+      (eq$5(objValue, objectProto$17[key]) && !hasOwnProperty$14.call(object, key))) {
+    return srcValue;
   }
-  return arrayPush$4(isArray$15(array) ? copyArray$5(array) : [array], baseFlatten$2(args, 1));
+  return objValue;
 }
 
-var concat_1 = concat$2;
+var _customDefaultsAssignIn = customDefaultsAssignIn$1;
 
-var convert$3 = convert_1;
-var func$2 = convert$3('concat', concat_1);
+var apply$4 = _apply;
+var assignInWith = assignInWith_1;
+var baseRest = _baseRest;
+var customDefaultsAssignIn = _customDefaultsAssignIn;
 
-func$2.placeholder = placeholder;
-var concat = func$2;
+/**
+ * Assigns own and inherited enumerable string keyed properties of source
+ * objects to the destination object for all destination properties that
+ * resolve to `undefined`. Source objects are applied from left to right.
+ * Once a property is set, additional values of the same property are ignored.
+ *
+ * **Note:** This method mutates `object`.
+ *
+ * @static
+ * @since 0.1.0
+ * @memberOf _
+ * @category Object
+ * @param {Object} object The destination object.
+ * @param {...Object} [sources] The source objects.
+ * @returns {Object} Returns `object`.
+ * @see _.defaultsDeep
+ * @example
+ *
+ * _.defaults({ 'a': 1 }, { 'b': 2 }, { 'a': 3 });
+ * // => { 'a': 1, 'b': 2 }
+ */
+var defaults = baseRest(function(args) {
+  args.push(undefined, customDefaultsAssignIn);
+  return apply$4(assignInWith, undefined, args);
+});
+
+var defaults_1 = defaults;
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) {
   return typeof obj;
@@ -7512,7 +7934,11 @@ var forceUpdate = each(function (child) {
   }, 0);
 });
 
-var changeEvents = ['add', 'change', 'remove'];
+var getVdata = property_1$1('$options.vdata');
+
+var hasVdata = function hasVdata(o) {
+  return getVdata(o) !== undefined;
+};
 
 /**
  * create VData plugin
@@ -7522,15 +7948,10 @@ var changeEvents = ['add', 'change', 'remove'];
 var vdata = function (store) {
   return {
     install: function install(Vue, options) {
-      if (options === undefined) {
-        options = {
-          events: changeEvents
-        };
-      }
-
-      if (property_1('events')(options) === undefined) {
-        options.events = concat(options.events)(changeEvents);
-      }
+      options = defaults_1(options || {}, {
+        events: ['add', 'change', 'remove'],
+        throttle: 150
+      });
 
       Vue.prototype.$store = store;
 
@@ -7540,15 +7961,23 @@ var vdata = function (store) {
         beforeCreate: function beforeCreate() {
           var _this = this;
 
-          if (property_1('$options.vdata')(this)) {
-            this.$options.vdata.bind(this);
-            this._vdata_handler = function (collection) {
-              _this.$options.vdata(store, collection);
-            };
-            map(function (event) {
-              return store.on(event, _this._vdata_handler);
-            })(options.events);
-            console.log('vdata[' + this._uid + ']: ready. listening.', options.events);
+          if (hasVdata(this)) {
+            (function () {
+              var self = _this;
+              _this._vdata_handler = throttle_1(function (collection) {
+                console.log('vdata running for', collection);
+                self.$options.vdata.call(self, [store, collection]);
+              }, options.throttle, { leading: true });
+              map(function (event) {
+                return store.on(event, _this._vdata_handler);
+              })(options.events);
+              console.log('vdata[' + _this._uid + ']: ready. listening.', options.events);
+            })();
+          }
+        },
+        beforeUpdate: function beforeUpdate() {
+          if (hasVdata(this)) {
+            this.$options.vdata.call(this, [store, 'vue']);
           }
         },
         beforeDestroy: function beforeDestroy() {

@@ -27,7 +27,10 @@ describe('VData', () => {
   describe('vdata', () => {
     it('makes the store directly accessible', () => {
       const vm = new Vue()
-      return expect(vm.$store).toBeDefined()
+      return Promise.all([
+        expect(vm.$store).toBeDefined(),
+        expect(vm.$store.get).toBeDefined()
+      ])
     })
 
     it('can pass data via props', () => {
@@ -74,8 +77,8 @@ describe('VData', () => {
             user: {name: 'anon'}
           }
         },
-        vdata (store) {
-          this.user = store.get('users', 1)
+        vdata () {
+          this.user = this.$store.get('users', 1)
         },
         methods: {
           rename (to) {

@@ -33,8 +33,8 @@ const Ed = Vue.component('ed', {
 
 const Ax = Vue.component('ax', {
   template: `
-    <h1 :class="{'form-group': true, 'has-error': !$q.user.isValid()}">
-      <ed v-model="$qs.user"/>
+    <h1 :class="{'form-group': true}">
+      <ed v-model="user"/>
     </h1>
   `,
   components: {Ed},
@@ -49,6 +49,9 @@ const Ax = Vue.component('ax', {
       user: {name: 'top kek'}
     }
   },
+  updated () {
+    console.log(this.value)
+  },
   vdata () {
     this.user = this.$store.get('users', this.value)
   },
@@ -61,21 +64,31 @@ const Ax = Vue.component('ax', {
 
 const Bx = Vue.component('bx', {
   template: `
-    <ul>
+    <ul class="btn-group">
       <li
         v-for="user in users"
         class="btn btn-default"
-        @click="$emit('input', {event: {target: {value: user.id}}}">
+        @click="handleClick(user.id)">
         {{user.name}}
       </li> 
     </ul>
   `,
   props: ['value'],
-  data: {
-    users: []
+  data () {
+    return {
+      users: []
+    }
+  },
+  methods: {
+    handleClick (id) {
+      this.$emit('input', id)
+    },
+    getUsers () {
+      return this.$store.getAll('users')
+    }
   },
   vdata () {
-    this.users = this.$store.getAll('users')
+    this.user = this.getUsers()
   },
   asyncData: {
     users () {
@@ -88,10 +101,15 @@ new Vue({
   template: `
     <div>
       <ax :value="userId"/>
-      <bx v-model="userId"/>
+      <bx @input="handleInput"/>
     </div>
   `,
   components: {Ax, Bx},
+  methods: {
+    handleInput (id) {
+      this.userId = id
+    }
+  },
   data () {
     return {
       userId: 1

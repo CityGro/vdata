@@ -1,7 +1,8 @@
 import each from 'lodash/fp/each'
 import map from 'lodash/fp/map'
 import property from 'lodash/property'
-import concat from 'lodash/fp/concat'
+import throttle from 'lodash/throttle'
+import defaults from 'lodash/defaults'
 
 import {AsyncDataMixin} from '../lib/vue-async-data/src/main'
 
@@ -10,7 +11,9 @@ const forceUpdate = each((child) => setTimeout(() => {
   forceUpdate(child.$children)
 }, 0))
 
-const changeEvents = ['add', 'change', 'remove']
+const getVdata = property('$options.vdata')
+
+const hasVdata = (o) => getVdata(o) !== undefined
 
 /**
  * create VData plugin
@@ -20,15 +23,10 @@ const changeEvents = ['add', 'change', 'remove']
 export default function (store) {
   return {
     install (Vue, options) {
-      if (options === undefined) {
-        options = {
-          events: changeEvents
-        }
-      }
-
-      if (property('events')(options) === undefined) {
-        options.events = concat(options.events)(changeEvents)
-      }
+      options = defaults(options || {}, {
+        events: ['add', 'change', 'remove'],
+        throttle: 150
+      })
 
       Vue.prototype.$store = store
 
@@ -36,13 +34,19 @@ export default function (store) {
 
       Vue.mixin({
         beforeCreate () {
-          if (property('$options.vdata')(this)) {
-            this.$options.vdata.bind(this)
-            this._vdata_handler = (collection) => {
-              this.$options.vdata(store, collection)
-            }
+          if (hasVdata(this)) {
+            const self = this
+            this._vdata_handler = throttle((collection) => {
+              console.log('vdata running for', collection)
+              self.$options.vdata.call(self, [store, collection])
+            }, options.throttle, {leading: true})
             map((event) => store.on(event, this._vdata_handler))(options.events)
             console.log(`vdata[${this._uid}]: ready. listening.`, options.events)
+          }
+        },
+        beforeUpdate () {
+          if (hasVdata(this)) {
+            this.$options.vdata.call(this, [store, 'vue'])
           }
         },
         beforeDestroy () {
