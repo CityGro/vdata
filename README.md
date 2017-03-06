@@ -61,10 +61,6 @@ vm.rename('xj9').then((user) => {
 
 `JSData.DataStore` events that will trigger state updates
 
-### `[options.throttle=150]: number`
-
-limit updates to once every `n` milliseconds
-
 ## vm options
 
 ### `vm.$options.vdata(store: JSData.DataStore, collection: string): void`

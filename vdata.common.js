@@ -7113,308 +7113,9 @@ var convert = convert_1;
 var func = convert('forEach', forEach_1);
 
 func.placeholder = placeholder;
+var forEach = func;
 
-var baseEach$2 = _baseEach;
-var isArrayLike$4 = isArrayLike_1;
-
-/**
- * The base implementation of `_.map` without support for iteratee shorthands.
- *
- * @private
- * @param {Array|Object} collection The collection to iterate over.
- * @param {Function} iteratee The function invoked per iteration.
- * @returns {Array} Returns the new mapped array.
- */
-function baseMap$1(collection, iteratee) {
-  var index = -1,
-      result = isArrayLike$4(collection) ? Array(collection.length) : [];
-
-  baseEach$2(collection, function(value, key, collection) {
-    result[++index] = iteratee(value, key, collection);
-  });
-  return result;
-}
-
-var _baseMap = baseMap$1;
-
-var arrayMap$3 = _arrayMap;
-var baseIteratee$2 = _baseIteratee;
-var baseMap = _baseMap;
-var isArray$14 = isArray_1;
-
-/**
- * Creates an array of values by running each element in `collection` thru
- * `iteratee`. The iteratee is invoked with three arguments:
- * (value, index|key, collection).
- *
- * Many lodash methods are guarded to work as iteratees for methods like
- * `_.every`, `_.filter`, `_.map`, `_.mapValues`, `_.reject`, and `_.some`.
- *
- * The guarded methods are:
- * `ary`, `chunk`, `curry`, `curryRight`, `drop`, `dropRight`, `every`,
- * `fill`, `invert`, `parseInt`, `random`, `range`, `rangeRight`, `repeat`,
- * `sampleSize`, `slice`, `some`, `sortBy`, `split`, `take`, `takeRight`,
- * `template`, `trim`, `trimEnd`, `trimStart`, and `words`
- *
- * @static
- * @memberOf _
- * @since 0.1.0
- * @category Collection
- * @param {Array|Object} collection The collection to iterate over.
- * @param {Function} [iteratee=_.identity] The function invoked per iteration.
- * @returns {Array} Returns the new mapped array.
- * @example
- *
- * function square(n) {
- *   return n * n;
- * }
- *
- * _.map([4, 8], square);
- * // => [16, 64]
- *
- * _.map({ 'a': 4, 'b': 8 }, square);
- * // => [16, 64] (iteration order is not guaranteed)
- *
- * var users = [
- *   { 'user': 'barney' },
- *   { 'user': 'fred' }
- * ];
- *
- * // The `_.property` iteratee shorthand.
- * _.map(users, 'user');
- * // => ['barney', 'fred']
- */
-function map$2(collection, iteratee) {
-  var func = isArray$14(collection) ? arrayMap$3 : baseMap;
-  return func(collection, baseIteratee$2(iteratee, 3));
-}
-
-var map_1 = map$2;
-
-var convert$2 = convert_1;
-var func$1 = convert$2('map', map_1);
-
-func$1.placeholder = placeholder;
-var map = func$1;
-
-var root$13 = _root;
-
-/**
- * Gets the timestamp of the number of milliseconds that have elapsed since
- * the Unix epoch (1 January 1970 00:00:00 UTC).
- *
- * @static
- * @memberOf _
- * @since 2.4.0
- * @category Date
- * @returns {number} Returns the timestamp.
- * @example
- *
- * _.defer(function(stamp) {
- *   console.log(_.now() - stamp);
- * }, _.now());
- * // => Logs the number of milliseconds it took for the deferred invocation.
- */
-var now$1 = function() {
-  return root$13.Date.now();
-};
-
-var now_1 = now$1;
-
-var isObject$10 = isObject_1;
-var now = now_1;
-var toNumber$2 = toNumber_1;
-
-/** Error message constants. */
-var FUNC_ERROR_TEXT$3 = 'Expected a function';
-
-/* Built-in method references for those with the same name as other `lodash` methods. */
-var nativeMax$4 = Math.max;
-var nativeMin$2 = Math.min;
-
-/**
- * Creates a debounced function that delays invoking `func` until after `wait`
- * milliseconds have elapsed since the last time the debounced function was
- * invoked. The debounced function comes with a `cancel` method to cancel
- * delayed `func` invocations and a `flush` method to immediately invoke them.
- * Provide `options` to indicate whether `func` should be invoked on the
- * leading and/or trailing edge of the `wait` timeout. The `func` is invoked
- * with the last arguments provided to the debounced function. Subsequent
- * calls to the debounced function return the result of the last `func`
- * invocation.
- *
- * **Note:** If `leading` and `trailing` options are `true`, `func` is
- * invoked on the trailing edge of the timeout only if the debounced function
- * is invoked more than once during the `wait` timeout.
- *
- * If `wait` is `0` and `leading` is `false`, `func` invocation is deferred
- * until to the next tick, similar to `setTimeout` with a timeout of `0`.
- *
- * See [David Corbacho's article](https://css-tricks.com/debouncing-throttling-explained-examples/)
- * for details over the differences between `_.debounce` and `_.throttle`.
- *
- * @static
- * @memberOf _
- * @since 0.1.0
- * @category Function
- * @param {Function} func The function to debounce.
- * @param {number} [wait=0] The number of milliseconds to delay.
- * @param {Object} [options={}] The options object.
- * @param {boolean} [options.leading=false]
- *  Specify invoking on the leading edge of the timeout.
- * @param {number} [options.maxWait]
- *  The maximum time `func` is allowed to be delayed before it's invoked.
- * @param {boolean} [options.trailing=true]
- *  Specify invoking on the trailing edge of the timeout.
- * @returns {Function} Returns the new debounced function.
- * @example
- *
- * // Avoid costly calculations while the window size is in flux.
- * jQuery(window).on('resize', _.debounce(calculateLayout, 150));
- *
- * // Invoke `sendMail` when clicked, debouncing subsequent calls.
- * jQuery(element).on('click', _.debounce(sendMail, 300, {
- *   'leading': true,
- *   'trailing': false
- * }));
- *
- * // Ensure `batchLog` is invoked once after 1 second of debounced calls.
- * var debounced = _.debounce(batchLog, 250, { 'maxWait': 1000 });
- * var source = new EventSource('/stream');
- * jQuery(source).on('message', debounced);
- *
- * // Cancel the trailing debounced invocation.
- * jQuery(window).on('popstate', debounced.cancel);
- */
-function debounce$1(func, wait, options) {
-  var lastArgs,
-      lastThis,
-      maxWait,
-      result,
-      timerId,
-      lastCallTime,
-      lastInvokeTime = 0,
-      leading = false,
-      maxing = false,
-      trailing = true;
-
-  if (typeof func != 'function') {
-    throw new TypeError(FUNC_ERROR_TEXT$3);
-  }
-  wait = toNumber$2(wait) || 0;
-  if (isObject$10(options)) {
-    leading = !!options.leading;
-    maxing = 'maxWait' in options;
-    maxWait = maxing ? nativeMax$4(toNumber$2(options.maxWait) || 0, wait) : maxWait;
-    trailing = 'trailing' in options ? !!options.trailing : trailing;
-  }
-
-  function invokeFunc(time) {
-    var args = lastArgs,
-        thisArg = lastThis;
-
-    lastArgs = lastThis = undefined;
-    lastInvokeTime = time;
-    result = func.apply(thisArg, args);
-    return result;
-  }
-
-  function leadingEdge(time) {
-    // Reset any `maxWait` timer.
-    lastInvokeTime = time;
-    // Start the timer for the trailing edge.
-    timerId = setTimeout(timerExpired, wait);
-    // Invoke the leading edge.
-    return leading ? invokeFunc(time) : result;
-  }
-
-  function remainingWait(time) {
-    var timeSinceLastCall = time - lastCallTime,
-        timeSinceLastInvoke = time - lastInvokeTime,
-        result = wait - timeSinceLastCall;
-
-    return maxing ? nativeMin$2(result, maxWait - timeSinceLastInvoke) : result;
-  }
-
-  function shouldInvoke(time) {
-    var timeSinceLastCall = time - lastCallTime,
-        timeSinceLastInvoke = time - lastInvokeTime;
-
-    // Either this is the first call, activity has stopped and we're at the
-    // trailing edge, the system time has gone backwards and we're treating
-    // it as the trailing edge, or we've hit the `maxWait` limit.
-    return (lastCallTime === undefined || (timeSinceLastCall >= wait) ||
-      (timeSinceLastCall < 0) || (maxing && timeSinceLastInvoke >= maxWait));
-  }
-
-  function timerExpired() {
-    var time = now();
-    if (shouldInvoke(time)) {
-      return trailingEdge(time);
-    }
-    // Restart the timer.
-    timerId = setTimeout(timerExpired, remainingWait(time));
-  }
-
-  function trailingEdge(time) {
-    timerId = undefined;
-
-    // Only invoke if we have `lastArgs` which means `func` has been
-    // debounced at least once.
-    if (trailing && lastArgs) {
-      return invokeFunc(time);
-    }
-    lastArgs = lastThis = undefined;
-    return result;
-  }
-
-  function cancel() {
-    if (timerId !== undefined) {
-      clearTimeout(timerId);
-    }
-    lastInvokeTime = 0;
-    lastArgs = lastCallTime = lastThis = timerId = undefined;
-  }
-
-  function flush() {
-    return timerId === undefined ? result : trailingEdge(now());
-  }
-
-  function debounced() {
-    var time = now(),
-        isInvoking = shouldInvoke(time);
-
-    lastArgs = arguments;
-    lastThis = this;
-    lastCallTime = time;
-
-    if (isInvoking) {
-      if (timerId === undefined) {
-        return leadingEdge(lastCallTime);
-      }
-      if (maxing) {
-        // Handle invocations in a tight loop.
-        timerId = setTimeout(timerExpired, wait);
-        return invokeFunc(lastCallTime);
-      }
-    }
-    if (timerId === undefined) {
-      timerId = setTimeout(timerExpired, wait);
-    }
-    return result;
-  }
-  debounced.cancel = cancel;
-  debounced.flush = flush;
-  return debounced;
-}
-
-var debounce_1 = debounce$1;
-
-var debounce = debounce_1;
-var isObject$9 = isObject_1;
-
-/** Error message constants. */
-var FUNC_ERROR_TEXT$2 = 'Expected a function';
+var each = forEach;
 
 var identity$5 = identity_1;
 var overRest$2 = _overRest;
@@ -7435,9 +7136,9 @@ function baseRest$2(func, start) {
 var _baseRest = baseRest$2;
 
 var eq$4 = eq_1;
-var isArrayLike$5 = isArrayLike_1;
+var isArrayLike$4 = isArrayLike_1;
 var isIndex$4 = _isIndex;
-var isObject$11 = isObject_1;
+var isObject$9 = isObject_1;
 
 /**
  * Checks if the given arguments are from an iteratee call.
@@ -7450,12 +7151,12 @@ var isObject$11 = isObject_1;
  *  else `false`.
  */
 function isIterateeCall$1(value, index, object) {
-  if (!isObject$11(object)) {
+  if (!isObject$9(object)) {
     return false;
   }
   var type = typeof index;
   if (type == 'number'
-        ? (isArrayLike$5(object) && isIndex$4(index, object.length))
+        ? (isArrayLike$4(object) && isIndex$4(index, object.length))
         : (type == 'string' && index in object)
       ) {
     return eq$4(object[index], value);
@@ -7875,8 +7576,7 @@ var vdata = function (store) {
   return {
     install: function install(Vue, options) {
       options = defaults_1(options || {}, {
-        events: ['add', 'change', 'remove'],
-        throttle: 150
+        events: ['add', 'change', 'remove']
       });
 
       Vue.prototype.$store = store;
@@ -7890,11 +7590,11 @@ var vdata = function (store) {
           if (hasVdata(this)) {
             (function () {
               var self = _this;
-              _this._vdataHandler = function (collection) {
-                console.log('vdata[' + self._uid + '] running for', collection);
-                self.$options.vdata.call(self, store, collection);
+              _this._vdataHandler = function (event) {
+                console.log('vdata[' + self._uid + '] running for', event);
+                self.$options.vdata.call(self, store, event);
               };
-              map(function (event) {
+              each(function (event) {
                 return store.on(event, self._vdataHandler);
               })(options.events);
               console.log('vdata[' + self._uid + ']: ready. listening.', options.events);
@@ -7903,14 +7603,14 @@ var vdata = function (store) {
         },
         beforeUpdate: function beforeUpdate() {
           if (hasVdata(this)) {
-            this._vdataHandler('vue');
+            this._vdataHandler('vm[' + this._uid + ']@beforeUpdate');
           }
         },
         beforeDestroy: function beforeDestroy() {
           var _this2 = this;
 
           if (hasVdata(this)) {
-            map(function (event) {
+            each(function (event) {
               return store.off(event, _this2._vdataHandler);
             })(options.events);
           }

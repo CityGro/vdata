@@ -1,7 +1,5 @@
 import each from 'lodash/fp/each'
-import map from 'lodash/fp/map'
 import property from 'lodash/property'
-import throttle from 'lodash/throttle'
 import defaults from 'lodash/defaults'
 
 import {AsyncDataMixin} from '../lib/vue-async-data/src/main'
@@ -19,8 +17,7 @@ export default function (store) {
   return {
     install (Vue, options) {
       options = defaults(options || {}, {
-        events: ['add', 'change', 'remove'],
-        throttle: 150
+        events: ['add', 'change', 'remove']
       })
 
       Vue.prototype.$store = store
@@ -31,22 +28,22 @@ export default function (store) {
         beforeCreate () {
           if (hasVdata(this)) {
             const self = this
-            this._vdataHandler = (collection) => {
-              console.log(`vdata[${self._uid}] running for`, collection)
-              self.$options.vdata.call(self, store, collection)
+            this._vdataHandler = (event) => {
+              console.log(`vdata[${self._uid}] running for`, event)
+              self.$options.vdata.call(self, store, event)
             }
-            map((event) => store.on(event, self._vdataHandler))(options.events)
+            each((event) => store.on(event, self._vdataHandler))(options.events)
             console.log(`vdata[${self._uid}]: ready. listening.`, options.events)
           }
         },
         beforeUpdate () {
           if (hasVdata(this)) {
-            this._vdataHandler('vue')
+            this._vdataHandler(`vm[${this._uid}]@beforeUpdate`)
           }
         },
         beforeDestroy () {
           if (hasVdata(this)) {
-            map((event) => store.off(event, this._vdataHandler))(options.events)
+            each((event) => store.off(event, this._vdataHandler))(options.events)
           }
         }
       })

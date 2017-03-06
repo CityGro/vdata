@@ -21,8 +21,7 @@ const Ed = Vue.component('ed', {
   `,
   props: {
     value: {
-      type: Object,
-      required: true
+      type: Object
     }
   },
   methods: {
@@ -51,11 +50,8 @@ const Ax = Vue.component('ax', {
       user: {name: 'top kek'}
     }
   },
-  updated () {
-    console.log(this.value)
-  },
   vdata () {
-    this.user = this.$store.get('users', this.value)
+    this.user = this.$store.get('users', this.value) || this.user
   },
   asyncData: {
     user () {
