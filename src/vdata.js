@@ -6,11 +6,6 @@ import defaults from 'lodash/defaults'
 
 import {AsyncDataMixin} from '../lib/vue-async-data/src/main'
 
-const forceUpdate = each((child) => setTimeout(() => {
-  child.$forceUpdate()
-  forceUpdate(child.$children)
-}, 0))
-
 const getVdata = property('$options.vdata')
 
 const hasVdata = (o) => getVdata(o) !== undefined
@@ -36,21 +31,23 @@ export default function (store) {
         beforeCreate () {
           if (hasVdata(this)) {
             const self = this
-            this._vdata_handler = throttle((collection) => {
-              console.log('vdata running for', collection)
+            this._vdataHandler = (collection) => {
+              console.log(`vdata[${self._uid}] running for`, collection)
               self.$options.vdata.call(self, store, collection)
-            }, options.throttle, {leading: true})
-            map((event) => store.on(event, this._vdata_handler))(options.events)
-            console.log(`vdata[${this._uid}]: ready. listening.`, options.events)
+            }
+            map((event) => store.on(event, self._vdataHandler))(options.events)
+            console.log(`vdata[${self._uid}]: ready. listening.`, options.events)
           }
         },
         beforeUpdate () {
           if (hasVdata(this)) {
-            this.$options.vdata.call(this, store, 'vue')
+            this._vdataHandler('vue')
           }
         },
         beforeDestroy () {
-          map((event) => store.off(event, this._vdata_handler))(options.events)
+          if (hasVdata(this)) {
+            map((event) => store.off(event, this._vdataHandler))(options.events)
+          }
         }
       })
     }

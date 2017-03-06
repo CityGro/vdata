@@ -7,7 +7,9 @@ const store = new JSData.DataStore()
 store.registerAdapter('http', new JSDataHttp.HttpAdapter(), {default: true})
 store.defineMapper('users')
 
-Vue.use(vdata(store))
+Vue.use(vdata(store), {
+  events: ['all']
+})
 
 const Ed = Vue.component('ed', {
   template: `
