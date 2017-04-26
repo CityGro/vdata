@@ -27,21 +27,28 @@ export default function (store) {
       Vue.mixin({
         methods: {
           $vdata () {
-            this._vdataHandler('change')
+            if (hasVdata(this)) {
+              this._vdataHandler('change')
+            }
           }
         },
         beforeCreate () {
           if (hasVdata(this)) {
             const self = this
             this._vdataHandler = (event) => {
-              if (includes(options.events, event)) {
-                console.log(`vdata[${self._uid}] running for`, event)
-                self.$options.vdata.call(self, store, event)
-              }
+              this.$nextTick(() => {
+                if (includes(options.events, event)) {
+                  console.log(`vdata[${self._uid}] running for`, event)
+                  self.$options.vdata.call(self, store, event)
+                }
+              })
             }
             store.on('all', self._vdataHandler)
-            console.log(`vdata[${self._uid}]: ready. listening.`, options.events)
+            console.log(`vdata[${self._uid}]: ready. listening on`, options.events)
           }
+        },
+        created () {
+          this.$vdata()
         },
         beforeDestroy () {
           if (hasVdata(this)) {

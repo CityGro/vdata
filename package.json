@@ -15,10 +15,11 @@
     "js-data"
   ],
   "scripts": {
+    "lint": "eslint src",
     "test": "jest",
     "build": "npm run build:cjs && npm run build:umd",
-    "build:umd": "webpack --config webpack.config.umd.js",
-    "build:cjs": "rollup -c rollup.config.cjs.js",
+    "build:umd": "webpack --config webpack.conf.umd.js",
+    "build:cjs": "rollup -c rollup.conf.cjs.js",
     "prepublish": "npm run build && npm test",
     "start": "cross-env BABEL_ENV=test node example/dev-server.js"
   },

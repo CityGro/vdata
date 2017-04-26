@@ -37,7 +37,7 @@ describe('VData', () => {
       Vue.config.isUnknownElement = () => false
       const Babby = Vue.component('babby', {
         render (createElement) {
-          return createElement('p', this.user.name)
+          return createElement('p', (this.user) ? this.user.name : '')
         },
         props: ['user']
       })
@@ -78,11 +78,16 @@ describe('VData', () => {
           }
         },
         vdata (store) {
-          this.user = store.get('users', 1)
+          const user = store.get('users', 1)
+          if (user) {
+            this.user = user
+          }
         },
         methods: {
           rename (to) {
+            console.log(this.user)
             return new Promise((resolve) => {
+              console.log(this.user)
               this.user.name = to
               resolve(this.user)
             })

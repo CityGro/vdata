@@ -63,7 +63,7 @@ vm.rename('xj9').then((user) => {
 
 ## vm options
 
-### `vm.$options.vdata(store: JSData.DataStore, collection: string): void`
+### `vm.$options.vdata(store: JSData.DataStore, event: string): void`
 
 > note that `@citygro/vdata` does not react to changes on `vm`, you will need to manually trigger updates if your
 > bindings depend on any `vm` state.
