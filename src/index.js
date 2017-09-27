@@ -1,3 +1,5 @@
 import vdata from './vdata'
+import createSyncMixin from './createSyncMixin'
+import DataFlowMixin from './DataFlowMixin'
 
-export {vdata}
+export {vdata, createSyncMixin, DataFlowMixin}
