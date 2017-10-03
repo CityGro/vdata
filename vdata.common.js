@@ -2,10 +2,6 @@
 
 Object.defineProperty(exports, '__esModule', { value: true });
 
-function _interopDefault (ex) { return (ex && (typeof ex === 'object') && 'default' in ex) ? ex['default'] : ex; }
-
-var entires = _interopDefault(require('lodash-es/entires'));
-
 var commonjsGlobal = typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {};
 
 
@@ -5069,7 +5065,7 @@ var registerSchemas = createCommonjsModule(function (module, exports) {
 Object.defineProperty(exports, "__esModule", { value: true });
 
 function default_1($store, modelMap) {
-    entires.default(modelMap).forEach(function (_a) {
+    entries_1.default(modelMap).forEach(function (_a) {
         var modelName = _a[0], model = _a[1];
         if (!options.idAttribute) {
             options.idAttribute = '_id';

@@ -17,7 +17,7 @@
   "scripts": {
     "test": "jest",
     "build": "npm run build:compile && npm run build:rollup",
-    "lint": "tslint -c tslint.json 'src/**/*.{ts,tsx}'",
+    "lint": "tslint -c tslint.json 'src/**/*.{ts,tsx}' || true",
     "build:compile": "tsc || true",
     "build:rollup": "rollup -c rollup.conf.js",
     "pretest": "npm run lint",
@@ -25,7 +25,6 @@
     "start": "cross-env BABEL_ENV=test node example/dev-server.js"
   },
   "jest": {
-    "rootDir": "src",
     "moduleFileExtensions": [
       "ts",
       "tsx",
@@ -33,14 +32,13 @@
       "json"
     ],
     "transform": {
-      "\\.(ts|tsx)$": "<rootDir>/node_modules/ts-jest/preprocessor.js"
+      "^.+\\.tsx?$": "<rootDir>/node_modules/ts-jest/preprocessor.js"
     },
-    "testPathIgnorePatterns": [
-      "<rootDir>/(build|docs|node_modules)/"
-    ],
+    "testRegex": "(/__tests__/.*|(\\.|/)(test|spec))\\.(jsx?|tsx?)$",
     "testEnvironment": "jsdom"
   },
   "devDependencies": {
+    "@types/jest": "^21.1.2",
     "@types/lodash-es": "^4.14.7",
     "@types/q": "^1.0.5",
     "cross-env": "^3.1.4",

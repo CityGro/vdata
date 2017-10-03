@@ -1,4 +1,4 @@
-import entries from 'lodash-es/entires'
+import entries from 'lodash-es/entries'
 
 export default function($store, modelMap) {
     entries(modelMap).forEach(([modelName, model]) => {
