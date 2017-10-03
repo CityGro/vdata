@@ -1,4 +1,4 @@
-import isFunction from 'lodash/isFunction'
+import isFunction from 'lodash-es/isFunction'
 
 export default (o) => {
   // needs more accurate heuristics, but this is a decent (naive) test

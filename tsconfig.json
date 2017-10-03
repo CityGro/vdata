@@ -1,0 +1,16 @@
+{
+  "compilerOptions": {
+    "outDir": "./lib/",
+    "sourceMap": true,
+    "strict": true,
+    "noImplicitReturns": true,
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "target": "es5",
+    "jsx": "react",
+    "jsxFactory": "h"
+  },
+  "include": [
+    "./src/**/*"
+  ]
+}

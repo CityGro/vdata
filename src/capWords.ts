@@ -1,5 +1,5 @@
-import camelCase from 'lodash/camelCase'
-import tail from 'lodash/tail'
+import camelCase from 'lodash-es/camelCase'
+import tail from 'lodash-es/tail'
 
 /**
  * convert snake_case or camelCase strings to CapCase
