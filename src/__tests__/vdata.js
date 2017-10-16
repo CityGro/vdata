@@ -13,15 +13,24 @@ describe('VData', () => {
     require('localstorage-polyfill')
     vdata = require('../vdata').default
     Vue = require('vue')
-    JSData = require('js-data')
     Adapter = require('js-data-localstorage').LocalStorageAdapter
-    store = new JSData.DataStore()
-    store.registerAdapter('ls', new Adapter(), {default: true})
-    store.defineMapper('users')
-    store.defineMapper('comments')
-    store.create('users', {id: 1, name: 'omanizer'})
-    store.create('comments', {id: 1, userId: 1})
-    Vue.use(vdata(store))
+    Vue.use(vdata, {
+      models: {
+        user: {
+          name: 'users'
+        },
+        comment: {
+          name: 'comments'
+        }
+      },
+      adapters: {
+        ls: {
+          adapter: new Adapter()
+        }
+      }
+    })
+    Vue.$store.create('users', {id: 1, name: 'omanizer'})
+    Vue.$store.create('comments', {id: 1, userId: 1})
   })
 
   describe('vdata', () => {
