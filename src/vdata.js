@@ -1,3 +1,4 @@
+import * as JSData from 'js-data'
 import AsyncDataMixin from './asyncData'
 import Q from 'q'
 import defaults from 'lodash/defaults'
@@ -6,11 +7,10 @@ import isArray from 'lodash/isArray'
 import isEmpty from 'lodash/isEmpty'
 import property from 'lodash/property'
 import registerAdapters from './registerAdapters'
+import registerExternalEvents from './registerExternalEvents'
 import registerSchemas from './registerSchemas'
 import throttle from 'lodash/throttle'
-import * as JSData from 'js-data'
 import {DataStore} from 'js-data'
-import {registerEvents, unbindEvents} from './externalEvents'
 
 const getVdata = property('$options.vdata')
 
@@ -44,6 +44,7 @@ export default {
     })
     registerSchemas(store, options.models)
     registerAdapters(store, options.adapters)
+    registerExternalEvents(Vue, options.externalEvents)
     console.log('[@citygro/vdata] store ready!', store)
     Vue.mixin(AsyncDataMixin)
     Vue.mixin({
@@ -55,7 +56,6 @@ export default {
         }
       },
       beforeCreate () {
-        registerEvents(this, options.externalEvents)
         if (hasVdata(this)) {
           this._vdataHandler = throttle(function () {
             const event = arguments[0]
@@ -72,7 +72,6 @@ export default {
         this.$vdata()
       },
       beforeDestroy () {
-        unbindEvents(this, options.externalEvents)
         if (hasVdata(this)) {
           store.off('all', this._vdataHandler)
         }

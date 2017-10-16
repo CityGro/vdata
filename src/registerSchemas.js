@@ -9,7 +9,7 @@ export default function ($store, modelMap = {}) {
   entries(modelMap).forEach(([modelName, schema]) => {
     let model = {...schema}
     if (!get(model, 'options.idAttribute')) {
-      model.options = {...(model.options || {}), idAttribute: '_id'}
+      model.options = {...(model.options || {}), idAttribute: 'id'}
     }
     $store.defineMapper(model.name || modelName, model.options)
   })
