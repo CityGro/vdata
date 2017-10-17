@@ -19998,9 +19998,9 @@ var registerAdapters = function ($store, adapters) {
         adapterDef = _ref2[1];
 
     if (adaptersMap.length === 1) {
-      $store.registerAdapter(key, adapterDef.instance, adapterDef.options || { default: true });
+      $store.registerAdapter(key, adapterDef.adapter, adapterDef.options || { default: true });
     } else {
-      $store.registerAdapter(key, adapterDef.instance, adapterDef.options || {});
+      $store.registerAdapter(key, adapterDef.adapter, adapterDef.options || {});
     }
   });
 };
