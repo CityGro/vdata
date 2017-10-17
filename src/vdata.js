@@ -23,7 +23,7 @@ let _Vue = {}
  */
 export default {
   createConfig (fn) {
-    return fn(_Vue)
+    return fn(new Proxy(_Vue, {}))
   },
   install (Vue, options) {
     _Vue = Vue

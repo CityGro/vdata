@@ -53,9 +53,9 @@ const createAsyncReload = (thisArg) => throttle(function (propertyName, skipLazy
         this[`${prop}Promise`] = asyncData[prop].bind(this)
       }
       let setError = (err) => {
-        console.error(`[@citygro/vdata<${this._uid}>]`, err)
         this[`${prop}Error`] = err;
         if (err) {
+          console.error(`[@citygro/vdata<${this._uid}>]`, err)
           this.asyncError = true;
         } else {
           this.asyncError = !!names.find((n) => this[`${n}Error`]);

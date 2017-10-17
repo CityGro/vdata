@@ -17067,9 +17067,9 @@ var createAsyncReload = function createAsyncReload(thisArg) {
               _this[prop + 'Promise'] = asyncData[prop].bind(_this);
             };
             var setError = function setError(err) {
-              console.error('[@citygro/vdata<' + _this._uid + '>]', err);
               _this[prop + 'Error'] = err;
               if (err) {
+                console.error('[@citygro/vdata<' + _this._uid + '>]', err);
                 _this.asyncError = true;
               } else {
                 _this.asyncError = !!names.find(function (n) {
@@ -20091,7 +20091,7 @@ var _Vue = {};
  */
 var vdata = {
   createConfig: function createConfig(fn) {
-    return fn(_Vue);
+    return fn(new Proxy(_Vue, {}));
   },
   install: function install(Vue, options) {
     _Vue = Vue;
