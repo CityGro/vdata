@@ -32,6 +32,11 @@ export default {
       events: ['add', 'change', 'remove']
     })
     const store = new DataStore()
+    Object.defineProperty(store, 'vdataOptions', {
+      get () {
+        return options
+      }
+    })
     Object.defineProperty(Vue, '$store', {
       get () {
         return store
@@ -57,13 +62,14 @@ export default {
       },
       beforeCreate () {
         if (hasVdata(this)) {
+          const self = this
           this._vdataHandler = throttle(function () {
             const event = arguments[0]
             if (includes(options.events, event)) {
               console.log(`[@citygro/vdata<${self._uid}>] running for ${event}`)
-              this.$options.vdata.apply(this, [store, ...arguments])
+              self.$options.vdata.apply(self, [store, ...arguments])
             }
-          }.bind(this), 10)
+          }.bind(self), 10)
           store.on('all', self._vdataHandler)
           console.log(`[@citygro/vdata<${self._uid}>]: ready. listening on`, options.events)
         }

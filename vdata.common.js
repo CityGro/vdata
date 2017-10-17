@@ -20099,6 +20099,11 @@ var vdata = {
       events: ['add', 'change', 'remove']
     });
     var store = new DataStore$1();
+    Object.defineProperty(store, 'vdataOptions', {
+      get: function get() {
+        return options;
+      }
+    });
     Object.defineProperty(Vue, '$store', {
       get: function get() {
         return store;
@@ -20124,13 +20129,14 @@ var vdata = {
       },
       beforeCreate: function beforeCreate() {
         if (hasVdata(this)) {
+          var self = this;
           this._vdataHandler = throttle_1(function () {
             var event = arguments[0];
             if (includes_1(options.events, event)) {
               console.log('[@citygro/vdata<' + self._uid + '>] running for ' + event);
-              this.$options.vdata.apply(this, [store].concat(Array.prototype.slice.call(arguments)));
+              self.$options.vdata.apply(self, [store].concat(Array.prototype.slice.call(arguments)));
             }
-          }.bind(this), 10);
+          }.bind(self), 10);
           store.on('all', self._vdataHandler);
           console.log('[@citygro/vdata<' + self._uid + '>]: ready. listening on', options.events);
         }
