@@ -1,13 +1,24 @@
 import Vue from 'vue'
 import {vdata} from '../src/index'
-import * as JSData from 'js-data'
 import * as JSDataHttp from 'js-data-http'
 
-const store = new JSData.DataStore()
-store.registerAdapter('http', new JSDataHttp.HttpAdapter(), {default: true})
-store.defineMapper('users')
-
-Vue.use(vdata(store))
+Vue.use(vdata, vdata.createConfig((V) => ({
+  models: {
+    user: {
+      name: 'users'
+    }
+  },
+  adapters: {
+    http: {
+      adapter: new JSDataHttp.HttpAdapter({
+        deserialize (config, response, opts) {
+          console.log(V.$store)
+          return response.data
+        }
+      })
+    }
+  }
+})))
 
 const Ed = Vue.component('ed', {
   template: `
@@ -100,8 +111,8 @@ const Bx = Vue.component('bx', {
     createUser () {
       this.$store.create('users', {name: 'new user'})
     },
-    getUsers (store) {
-      return store.getAll('users')
+    getUsers () {
+      return this.$store.getAll('users')
     },
     getStatus (id) {
       return {
@@ -117,7 +128,7 @@ const Bx = Vue.component('bx', {
     }
   },
   vdata () {
-    this.users = this.getUsers(store)
+    this.users = this.getUsers()
   },
   asyncData: {
     users () {

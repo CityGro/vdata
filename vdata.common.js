@@ -18843,183 +18843,6 @@ function includes(collection, value, fromIndex, guard) {
 
 var includes_1 = includes;
 
-var getNative$2 = _getNative;
-var root$4 = _root;
-
-/* Built-in method references that are verified to be native. */
-var DataView$1 = getNative$2(root$4, 'DataView');
-
-var _DataView = DataView$1;
-
-var getNative$3 = _getNative;
-var root$5 = _root;
-
-/* Built-in method references that are verified to be native. */
-var Map$1 = getNative$3(root$5, 'Map');
-
-var _Map = Map$1;
-
-var getNative$4 = _getNative;
-var root$6 = _root;
-
-/* Built-in method references that are verified to be native. */
-var Promise$2 = getNative$4(root$6, 'Promise');
-
-var _Promise = Promise$2;
-
-var getNative$5 = _getNative;
-var root$7 = _root;
-
-/* Built-in method references that are verified to be native. */
-var Set$1 = getNative$5(root$7, 'Set');
-
-var _Set = Set$1;
-
-var getNative$6 = _getNative;
-var root$8 = _root;
-
-/* Built-in method references that are verified to be native. */
-var WeakMap$1 = getNative$6(root$8, 'WeakMap');
-
-var _WeakMap = WeakMap$1;
-
-var DataView = _DataView;
-var Map = _Map;
-var Promise$1 = _Promise;
-var Set = _Set;
-var WeakMap = _WeakMap;
-var baseGetTag$6 = _baseGetTag;
-var toSource$2 = _toSource;
-
-/** `Object#toString` result references. */
-var mapTag$2 = '[object Map]';
-var objectTag$1 = '[object Object]';
-var promiseTag = '[object Promise]';
-var setTag$2 = '[object Set]';
-var weakMapTag$1 = '[object WeakMap]';
-
-var dataViewTag$1 = '[object DataView]';
-
-/** Used to detect maps, sets, and weakmaps. */
-var dataViewCtorString = toSource$2(DataView);
-var mapCtorString = toSource$2(Map);
-var promiseCtorString = toSource$2(Promise$1);
-var setCtorString = toSource$2(Set);
-var weakMapCtorString = toSource$2(WeakMap);
-
-/**
- * Gets the `toStringTag` of `value`.
- *
- * @private
- * @param {*} value The value to query.
- * @returns {string} Returns the `toStringTag`.
- */
-var getTag$1 = baseGetTag$6;
-
-// Fallback for data views, maps, sets, and weak maps in IE 11 and promises in Node.js < 6.
-if ((DataView && getTag$1(new DataView(new ArrayBuffer(1))) != dataViewTag$1) ||
-    (Map && getTag$1(new Map) != mapTag$2) ||
-    (Promise$1 && getTag$1(Promise$1.resolve()) != promiseTag) ||
-    (Set && getTag$1(new Set) != setTag$2) ||
-    (WeakMap && getTag$1(new WeakMap) != weakMapTag$1)) {
-  getTag$1 = function(value) {
-    var result = baseGetTag$6(value),
-        Ctor = result == objectTag$1 ? value.constructor : undefined,
-        ctorString = Ctor ? toSource$2(Ctor) : '';
-
-    if (ctorString) {
-      switch (ctorString) {
-        case dataViewCtorString: return dataViewTag$1;
-        case mapCtorString: return mapTag$2;
-        case promiseCtorString: return promiseTag;
-        case setCtorString: return setTag$2;
-        case weakMapCtorString: return weakMapTag$1;
-      }
-    }
-    return result;
-  };
-}
-
-var _getTag = getTag$1;
-
-var baseKeys$2 = _baseKeys;
-var getTag = _getTag;
-var isArguments$2 = isArguments_1;
-var isArray$3 = isArray_1;
-var isArrayLike$5 = isArrayLike_1;
-var isBuffer$1 = isBuffer_1;
-var isPrototype$3 = _isPrototype;
-var isTypedArray$2 = isTypedArray_1;
-
-/** `Object#toString` result references. */
-var mapTag$1 = '[object Map]';
-var setTag$1 = '[object Set]';
-
-/** Used for built-in method references. */
-var objectProto$10 = Object.prototype;
-
-/** Used to check objects for own properties. */
-var hasOwnProperty$8 = objectProto$10.hasOwnProperty;
-
-/**
- * Checks if `value` is an empty object, collection, map, or set.
- *
- * Objects are considered empty if they have no own enumerable string keyed
- * properties.
- *
- * Array-like values such as `arguments` objects, arrays, buffers, strings, or
- * jQuery-like collections are considered empty if they have a `length` of `0`.
- * Similarly, maps and sets are considered empty if they have a `size` of `0`.
- *
- * @static
- * @memberOf _
- * @since 0.1.0
- * @category Lang
- * @param {*} value The value to check.
- * @returns {boolean} Returns `true` if `value` is empty, else `false`.
- * @example
- *
- * _.isEmpty(null);
- * // => true
- *
- * _.isEmpty(true);
- * // => true
- *
- * _.isEmpty(1);
- * // => true
- *
- * _.isEmpty([1, 2, 3]);
- * // => false
- *
- * _.isEmpty({ 'a': 1 });
- * // => false
- */
-function isEmpty(value) {
-  if (value == null) {
-    return true;
-  }
-  if (isArrayLike$5(value) &&
-      (isArray$3(value) || typeof value == 'string' || typeof value.splice == 'function' ||
-        isBuffer$1(value) || isTypedArray$2(value) || isArguments$2(value))) {
-    return !value.length;
-  }
-  var tag = getTag(value);
-  if (tag == mapTag$1 || tag == setTag$1) {
-    return !value.size;
-  }
-  if (isPrototype$3(value)) {
-    return !baseKeys$2(value).length;
-  }
-  for (var key in value) {
-    if (hasOwnProperty$8.call(value, key)) {
-      return false;
-    }
-  }
-  return true;
-}
-
-var isEmpty_1 = isEmpty;
-
 /**
  * The base implementation of `_.property` without support for deep paths.
  *
@@ -19035,7 +18858,7 @@ function baseProperty$1(key) {
 
 var _baseProperty = baseProperty$1;
 
-var isArray$5 = isArray_1;
+var isArray$4 = isArray_1;
 var isSymbol$2 = isSymbol_1;
 
 /** Used to match property names within property paths. */
@@ -19051,7 +18874,7 @@ var reIsPlainProp = /^\w*$/;
  * @returns {boolean} Returns `true` if `value` is a property name, else `false`.
  */
 function isKey$2(value, object) {
-  if (isArray$5(value)) {
+  if (isArray$4(value)) {
     return false;
   }
   var type = typeof value;
@@ -19065,10 +18888,10 @@ function isKey$2(value, object) {
 
 var _isKey = isKey$2;
 
-var getNative$7 = _getNative;
+var getNative$2 = _getNative;
 
 /* Built-in method references that are verified to be native. */
-var nativeCreate$1 = getNative$7(Object, 'create');
+var nativeCreate$1 = getNative$2(Object, 'create');
 
 var _nativeCreate = nativeCreate$1;
 
@@ -19112,10 +18935,10 @@ var nativeCreate$2 = _nativeCreate;
 var HASH_UNDEFINED = '__lodash_hash_undefined__';
 
 /** Used for built-in method references. */
-var objectProto$11 = Object.prototype;
+var objectProto$10 = Object.prototype;
 
 /** Used to check objects for own properties. */
-var hasOwnProperty$9 = objectProto$11.hasOwnProperty;
+var hasOwnProperty$8 = objectProto$10.hasOwnProperty;
 
 /**
  * Gets the hash value for `key`.
@@ -19132,7 +18955,7 @@ function hashGet$1(key) {
     var result = data[key];
     return result === HASH_UNDEFINED ? undefined : result;
   }
-  return hasOwnProperty$9.call(data, key) ? data[key] : undefined;
+  return hasOwnProperty$8.call(data, key) ? data[key] : undefined;
 }
 
 var _hashGet = hashGet$1;
@@ -19140,10 +18963,10 @@ var _hashGet = hashGet$1;
 var nativeCreate$3 = _nativeCreate;
 
 /** Used for built-in method references. */
-var objectProto$12 = Object.prototype;
+var objectProto$11 = Object.prototype;
 
 /** Used to check objects for own properties. */
-var hasOwnProperty$10 = objectProto$12.hasOwnProperty;
+var hasOwnProperty$9 = objectProto$11.hasOwnProperty;
 
 /**
  * Checks if a hash value for `key` exists.
@@ -19156,7 +18979,7 @@ var hasOwnProperty$10 = objectProto$12.hasOwnProperty;
  */
 function hashHas$1(key) {
   var data = this.__data__;
-  return nativeCreate$3 ? (data[key] !== undefined) : hasOwnProperty$10.call(data, key);
+  return nativeCreate$3 ? (data[key] !== undefined) : hasOwnProperty$9.call(data, key);
 }
 
 var _hashHas = hashHas$1;
@@ -19387,9 +19210,17 @@ ListCache$1.prototype.set = listCacheSet;
 
 var _ListCache = ListCache$1;
 
+var getNative$3 = _getNative;
+var root$4 = _root;
+
+/* Built-in method references that are verified to be native. */
+var Map$1 = getNative$3(root$4, 'Map');
+
+var _Map = Map$1;
+
 var Hash = _Hash;
 var ListCache = _ListCache;
-var Map$2 = _Map;
+var Map = _Map;
 
 /**
  * Removes all key-value entries from the map.
@@ -19402,7 +19233,7 @@ function mapCacheClear$1() {
   this.size = 0;
   this.__data__ = {
     'hash': new Hash,
-    'map': new (Map$2 || ListCache),
+    'map': new (Map || ListCache),
     'string': new Hash
   };
 }
@@ -19685,7 +19516,7 @@ var _stringToPath = stringToPath$1;
 
 var Symbol$4 = _Symbol;
 var arrayMap$2 = _arrayMap;
-var isArray$6 = isArray_1;
+var isArray$5 = isArray_1;
 var isSymbol$3 = isSymbol_1;
 
 /** Used as references for various `Number` constants. */
@@ -19708,7 +19539,7 @@ function baseToString$1(value) {
   if (typeof value == 'string') {
     return value;
   }
-  if (isArray$6(value)) {
+  if (isArray$5(value)) {
     // Recursively convert values (susceptible to call stack limits).
     return arrayMap$2(value, baseToString$1) + '';
   }
@@ -19750,7 +19581,7 @@ function toString$1(value) {
 
 var toString_1 = toString$1;
 
-var isArray$4 = isArray_1;
+var isArray$3 = isArray_1;
 var isKey$1 = _isKey;
 var stringToPath = _stringToPath;
 var toString = toString_1;
@@ -19764,7 +19595,7 @@ var toString = toString_1;
  * @returns {Array} Returns the cast property path array.
  */
 function castPath$1(value, object) {
-  if (isArray$4(value)) {
+  if (isArray$3(value)) {
     return value;
   }
   return isKey$1(value, object) ? [value] : stringToPath(toString(value));
@@ -19888,6 +19719,97 @@ function baseToPairs$1(object, props) {
 
 var _baseToPairs = baseToPairs$1;
 
+var getNative$4 = _getNative;
+var root$5 = _root;
+
+/* Built-in method references that are verified to be native. */
+var DataView$1 = getNative$4(root$5, 'DataView');
+
+var _DataView = DataView$1;
+
+var getNative$5 = _getNative;
+var root$6 = _root;
+
+/* Built-in method references that are verified to be native. */
+var Promise$2 = getNative$5(root$6, 'Promise');
+
+var _Promise = Promise$2;
+
+var getNative$6 = _getNative;
+var root$7 = _root;
+
+/* Built-in method references that are verified to be native. */
+var Set$1 = getNative$6(root$7, 'Set');
+
+var _Set = Set$1;
+
+var getNative$7 = _getNative;
+var root$8 = _root;
+
+/* Built-in method references that are verified to be native. */
+var WeakMap$1 = getNative$7(root$8, 'WeakMap');
+
+var _WeakMap = WeakMap$1;
+
+var DataView = _DataView;
+var Map$2 = _Map;
+var Promise$1 = _Promise;
+var Set = _Set;
+var WeakMap = _WeakMap;
+var baseGetTag$6 = _baseGetTag;
+var toSource$2 = _toSource;
+
+/** `Object#toString` result references. */
+var mapTag$2 = '[object Map]';
+var objectTag$1 = '[object Object]';
+var promiseTag = '[object Promise]';
+var setTag$2 = '[object Set]';
+var weakMapTag$1 = '[object WeakMap]';
+
+var dataViewTag$1 = '[object DataView]';
+
+/** Used to detect maps, sets, and weakmaps. */
+var dataViewCtorString = toSource$2(DataView);
+var mapCtorString = toSource$2(Map$2);
+var promiseCtorString = toSource$2(Promise$1);
+var setCtorString = toSource$2(Set);
+var weakMapCtorString = toSource$2(WeakMap);
+
+/**
+ * Gets the `toStringTag` of `value`.
+ *
+ * @private
+ * @param {*} value The value to query.
+ * @returns {string} Returns the `toStringTag`.
+ */
+var getTag$1 = baseGetTag$6;
+
+// Fallback for data views, maps, sets, and weak maps in IE 11 and promises in Node.js < 6.
+if ((DataView && getTag$1(new DataView(new ArrayBuffer(1))) != dataViewTag$1) ||
+    (Map$2 && getTag$1(new Map$2) != mapTag$2) ||
+    (Promise$1 && getTag$1(Promise$1.resolve()) != promiseTag) ||
+    (Set && getTag$1(new Set) != setTag$2) ||
+    (WeakMap && getTag$1(new WeakMap) != weakMapTag$1)) {
+  getTag$1 = function(value) {
+    var result = baseGetTag$6(value),
+        Ctor = result == objectTag$1 ? value.constructor : undefined,
+        ctorString = Ctor ? toSource$2(Ctor) : '';
+
+    if (ctorString) {
+      switch (ctorString) {
+        case dataViewCtorString: return dataViewTag$1;
+        case mapCtorString: return mapTag$2;
+        case promiseCtorString: return promiseTag;
+        case setCtorString: return setTag$2;
+        case weakMapCtorString: return weakMapTag$1;
+      }
+    }
+    return result;
+  };
+}
+
+var _getTag = getTag$1;
+
 /**
  * Converts `map` to its key-value pairs.
  *
@@ -19927,13 +19849,13 @@ function setToPairs$1(set) {
 var _setToPairs = setToPairs$1;
 
 var baseToPairs = _baseToPairs;
-var getTag$2 = _getTag;
+var getTag = _getTag;
 var mapToArray = _mapToArray;
 var setToPairs = _setToPairs;
 
 /** `Object#toString` result references. */
-var mapTag$3 = '[object Map]';
-var setTag$3 = '[object Set]';
+var mapTag$1 = '[object Map]';
+var setTag$1 = '[object Set]';
 
 /**
  * Creates a `_.toPairs` or `_.toPairsIn` function.
@@ -19944,11 +19866,11 @@ var setTag$3 = '[object Set]';
  */
 function createToPairs$1(keysFunc) {
   return function(object) {
-    var tag = getTag$2(object);
-    if (tag == mapTag$3) {
+    var tag = getTag(object);
+    if (tag == mapTag$1) {
       return mapToArray(object);
     }
-    if (tag == setTag$3) {
+    if (tag == setTag$1) {
       return setToPairs(object);
     }
     return baseToPairs(object, keysFunc(object));
@@ -20004,6 +19926,84 @@ var registerAdapters = function ($store, adapters) {
     }
   });
 };
+
+var baseKeys$2 = _baseKeys;
+var getTag$2 = _getTag;
+var isArguments$2 = isArguments_1;
+var isArray$6 = isArray_1;
+var isArrayLike$5 = isArrayLike_1;
+var isBuffer$1 = isBuffer_1;
+var isPrototype$3 = _isPrototype;
+var isTypedArray$2 = isTypedArray_1;
+
+/** `Object#toString` result references. */
+var mapTag$3 = '[object Map]';
+var setTag$3 = '[object Set]';
+
+/** Used for built-in method references. */
+var objectProto$12 = Object.prototype;
+
+/** Used to check objects for own properties. */
+var hasOwnProperty$10 = objectProto$12.hasOwnProperty;
+
+/**
+ * Checks if `value` is an empty object, collection, map, or set.
+ *
+ * Objects are considered empty if they have no own enumerable string keyed
+ * properties.
+ *
+ * Array-like values such as `arguments` objects, arrays, buffers, strings, or
+ * jQuery-like collections are considered empty if they have a `length` of `0`.
+ * Similarly, maps and sets are considered empty if they have a `size` of `0`.
+ *
+ * @static
+ * @memberOf _
+ * @since 0.1.0
+ * @category Lang
+ * @param {*} value The value to check.
+ * @returns {boolean} Returns `true` if `value` is empty, else `false`.
+ * @example
+ *
+ * _.isEmpty(null);
+ * // => true
+ *
+ * _.isEmpty(true);
+ * // => true
+ *
+ * _.isEmpty(1);
+ * // => true
+ *
+ * _.isEmpty([1, 2, 3]);
+ * // => false
+ *
+ * _.isEmpty({ 'a': 1 });
+ * // => false
+ */
+function isEmpty(value) {
+  if (value == null) {
+    return true;
+  }
+  if (isArrayLike$5(value) &&
+      (isArray$6(value) || typeof value == 'string' || typeof value.splice == 'function' ||
+        isBuffer$1(value) || isTypedArray$2(value) || isArguments$2(value))) {
+    return !value.length;
+  }
+  var tag = getTag$2(value);
+  if (tag == mapTag$3 || tag == setTag$3) {
+    return !value.size;
+  }
+  if (isPrototype$3(value)) {
+    return !baseKeys$2(value).length;
+  }
+  for (var key in value) {
+    if (hasOwnProperty$10.call(value, key)) {
+      return false;
+    }
+  }
+  return true;
+}
+
+var isEmpty_1 = isEmpty;
 
 var registerExternalEvents = (function (Vue) {
   var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
@@ -20084,21 +20084,26 @@ var hasVdata = function hasVdata(o) {
   return getVdata(o) !== undefined;
 };
 
-var _Vue = {};
+// late binding
+var _Vue;
 
 /**
  * VData plugin
  */
 var vdata = {
   createConfig: function createConfig(fn) {
-    return fn(new Proxy(_Vue, {}));
+    return function (V) {
+      var options = fn(V);
+      return defaults_1(options || {}, {
+        events: ['add', 'change', 'remove']
+      });
+    };
   },
-  install: function install(Vue, options) {
+  install: function install(Vue, optionsCreator) {
     _Vue = Vue;
+    console.log(_Vue);
     utils.Promise = q;
-    options = defaults_1(options || {}, {
-      events: ['add', 'change', 'remove']
-    });
+    var options = optionsCreator(Vue);
     var store = new DataStore$1();
     Object.defineProperty(store, 'vdataOptions', {
       get: function get() {

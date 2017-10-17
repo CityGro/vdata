@@ -3,8 +3,6 @@ import AsyncDataMixin from './asyncData'
 import Q from 'q'
 import defaults from 'lodash/defaults'
 import includes from 'lodash/includes'
-import isArray from 'lodash/isArray'
-import isEmpty from 'lodash/isEmpty'
 import property from 'lodash/property'
 import registerAdapters from './registerAdapters'
 import registerExternalEvents from './registerExternalEvents'
@@ -16,21 +14,26 @@ const getVdata = property('$options.vdata')
 
 const hasVdata = (o) => getVdata(o) !== undefined
 
-let _Vue = {}
+// late binding
+var _Vue
 
 /**
  * VData plugin
  */
 export default {
   createConfig (fn) {
-    return fn(new Proxy(_Vue, {}))
+    return (V) => {
+      const options = fn(V)
+      return defaults(options || {}, {
+        events: ['add', 'change', 'remove']
+      })
+    }
   },
-  install (Vue, options) {
+  install (Vue, optionsCreator) {
     _Vue = Vue
+    console.log(_Vue)
     JSData.utils.Promise = Q
-    options = defaults(options || {}, {
-      events: ['add', 'change', 'remove']
-    })
+    const options = optionsCreator(Vue)
     const store = new DataStore()
     Object.defineProperty(store, 'vdataOptions', {
       get () {

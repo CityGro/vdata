@@ -14,7 +14,7 @@ describe('VData', () => {
     vdata = require('../vdata').default
     Vue = require('vue')
     Adapter = require('js-data-localstorage').LocalStorageAdapter
-    Vue.use(vdata, {
+    Vue.use(vdata, vdata.createConfig((V) => ({
       models: {
         user: {
           name: 'users'
@@ -28,7 +28,7 @@ describe('VData', () => {
           adapter: new Adapter()
         }
       }
-    })
+    })))
     Vue.$store.create('users', {id: 1, name: 'omanizer'})
     Vue.$store.create('comments', {id: 1, userId: 1})
   })
