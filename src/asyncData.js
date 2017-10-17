@@ -53,6 +53,7 @@ const createAsyncReload = (thisArg) => throttle(function (propertyName, skipLazy
         this[`${prop}Promise`] = asyncData[prop].bind(this)
       }
       let setError = (err) => {
+        console.error(`[@citygro/vdata<${this._uid}>]`, err)
         this[`${prop}Error`] = err;
         if (err) {
           this.asyncError = true;
@@ -119,10 +120,10 @@ export default {
     if (asyncData) {
       let names = Object.keys(asyncData).filter((s) => !isOptionName(s));
       let dataObj = {
-        asyncloading: true,
-        asyncerror: false,
-        asyncall: Q.all(names.map((name) => asyncData[name])),
-        asyncany: Q.any(names.map((name) => asyncData[name]))
+        asyncLoading: true,
+        asyncError: false,
+        asyncAll: Q.all(names.map((name) => asyncData[name])),
+        asyncAny: Q.any(names.map((name) => asyncData[name]))
       }
       names.forEach((name) => {
         dataObj[name] = asyncData[`${name}Default`];

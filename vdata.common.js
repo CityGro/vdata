@@ -17067,6 +17067,7 @@ var createAsyncReload = function createAsyncReload(thisArg) {
               _this[prop + 'Promise'] = asyncData[prop].bind(_this);
             };
             var setError = function setError(err) {
+              console.error('[@citygro/vdata<' + _this._uid + '>]', err);
               _this[prop + 'Error'] = err;
               if (err) {
                 _this.asyncError = true;
@@ -17164,12 +17165,12 @@ var AsyncDataMixin = {
         return !isOptionName(s);
       });
       var dataObj = {
-        asyncloading: true,
-        asyncerror: false,
-        asyncall: q.all(names.map(function (name) {
+        asyncLoading: true,
+        asyncError: false,
+        asyncAll: q.all(names.map(function (name) {
           return asyncData[name];
         })),
-        asyncany: q.any(names.map(function (name) {
+        asyncAny: q.any(names.map(function (name) {
           return asyncData[name];
         }))
       };
