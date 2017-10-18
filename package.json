@@ -22,7 +22,7 @@
     "build:cjs": "rollup -c rollup.conf.cjs.js",
     "prepare": "npm run build && npm test",
     "start": "cross-env BABEL_ENV=test node example/dev-server.js",
-    "publish": "./bin/publish"
+    "publish-script": "./bin/publish"
   },
   "jest": {
     "rootDir": "src",
