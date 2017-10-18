@@ -16281,12 +16281,12 @@ return Q;
  * _.isObject(null);
  * // => false
  */
-function isObject$3(value) {
+function isObject$2(value) {
   var type = typeof value;
   return value != null && (type == 'object' || type == 'function');
 }
 
-var isObject_1 = isObject$3;
+var isObject_1 = isObject$2;
 
 /** Detect free variable `global` from Node.js. */
 var freeGlobal$1 = typeof commonjsGlobal == 'object' && commonjsGlobal && commonjsGlobal.Object === Object && commonjsGlobal;
@@ -16493,7 +16493,7 @@ function isSymbol$1(value) {
 
 var isSymbol_1 = isSymbol$1;
 
-var isObject$4 = isObject_1;
+var isObject$3 = isObject_1;
 var isSymbol = isSymbol_1;
 
 /** Used as references for various `Number` constants. */
@@ -16544,9 +16544,9 @@ function toNumber$1(value) {
   if (isSymbol(value)) {
     return NAN;
   }
-  if (isObject$4(value)) {
+  if (isObject$3(value)) {
     var other = typeof value.valueOf == 'function' ? value.valueOf() : value;
-    value = isObject$4(other) ? (other + '') : other;
+    value = isObject$3(other) ? (other + '') : other;
   }
   if (typeof value != 'string') {
     return value === 0 ? value : +value;
@@ -16560,12 +16560,12 @@ function toNumber$1(value) {
 
 var toNumber_1 = toNumber$1;
 
-var isObject$2 = isObject_1;
+var isObject$1 = isObject_1;
 var now = now_1;
 var toNumber = toNumber_1;
 
 /** Error message constants. */
-var FUNC_ERROR_TEXT$1 = 'Expected a function';
+var FUNC_ERROR_TEXT = 'Expected a function';
 
 /* Built-in method references for those with the same name as other `lodash` methods. */
 var nativeMax = Math.max;
@@ -16625,7 +16625,7 @@ var nativeMin = Math.min;
  * // Cancel the trailing debounced invocation.
  * jQuery(window).on('popstate', debounced.cancel);
  */
-function debounce$1(func, wait, options) {
+function debounce(func, wait, options) {
   var lastArgs,
       lastThis,
       maxWait,
@@ -16638,10 +16638,10 @@ function debounce$1(func, wait, options) {
       trailing = true;
 
   if (typeof func != 'function') {
-    throw new TypeError(FUNC_ERROR_TEXT$1);
+    throw new TypeError(FUNC_ERROR_TEXT);
   }
   wait = toNumber(wait) || 0;
-  if (isObject$2(options)) {
+  if (isObject$1(options)) {
     leading = !!options.leading;
     maxing = 'maxWait' in options;
     maxWait = maxing ? nativeMax(toNumber(options.maxWait) || 0, wait) : maxWait;
@@ -16747,77 +16747,7 @@ function debounce$1(func, wait, options) {
   return debounced;
 }
 
-var debounce_1 = debounce$1;
-
-var debounce = debounce_1;
-var isObject$1 = isObject_1;
-
-/** Error message constants. */
-var FUNC_ERROR_TEXT = 'Expected a function';
-
-/**
- * Creates a throttled function that only invokes `func` at most once per
- * every `wait` milliseconds. The throttled function comes with a `cancel`
- * method to cancel delayed `func` invocations and a `flush` method to
- * immediately invoke them. Provide `options` to indicate whether `func`
- * should be invoked on the leading and/or trailing edge of the `wait`
- * timeout. The `func` is invoked with the last arguments provided to the
- * throttled function. Subsequent calls to the throttled function return the
- * result of the last `func` invocation.
- *
- * **Note:** If `leading` and `trailing` options are `true`, `func` is
- * invoked on the trailing edge of the timeout only if the throttled function
- * is invoked more than once during the `wait` timeout.
- *
- * If `wait` is `0` and `leading` is `false`, `func` invocation is deferred
- * until to the next tick, similar to `setTimeout` with a timeout of `0`.
- *
- * See [David Corbacho's article](https://css-tricks.com/debouncing-throttling-explained-examples/)
- * for details over the differences between `_.throttle` and `_.debounce`.
- *
- * @static
- * @memberOf _
- * @since 0.1.0
- * @category Function
- * @param {Function} func The function to throttle.
- * @param {number} [wait=0] The number of milliseconds to throttle invocations to.
- * @param {Object} [options={}] The options object.
- * @param {boolean} [options.leading=true]
- *  Specify invoking on the leading edge of the timeout.
- * @param {boolean} [options.trailing=true]
- *  Specify invoking on the trailing edge of the timeout.
- * @returns {Function} Returns the new throttled function.
- * @example
- *
- * // Avoid excessively updating the position while scrolling.
- * jQuery(window).on('scroll', _.throttle(updatePosition, 100));
- *
- * // Invoke `renewToken` when the click event is fired, but not more than once every 5 minutes.
- * var throttled = _.throttle(renewToken, 300000, { 'trailing': false });
- * jQuery(element).on('click', throttled);
- *
- * // Cancel the trailing throttled invocation.
- * jQuery(window).on('popstate', throttled.cancel);
- */
-function throttle(func, wait, options) {
-  var leading = true,
-      trailing = true;
-
-  if (typeof func != 'function') {
-    throw new TypeError(FUNC_ERROR_TEXT);
-  }
-  if (isObject$1(options)) {
-    leading = 'leading' in options ? !!options.leading : leading;
-    trailing = 'trailing' in options ? !!options.trailing : trailing;
-  }
-  return debounce(func, wait, {
-    'leading': leading,
-    'maxWait': wait,
-    'trailing': trailing
-  });
-}
-
-var throttle_1 = throttle;
+var debounce_1 = debounce;
 
 var _typeof$1 = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) {
   return typeof obj;
@@ -17032,7 +16962,7 @@ var isOptionName = function isOptionName(key) {
 
 // name args optional
 var createAsyncReload = function createAsyncReload(thisArg) {
-  return throttle_1(function (propertyName) {
+  return debounce_1(function (propertyName) {
     var _this = this;
 
     var skipLazy = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
@@ -17214,7 +17144,7 @@ function apply$2(func, thisArg, args) {
 var _apply = apply$2;
 
 var baseGetTag$2 = _baseGetTag;
-var isObject$6 = isObject_1;
+var isObject$5 = isObject_1;
 
 /** `Object#toString` result references. */
 var asyncTag = '[object AsyncFunction]';
@@ -17240,7 +17170,7 @@ var proxyTag = '[object Proxy]';
  * // => false
  */
 function isFunction$2(value) {
-  if (!isObject$6(value)) {
+  if (!isObject$5(value)) {
     return false;
   }
   // The use of `Object#toString` avoids issues with the `typeof` operator
@@ -17308,7 +17238,7 @@ var _toSource = toSource$1;
 
 var isFunction$1 = isFunction_1;
 var isMasked = _isMasked;
-var isObject$5 = isObject_1;
+var isObject$4 = isObject_1;
 var toSource = _toSource;
 
 /**
@@ -17345,7 +17275,7 @@ var reIsNative = RegExp('^' +
  *  else `false`.
  */
 function baseIsNative$1(value) {
-  if (!isObject$5(value) || isMasked(value)) {
+  if (!isObject$4(value) || isMasked(value)) {
     return false;
   }
   var pattern = isFunction$1(value) ? reIsNative : reIsHostCtor;
@@ -17808,7 +17738,7 @@ var _isIndex = isIndex$1;
 var eq$2 = eq_1;
 var isArrayLike = isArrayLike_1;
 var isIndex = _isIndex;
-var isObject$7 = isObject_1;
+var isObject$6 = isObject_1;
 
 /**
  * Checks if the given arguments are from an iteratee call.
@@ -17821,7 +17751,7 @@ var isObject$7 = isObject_1;
  *  else `false`.
  */
 function isIterateeCall$1(value, index, object) {
-  if (!isObject$7(object)) {
+  if (!isObject$6(object)) {
     return false;
   }
   var type = typeof index;
@@ -18257,7 +18187,7 @@ function nativeKeysIn$1(object) {
 
 var _nativeKeysIn = nativeKeysIn$1;
 
-var isObject$8 = isObject_1;
+var isObject$7 = isObject_1;
 var isPrototype = _isPrototype;
 var nativeKeysIn = _nativeKeysIn;
 
@@ -18275,7 +18205,7 @@ var hasOwnProperty$5 = objectProto$6.hasOwnProperty;
  * @returns {Array} Returns the array of property names.
  */
 function baseKeysIn$1(object) {
-  if (!isObject$8(object)) {
+  if (!isObject$7(object)) {
     return nativeKeysIn(object);
   }
   var isProto = isPrototype(object),
@@ -19387,7 +19317,7 @@ var _MapCache = MapCache$1;
 var MapCache = _MapCache;
 
 /** Error message constants. */
-var FUNC_ERROR_TEXT$2 = 'Expected a function';
+var FUNC_ERROR_TEXT$1 = 'Expected a function';
 
 /**
  * Creates a function that memoizes the result of `func`. If `resolver` is
@@ -19435,7 +19365,7 @@ var FUNC_ERROR_TEXT$2 = 'Expected a function';
  */
 function memoize$1(func, resolver) {
   if (typeof func != 'function' || (resolver != null && typeof resolver != 'function')) {
-    throw new TypeError(FUNC_ERROR_TEXT$2);
+    throw new TypeError(FUNC_ERROR_TEXT$1);
   }
   var memoized = function() {
     var args = arguments,
@@ -20103,13 +20033,7 @@ var vdata = {
     _Vue = Vue;
     console.log(_Vue);
     utils.Promise = q;
-    var options = optionsCreator(Vue);
     var store = new DataStore$1();
-    Object.defineProperty(store, 'vdataOptions', {
-      get: function get() {
-        return options;
-      }
-    });
     Object.defineProperty(Vue, '$store', {
       get: function get() {
         return store;
@@ -20118,6 +20042,12 @@ var vdata = {
     Object.defineProperty(Vue.prototype, '$store', {
       get: function get() {
         return store;
+      }
+    });
+    var options = optionsCreator(Vue);
+    Object.defineProperty(store, 'vdataOptions', {
+      get: function get() {
+        return options;
       }
     });
     registerSchemas(store, options.models);
@@ -20136,13 +20066,13 @@ var vdata = {
       beforeCreate: function beforeCreate() {
         if (hasVdata(this)) {
           var self = this;
-          this._vdataHandler = throttle_1(function () {
+          this._vdataHandler = debounce_1(function () {
             var event = arguments[0];
             if (includes_1(options.events, event)) {
               console.log('[@citygro/vdata<' + self._uid + '>] running for ' + event);
               self.$options.vdata.apply(self, [store].concat(Array.prototype.slice.call(arguments)));
             }
-          }.bind(self), 10);
+          }.bind(self), 25);
           store.on('all', self._vdataHandler);
           console.log('[@citygro/vdata<' + self._uid + '>]: ready. listening on', options.events);
         }
@@ -21749,7 +21679,7 @@ var baseSetData$1 = !metaMap ? identity$3 : function(func, data) {
 
 var _baseSetData = baseSetData$1;
 
-var isObject$10 = isObject_1;
+var isObject$9 = isObject_1;
 
 /** Built-in value references. */
 var objectCreate = Object.create;
@@ -21765,7 +21695,7 @@ var objectCreate = Object.create;
 var baseCreate$1 = (function() {
   function object() {}
   return function(proto) {
-    if (!isObject$10(proto)) {
+    if (!isObject$9(proto)) {
       return {};
     }
     if (objectCreate) {
@@ -21781,7 +21711,7 @@ var baseCreate$1 = (function() {
 var _baseCreate = baseCreate$1;
 
 var baseCreate = _baseCreate;
-var isObject$9 = isObject_1;
+var isObject$8 = isObject_1;
 
 /**
  * Creates a function that produces an instance of `Ctor` regardless of
@@ -21812,7 +21742,7 @@ function createCtor$1(Ctor) {
 
     // Mimic the constructor's `return` behavior.
     // See https://es5.github.io/#x13.2.2 for more details.
-    return isObject$9(result) ? result : thisBinding;
+    return isObject$8(result) ? result : thisBinding;
   };
 }
 
@@ -22898,7 +22828,7 @@ var setWrapToString = _setWrapToString;
 var toInteger$3 = toInteger_1;
 
 /** Error message constants. */
-var FUNC_ERROR_TEXT$3 = 'Expected a function';
+var FUNC_ERROR_TEXT$2 = 'Expected a function';
 
 /** Used to compose bitmasks for function metadata. */
 var WRAP_BIND_FLAG = 1;
@@ -22939,7 +22869,7 @@ var nativeMax$3 = Math.max;
 function createWrap$1(func, bitmask, thisArg, partials, holders, argPos, ary, arity) {
   var isBindKey = bitmask & WRAP_BIND_KEY_FLAG;
   if (!isBindKey && typeof func != 'function') {
-    throw new TypeError(FUNC_ERROR_TEXT$3);
+    throw new TypeError(FUNC_ERROR_TEXT$2);
   }
   var length = partials ? partials.length : 0;
   if (!length) {
@@ -23786,7 +23716,7 @@ var initCloneByTag = _initCloneByTag;
 var initCloneObject = _initCloneObject;
 var isArray$8 = isArray_1;
 var isBuffer$2 = isBuffer_1;
-var isObject$11 = isObject_1;
+var isObject$10 = isObject_1;
 var keys$4 = keys_1;
 
 /** Used to compose bitmasks for cloning. */
@@ -23867,7 +23797,7 @@ function baseClone$1(value, bitmask, customizer, key, object, stack) {
   if (result !== undefined) {
     return result;
   }
-  if (!isObject$11(value)) {
+  if (!isObject$10(value)) {
     return value;
   }
   var isArr = isArray$8(value);
@@ -24582,7 +24512,7 @@ function baseIsMatch$1(object, source, matchData, customizer) {
 
 var _baseIsMatch = baseIsMatch$1;
 
-var isObject$12 = isObject_1;
+var isObject$11 = isObject_1;
 
 /**
  * Checks if `value` is suitable for strict equality comparisons, i.e. `===`.
@@ -24593,7 +24523,7 @@ var isObject$12 = isObject_1;
  *  equality comparisons, else `false`.
  */
 function isStrictComparable$1(value) {
-  return value === value && !isObject$12(value);
+  return value === value && !isObject$11(value);
 }
 
 var _isStrictComparable = isStrictComparable$1;
@@ -25078,6 +25008,179 @@ function convert$1(name, func, options) {
 
 var convert_1 = convert$1;
 
+/**
+ * Creates a base function for methods like `_.forIn` and `_.forOwn`.
+ *
+ * @private
+ * @param {boolean} [fromRight] Specify iterating from right to left.
+ * @returns {Function} Returns the new base function.
+ */
+function createBaseFor$1(fromRight) {
+  return function(object, iteratee, keysFunc) {
+    var index = -1,
+        iterable = Object(object),
+        props = keysFunc(object),
+        length = props.length;
+
+    while (length--) {
+      var key = props[fromRight ? length : ++index];
+      if (iteratee(iterable[key], key, iterable) === false) {
+        break;
+      }
+    }
+    return object;
+  };
+}
+
+var _createBaseFor = createBaseFor$1;
+
+var createBaseFor = _createBaseFor;
+
+/**
+ * The base implementation of `baseForOwn` which iterates over `object`
+ * properties returned by `keysFunc` and invokes `iteratee` for each property.
+ * Iteratee functions may exit iteration early by explicitly returning `false`.
+ *
+ * @private
+ * @param {Object} object The object to iterate over.
+ * @param {Function} iteratee The function invoked per iteration.
+ * @param {Function} keysFunc The function to get the keys of `object`.
+ * @returns {Object} Returns `object`.
+ */
+var baseFor$1 = createBaseFor();
+
+var _baseFor = baseFor$1;
+
+var baseFor = _baseFor;
+var keys$7 = keys_1;
+
+/**
+ * The base implementation of `_.forOwn` without support for iteratee shorthands.
+ *
+ * @private
+ * @param {Object} object The object to iterate over.
+ * @param {Function} iteratee The function invoked per iteration.
+ * @returns {Object} Returns `object`.
+ */
+function baseForOwn$1(object, iteratee) {
+  return object && baseFor(object, iteratee, keys$7);
+}
+
+var _baseForOwn = baseForOwn$1;
+
+var isArrayLike$6 = isArrayLike_1;
+
+/**
+ * Creates a `baseEach` or `baseEachRight` function.
+ *
+ * @private
+ * @param {Function} eachFunc The function to iterate over a collection.
+ * @param {boolean} [fromRight] Specify iterating from right to left.
+ * @returns {Function} Returns the new base function.
+ */
+function createBaseEach$1(eachFunc, fromRight) {
+  return function(collection, iteratee) {
+    if (collection == null) {
+      return collection;
+    }
+    if (!isArrayLike$6(collection)) {
+      return eachFunc(collection, iteratee);
+    }
+    var length = collection.length,
+        index = fromRight ? length : -1,
+        iterable = Object(collection);
+
+    while ((fromRight ? index-- : ++index < length)) {
+      if (iteratee(iterable[index], index, iterable) === false) {
+        break;
+      }
+    }
+    return collection;
+  };
+}
+
+var _createBaseEach = createBaseEach$1;
+
+var baseForOwn = _baseForOwn;
+var createBaseEach = _createBaseEach;
+
+/**
+ * The base implementation of `_.forEach` without support for iteratee shorthands.
+ *
+ * @private
+ * @param {Array|Object} collection The collection to iterate over.
+ * @param {Function} iteratee The function invoked per iteration.
+ * @returns {Array|Object} Returns `collection`.
+ */
+var baseEach$1 = createBaseEach(baseForOwn);
+
+var _baseEach = baseEach$1;
+
+var identity$5 = identity_1;
+
+/**
+ * Casts `value` to `identity` if it's not a function.
+ *
+ * @private
+ * @param {*} value The value to inspect.
+ * @returns {Function} Returns cast function.
+ */
+function castFunction$1(value) {
+  return typeof value == 'function' ? value : identity$5;
+}
+
+var _castFunction = castFunction$1;
+
+var arrayEach$3 = _arrayEach;
+var baseEach = _baseEach;
+var castFunction = _castFunction;
+var isArray$15 = isArray_1;
+
+/**
+ * Iterates over elements of `collection` and invokes `iteratee` for each element.
+ * The iteratee is invoked with three arguments: (value, index|key, collection).
+ * Iteratee functions may exit iteration early by explicitly returning `false`.
+ *
+ * **Note:** As with other "Collections" methods, objects with a "length"
+ * property are iterated like arrays. To avoid this behavior use `_.forIn`
+ * or `_.forOwn` for object iteration.
+ *
+ * @static
+ * @memberOf _
+ * @since 0.1.0
+ * @alias each
+ * @category Collection
+ * @param {Array|Object} collection The collection to iterate over.
+ * @param {Function} [iteratee=_.identity] The function invoked per iteration.
+ * @returns {Array|Object} Returns `collection`.
+ * @see _.forEachRight
+ * @example
+ *
+ * _.forEach([1, 2], function(value) {
+ *   console.log(value);
+ * });
+ * // => Logs `1` then `2`.
+ *
+ * _.forEach({ 'a': 1, 'b': 2 }, function(value, key) {
+ *   console.log(key);
+ * });
+ * // => Logs 'a' then 'b' (iteration order is not guaranteed).
+ */
+function forEach$3(collection, iteratee) {
+  var func = isArray$15(collection) ? arrayEach$3 : baseEach;
+  return func(collection, castFunction(iteratee));
+}
+
+var forEach_1 = forEach$3;
+
+var convert = convert_1;
+var func = convert('forEach', forEach_1);
+
+func.placeholder = placeholder;
+var forEach$1 = func;
+
+var each = forEach$1;
+
 var _falseOptions = {
   'cap': false,
   'curry': false,
@@ -25086,29 +25189,28 @@ var _falseOptions = {
   'rearg': false
 };
 
-var convert = convert_1;
-var func$1 = convert('toPairs', toPairs_1, _falseOptions);
+var convert$2 = convert_1;
+var func$1 = convert$2('toPairs', toPairs_1, _falseOptions);
 
 func$1.placeholder = placeholder;
 var toPairs$1 = func$1;
 
 var entries$2 = toPairs$1;
 
-var convert$2 = convert_1;
-var func$2 = convert$2('flatten', flatten_1, _falseOptions);
+var convert$3 = convert_1;
+var func$2 = convert$3('flatten', flatten_1, _falseOptions);
 
 func$2.placeholder = placeholder;
-var flatten$2 = func$2;
 
 var LodashWrapper$3 = _LodashWrapper;
 var flatRest$2 = _flatRest;
 var getData$4 = _getData;
 var getFuncName$2 = _getFuncName;
-var isArray$15 = isArray_1;
+var isArray$16 = isArray_1;
 var isLaziable$2 = _isLaziable;
 
 /** Error message constants. */
-var FUNC_ERROR_TEXT$4 = 'Expected a function';
+var FUNC_ERROR_TEXT$3 = 'Expected a function';
 
 /** Used to compose bitmasks for function metadata. */
 var WRAP_CURRY_FLAG$6 = 8;
@@ -25135,7 +25237,7 @@ function createFlow$1(fromRight) {
     while (index--) {
       var func = funcs[index];
       if (typeof func != 'function') {
-        throw new TypeError(FUNC_ERROR_TEXT$4);
+        throw new TypeError(FUNC_ERROR_TEXT$3);
       }
       if (prereq && !wrapper && getFuncName$2(func) == 'wrapper') {
         var wrapper = new LodashWrapper$3([], true);
@@ -25163,7 +25265,7 @@ function createFlow$1(fromRight) {
       var args = arguments,
           value = args[0];
 
-      if (wrapper && args.length == 1 && isArray$15(value)) {
+      if (wrapper && args.length == 1 && isArray$16(value)) {
         return wrapper.plant(value).value();
       }
       var index = 0,
@@ -25207,8 +25309,8 @@ var flow$2 = createFlow();
 
 var flow_1 = flow$2;
 
-var convert$3 = convert_1;
-var func$3 = convert$3('flow', flow_1);
+var convert$4 = convert_1;
+var func$3 = convert$4('flow', flow_1);
 
 func$3.placeholder = placeholder;
 var flow = func$3;
@@ -25218,7 +25320,17 @@ var isRecord = (function (o) {
   return isFunction_1(o.hasChanges);
 });
 
-var toKV = flow(entries$2, flatten$2);
+var applyKV = function applyKV(record, values) {
+  var set$$1 = flow(entries$2, each(function (_ref) {
+    var _ref2 = slicedToArray(_ref, 2),
+        key = _ref2[0],
+        value = _ref2[1];
+
+    record[key] = value;
+  }));
+  set$$1(values);
+  return record;
+};
 
 var format = function format(name) {
   var prefix = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '';
@@ -25239,6 +25351,7 @@ var format = function format(name) {
  * name and `update:${valueProp}` is emitted.
  *
  * TODO syntax sugar <https://github.com/vuejs/vue/issues/4946>
+ * TODO ensure that all of these methods correctly trigger change tracking in js-data
  *
  * @param {string} valueProp - bind dataflow to this prop
  */
@@ -25253,15 +25366,7 @@ var createSyncMixin = (function (valueProp) {
     }), defineProperty$1(_methods, format('handleChange', prefix), function (value) {
       if (isRecord(this[valueProp])) {
         var record = this.$store.createRecord('flow_pages', this[valueProp]);
-
-        var _toKV = toKV(value),
-            _toKV2 = slicedToArray(_toKV, 2),
-            key = _toKV2[0],
-            newVal = _toKV2[1];
-
-        record[key] = newVal;
-        console.log(record.hasChanges());
-        this.$emit(event, record);
+        this.$emit(event, applyKV(record, value));
       } else {
         this.$emit(event, _extends({}, this[valueProp], value));
       }

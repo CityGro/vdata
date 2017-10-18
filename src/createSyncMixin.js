@@ -1,11 +1,18 @@
 import camelCase from 'lodash/camelCase'
 import capWords from './capWords'
+import each from 'lodash/fp/each'
 import entries from 'lodash/fp/entries'
 import flatten from 'lodash/fp/flatten'
 import flow from 'lodash/fp/flow'
 import isRecord from './isRecord'
 
-const toKV = flow(entries, flatten)
+const applyKV = (record, values) => {
+  const set = flow(entries, each(([key, value]) => {
+    record[key] = value
+  }))
+  set(values)
+  return record
+}
 
 const format = (name, prefix = '') => {
   if (prefix === '') {
@@ -24,6 +31,7 @@ const format = (name, prefix = '') => {
  * name and `update:${valueProp}` is emitted.
  *
  * TODO syntax sugar <https://github.com/vuejs/vue/issues/4946>
+ * TODO ensure that all of these methods correctly trigger change tracking in js-data
  *
  * @param {string} valueProp - bind dataflow to this prop
  */
@@ -38,10 +46,7 @@ export default (valueProp) => {
       [format('handleChange', prefix)] (value) {
         if (isRecord(this[valueProp])) {
           const record = this.$store.createRecord('flow_pages', this[valueProp])
-          const [key, newVal] = toKV(value)
-          record[key] = newVal
-          console.log(record.hasChanges())
-          this.$emit(event, record)
+          this.$emit(event, applyKV(record, value))
         } else {
           this.$emit(event, {...this[valueProp], ...value})
         }

@@ -25,7 +25,7 @@
  */
 
 import Q from 'q'
-import throttle from 'lodash/throttle'
+import debounce from 'lodash/debounce'
 
 let optionNames = [
   'Default',
@@ -35,7 +35,7 @@ let optionNames = [
 let isOptionName = (key, names = optionNames) => names.find(n => key.endsWith(n))
 
 // name args optional
-const createAsyncReload = (thisArg) => throttle(function (propertyName, skipLazy = false) {
+const createAsyncReload = (thisArg) => debounce(function (propertyName, skipLazy = false) {
   let asyncData = this.$options.asyncData;
   if (asyncData) {
     let names = Object.keys(asyncData)

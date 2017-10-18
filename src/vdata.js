@@ -1,13 +1,13 @@
 import * as JSData from 'js-data'
 import AsyncDataMixin from './asyncData'
 import Q from 'q'
+import debounce from 'lodash/debounce'
 import defaults from 'lodash/defaults'
 import includes from 'lodash/includes'
 import property from 'lodash/property'
 import registerAdapters from './registerAdapters'
 import registerExternalEvents from './registerExternalEvents'
 import registerSchemas from './registerSchemas'
-import throttle from 'lodash/throttle'
 import {DataStore} from 'js-data'
 
 const getVdata = property('$options.vdata')
@@ -33,13 +33,7 @@ export default {
     _Vue = Vue
     console.log(_Vue)
     JSData.utils.Promise = Q
-    const options = optionsCreator(Vue)
     const store = new DataStore()
-    Object.defineProperty(store, 'vdataOptions', {
-      get () {
-        return options
-      }
-    })
     Object.defineProperty(Vue, '$store', {
       get () {
         return store
@@ -48,6 +42,12 @@ export default {
     Object.defineProperty(Vue.prototype, '$store', {
       get () {
         return store
+      }
+    })
+    const options = optionsCreator(Vue)
+    Object.defineProperty(store, 'vdataOptions', {
+      get () {
+        return options
       }
     })
     registerSchemas(store, options.models)
@@ -66,13 +66,13 @@ export default {
       beforeCreate () {
         if (hasVdata(this)) {
           const self = this
-          this._vdataHandler = throttle(function () {
+          this._vdataHandler = debounce(function () {
             const event = arguments[0]
             if (includes(options.events, event)) {
               console.log(`[@citygro/vdata<${self._uid}>] running for ${event}`)
               self.$options.vdata.apply(self, [store, ...arguments])
             }
-          }.bind(self), 10)
+          }.bind(self), 25)
           store.on('all', self._vdataHandler)
           console.log(`[@citygro/vdata<${self._uid}>]: ready. listening on`, options.events)
         }
