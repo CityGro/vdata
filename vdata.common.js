@@ -25381,11 +25381,11 @@ var createSyncMixin = (function (valueProp) {
       arr[i] = _extends({}, arr[i], value);
       this.$emit(event, arr);
     }), defineProperty$1(_methods, format('pushToArray', prefix), function (value) {
-      var arr = [].concat(toConsumableArray$1(this[valueProp]));
+      var arr = [].concat(toConsumableArray$1(this[valueProp] || []));
       arr.push(value);
       this.$emit(event, arr);
     }), defineProperty$1(_methods, format('pushToArrayKey', prefix), function (key, value) {
-      var arr = [].concat(toConsumableArray$1(this[valueProp][key]));
+      var arr = [].concat(toConsumableArray$1(this[valueProp][key] || []));
       arr.push(value);
       this.handleChange(defineProperty$1({}, key, arr));
     }), defineProperty$1(_methods, format('removeFromArray', prefix), function (i) {

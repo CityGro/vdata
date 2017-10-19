@@ -65,12 +65,12 @@ export default (valueProp) => {
         this.$emit(event, arr)
       },
       [format('pushToArray', prefix)] (value) {
-        let arr = [...this[valueProp]]
+        let arr = [...(this[valueProp] || [])]
         arr.push(value)
         this.$emit(event, arr)
       },
       [format('pushToArrayKey', prefix)] (key, value) {
-        let arr = [...this[valueProp][key]]
+        let arr = [...(this[valueProp][key] || [])]
         arr.push(value)
         this.handleChange({[key]: arr})
       },
