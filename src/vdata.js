@@ -72,7 +72,7 @@ export default {
               console.log(`[@citygro/vdata<${self._uid}>] running for ${event}`)
               self.$options.vdata.apply(self, [store, ...arguments])
             }
-          }.bind(self), 25)
+          }.bind(self), 25, {leading: true})
           store.on('all', self._vdataHandler)
           console.log(`[@citygro/vdata<${self._uid}>]: ready. listening on`, options.events)
         }

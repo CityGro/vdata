@@ -26,25 +26,26 @@
 
 import Q from 'q'
 import debounce from 'lodash/debounce'
+import keys from 'lodash/keys'
 
 let optionNames = [
   'Default',
   'Lazy',
 ];
 
-let isOptionName = (key, names = optionNames) => names.find(n => key.endsWith(n))
+const isOptionName = (key, names = optionNames) => names.find((n) => key.endsWith(n))
 
 // name args optional
 const createAsyncReload = (thisArg) => debounce(function (propertyName, skipLazy = false) {
-  let asyncData = this.$options.asyncData;
+  const asyncData = this.$options.asyncData
   if (asyncData) {
-    let names = Object.keys(asyncData)
+    let names = keys(asyncData)
       .filter((s) => !isOptionName(s))
       .filter((s) => propertyName === undefined || s === propertyName)
-      .filter((s) => skipLazy === false || !asyncData[`${s}Lazy`]);
+      .filter((s) => skipLazy === false || !asyncData[`${s}Lazy`])
     if (propertyName !== undefined && names.length === 0) {
-      console.error(`asyncData.${propertyName} cannot find.`, this);
-      return;
+      console.error(`asyncData.${propertyName} cannot find.`, this)
+      return
     }
     for (let prop of names) {
       // helper
@@ -53,20 +54,20 @@ const createAsyncReload = (thisArg) => debounce(function (propertyName, skipLazy
         this[`${prop}Promise`] = asyncData[prop].bind(this)
       }
       let setError = (err) => {
-        this[`${prop}Error`] = err;
+        this[`${prop}Error`] = err
         if (err) {
           console.error(`[@citygro/vdata<${this._uid}>]`, err)
-          this.asyncError = true;
+          this.asyncError = true
         } else {
-          this.asyncError = !!names.find((n) => this[`${n}Error`]);
+          this.asyncError = !!names.find((n) => this[`${n}Error`])
         }
       }
       let setLoading = (flag) => {
         this[`${prop}Loading`] = flag
           if (flag) {
-            this.asyncLoading = true;
+            this.asyncLoading = true
           } else {
-            this.asyncLoading = !!names.find((n) => this[`${n}Loading`]);
+            this.asyncLoading = !!names.find((n) => this[`${n}Loading`])
         }
       }
       let setTimer = () => {
@@ -83,21 +84,21 @@ const createAsyncReload = (thisArg) => debounce(function (propertyName, skipLazy
           cancelTimeout(this[`_${prop}Timer`])
         }
       }
-      setLoading(true);
-      setError(undefined);
-      setTimer();
+      setLoading(true)
+      setError(undefined)
+      setTimer()
       if (typeof asyncData[prop] !== 'function') {
-        console.error(`asyncData.${prop} must be funtion. actual: ${asyncData[prop]}`, this);
-        continue;
+        console.error(`asyncData.${prop} must be funtion. actual: ${asyncData[prop]}`, this)
+        continue
       }
       asyncData[prop].apply(this).then((res) => {
-        setData(res);
-        setLoading(false);
-        cancelTimer();
+        setData(res)
+        setLoading(false)
+        cancelTimer()
       }).catch((err) => {
-        setError(err);
-        setLoading(false);
-        cancelTimer();
+        setError(err)
+        setLoading(false)
+        cancelTimer()
       })
     }
   }
@@ -108,7 +109,7 @@ export default {
     this._asyncReload = createAsyncReload(this)
   },
   mounted () {
-    this.asyncReload(undefined, true);
+    this.asyncReload(undefined, true)
   },
   methods: {
     asyncReload () {
@@ -116,9 +117,10 @@ export default {
     }
   },
   data () {
-    let asyncData = this.$options.asyncData;
+    const asyncData = this.$options.asyncData
     if (asyncData) {
-      let names = Object.keys(asyncData).filter((s) => !isOptionName(s));
+      const names = keys(asyncData).filter((s) => !isOptionName(s));
+      const errorNames = names.map((s) => `${s}Error`)
       let dataObj = {
         asyncLoading: true,
         asyncError: false,
@@ -126,15 +128,14 @@ export default {
         asyncAny: Q.any(names.map((name) => asyncData[name]))
       }
       names.forEach((name) => {
-        dataObj[name] = asyncData[`${name}Default`];
+        dataObj[name] = asyncData[`${name}Default`]
         dataObj[`${name}Promise`] = asyncData[name]
-        dataObj[`${name}Loading`] = !asyncData[`${name}Lazy`];
+        dataObj[`${name}Loading`] = !asyncData[`${name}Lazy`]
       })
-      let errorNames = names.map((s) => `${s}Error`);
       errorNames.forEach((name) => {
-        dataObj[name] = undefined;
-      });
-      return dataObj;
+        dataObj[name] = undefined
+      })
+      return dataObj
     }
     return {}
   }
