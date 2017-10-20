@@ -20031,7 +20031,6 @@ var vdata = {
   },
   install: function install(Vue, optionsCreator) {
     _Vue = Vue;
-    console.log(_Vue);
     utils.Promise = q;
     var store = new DataStore$1();
     Object.defineProperty(Vue, '$store', {
@@ -20074,7 +20073,7 @@ var vdata = {
             }
           }.bind(self), 25, { leading: true });
           store.on('all', self._vdataHandler);
-          console.log('[@citygro/vdata<' + self._uid + '>]: ready. listening on', options.events);
+          console.log('[@citygro/vdata<' + self._uid + '>] ready. listening on', options.events);
         }
       },
       created: function created() {
@@ -20705,6 +20704,11 @@ var tail_1 = tail;
 var capWords = (function (s) {
   var camel = camelCase_1(s);
   return [camel.charAt(0).toUpperCase()].contact(tail_1(camel)).join('');
+});
+
+var isRecord = (function (o) {
+  // needs more accurate heuristics, but this is a decent (naive) test
+  return isFunction_1(o.hasChanges);
 });
 
 var _mapping = createCommonjsModule(function (module, exports) {
@@ -25197,11 +25201,6 @@ var toPairs$1 = func$1;
 
 var entries$2 = toPairs$1;
 
-var convert$3 = convert_1;
-var func$2 = convert$3('flatten', flatten_1, _falseOptions);
-
-func$2.placeholder = placeholder;
-
 var LodashWrapper$3 = _LodashWrapper;
 var flatRest$2 = _flatRest;
 var getData$4 = _getData;
@@ -25309,18 +25308,13 @@ var flow$2 = createFlow();
 
 var flow_1 = flow$2;
 
-var convert$4 = convert_1;
-var func$3 = convert$4('flow', flow_1);
+var convert$3 = convert_1;
+var func$2 = convert$3('flow', flow_1);
 
-func$3.placeholder = placeholder;
-var flow = func$3;
+func$2.placeholder = placeholder;
+var flow = func$2;
 
-var isRecord = (function (o) {
-  // needs more accurate heuristics, but this is a decent (naive) test
-  return isFunction_1(o.hasChanges);
-});
-
-var applyKV = function applyKV(record, values) {
+var applyDiff = function applyDiff(record, diff) {
   var set$$1 = flow(entries$2, each(function (_ref) {
     var _ref2 = slicedToArray(_ref, 2),
         key = _ref2[0],
@@ -25328,9 +25322,26 @@ var applyKV = function applyKV(record, values) {
 
     record[key] = value;
   }));
-  set$$1(values);
+  set$$1(diff);
   return record;
 };
+
+/**
+ * update record
+ *
+ * @param {Vue} vm
+ * @param {string} prop
+ * @param {object} diff
+ */
+var updateRecord$1 = (function (vm, prop, diff) {
+  var record = vm[prop];
+  if (isFunction_1(record._mapper)) {
+    var recordName = record._mapper().name;
+    return applyDiff(vm.$store.createRecord(recordName, record), diff);
+  } else {
+    throw new TypeError('utils/updateRecord can only operate over a js-data/Record object');
+  }
+});
 
 var format = function format(name) {
   var prefix = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '';
@@ -25342,6 +25353,17 @@ var format = function format(name) {
   }
 };
 
+var forceUpdate = function forceUpdate(vm) {
+  vm.$nextTick(function () {
+    vm.$forceUpdate();
+    vm.$children.forEach(function (child) {
+      return setTimeout(function () {
+        return child.$forceUpdate();
+      }, 0);
+    });
+  });
+};
+
 /**
  * create a dataflow mixin for a given value prop.
  *
@@ -25349,9 +25371,6 @@ var format = function format(name) {
  *
  * custom dataflows follow a pattern: methods are prefixed with the `valueProp`
  * name and `update:${valueProp}` is emitted.
- *
- * TODO syntax sugar <https://github.com/vuejs/vue/issues/4946>
- * TODO ensure that all of these methods correctly trigger change tracking in js-data
  *
  * @param {string} valueProp - bind dataflow to this prop
  */
@@ -25363,10 +25382,14 @@ var createSyncMixin = (function (valueProp) {
   return {
     methods: (_methods = {}, defineProperty$1(_methods, format('forwardInput', prefix), function (e) {
       this.$emit(event, e);
+      if (isRecord(this[valueProp])) {
+        forceUpdate(this);
+      }
     }), defineProperty$1(_methods, format('handleChange', prefix), function (value) {
       if (isRecord(this[valueProp])) {
-        var record = this.$store.createRecord('flow_pages', this[valueProp]);
-        this.$emit(event, applyKV(record, value));
+        var updated = updateRecord$1(this, valueProp, value);
+        this.$emit(event, updated);
+        forceUpdate(this);
       } else {
         this.$emit(event, _extends({}, this[valueProp], value));
       }

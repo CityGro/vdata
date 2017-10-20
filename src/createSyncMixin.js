@@ -1,18 +1,7 @@
 import camelCase from 'lodash/camelCase'
-import capWords from './capWords'
-import each from 'lodash/fp/each'
-import entries from 'lodash/fp/entries'
-import flatten from 'lodash/fp/flatten'
-import flow from 'lodash/fp/flow'
-import isRecord from './isRecord'
-
-const applyKV = (record, values) => {
-  const set = flow(entries, each(([key, value]) => {
-    record[key] = value
-  }))
-  set(values)
-  return record
-}
+import capWords from './utils/capWords'
+import isRecord from './utils/isRecord'
+import updateRecord from './utils/updateRecord'
 
 const format = (name, prefix = '') => {
   if (prefix === '') {
@@ -20,6 +9,13 @@ const format = (name, prefix = '') => {
   } else {
     return `${camelCase(prefix)}${capWords(name)}`
   }
+}
+
+const forceUpdate = (vm) => {
+  vm.$nextTick(() => {
+    vm.$forceUpdate()
+    vm.$children.forEach((child) => setTimeout(() => child.$forceUpdate(), 0))
+  })
 }
 
 /**
@@ -30,9 +26,6 @@ const format = (name, prefix = '') => {
  * custom dataflows follow a pattern: methods are prefixed with the `valueProp`
  * name and `update:${valueProp}` is emitted.
  *
- * TODO syntax sugar <https://github.com/vuejs/vue/issues/4946>
- * TODO ensure that all of these methods correctly trigger change tracking in js-data
- *
  * @param {string} valueProp - bind dataflow to this prop
  */
 export default (valueProp) => {
@@ -42,11 +35,15 @@ export default (valueProp) => {
     methods: {
       [format('forwardInput', prefix)] (e) {
         this.$emit(event, e)
+        if (isRecord(this[valueProp])) {
+          forceUpdate(this)
+        }
       },
       [format('handleChange', prefix)] (value) {
         if (isRecord(this[valueProp])) {
-          const record = this.$store.createRecord('flow_pages', this[valueProp])
-          this.$emit(event, applyKV(record, value))
+          const updated = updateRecord(this, valueProp, value)
+          this.$emit(event, updated)
+          forceUpdate(this)
         } else {
           this.$emit(event, {...this[valueProp], ...value})
         }

@@ -31,7 +31,6 @@ export default {
   },
   install (Vue, optionsCreator) {
     _Vue = Vue
-    console.log(_Vue)
     JSData.utils.Promise = Q
     const store = new DataStore()
     Object.defineProperty(Vue, '$store', {
@@ -74,7 +73,7 @@ export default {
             }
           }.bind(self), 25, {leading: true})
           store.on('all', self._vdataHandler)
-          console.log(`[@citygro/vdata<${self._uid}>]: ready. listening on`, options.events)
+          console.log(`[@citygro/vdata<${self._uid}>] ready. listening on`, options.events)
         }
       },
       created () {
