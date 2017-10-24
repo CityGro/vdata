@@ -34,25 +34,26 @@ export default (valueProp) => {
   return {
     methods: {
       [format('forwardInput', prefix)] (e) {
-        this.$emit(event, e)
         if (isRecord(this[valueProp])) {
-          forceUpdate(this)
+          throw new TypeError('[@citygro/vdata] cannot forward Record objects')
+        } else {
+          this.$emit(event, e)
         }
       },
       [format('handleChange', prefix)] (value) {
         if (isRecord(this[valueProp])) {
           const updated = updateRecord(this, valueProp, value)
           this.$emit(event, updated)
-          forceUpdate(this)
         } else {
           this.$emit(event, {...this[valueProp], ...value})
         }
+        forceUpdate(this)
       },
       [format('handleKeyChange', prefix)] (key, value) {
         this.handleChange({[key]: {...this[valueProp][key], ...value}})
       },
       [format('handleArrayKeyChange', prefix)] (i, key, value) {
-        let arr = [...this[valueProp][key]]
+        let arr = [...this[valueProp][key] || []]
         arr[i] = {...arr[i], ...value}
         this.handleChange({[key]: arr})
       },
@@ -60,11 +61,13 @@ export default (valueProp) => {
         let arr = [...this[valueProp]]
         arr[i] = {...arr[i], ...value}
         this.$emit(event, arr)
+        forceUpdate(this)
       },
       [format('pushToArray', prefix)] (value) {
         let arr = [...(this[valueProp] || [])]
         arr.push(value)
         this.$emit(event, arr)
+        forceUpdate(this)
       },
       [format('pushToArrayKey', prefix)] (key, value) {
         let arr = [...(this[valueProp][key] || [])]
@@ -75,6 +78,7 @@ export default (valueProp) => {
         let value = [...this[valueProp]]
         value.splice(i, 1)
         this.$emit(event, value)
+        forceUpdate(this)
       },
       [format('removeFromArrayKey', prefix)] (i, key) {
         let arr = [...this[valueProp][key]]

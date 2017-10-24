@@ -25381,32 +25381,35 @@ var createSyncMixin = (function (valueProp) {
   var prefix = valueProp === 'value' ? '' : valueProp;
   return {
     methods: (_methods = {}, defineProperty$1(_methods, format('forwardInput', prefix), function (e) {
-      this.$emit(event, e);
       if (isRecord(this[valueProp])) {
-        forceUpdate(this);
+        throw new TypeError('[@citygro/vdata] cannot forward Record objects');
+      } else {
+        this.$emit(event, e);
       }
     }), defineProperty$1(_methods, format('handleChange', prefix), function (value) {
       if (isRecord(this[valueProp])) {
         var updated = updateRecord$1(this, valueProp, value);
         this.$emit(event, updated);
-        forceUpdate(this);
       } else {
         this.$emit(event, _extends({}, this[valueProp], value));
       }
+      forceUpdate(this);
     }), defineProperty$1(_methods, format('handleKeyChange', prefix), function (key, value) {
       this.handleChange(defineProperty$1({}, key, _extends({}, this[valueProp][key], value)));
     }), defineProperty$1(_methods, format('handleArrayKeyChange', prefix), function (i, key, value) {
-      var arr = [].concat(toConsumableArray$1(this[valueProp][key]));
+      var arr = [].concat(toConsumableArray$1(this[valueProp][key] || []));
       arr[i] = _extends({}, arr[i], value);
       this.handleChange(defineProperty$1({}, key, arr));
     }), defineProperty$1(_methods, format('handleArrayChange', prefix), function (i, value) {
       var arr = [].concat(toConsumableArray$1(this[valueProp]));
       arr[i] = _extends({}, arr[i], value);
       this.$emit(event, arr);
+      forceUpdate(this);
     }), defineProperty$1(_methods, format('pushToArray', prefix), function (value) {
       var arr = [].concat(toConsumableArray$1(this[valueProp] || []));
       arr.push(value);
       this.$emit(event, arr);
+      forceUpdate(this);
     }), defineProperty$1(_methods, format('pushToArrayKey', prefix), function (key, value) {
       var arr = [].concat(toConsumableArray$1(this[valueProp][key] || []));
       arr.push(value);
@@ -25415,6 +25418,7 @@ var createSyncMixin = (function (valueProp) {
       var value = [].concat(toConsumableArray$1(this[valueProp]));
       value.splice(i, 1);
       this.$emit(event, value);
+      forceUpdate(this);
     }), defineProperty$1(_methods, format('removeFromArrayKey', prefix), function (i, key) {
       var arr = [].concat(toConsumableArray$1(this[valueProp][key]));
       arr.splice(i, 1);
