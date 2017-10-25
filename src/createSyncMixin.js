@@ -1,7 +1,7 @@
 import camelCase from 'lodash/camelCase'
 import capWords from './utils/capWords'
 import isRecord from './utils/isRecord'
-import updateRecord from './utils/updateRecord'
+import updateVm from './utils/updateVm'
 
 const format = (name, prefix = '') => {
   if (prefix === '') {
@@ -42,12 +42,12 @@ export default (valueProp) => {
       },
       [format('handleChange', prefix)] (value) {
         if (isRecord(this[valueProp])) {
-          const updated = updateRecord(this, valueProp, value)
+          const updated = updateVm(this, valueProp, value)
           this.$emit(event, updated)
+          forceUpdate(this)
         } else {
           this.$emit(event, {...this[valueProp], ...value})
         }
-        forceUpdate(this)
       },
       [format('handleKeyChange', prefix)] (key, value) {
         this.handleChange({[key]: {...this[valueProp][key], ...value}})
@@ -61,13 +61,11 @@ export default (valueProp) => {
         let arr = [...this[valueProp]]
         arr[i] = {...arr[i], ...value}
         this.$emit(event, arr)
-        forceUpdate(this)
       },
       [format('pushToArray', prefix)] (value) {
         let arr = [...(this[valueProp] || [])]
         arr.push(value)
         this.$emit(event, arr)
-        forceUpdate(this)
       },
       [format('pushToArrayKey', prefix)] (key, value) {
         let arr = [...(this[valueProp][key] || [])]
@@ -78,7 +76,6 @@ export default (valueProp) => {
         let value = [...this[valueProp]]
         value.splice(i, 1)
         this.$emit(event, value)
-        forceUpdate(this)
       },
       [format('removeFromArrayKey', prefix)] (i, key) {
         let arr = [...this[valueProp][key]]

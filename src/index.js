@@ -1,5 +1,11 @@
-import vdata from './vdata'
-import createSyncMixin from './createSyncMixin'
 import DataFlowMixin from './DataFlowMixin'
+import createSyncMixin from './createSyncMixin'
+import updateRecord from './utils/updateRecord'
+import vdata from './vdata'
 
-export {vdata, createSyncMixin, DataFlowMixin}
+export {
+  DataFlowMixin,
+  createSyncMixin,
+  updateRecord,
+  vdata
+}

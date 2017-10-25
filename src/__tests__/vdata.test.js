@@ -1,13 +1,11 @@
 /* global describe, it, beforeEach, jest, expect */
 
-import updateRecord from '../utils/updateRecord'
+import updateVm from '../utils/updateVm'
 
 describe('VData', () => {
   let vdata
   let Vue
-  let JSData
   let Adapter
-  let store
 
   beforeEach(() => {
     jest.resetModules()
@@ -155,7 +153,7 @@ describe('VData', () => {
     })
   })
 
-  describe('utils/updateRecord', () => {
+  describe('utils/updateVm', () => {
     it('applies diffs in a way that triggers js-data change detection', () => {
       const vm = new Vue({
         data () {
@@ -163,7 +161,7 @@ describe('VData', () => {
         }
       })
       vm.user = vm.$store.createRecord('users', {id: 13, name: 'foo'})
-      const updated = updateRecord(vm, 'user', {name: 'bar'})
+      const updated = updateVm(vm, 'user', {name: 'bar'})
       return Promise.all([
         expect(updated.name).toEqual('bar'),
         expect(updated.hasChanges()).toBe(true)

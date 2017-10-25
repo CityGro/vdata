@@ -14,15 +14,12 @@ const applyDiff = (record, diff) => {
 /**
  * update record
  *
- * @param {Vue} vm
- * @param {string} prop
+ * @param {object} record
  * @param {object} diff
  */
-export default (vm, prop, diff) => {
-  const record = vm[prop]
+export default (record, diff) => {
   if (isFunction(record._mapper)) {
-    const recordName = record._mapper().name
-    return applyDiff(vm.$store.createRecord(recordName, record), diff)
+    return applyDiff(record, diff)
   } else {
     throw new TypeError('utils/updateRecord can only operate over a js-data/Record object')
   }
