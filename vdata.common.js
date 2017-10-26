@@ -8195,11 +8195,7 @@ var createSyncMixin = (function (valueProp) {
   var prefix = valueProp === 'value' ? '' : valueProp;
   return {
     methods: (_methods = {}, defineProperty$3(_methods, format('forwardInput', prefix), function (e) {
-      if (isRecord(this[valueProp])) {
-        throw new TypeError('[@citygro/vdata] cannot forward Record objects');
-      } else {
-        this.$emit(event, e);
-      }
+      this.$emit(event, e);
     }), defineProperty$3(_methods, format('handleChange', prefix), function (value) {
       if (isRecord(this[valueProp])) {
         var updated = updateVm(this, valueProp, value);

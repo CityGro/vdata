@@ -34,11 +34,7 @@ export default (valueProp) => {
   return {
     methods: {
       [format('forwardInput', prefix)] (e) {
-        if (isRecord(this[valueProp])) {
-          throw new TypeError('[@citygro/vdata] cannot forward Record objects')
-        } else {
-          this.$emit(event, e)
-        }
+        this.$emit(event, e)
       },
       [format('handleChange', prefix)] (value) {
         if (isRecord(this[valueProp])) {
