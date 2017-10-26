@@ -3,14 +3,14 @@ import isEmpty from 'lodash/isEmpty'
 
 export default (Vue, options = {}) => {
   const handlers = options.handlers || {}
-  const eventEmmitter = options.eventEmmitter
-  if (!eventEmmitter && isEmpty(handlers)) {
+  const eventEmitter = options.emitter
+  if (!eventEmitter && isEmpty(handlers)) {
     return
-  } else if (!eventEmmitter) {
+  } else if (!eventEmitter) {
     console.error('[@citygro/vdata] missing event source!')
   } else {
     entries(handlers).forEach(([event, handler]) => {
-      eventEmmitter.on(event, handler.bind(Vue))
+      eventEmitter.on(event, handler.bind(Vue))
     })
   }
 }

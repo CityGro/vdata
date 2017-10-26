@@ -25317,10 +25317,10 @@ var registerExternalEvents = (function (Vue) {
   var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
   var handlers = options.handlers || {};
-  var eventEmmitter = options.eventEmmitter;
-  if (!eventEmmitter && isEmpty_1(handlers)) {
+  var eventEmitter = options.emitter;
+  if (!eventEmitter && isEmpty_1(handlers)) {
     return;
-  } else if (!eventEmmitter) {
+  } else if (!eventEmitter) {
     console.error('[@citygro/vdata] missing event source!');
   } else {
     entries$2(handlers).forEach(function (_ref) {
@@ -25328,7 +25328,7 @@ var registerExternalEvents = (function (Vue) {
           event = _ref2[0],
           handler = _ref2[1];
 
-      eventEmmitter.on(event, handler.bind(Vue));
+      eventEmitter.on(event, handler.bind(Vue));
     });
   }
 });
