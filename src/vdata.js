@@ -52,7 +52,9 @@ export default {
     registerSchemas(store, options.models)
     registerAdapters(store, options.adapters)
     registerExternalEvents(Vue, options.externalEvents)
-    console.log('[@citygro/vdata] store ready!', store)
+    if (process.env.NODE_ENV !== 'test') {
+      console.log('[@citygro/vdata] store ready!', store)
+    }
     Vue.mixin(AsyncDataMixin)
     Vue.mixin({
       methods: {
@@ -68,12 +70,16 @@ export default {
           this._vdataHandler = debounce(function () {
             const event = arguments[0]
             if (includes(options.events, event)) {
-              console.log(`[@citygro/vdata<${self._uid}>] running for ${event}`)
+              if (process.env.NODE_ENV !== 'test') {
+                console.log(`[@citygro/vdata<${self._uid}>] running for ${event}`)
+              }
               self.$options.vdata.apply(self, [store, ...arguments])
             }
           }.bind(self), 25, {leading: true})
           store.on('all', self._vdataHandler)
-          console.log(`[@citygro/vdata<${self._uid}>] ready. listening on`, options.events)
+          if (process.env.NODE_ENV !== 'test') {
+            console.log(`[@citygro/vdata<${self._uid}>] ready. listening on`, options.events)
+          }
         }
       },
       created () {

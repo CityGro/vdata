@@ -1,8 +1,8 @@
-/* global describe, it, beforeEach, jest, expect */
+/* global describe, test, beforeEach, jest, expect */
 
-import updateVm from '../utils/updateVm'
+import * as dataFlow from '../dataFlow'
 import formatMethod from '../utils/formatMethod'
-import createSyncMixin from '../createSyncMixin'
+import updateVm from '../utils/updateVm'
 
 describe('VData', () => {
   let vdata
@@ -15,6 +15,7 @@ describe('VData', () => {
     require('localstorage-polyfill')
     vdata = require('../vdata').default
     Vue = require('vue')
+    Vue.config.productionTip = false
     Adapter = require('js-data-localstorage').LocalStorageAdapter
     Vue.use(vdata, vdata.createConfig((V) => ({
       models: {
@@ -36,7 +37,7 @@ describe('VData', () => {
   })
 
   describe('vdata', () => {
-    it('makes the store directly accessible', () => {
+    test('makes the store directly accessible', () => {
       const vm = new Vue()
       return Promise.all([
         expect(vm.$store).toBeDefined(),
@@ -44,7 +45,7 @@ describe('VData', () => {
       ])
     })
 
-    it('can pass data via props', () => {
+    test('can pass data via props', () => {
       Vue.config.isUnknownElement = () => false
       const Babby = Vue.component('babby', {
         render (createElement) {
@@ -124,12 +125,12 @@ describe('VData', () => {
   })
 
   describe('asyncData', () => {
-    it('attaches the appropriate methods', () => {
+    test('attaches the appropriate methods', () => {
       const vm = new Vue()
       return expect(vm.asyncReload).toBeDefined()
     })
 
-    it('indicates loading state for async data resources', () => {
+    test('indicates loading state for async data resources', () => {
       const vm = new Vue({
         render (h) {
           const self = this
@@ -156,7 +157,7 @@ describe('VData', () => {
   })
 
   describe('utils/updateVm', () => {
-    it('applies diffs in a way that triggers js-data change detection', () => {
+    test('applies diffs in a way that triggers js-data change detection', () => {
       const vm = new Vue({
         data () {
           return {user: {}}
@@ -172,17 +173,17 @@ describe('VData', () => {
   })
 
   describe('utils/formatMethod', () => {
-    it('formats value methods', () => {
+    test('formats value methods', () => {
       return expect(formatMethod('handleChange')).toEqual('handleChange')
     })
-    it('formats sync methods', () => {
+    test('formats sync methods', () => {
       return expect(formatMethod('handleChange', 'myProp')).toEqual('myPropHandleChange')
     })
   })
 
   describe('createSyncMixin', () => {
-    it('creates methods for v-model', () => {
-      const mixin = createSyncMixin('value')
+    test('creates methods for v-model', () => {
+      const mixin = dataFlow.createSyncMixin('value')
       return Promise.all([
         expect(mixin.methods.forwardInput).toBeDefined(),
         expect(mixin.methods.handleArrayChange).toBeDefined(),
@@ -194,8 +195,8 @@ describe('VData', () => {
         expect(mixin.methods.removeFromArrayKey).toBeDefined()
       ])
     })
-    it('creates methods for sync', () => {
-      const mixin = createSyncMixin('myProp')
+    test('creates methods for sync', () => {
+      const mixin = dataFlow.createSyncMixin('myProp')
       return Promise.all([
         expect(mixin.methods.myPropForwardInput).toBeDefined(),
         expect(mixin.methods.myPropHandleArrayChange).toBeDefined(),
@@ -206,6 +207,76 @@ describe('VData', () => {
         expect(mixin.methods.myPropRemoveFromArray).toBeDefined(),
         expect(mixin.methods.myPropRemoveFromArrayKey).toBeDefined()
       ])
+    })
+  })
+
+  describe('dataFlow/handleChange', () => {
+    test('update Record', () => {
+      const record = Vue.$store.createRecord('users', {name: 'foo'})
+      return expect(dataFlow.handleChange(record, {name: 'bar'}).name).toEqual('bar')
+    })
+    test('update Object', () => {
+      const o = {foo: 'bar'}
+      return expect(dataFlow.handleChange(o, {foo: 'baz'}).foo).toEqual('baz')
+    })
+  })
+
+  describe('dataFlow/handleKeyChange', () => {
+    test('update Record key', () => {
+      const record = Vue.$store.createRecord('users', {name: {first: 'foo'}})
+      expect(dataFlow.handleKeyChange(record, 'name', {first: 'bar'}).name).toEqual({first: 'bar'})
+    })
+    test('update Object key', () => {
+      const o = {key: {prop: true}}
+      return expect(dataFlow.handleKeyChange(o, 'key', {prop: false}).key).toEqual({prop: false})
+    })
+  })
+
+  describe('dataFlow/handleArrayChange', () => {
+    test('update Array<Record>', () => {
+      const record = Vue.$store.createRecord('users', {name: 'foo'})
+      const arr = [record]
+      return expect(dataFlow.handleArrayChange(arr, 0, {name: 'bar'})[0]).toEqual({name: 'bar'})
+    })
+    test('update Array<Object>', () => {
+      const arr = [{key: 'value'}]
+      return expect(dataFlow.handleArrayChange(arr, 0, {key: false})[0]).toEqual({key: false})
+    })
+  })
+
+  describe('dataFlow/handleArrayKeyChange', () => {
+    test('update Array<Record> key', () => {
+      const bar = Vue.$store.createRecord('users', {name: 'bar'})
+      const record = Vue.$store.createRecord('users', {name: [bar]})
+      return expect(dataFlow.handleArrayKeyChange(record, 0, 'name', {name: 'baz'}).name[0].name).toEqual('baz')
+    })
+    test('update Array<Object> key', () => {
+      const o = {key: [{key: 'value'}]}
+      return expect(dataFlow.handleArrayKeyChange(o, 0, 'key', {key: false}).key[0]).toEqual({key: false})
+    })
+  })
+
+  describe('dataFlow/pushToArray', () => {
+    test('update Array', () => {
+      return expect(dataFlow.pushToArray([], {key: 'value'})).toEqual([{key: 'value'}])
+    })
+  })
+
+  describe('dataFlow/pushToArrayKey', () => {
+    test('update Array Object key', () => {
+      return expect(dataFlow.pushToArrayKey({key: []}, 'key', {key: 'value'})).toEqual({key: [{key: 'value'}]})
+    })
+  })
+
+  describe('dataFlow/removeFromArray', () => {
+    test('remove from Array', () => {
+      return expect(dataFlow.removeFromArray([{key: 'value'}], 0)).toEqual([])
+    })
+  })
+
+  describe('dataFlow/removeFromArrayKey', () => {
+    test('remove from Array key', () => {
+      return expect(dataFlow.removeFromArrayKey({key: [{key: 'value'}]}, 0, 'key')).toEqual({key: []})
     })
   })
 })
