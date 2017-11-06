@@ -1,15 +1,6 @@
-import camelCase from 'lodash/camelCase'
-import capWords from './utils/capWords'
+import format from './utils/formatMethod'
 import isRecord from './utils/isRecord'
 import updateVm from './utils/updateVm'
-
-const format = (name, prefix = '') => {
-  if (prefix === '') {
-    return camelCase(name)
-  } else {
-    return `${camelCase(prefix)}${capWords(name)}`
-  }
-}
 
 const forceUpdate = (vm) => {
   vm.$nextTick(() => {

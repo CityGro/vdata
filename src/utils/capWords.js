@@ -1,4 +1,6 @@
 import camelCase from 'lodash/camelCase'
+import concat from 'lodash/concat'
+import join from 'lodash/join'
 import tail from 'lodash/tail'
 
 /**
@@ -8,5 +10,6 @@ import tail from 'lodash/tail'
  */
 export default (s) => {
   const camel = camelCase(s)
-  return [camel.charAt(0).toUpperCase()].contact(tail(camel)).join('')
+  const arr = concat([], camel.charAt(0).toUpperCase(), tail(camel))
+  return join(arr, '')
 }

@@ -1,6 +1,8 @@
 /* global describe, it, beforeEach, jest, expect */
 
 import updateVm from '../utils/updateVm'
+import formatMethod from '../utils/formatMethod'
+import createSyncMixin from '../createSyncMixin'
 
 describe('VData', () => {
   let vdata
@@ -165,6 +167,44 @@ describe('VData', () => {
       return Promise.all([
         expect(updated.name).toEqual('bar'),
         expect(updated.hasChanges()).toBe(true)
+      ])
+    })
+  })
+
+  describe('utils/formatMethod', () => {
+    it('formats value methods', () => {
+      return expect(formatMethod('handleChange')).toEqual('handleChange')
+    })
+    it('formats sync methods', () => {
+      return expect(formatMethod('handleChange', 'myProp')).toEqual('myPropHandleChange')
+    })
+  })
+
+  describe('createSyncMixin', () => {
+    it('creates methods for v-model', () => {
+      const mixin = createSyncMixin('value')
+      return Promise.all([
+        expect(mixin.methods.forwardInput).toBeDefined(),
+        expect(mixin.methods.handleArrayChange).toBeDefined(),
+        expect(mixin.methods.handleArrayKeyChange).toBeDefined(),
+        expect(mixin.methods.handleChange).toBeDefined(),
+        expect(mixin.methods.handleKeyChange).toBeDefined(),
+        expect(mixin.methods.pushToArray).toBeDefined(),
+        expect(mixin.methods.removeFromArray).toBeDefined(),
+        expect(mixin.methods.removeFromArrayKey).toBeDefined()
+      ])
+    })
+    it('creates methods for sync', () => {
+      const mixin = createSyncMixin('myProp')
+      return Promise.all([
+        expect(mixin.methods.myPropForwardInput).toBeDefined(),
+        expect(mixin.methods.myPropHandleArrayChange).toBeDefined(),
+        expect(mixin.methods.myPropHandleArrayKeyChange).toBeDefined(),
+        expect(mixin.methods.myPropHandleChange).toBeDefined(),
+        expect(mixin.methods.myPropHandleKeyChange).toBeDefined(),
+        expect(mixin.methods.myPropPushToArray).toBeDefined(),
+        expect(mixin.methods.myPropRemoveFromArray).toBeDefined(),
+        expect(mixin.methods.myPropRemoveFromArrayKey).toBeDefined()
       ])
     })
   })
