@@ -107,8 +107,6 @@ const createAsyncReload = (thisArg) => debounce(function (propertyName, skipLazy
 export default {
   created () {
     this._asyncReload = createAsyncReload(this)
-  },
-  mounted () {
     this.asyncReload(undefined, true)
   },
   methods: {

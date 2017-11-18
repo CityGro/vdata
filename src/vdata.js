@@ -1,9 +1,10 @@
-import * as JSData from 'js-data'
 import AsyncDataMixin from './asyncData'
-import Q from 'q'
-import debounce from 'lodash/debounce'
 import defaults from 'lodash/defaults'
-import includes from 'lodash/includes'
+import entries from 'lodash/entries'
+import getAsyncDefaults from './getAsyncDefaults'
+import injectAsyncData from './injectAsyncData'
+import injectVdataHandler from './injectVdataHandler'
+import isFunction from 'lodash/isFunction'
 import property from 'lodash/property'
 import registerAdapters from './registerAdapters'
 import registerExternalEvents from './registerExternalEvents'
@@ -31,7 +32,6 @@ export default {
   },
   install (Vue, optionsCreator) {
     _Vue = Vue
-    JSData.utils.Promise = Q
     const store = new DataStore()
     Object.defineProperty(Vue, '$store', {
       get () {
@@ -66,19 +66,18 @@ export default {
       },
       beforeCreate () {
         if (hasVdata(this)) {
-          const self = this
-          this._vdataHandler = debounce(function () {
-            const event = arguments[0]
-            if (includes(options.events, event)) {
-              if (process.env.NODE_ENV !== 'test') {
-                console.log(`[@citygro/vdata<${self._uid}>] running for ${event}`)
-              }
-              self.$options.vdata.apply(self, [store, ...arguments])
-            }
-          }.bind(self), 25, {leading: true})
-          store.on('all', self._vdataHandler)
-          if (process.env.NODE_ENV !== 'test') {
-            console.log(`[@citygro/vdata<${self._uid}>] ready. listening on`, options.events)
+          if (isFunction(this.$options.vdata)) {
+            injectVdataHandler(this, store, options, this.$options.vdata)
+          } else {
+            injectAsyncData(this, store, this.$options.vdata)
+            injectVdataHandler(this, store, options, () => {
+              entries(this.$options.vdata).forEach(([model, options]) => {
+                options = getAsyncDefaults(options)
+                if (options.sync === true) {
+                  this[model] = store.getAll(model)
+                }
+              })
+            })
           }
         }
       },
