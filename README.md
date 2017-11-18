@@ -3,15 +3,13 @@
 [![npm downloads](https://img.shields.io/npm/dt/@citygro/vdata.svg)](https://npmjs.org/package/@citygro/vdata)
 [![npm version](https://img.shields.io/npm/v/@citygro/vdata.svg)](https://npmjs.org/package/@citygro/vdata)
 
-@citygro/vdata(3) -- vue-js-data binding
-===============================
+@citygro/vdata(3) -- reactive query model
+=========================================
 
 > `@citygro/vdata` requires `vue>=2.1.0`
 
 ```sh
-$ yarn add js-data @citygro/vdata
-# or
-$ npm install --save js-data @citygro/vdata
+$ yarn add js-data-http @citygro/vdata
 ```
 
 ## usage
@@ -19,77 +17,79 @@ $ npm install --save js-data @citygro/vdata
 ```js
 import Vue from 'vue'
 import {vdata} from '@citygro/vdata'
-import JSData from 'js-data'
+import HttpAdapter from 'js-data-http'
 
-const store = new JSData.DataStore()
-// .. register adapter ..
-store.defineMapper('user')
-store.create('user', {id: 1, name: 'tokyo_jesus'})
-
-Vue.use(vdata(store))
-
-const vm = new Vue({
-  // called on js-data change and onBeforeUpdate
-  vdata (store) {
-    this.user = store.get('user', 1)
-    this.posts = store.getAll('post', {user: 1})
-  },
-  asyncData: {
-    user () {
-      return this.$store.find('user', 1)
-    },
-    posts () {
-      return this.$store.findAll('post', {user: 1})
+Vue.use(vdata, vdata.createConfig(() => ({
+  models: {
+    user: {
+      // options
     }
   },
-  methods: {
-    rename (to) {
-      this.user.name = to
-      return this.user.save()
+  adapters: {
+    http: {
+      adapter: new HttpAdapter()
     }
   }
-})
+})))
 
-vm.rename('xj9').then((user) => {
-  expect(user.name).toBe('xj9')
-})
+// doTheThing()
 ```
 
-## install options
+## `vdataConfig: Object`
 
-### `[options.events=['change', 'add', 'remove']]: string[]`
+### `events: Array<string>`
 
-`JSData.DataStore` events that will trigger state updates
+`JSData` events that should trigger a `vdata` update procedure.
 
-## vm options
+- add
+- change
+- remove
 
-### `vm.$options.vdata(store: JSData.DataStore, event: string): void`
+### `models: Object`
 
-> note that `@citygro/vdata` does not react to changes on `vm`, you will need to manually trigger updates if your
-> bindings depend on any `vm` state.
->
-> see `vm.$vdata()`
+a mapping of [`JSData` models](http://api.js-data.io/js-data/3.0.1/Mapper.html).
 
-run synchronous functions to update component data from the `JSData.DataStore`
+```
+{
+  models: {
+    [name]: {
+      name: String,
+      idAttribute: String
+    }
+  }
+}
+```
 
-### `vm.$options.asyncData: {[key: string]: Function}`
+### `adapters: Object`
 
-## properties
+a mapping of `JSData` adapter instances. each adapter has its own options,
+check the docs for your specific choice.
 
-### `vm.asyncLoading: boolean`
+```
+{
+  adapters: {
+    [name]: {
+      adapter: AdapterInstance,
+      default: Boolean
+    }
+  }
+}
+```
 
-async loading state
+## dataflow
 
-### `vm.asyncError: boolean`
+`vdata` provides a rich vocabulary for working with and modifying complex
+data.
 
-async error flag
+### `handleChange(diff: Object)`
 
-## methods
+```
+// ...
+import {DataFlowMixin} from '@citygro/vdata'
 
-### `vm.asyncReload(name: string|void)`
-
-refresh data. if `name` is specified, only that field is updated
-
-### `vm.$vdata(): void`
-
-force state update
+export default {
+  name: 'my-editor',
+  mixins: [DataFlowMixin],
+  template: '<text-input :value="value.key" @input="handleChange({key: $event})" />'
+}
+```
