@@ -24,10 +24,10 @@
  * THE SOFTWARE.
  */
 
-import Q from 'q'
+import Any from 'p-any'
 import debounce from 'lodash/debounce'
-import keys from 'lodash/keys'
 import isFunction from 'lodash/isFunction'
+import keys from 'lodash/keys'
 
 let optionNames = [
   'Default',
@@ -123,8 +123,8 @@ export default {
       let dataObj = {
         asyncLoading: true,
         asyncError: false,
-        asyncAll: Q.all(names.map((name) => asyncData[name])),
-        asyncAny: Q.any(names.map((name) => asyncData[name]))
+        asyncAll: Promise.all(names.map((name) => asyncData[name])),
+        asyncAny: Any(names.map((name) => asyncData[name]))
       }
       names.forEach((name) => {
         const asyncDefault = asyncData[`${name}Default`]

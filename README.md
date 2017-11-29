@@ -44,9 +44,9 @@ Vue.use(vdata, {
 // doTheThing()
 ```
 
-## `vdataConfig: Object`
+## `vdataConfig: object`
 
-### `events: Array<string>`
+### `events: string[]`
 
 > first, familiarize yourself with [js-data events](http://api.js-data.io/js-data/3.0.1/DataStore.html#event:add).
 
@@ -56,7 +56,7 @@ Vue.use(vdata, {
 - change
 - remove
 
-### `models: Object`
+### `models: object`
 
 a mapping of [`JSData` models](http://api.js-data.io/js-data/3.0.1/Mapper.html).
 
@@ -70,7 +70,7 @@ a mapping of [`JSData` models](http://api.js-data.io/js-data/3.0.1/Mapper.html).
 }
 ```
 
-### `adapters: Object`
+### `adapters: object`
 
 a mapping of `JSData` adapter instances. each adapter has its own options,
 check the docs for your specific choice.
@@ -88,10 +88,12 @@ check the docs for your specific choice.
 
 ## dataflow
 
+> this is a BETA feature
+
 `vdata` provides a rich vocabulary for working with and modifying complex
 data.
 
-### `handleChange(diff: Object)`
+### `handleChange(diff: object)`
 
 > see this [in a fiddle](https://jsfiddle.net/v4wtgkmg/1/)
 
@@ -105,6 +107,20 @@ export default {
   template: '<text-input :value="value.key" @input="handleChange({key: $event})" />'
 }
 ```
+
+### `handleKeyChange(key: string, diff: object)`
+
+### `handleArrayChange(i: number, diff: object)`
+
+### `handleArrayKeyChange(i: number, key: string, diff: object)`
+
+### `pushToArray(diff: any)`
+
+### `pushToArrayKey(key: string, diff: any)`
+
+### `removeFromArray(i: number)`
+
+### `removeFromArrayKey(i: number, key: string)`
 
 ## `asyncData`
 
@@ -153,6 +169,8 @@ you will need to invoke `asyncReload()` or `asyncReload('prop')`
 
 ## vQuery
 
+> this is a BETA feature
+
 `vQuery` automatically generates `asyncReload` and `vdata` using a simple declarative syntax.
 
 ```
@@ -183,7 +201,7 @@ equivalent to `asyncData.[prop]Lazy`
 
 find one record by id. if `false` find all records
 
-### `vQuery[proppp].force: bool`
+### `vQuery[prop].force: bool`
 
 always fetch a fresh record
 
@@ -200,8 +218,4 @@ async function foo () {
   const result data.map(/* transform */)
   return result
 }
-```
-
-```
-import {to} from '@citygro/vdata'
 ```

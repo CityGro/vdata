@@ -1,4 +1,5 @@
 var webpack = require('webpack')
+const UglifyJSPlugin = require('uglifyjs-webpack-plugin')
 
 module.exports = {
   entry: ['./vdata.common.js'],
@@ -20,11 +21,15 @@ module.exports = {
     new webpack.DefinePlugin({
       'process.env.NODE_ENV': JSON.stringify('production')
     }),
-    new webpack.optimize.UglifyJsPlugin({
-      comments: false,
-      compressor: {
-        screw_ie8: true,
-        warnings: false
+    new UglifyJSPlugin({
+      uglifyOptions: {
+        compress: {
+          warnings: false
+        },
+        output: {
+          beautify: true,
+          comments: true
+        }
       }
     })
   ]
