@@ -118,6 +118,7 @@ describe('AsyncData', () => {
   })
 
   test('lazy reload.', () => {
+    jest.useFakeTimers()
     const spy = jest.fn()
     const lazyVm = new Vue({
       template: `<div></div>`,
@@ -137,10 +138,7 @@ describe('AsyncData', () => {
     expect(lazyVm.sandboxLoading).toEqual(false)
     expect(spy).not.toHaveBeenCalled()
     lazyVm.asyncReload('sandbox')
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        resolve(expect(spy).toHaveBeenCalledTimes(2))
-      }, 50)
-    })
+    jest.runAllTimers()
+    expect(spy).toHaveBeenCalledTimes(2)
   })
 })
