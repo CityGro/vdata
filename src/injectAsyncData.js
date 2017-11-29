@@ -12,9 +12,9 @@ export default (vm, store, q) => {
   let asyncData = (isEmpty(vm.$options.asyncData)) ? {} : vm.$options.asyncData
   q.forEach(([prop, options]) => {
     const model = options.model || prop
-    asyncData[`${model}Lazy`] = options.lazy
-    asyncData[`${model}Default`] = (isFunction(options.default)) ? options.default.call(vm) : options.default
-    asyncData[model] = (options.id)
+    asyncData[`${prop}Lazy`] = options.lazy
+    asyncData[`${prop}Default`] = (isFunction(options.default)) ? options.default.call(vm) : options.default
+    asyncData[prop] = (options.id)
       ? () => store.find(model, options.id, {force: options.force})
       : () => store.findAll(model, {force: options.force})
   })

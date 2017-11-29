@@ -25,7 +25,6 @@
     "publish-script": "./bin/publish"
   },
   "jest": {
-    "rootDir": "src",
     "moduleFileExtensions": [
       "jsx",
       "js",
@@ -78,7 +77,7 @@
     "babel-cli": "^6.18.0",
     "babel-core": "^6.18.0",
     "babel-eslint": "^8.0.2",
-    "babel-jest": "*",
+    "babel-jest": "^21.2.0",
     "babel-loader": "^6.2.0",
     "babel-plugin-external-helpers": "^6.18.0",
     "babel-plugin-syntax-async-functions": "^6.13.0",
@@ -97,7 +96,7 @@
     "eslint-plugin-promise": "^3.6.0",
     "eslint-plugin-standard": "^3.0.1",
     "html-webpack-plugin": "^2.28.0",
-    "jest": "*",
+    "jest": "^21.2.1",
     "js-data-http": "3.0.0-beta.8",
     "js-data-localstorage": "3.0.0-beta.2",
     "jsdom": "^9.8.3",

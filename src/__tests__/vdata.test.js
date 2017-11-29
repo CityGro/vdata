@@ -279,4 +279,48 @@ describe('vdata', () => {
       return expect(dataFlow.removeFromArrayKey({key: [{key: 'value'}]}, 0, 'key')).toEqual({key: []})
     })
   })
+
+  describe('vQuery', () => {
+    test('generate default query + handler', () => {
+      const vm = new Vue({
+        data () {
+          return {
+            myId: 1
+          }
+        },
+        vQuery: {
+          comments: true
+        }
+      })
+      expect(vm.$options.asyncData.comments).toBeDefined()
+      expect(vm.$options.asyncData.commentsDefault).toBe(undefined)
+      expect(vm.$options.asyncData.commentsLazy).toBe(false)
+      expect(vm._vQueryHandler).toBeDefined()
+    })
+    test('generate custom query + handler', () => {
+      const vm = new Vue({
+        data () {
+          return {
+            myId: 1
+          }
+        },
+        vQuery: {
+          comments: true,
+          user () {
+            const id = this.myId
+            return {
+              model: 'users',
+              lazy: true,
+              default: () => ({}),
+              id
+            }
+          }
+        }
+      })
+      expect(vm.$options.asyncData.user).toBeDefined()
+      expect(vm.$options.asyncData.userDefault).toEqual({})
+      expect(vm.$options.asyncData.userLazy).toBe(true)
+      expect(vm._vQueryHandler).toBeDefined()
+    })
+  })
 })

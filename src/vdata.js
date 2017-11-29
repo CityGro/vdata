@@ -1,4 +1,4 @@
-import AsyncDataMixin from './asyncData'
+import AsyncDataMixin from './AsyncDataMixin'
 import defaults from 'lodash/defaults'
 import get from 'lodash/get'
 import injectHandler from './injectHandler'

@@ -1,4 +1,5 @@
-/**!
+/* global jest, describe, test, beforeEach, expect */
+/** !
  * vue-async-data
  *
  * The MIT License (MIT)
@@ -24,8 +25,8 @@
  * THE SOFTWARE.
  */
 
-import Vue from 'vue';
-import { AsyncDataMixin } from './main';
+import Vue from 'vue/dist/vue.js'
+import AsyncDataMixin from '../AsyncDataMixin'
 
 describe('AsyncData', () => {
   let resolve = (done) => {
@@ -35,22 +36,22 @@ describe('AsyncData', () => {
       asyncData: {
         sandbox () {
           return new Promise((resolve, reject) => {
-            this.counter++;
-            resolve('OK!' + this.counter);
+            this.counter++
+            resolve('OK!' + this.counter)
             setTimeout(() => {
-              if (done) done();
+              if (done) done()
             }, 10)
-          });
+          })
         },
-        sandboxDefault: 'Default!',
+        sandboxDefault: 'Default!'
       },
       data () {
         return {
           counter: 0
         }
       }
-    }).$mount();
-  };
+    }).$mount()
+  }
   let reject = (done) => {
     return new Vue({
       template: `<div></div>`,
@@ -58,12 +59,13 @@ describe('AsyncData', () => {
       asyncData: {
         sandbox () {
           return new Promise((resolve, reject) => {
-            this.counter++;
-            reject('NG!' + this.counter);
+            this.counter++
+            // eslint-disable-next-line prefer-promise-reject-errors
+            reject('NG!' + this.counter) // FIXME
             setTimeout(() => {
-              if (done) done();
+              if (done) done()
             }, 50)
-          });
+          })
         }
       },
       data () {
@@ -71,74 +73,74 @@ describe('AsyncData', () => {
           counter: 0
         }
       }
-    }).$mount();
+    }).$mount()
   }
 
   beforeEach(() => {
+    jest.resetModules()
+    Vue.config.productionTip = false
   })
 
-  it('If "asyncData" property is not found, mixin does not work.', () => {
+  test('If "asyncData" property is not found, mixin does not work.', () => {
     let emptyVm = new Vue({
       template: `<div></div>`,
-      mixins: [ AsyncDataMixin ],
-    }).$mount();
-    expect(emptyVm.asyncLoading).toEqual(undefined);
+      mixins: [ AsyncDataMixin ]
+    }).$mount()
+    expect(emptyVm.asyncLoading).toEqual(undefined)
   })
 
-  it('Default property is set.', () => {
-    let resolveVm = resolve();
-    expect(resolveVm.asyncLoading).toEqual(true);
-    expect(resolveVm.asyncError).toEqual(false);
-    expect(resolveVm.sandbox).toEqual('Default!');
+  test('Default property is set.', () => {
+    let resolveVm = resolve()
+    expect(resolveVm.asyncLoading).toEqual(true)
+    expect(resolveVm.asyncError).toEqual(false)
+    expect(resolveVm.sandbox).toEqual('Default!')
   })
 
-  it('Resolve promise.', (done) => {
+  test('Resolve promise.', (done) => {
     let resolveVm = resolve(() => {
-      expect(resolveVm.sandbox).toEqual('OK!1');
-      expect(resolveVm.sandboxLoading).toEqual(false);
-      expect(resolveVm.asyncLoading).toEqual(false);
-      expect(resolveVm.asyncError).toEqual(false);
-      done();
-    });
-    expect(resolveVm.asyncError).toEqual(false);
+      expect(resolveVm.sandbox).toEqual('OK!1')
+      expect(resolveVm.sandboxLoading).toEqual(false)
+      expect(resolveVm.asyncLoading).toEqual(false)
+      expect(resolveVm.asyncError).toEqual(false)
+      done()
+    })
+    expect(resolveVm.asyncError).toEqual(false)
   })
 
-  it('Reject promise.', (done) => {
+  test('Reject promise.', (done) => {
     let rejectVm = reject(() => {
-      expect(rejectVm.sandboxError).toEqual('NG!1');
-      expect(rejectVm.sandboxLoading).toEqual(false);
-      expect(rejectVm.asyncError).toEqual(true);
-      done();
-    });
-    expect(rejectVm.asyncError).toEqual(false);
+      expect(rejectVm.sandboxError).toEqual('NG!1')
+      expect(rejectVm.sandboxLoading).toEqual(false)
+      expect(rejectVm.asyncError).toEqual(true)
+      done()
+    })
+    expect(rejectVm.asyncError).toEqual(false)
   })
 
-  it('lazy reload.', () => {
-    let spy = jasmine.createSpy();
-
-    let lazyVm = new Vue({
+  test('lazy reload.', () => {
+    const spy = jest.fn()
+    const lazyVm = new Vue({
       template: `<div></div>`,
       mixins: [ AsyncDataMixin ],
       asyncData: {
         sandbox () {
-          return new Promise((resolve, reject) => {
-            resolve('OK!');
-            spy();
-          });
+          spy()
+          return new Promise((resolve) => {
+            spy()
+            resolve('OK!')
+          })
         },
         sandboxDefault: 'Default!',
-        sandboxLazy: true,
+        sandboxLazy: true
       }
-    }).$mount();
-
-    expect(lazyVm.sandboxLoading).toEqual(false);
-    expect(spy).not.toHaveBeenCalled();
-
-    lazyVm.asyncReload('sandbox');
-    expect(spy).toHaveBeenCalled();
-    spy.calls.reset();
-
-    lazyVm.asyncReload();
-    expect(spy).toHaveBeenCalled();
+    }).$mount()
+    expect(lazyVm.sandboxLoading).toEqual(false)
+    expect(spy).not.toHaveBeenCalled()
+    lazyVm.asyncReload('sandbox')
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        resolve(expect(spy).toHaveBeenCalledTimes(2))
+      }, 50)
+    })
   })
 })
