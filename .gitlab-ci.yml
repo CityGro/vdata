@@ -1,14 +1,13 @@
-image: node:latest
+image: node:8.9
 cache:
   paths:
-    - node_modules/
+    - node_modules
 before_script:
-    - yarn
+  - yarn install
 stages:
-    - test
+  - test
 test:
-    stage: test
-    only:
-        - latest
-    script:
-        - npm test
+  stage: test
+  script:
+    - yarn test
+  coverage: /All files\s*\|\s*([\d\.]+)/

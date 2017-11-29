@@ -2,6 +2,7 @@
 [![coverage report](https://gitlab.com/citygro/vdata/badges/latest/coverage.svg)](https://gitlab.com/citygro/@citygro/vdata/commits/latest)
 [![npm downloads](https://img.shields.io/npm/dt/@citygro/vdata.svg)](https://npmjs.org/package/@citygro/vdata)
 [![npm version](https://img.shields.io/npm/v/@citygro/vdata.svg)](https://npmjs.org/package/@citygro/vdata)
+[![license](https://img.shields.io/npm/l/@citygro/vdata.svg)](https://gitlab.com/citygro/vdata/blob/latest/LICENSE)
 
 @citygro/vdata(3) -- reactive query model
 =========================================
@@ -19,7 +20,7 @@ import Vue from 'vue'
 import {vdata} from '@citygro/vdata'
 import HttpAdapter from 'js-data-http'
 
-Vue.use(vdata, vdata.createConfig(() => ({
+Vue.use(vdata, {
   models: {
     user: {
       // options
@@ -30,7 +31,7 @@ Vue.use(vdata, vdata.createConfig(() => ({
       adapter: new HttpAdapter()
     }
   }
-})))
+})
 
 // doTheThing()
 ```
@@ -82,6 +83,8 @@ check the docs for your specific choice.
 data.
 
 ### `handleChange(diff: Object)`
+
+> see this [in a fiddle](https://jsfiddle.net/v4wtgkmg/1/)
 
 ```
 // ...

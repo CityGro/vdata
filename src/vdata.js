@@ -1,37 +1,30 @@
 import AsyncDataMixin from './asyncData'
 import defaults from 'lodash/defaults'
-import entries from 'lodash/entries'
-import getAsyncDefaults from './getAsyncDefaults'
-import injectAsyncData from './injectAsyncData'
-import injectVdataHandler from './injectVdataHandler'
+import get from 'lodash/get'
+import injectHandler from './injectHandler'
 import isFunction from 'lodash/isFunction'
-import property from 'lodash/property'
+import processVQuery from './processVQuery'
 import registerAdapters from './registerAdapters'
 import registerExternalEvents from './registerExternalEvents'
 import registerSchemas from './registerSchemas'
 import {DataStore} from 'js-data'
 
-const getVdata = property('$options.vdata')
-
-const hasVdata = (o) => getVdata(o) !== undefined
-
-// late binding
-var _Vue
+const hasVQuery = (o) => !!get(o, '$options.vQuery')
+const hasVdata = (o) => !!get(o, 'options.vdata')
 
 /**
- * VData plugin
+ * vdata plugin
  */
 export default {
   createConfig (fn) {
     return (V) => {
       const options = fn(V)
       return defaults(options || {}, {
-        events: ['add', 'change', 'remove']
+        events: ['add', 'change', 'remove', 'manual']
       })
     }
   },
-  install (Vue, optionsCreator) {
-    _Vue = Vue
+  install (Vue, options) {
     const store = new DataStore()
     Object.defineProperty(Vue, '$store', {
       get () {
@@ -43,7 +36,7 @@ export default {
         return store
       }
     })
-    const options = optionsCreator(Vue)
+    options = (isFunction(options)) ? options(Vue) : options
     Object.defineProperty(store, 'vdataOptions', {
       get () {
         return options
@@ -60,33 +53,27 @@ export default {
       methods: {
         $vdata () {
           if (hasVdata(this)) {
-            this._vdataHandler('change')
+            this._vdataHandler(...[store, ...arguments])
+          }
+          if (hasVQuery(this)) {
+            this._vQueryHandler(...[store, ...arguments])
           }
         }
       },
       beforeCreate () {
         if (hasVdata(this)) {
-          if (isFunction(this.$options.vdata)) {
-            injectVdataHandler(this, store, options, this.$options.vdata)
-          } else {
-            injectAsyncData(this, store, this.$options.vdata)
-            injectVdataHandler(this, store, options, () => {
-              entries(this.$options.vdata).forEach(([model, options]) => {
-                options = getAsyncDefaults(options)
-                if (options.sync === true) {
-                  this[model] = store.getAll(model)
-                }
-              })
-            })
-          }
+          injectHandler(this, 'vdata', options.events, this.$options.vdata)
+        }
+        if (hasVQuery(this)) {
+          processVQuery(this, store, options.events, this.$options.vQuery)
         }
       },
       created () {
-        this.$vdata()
+        this.$vdata('manual')
       },
       beforeDestroy () {
         if (hasVdata(this)) {
-          store.off('all', this._vdataHandler)
+          store.off('all', this.$vdata)
         }
       }
     })

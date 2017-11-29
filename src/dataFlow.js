@@ -1,6 +1,6 @@
-import format from './utils/formatMethod'
-import isRecord from './utils/isRecord'
-import updateRecord from './utils/updateRecord'
+import format from './formatMethod'
+import isRecord from './isRecord'
+import updateRecord from './updateRecord'
 
 /**
  * @param {Vue} vm - Vue instance that needs to be force updated
@@ -102,7 +102,6 @@ export const removeFromArrayKey = (value = {}, i, key) => {
   const updated = removeFromArray(value[key], i)
   return handleChange(value, {[key]: updated})
 }
-
 
 /**
  * create a dataflow mixin for a given value prop.

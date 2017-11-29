@@ -1,4 +1,4 @@
-import updateRecord from './utils/updateRecord'
+import updateRecord from './updateRecord'
 import vdata from './vdata'
 import {createSyncMixin} from './dataFlow'
 

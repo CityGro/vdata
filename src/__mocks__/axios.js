@@ -6,6 +6,6 @@ function request () {
   return new Promise((resolve) => resolve({data: true}))
 }
 
-axios.request =  request
+axios.request = request
 
 module.exports = axios

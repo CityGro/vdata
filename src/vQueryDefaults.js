@@ -1,4 +1,5 @@
 import defaults from 'lodash/defaults'
+import isFunction from 'lodash/isFunction'
 
 const defaultOpts = {
   lazy: false,
@@ -24,4 +25,12 @@ const defaultOpts = {
  * @param {object|boolean} options
  @ @returns object
  */
-export default (options) => (options === true) ? defaultOpts : defaults({}, options, defaultOpts)
+export default (vm, options) => {
+  if (options === true) {
+    return defaultOpts
+  } else if (isFunction(options)) {
+    return defaults(options.call(vm), defaultOpts)
+  } else {
+    return defaults({}, options, defaultOpts)
+  }
+}

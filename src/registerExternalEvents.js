@@ -6,7 +6,8 @@ export default (Vue, options = {}) => {
   const eventEmitter = options.emitter
   if (!eventEmitter && isEmpty(handlers)) {
     return
-  } else if (!eventEmitter) {
+  }
+  if (!eventEmitter) {
     console.error('[@citygro/vdata] missing event source!')
   } else {
     entries(handlers).forEach(([event, handler]) => {

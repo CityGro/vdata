@@ -1,13 +1,13 @@
 /* global describe, test, beforeEach, jest, expect */
 
 import * as dataFlow from '../dataFlow'
-import formatMethod from '../utils/formatMethod'
-import updateVm from '../utils/updateVm'
+import formatMethod from '../formatMethod'
+import updateVm from '../updateVm'
 
-describe('VData', () => {
-  let vdata
-  let Vue
+describe('vdata', () => {
   let Adapter
+  let Vue
+  let vdata
 
   beforeEach(() => {
     jest.resetModules()
@@ -17,13 +17,13 @@ describe('VData', () => {
     Vue = require('vue')
     Vue.config.productionTip = false
     Adapter = require('js-data-localstorage').LocalStorageAdapter
-    Vue.use(vdata, vdata.createConfig((V) => ({
+    Vue.use(vdata, {
       models: {
-        user: {
-          name: 'users'
+        users: {
+          idAttribute: 'id'
         },
-        comment: {
-          name: 'comments'
+        comments: {
+          idAttribute: 'id'
         }
       },
       adapters: {
@@ -31,12 +31,12 @@ describe('VData', () => {
           adapter: new Adapter()
         }
       }
-    })))
+    })
     Vue.$store.create('users', {id: 1, name: 'omanizer'})
     Vue.$store.create('comments', {id: 1, userId: 1})
   })
 
-  describe('vdata', () => {
+  describe('plugin', () => {
     test('makes the store directly accessible', () => {
       const vm = new Vue()
       return Promise.all([

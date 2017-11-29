@@ -27,11 +27,12 @@
 import Q from 'q'
 import debounce from 'lodash/debounce'
 import keys from 'lodash/keys'
+import isFunction from 'lodash/isFunction'
 
 let optionNames = [
   'Default',
-  'Lazy',
-];
+  'Lazy'
+]
 
 const isOptionName = (key, names = optionNames) => names.find((n) => key.endsWith(n))
 
@@ -64,16 +65,16 @@ const createAsyncReload = (thisArg) => debounce(function (propertyName, skipLazy
       }
       let setLoading = (flag) => {
         this[`${prop}Loading`] = flag
-          if (flag) {
-            this.asyncLoading = true
-          } else {
-            this.asyncLoading = !!names.find((n) => this[`${n}Loading`])
+        if (flag) {
+          this.asyncLoading = true
+        } else {
+          this.asyncLoading = !!names.find((n) => this[`${n}Loading`])
         }
       }
       let setTimer = () => {
         const timeout = asyncData[`${prop}Timeout`] || -1
         if (timeout > 0) {
-          cancelTimeout(this[`_${prop}Timer`])
+          clearTimeout(this[`_${prop}Timer`])
           this[`_${prop}Timer`] = setTimeout(() => {
             this._asyncReload.cancel()
           }, timeout)
@@ -81,7 +82,7 @@ const createAsyncReload = (thisArg) => debounce(function (propertyName, skipLazy
       }
       let cancelTimer = () => {
         if (this[`_${prop}Timer`]) {
-          cancelTimeout(this[`_${prop}Timer`])
+          clearTimeout(this[`_${prop}Timer`])
         }
       }
       setLoading(true)
@@ -117,7 +118,7 @@ export default {
   data () {
     const asyncData = this.$options.asyncData
     if (asyncData) {
-      const names = keys(asyncData).filter((s) => !isOptionName(s));
+      const names = keys(asyncData).filter((s) => !isOptionName(s))
       const errorNames = names.map((s) => `${s}Error`)
       let dataObj = {
         asyncLoading: true,
@@ -126,7 +127,8 @@ export default {
         asyncAny: Q.any(names.map((name) => asyncData[name]))
       }
       names.forEach((name) => {
-        dataObj[name] = asyncData[`${name}Default`]
+        const asyncDefault = asyncData[`${name}Default`]
+        dataObj[name] = (isFunction(asyncDefault)) ? asyncDefault() : asyncDefault
         dataObj[`${name}Promise`] = asyncData[name]
         dataObj[`${name}Loading`] = !asyncData[`${name}Lazy`]
       })

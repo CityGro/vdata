@@ -1,24 +1,22 @@
-import entries from 'lodash/entries'
-import getAsyncDefaults from './getAsyncDefaults'
 import isEmpty from 'lodash/isEmpty'
+import isFunction from 'lodash/isFunction'
 
 /**
  * creates an asyncData object using a vdata config object
  *
  * @param {Vue} thisArg
  * @param {JSData.DataStore} store
- * @param {object|boolean} options
+ * @param {array[]} q
  */
-export default (thisArg, store, options) => {
-  let asyncData = (isEmpty(this.$options.asyncData)) ? {} : this.$options.asyncData
-  entries(options).each(([model, options]) => {
-    options = getAsyncDefaults(options)
+export default (vm, store, q) => {
+  let asyncData = (isEmpty(vm.$options.asyncData)) ? {} : vm.$options.asyncData
+  q.forEach(([prop, options]) => {
+    const model = options.model || prop
     asyncData[`${model}Lazy`] = options.lazy
-    if (options.id) {
-      asyncData[model] = () => store.find(model, options.id, {force: options.force})
-    } else {
-      asyncData[model] = () => store.findAll(model, {force: options.force})
-    }
+    asyncData[`${model}Default`] = (isFunction(options.default)) ? options.default.call(vm) : options.default
+    asyncData[model] = (options.id)
+      ? () => store.find(model, options.id, {force: options.force})
+      : () => store.findAll(model, {force: options.force})
   })
-  this.$options.asyncData = asyncData
+  vm.$options.asyncData = asyncData
 }
