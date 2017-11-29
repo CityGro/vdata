@@ -2608,355 +2608,350 @@
     }, /* 157 */
     /***/
     function(t, e, n) {
-        var r, i, o;
-        !function(a, u) {
-            i = [ e, n(166), n(159), n(161), n(160), n(165), n(164), n(162), n(163), n(94), n(93), n(167), n(213), n(375), n(339), n(56), n(10), n(350), n(351), n(352), n(341), n(153), n(356), n(342), n(357), n(333), n(336), n(360), n(367) ], 
-            void 0 !== (o = "function" == typeof (r = u) ? r.apply(e, i) : r) && (t.exports = o);
-        }(0, function(t, e, n, r, i, o, a, u, c, s, f, l, p) {
-            "use strict";
-            function d(t) {
-                return t && t.__esModule ? t : {
-                    default: t
-                };
+        "use strict";
+        function r(t) {
+            return t && t.__esModule ? t : {
+                default: t
+            };
+        }
+        function i(t) {
+            return t && "object" === (void 0 === t ? "undefined" : (0, d.default)(t)) && "default" in t ? t.default : t;
+        }
+        var o = r(n(166)), a = r(n(159)), u = r(n(161)), c = r(n(160)), s = (r(n(165)), 
+        r(n(164)), r(n(162))), f = r(n(163)), l = r(n(94)), p = r(n(93)), d = r(n(167));
+        Object.defineProperty(e, "__esModule", {
+            value: !0
+        });
+        var h = i(n(375)), v = i(n(339)), y = i(n(56)), g = i(n(10)), m = i(n(350)), x = i(n(351)), b = i(n(352)), _ = i(n(341)), A = i(n(153)), O = i(n(356)), w = i(n(342)), j = i(n(357)), E = n(213), C = i(n(333)), k = i(n(336)), I = i(n(360)), R = i(n(367)), F = "function" == typeof p.default && "symbol" === (0, 
+        d.default)(l.default) ? function(t) {
+            return void 0 === t ? "undefined" : (0, d.default)(t);
+        } : function(t) {
+            return t && "function" == typeof p.default && t.constructor === p.default && t !== p.default.prototype ? "symbol" : void 0 === t ? "undefined" : (0, 
+            d.default)(t);
+        }, S = function(t, e, n) {
+            return e in t ? (0, f.default)(t, e, {
+                value: n,
+                enumerable: !0,
+                configurable: !0,
+                writable: !0
+            }) : t[e] = n, t;
+        }, P = s.default || function(t) {
+            for (var e = 1; e < arguments.length; e++) {
+                var n = arguments[e];
+                for (var r in n) Object.prototype.hasOwnProperty.call(n, r) && (t[r] = n[r]);
             }
-            function h(t) {
-                return t && "object" === (void 0 === t ? "undefined" : (0, O.default)(t)) && "default" in t ? t.default : t;
-            }
-            var v = d(e), y = d(n), g = d(r), m = d(i), x = (d(o), d(a), d(u)), b = d(c), _ = d(s), A = d(f), O = d(l);
-            Object.defineProperty(t, "__esModule", {
-                value: !0
-            });
-            var w = h(), j = h(), E = h(), C = h(), k = h(), I = h(), R = h(), F = h(), S = h(), P = h(), M = h(), L = h(), T = h(), D = h(), N = h(), W = h(), K = "function" == typeof A.default && "symbol" === (0, 
-            O.default)(_.default) ? function(t) {
-                return void 0 === t ? "undefined" : (0, O.default)(t);
-            } : function(t) {
-                return t && "function" == typeof A.default && t.constructor === A.default && t !== A.default.prototype ? "symbol" : void 0 === t ? "undefined" : (0, 
-                O.default)(t);
-            }, B = function(t, e, n) {
-                return e in t ? (0, b.default)(t, e, {
-                    value: n,
-                    enumerable: !0,
-                    configurable: !0,
-                    writable: !0
-                }) : t[e] = n, t;
-            }, $ = x.default || function(t) {
-                for (var e = 1; e < arguments.length; e++) {
-                    var n = arguments[e];
-                    for (var r in n) Object.prototype.hasOwnProperty.call(n, r) && (t[r] = n[r]);
-                }
-                return t;
-            }, z = function() {
-                return function(t, e) {
-                    if (Array.isArray(t)) return t;
-                    if ((0, g.default)(Object(t))) return function(t, e) {
-                        var n = [], r = !0, i = !1, o = void 0;
+            return t;
+        }, M = function() {
+            return function(t, e) {
+                if (Array.isArray(t)) return t;
+                if ((0, u.default)(Object(t))) return function(t, e) {
+                    var n = [], r = !0, i = !1, o = void 0;
+                    try {
+                        for (var a, u = (0, c.default)(t); !(r = (a = u.next()).done) && (n.push(a.value), 
+                        !e || n.length !== e); r = !0) ;
+                    } catch (t) {
+                        i = !0, o = t;
+                    } finally {
                         try {
-                            for (var a, u = (0, m.default)(t); !(r = (a = u.next()).done) && (n.push(a.value), 
-                            !e || n.length !== e); r = !0) ;
+                            !r && u.return && u.return();
+                        } finally {
+                            if (i) throw o;
+                        }
+                    }
+                    return n;
+                }(t, e);
+                throw new TypeError("Invalid attempt to destructure non-iterable instance");
+            };
+        }(), L = function(t) {
+            if (Array.isArray(t)) {
+                for (var e = 0, n = Array(t.length); e < t.length; e++) n[e] = t[e];
+                return n;
+            }
+            return (0, a.default)(t);
+        }, T = [ "Default", "Lazy" ], D = function(t) {
+            return (arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : T).find(function(e) {
+                return t.endsWith(e);
+            });
+        }, N = function(t) {
+            return v(function(t) {
+                var e = this, n = arguments.length > 1 && void 0 !== arguments[1] && arguments[1], r = this.$options.asyncData;
+                if (r) {
+                    var i = function() {
+                        var i = g(r).filter(function(t) {
+                            return !D(t);
+                        }).filter(function(e) {
+                            return void 0 === t || e === t;
+                        }).filter(function(t) {
+                            return !1 === n || !r[t + "Lazy"];
+                        });
+                        if (void 0 !== t && 0 === i.length) return console.error("asyncData." + t + " cannot find.", e), 
+                        {
+                            v: void 0
+                        };
+                        var o = function(t) {
+                            // helper
+                            var n = function(n) {
+                                e[t + "Error"] = n, n ? (console.error("[@citygro/vdata<" + e._uid + ">]", n), e.asyncError = !0) : e.asyncError = !!i.find(function(t) {
+                                    return e[t + "Error"];
+                                });
+                            }, o = function(n) {
+                                e[t + "Loading"] = n, e.asyncLoading = !!n || !!i.find(function(t) {
+                                    return e[t + "Loading"];
+                                });
+                            }, a = function() {
+                                e["_" + t + "Timer"] && clearTimeout(e["_" + t + "Timer"]);
+                            };
+                            if (o(!0), n(void 0), function() {
+                                var n = r[t + "Timeout"] || -1;
+                                n > 0 && (clearTimeout(e["_" + t + "Timer"]), e["_" + t + "Timer"] = setTimeout(function() {
+                                    e._asyncReload.cancel();
+                                }, n));
+                            }(), "function" != typeof r[t]) return console.error("asyncData." + t + " must be funtion. actual: " + r[t], e), 
+                            "continue";
+                            r[t].apply(e).then(function(n) {
+                                !function(n) {
+                                    e[t] = n, e[t + "Promise"] = r[t].bind(e);
+                                }(n), o(!1), a();
+                            }).catch(function(t) {
+                                n(t), o(!1), a();
+                            });
+                        }, a = !0, u = !1, s = void 0;
+                        try {
+                            for (var f, l = (0, c.default)(i); !(a = (f = l.next()).done); a = !0) o(f.value);
                         } catch (t) {
-                            i = !0, o = t;
+                            u = !0, s = t;
                         } finally {
                             try {
-                                !r && u.return && u.return();
+                                !a && l.return && l.return();
                             } finally {
-                                if (i) throw o;
+                                if (u) throw s;
                             }
                         }
-                        return n;
-                    }(t, e);
-                    throw new TypeError("Invalid attempt to destructure non-iterable instance");
-                };
-            }(), q = function(t) {
-                if (Array.isArray(t)) {
-                    for (var e = 0, n = Array(t.length); e < t.length; e++) n[e] = t[e];
-                    return n;
+                    }();
+                    if ("object" === (void 0 === i ? "undefined" : F(i))) return i.v;
                 }
-                return (0, y.default)(t);
-            }, U = [ "Default", "Lazy" ], Q = function(t) {
-                return (arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : U).find(function(e) {
-                    return t.endsWith(e);
-                });
-            }, J = function(t) {
-                return j(function(t) {
-                    var e = this, n = arguments.length > 1 && void 0 !== arguments[1] && arguments[1], r = this.$options.asyncData;
-                    if (r) {
-                        var i = function() {
-                            var i = C(r).filter(function(t) {
-                                return !Q(t);
-                            }).filter(function(e) {
-                                return void 0 === t || e === t;
-                            }).filter(function(t) {
-                                return !1 === n || !r[t + "Lazy"];
-                            });
-                            if (void 0 !== t && 0 === i.length) return console.error("asyncData." + t + " cannot find.", e), 
-                            {
-                                v: void 0
-                            };
-                            var o = function(t) {
-                                // helper
-                                var n = function(n) {
-                                    e[t + "Error"] = n, n ? (console.error("[@citygro/vdata<" + e._uid + ">]", n), e.asyncError = !0) : e.asyncError = !!i.find(function(t) {
-                                        return e[t + "Error"];
-                                    });
-                                }, o = function(n) {
-                                    e[t + "Loading"] = n, e.asyncLoading = !!n || !!i.find(function(t) {
-                                        return e[t + "Loading"];
-                                    });
-                                }, a = function() {
-                                    e["_" + t + "Timer"] && clearTimeout(e["_" + t + "Timer"]);
-                                };
-                                if (o(!0), n(void 0), function() {
-                                    var n = r[t + "Timeout"] || -1;
-                                    n > 0 && (clearTimeout(e["_" + t + "Timer"]), e["_" + t + "Timer"] = setTimeout(function() {
-                                        e._asyncReload.cancel();
-                                    }, n));
-                                }(), "function" != typeof r[t]) return console.error("asyncData." + t + " must be funtion. actual: " + r[t], e), 
-                                "continue";
-                                r[t].apply(e).then(function(n) {
-                                    !function(n) {
-                                        e[t] = n, e[t + "Promise"] = r[t].bind(e);
-                                    }(n), o(!1), a();
-                                }).catch(function(t) {
-                                    n(t), o(!1), a();
-                                });
-                            }, a = !0, u = !1, c = void 0;
-                            try {
-                                for (var s, f = (0, m.default)(i); !(a = (s = f.next()).done); a = !0) o(s.value);
-                            } catch (t) {
-                                u = !0, c = t;
-                            } finally {
-                                try {
-                                    !a && f.return && f.return();
-                                } finally {
-                                    if (u) throw c;
-                                }
-                            }
-                        }();
-                        if ("object" === (void 0 === i ? "undefined" : K(i))) return i.v;
-                    }
-                }, 50).bind(t);
-            }, H = {
-                created: function() {
-                    this._asyncReload = J(this), this.asyncReload(void 0, !0);
-                },
-                methods: {
-                    asyncReload: function() {
-                        this._asyncReload.apply(this, arguments);
-                    }
-                },
-                data: function() {
-                    var t = this.$options.asyncData;
-                    if (t) {
-                        var e = C(t).filter(function(t) {
-                            return !Q(t);
-                        }), n = e.map(function(t) {
-                            return t + "Error";
-                        }), r = {
-                            asyncLoading: !0,
-                            asyncError: !1,
-                            asyncAll: v.default.all(e.map(function(e) {
-                                return t[e];
-                            })),
-                            asyncAny: w(e.map(function(e) {
-                                return t[e];
-                            }))
-                        };
-                        return e.forEach(function(e) {
-                            var n = t[e + "Default"];
-                            r[e] = E(n) ? n() : n, r[e + "Promise"] = t[e], r[e + "Loading"] = !t[e + "Lazy"];
-                        }), n.forEach(function(t) {
-                            r[t] = void 0;
-                        }), r;
-                    }
-                    return {};
+            }, 50).bind(t);
+        }, W = {
+            created: function() {
+                this._asyncReload = N(this), this.asyncReload(void 0, !0);
+            },
+            methods: {
+                asyncReload: function() {
+                    this._asyncReload.apply(this, arguments);
                 }
-            }, V = function(t, e) {
-                if (E(t._mapper)) return function(t, e) {
-                    return R(I, k(function(e) {
-                        var n = z(e, 2), r = n[0], i = n[1];
-                        t[r] = i;
-                    }))(e), t;
-                }(t, e);
-                throw new TypeError("utils/updateRecord can only operate over a js-data/Record object");
-            }, G = function(t, e, n, r, i) {
-                t["_" + e + "Handler"] = j(function() {
-                    var e = arguments[1];
-                    P(r, e) && (console.log("[@citygro/vdata<" + t._uid + ">] running for " + e), i.apply(t, [].concat(Array.prototype.slice.call(arguments))));
-                }, 25, {
-                    leading: !0
-                }), console.log("[@citygro/vdata#" + e + "<" + t._uid + ">] ready. listening on", r);
-            }, Y = {
-                lazy: !1,
-                sync: !0,
-                id: !1,
-                force: !1
-            }, Z = function(t, e, n, r) {
-                var i = M(r).map(function(e) {
-                    var n = z(e, 2), r = n[0], i = n[1];
-                    return [ r, function(t, e) {
-                        return !0 === e ? Y : E(e) ? F(e.call(t), Y) : F({}, e, Y);
-                    }(t, i) ];
-                });
-                !function(t, e, n) {
-                    var r = L(t.$options.asyncData) ? {} : t.$options.asyncData;
-                    n.forEach(function(n) {
-                        var i = z(n, 2), o = i[0], a = i[1], u = a.model || o;
-                        r[o + "Lazy"] = a.lazy, r[o + "Default"] = E(a.default) ? a.default.call(t) : a.default, 
-                        r[o] = a.id ? function() {
-                            return e.find(u, a.id, {
-                                force: a.force
-                            });
-                        } : function() {
-                            return e.findAll(u, {
-                                force: a.force
-                            });
-                        };
-                    }), t.$options.asyncData = r;
-                }(t, e, i), G(t, "vQuery", 0, function() {
-                    i.forEach(function(n) {
-                        var r = z(n, 2), i = r[0], o = r[1], a = o.model || i;
-                        !0 === o.sync && (t[i] = o.id ? e.get(a, o.id) : e.getAll(a));
-                    });
-                });
-            }, X = function(t) {
-                return !!S(t, "$options.vQuery");
-            }, tt = function(t) {
-                return !!S(t, "options.vdata");
-            }, et = {
-                createConfig: function(t) {
-                    return function(e) {
-                        var n = t(e);
-                        return F(n || {}, {
-                            events: [ "add", "change", "remove", "manual" ]
+            },
+            data: function() {
+                var t = this.$options.asyncData;
+                if (t) {
+                    var e = g(t).filter(function(t) {
+                        return !D(t);
+                    }), n = e.map(function(t) {
+                        return t + "Error";
+                    }), r = {
+                        asyncLoading: !0,
+                        asyncError: !1,
+                        asyncAll: o.default.all(e.map(function(e) {
+                            return t[e];
+                        })),
+                        asyncAny: h(e.map(function(e) {
+                            return t[e];
+                        }))
+                    };
+                    return e.forEach(function(e) {
+                        var n = t[e + "Default"];
+                        r[e] = y(n) ? n() : n, r[e + "Promise"] = t[e], r[e + "Loading"] = !t[e + "Lazy"];
+                    }), n.forEach(function(t) {
+                        r[t] = void 0;
+                    }), r;
+                }
+                return {};
+            }
+        }, K = function(t, e) {
+            if (y(t._mapper)) return function(t, e) {
+                return b(x, m(function(e) {
+                    var n = M(e, 2), r = n[0], i = n[1];
+                    t[r] = i;
+                }))(e), t;
+            }(t, e);
+            throw new TypeError("utils/updateRecord can only operate over a js-data/Record object");
+        }, B = function(t, e, n, r, i) {
+            t["_" + e + "Handler"] = v(function() {
+                var e = arguments[1];
+                O(r, e) && (console.log("[@citygro/vdata<" + t._uid + ">] running for " + e), i.apply(t, [].concat(Array.prototype.slice.call(arguments))));
+            }, 25, {
+                leading: !0
+            }), console.log("[@citygro/vdata#" + e + "<" + t._uid + ">] ready. listening on", r);
+        }, $ = {
+            lazy: !1,
+            sync: !0,
+            id: !1,
+            force: !1
+        }, z = function(t, e, n, r) {
+            var i = w(r).map(function(e) {
+                var n = M(e, 2), r = n[0], i = n[1];
+                return [ r, function(t, e) {
+                    return !0 === e ? $ : y(e) ? _(e.call(t), $) : _({}, e, $);
+                }(t, i) ];
+            });
+            !function(t, e, n) {
+                var r = j(t.$options.asyncData) ? {} : t.$options.asyncData;
+                n.forEach(function(n) {
+                    var i = M(n, 2), o = i[0], a = i[1], u = a.model || o;
+                    r[o + "Lazy"] = a.lazy, r[o + "Default"] = y(a.default) ? a.default.call(t) : a.default, 
+                    r[o] = a.id ? function() {
+                        return e.find(u, a.id, {
+                            force: a.force
+                        });
+                    } : function() {
+                        return e.findAll(u, {
+                            force: a.force
                         });
                     };
-                },
-                install: function(t, e) {
-                    var n = new p.DataStore();
-                    Object.defineProperty(t, "$store", {
-                        get: function() {
-                            return n;
-                        }
-                    }), Object.defineProperty(t.prototype, "$store", {
-                        get: function() {
-                            return n;
-                        }
-                    }), e = E(e) ? e(t) : e, Object.defineProperty(n, "vdataOptions", {
-                        get: function() {
-                            return e;
-                        }
-                    }), function(t) {
-                        var e = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : {};
-                        L(e) && console.error("[@citygro/vdata] you have not defined any models!"), M(e).forEach(function(e) {
-                            var n = z(e, 2), r = n[0], i = n[1];
-                            return t.defineMapper(r, i);
-                        });
-                    }(n, e.models), function(t, e) {
-                        var n = M(e);
-                        n.forEach(function(e) {
-                            var r = z(e, 2), i = r[0], o = r[1];
-                            1 === n.length ? t.registerAdapter(i, o.adapter, o.options || {
-                                default: !0
-                            }) : t.registerAdapter(i, o.adapter, o.options || {});
-                        });
-                    }(n, e.adapters), function(t) {
-                        var e = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : {}, n = e.handlers || {}, r = e.emitter;
-                        !r && L(n) || (r ? M(n).forEach(function(e) {
-                            var n = z(e, 2), i = n[0], o = n[1];
-                            r.on(i, o.bind(t));
-                        }) : console.error("[@citygro/vdata] missing event source!"));
-                    }(t, e.externalEvents), console.log("[@citygro/vdata] store ready!", n), t.mixin(H), 
-                    t.mixin({
-                        methods: {
-                            $vdata: function() {
-                                tt(this) && this._vdataHandler.apply(this, [ n ].concat(Array.prototype.slice.call(arguments))), 
-                                X(this) && this._vQueryHandler.apply(this, [ n ].concat(Array.prototype.slice.call(arguments)));
-                            }
-                        },
-                        beforeCreate: function() {
-                            tt(this) && G(this, "vdata", e.events, this.$options.vdata), X(this) && Z(this, n, e.events, this.$options.vQuery);
-                        },
-                        created: function() {
-                            this.$vdata("manual");
-                        },
-                        beforeDestroy: function() {
-                            tt(this) && n.off("all", this.$vdata);
-                        }
-                    });
-                }
-            }, nt = function(t) {
-                var e = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : "";
-                return "" === e ? T(t) : "" + T(e) + function(t) {
-                    var e = T(t), n = D([], e.charAt(0).toUpperCase(), W(e));
-                    return N(n, "");
-                }(t);
-            }, rt = function() {
-                var t = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : {};
-                return E(t.hasChanges) && E(t._mapper);
-            }, it = function(t) {
-                t.$nextTick(function() {
-                    t.$forceUpdate(), t.$children.forEach(function(t) {
-                        return setTimeout(function() {
-                            return t.$forceUpdate();
-                        }, 0);
-                    });
+                }), t.$options.asyncData = r;
+            }(t, e, i), B(t, "vQuery", 0, function() {
+                i.forEach(function(n) {
+                    var r = M(n, 2), i = r[0], o = r[1], a = o.model || i;
+                    !0 === o.sync && (t[i] = o.id ? e.get(a, o.id) : e.getAll(a));
                 });
-            }, ot = function(t, e) {
-                return rt(t) ? V(t, e) : $({}, t, e);
-            }, at = function() {
-                var t = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : [], e = arguments[1], n = arguments[2], r = [].concat(q(t));
-                return rt(r[e]) ? r[e] = V(r[e], n) : rt(n) ? r[e] = n : r[e] = $({}, r[e] || {}, n), 
-                r;
-            }, ut = function() {
-                var t = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : [], e = arguments[1], n = [].concat(q(t));
-                return n.splice(e, 1), n;
-            }, ct = function(t) {
-                var e, n = "value" === t ? "input" : "update:" + t, r = "value" === t ? "" : t;
-                return {
-                    methods: (e = {}, B(e, nt("forwardInput", r), function(t) {
-                        this.$emit(n, t);
-                    }), B(e, nt("handleChange", r), function(e) {
-                        this.$emit(n, ot(this[t], e)), it(this);
-                    }), B(e, nt("handleKeyChange", r), function(e, r) {
-                        this.$emit(n, function(t, e, n) {
-                            var r = ot(t[e], n);
-                            return ot(t, B({}, e, r));
-                        }(this[t], e, r)), it(this);
-                    }), B(e, nt("handleArrayKeyChange", r), function(e, r, i) {
-                        this.$emit(n, function() {
-                            var t = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : {}, e = arguments[1], n = arguments[2], r = arguments[3], i = at(t[n] || [], e, r);
-                            return ot(t, B({}, n, i));
-                        }(this[t], e, r, i)), it(this);
-                    }), B(e, nt("handleArrayChange", r), function(e, r) {
-                        this.$emit(n, at(this[t], e, r)), it(this);
-                    }), B(e, nt("pushToArray", r), function(e) {
-                        this.$emit(n, function() {
-                            var t = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : [], e = arguments[1], n = [].concat(q(t));
-                            return n.push(e), n;
-                        }(this[t], e)), it(this);
-                    }), B(e, nt("pushToArrayKey", r), function(e, r) {
-                        this.$emit(n, function() {
-                            var t = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : {}, e = arguments[1], n = arguments[2], r = [].concat(q(t[e] || []));
-                            return r.push(n), ot(t, B({}, e, r));
-                        }(this[t], e, r)), it(this);
-                    }), B(e, nt("removeFromArray", r), function(e) {
-                        this.$emit(n, ut(this[t], e)), it(this);
-                    }), B(e, nt("removeFromArrayKey", r), function(e, r) {
-                        this.$emit(n, function() {
-                            var t = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : {}, e = arguments[1], n = arguments[2], r = ut(t[n], e);
-                            return ot(t, B({}, n, r));
-                        }(this[t], e, r)), it(this);
-                    }), e)
+            });
+        }, q = function(t) {
+            return !!A(t, "$options.vQuery");
+        }, U = function(t) {
+            return !!A(t, "options.vdata");
+        }, Q = {
+            createConfig: function(t) {
+                return function(e) {
+                    var n = t(e);
+                    return _(n || {}, {
+                        events: [ "add", "change", "remove", "manual" ]
+                    });
                 };
-            }, st = ct("value");
-            t.AsyncDataMixin = H, t.DataFlowMixin = st, t.createSyncMixin = ct, t.to = function(t) {
-                return t.then(function(t) {
-                    return [ null, t ];
-                }).catch(function(t) {
-                    return [ t, void 0 ];
+            },
+            install: function(t, e) {
+                var n = new E.DataStore();
+                Object.defineProperty(t, "$store", {
+                    get: function() {
+                        return n;
+                    }
+                }), Object.defineProperty(t.prototype, "$store", {
+                    get: function() {
+                        return n;
+                    }
+                }), e = y(e) ? e(t) : e, Object.defineProperty(n, "vdataOptions", {
+                    get: function() {
+                        return e;
+                    }
+                }), function(t) {
+                    var e = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : {};
+                    j(e) && console.error("[@citygro/vdata] you have not defined any models!"), w(e).forEach(function(e) {
+                        var n = M(e, 2), r = n[0], i = n[1];
+                        return t.defineMapper(r, i);
+                    });
+                }(n, e.models), function(t, e) {
+                    var n = w(e);
+                    n.forEach(function(e) {
+                        var r = M(e, 2), i = r[0], o = r[1];
+                        1 === n.length ? t.registerAdapter(i, o.adapter, o.options || {
+                            default: !0
+                        }) : t.registerAdapter(i, o.adapter, o.options || {});
+                    });
+                }(n, e.adapters), function(t) {
+                    var e = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : {}, n = e.handlers || {}, r = e.emitter;
+                    !r && j(n) || (r ? w(n).forEach(function(e) {
+                        var n = M(e, 2), i = n[0], o = n[1];
+                        r.on(i, o.bind(t));
+                    }) : console.error("[@citygro/vdata] missing event source!"));
+                }(t, e.externalEvents), console.log("[@citygro/vdata] store ready!", n), t.mixin(W), 
+                t.mixin({
+                    methods: {
+                        $vdata: function() {
+                            U(this) && this._vdataHandler.apply(this, [ n ].concat(Array.prototype.slice.call(arguments))), 
+                            q(this) && this._vQueryHandler.apply(this, [ n ].concat(Array.prototype.slice.call(arguments)));
+                        }
+                    },
+                    beforeCreate: function() {
+                        U(this) && B(this, "vdata", e.events, this.$options.vdata), q(this) && z(this, n, e.events, this.$options.vQuery);
+                    },
+                    created: function() {
+                        this.$vdata("manual");
+                    },
+                    beforeDestroy: function() {
+                        U(this) && n.off("all", this.$vdata);
+                    }
                 });
-            }, t.updateRecord = V, t.vdata = et;
-        });
+            }
+        }, J = function(t) {
+            var e = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : "";
+            return "" === e ? C(t) : "" + C(e) + function(t) {
+                var e = C(t), n = k([], e.charAt(0).toUpperCase(), R(e));
+                return I(n, "");
+            }(t);
+        }, H = function() {
+            var t = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : {};
+            return y(t.hasChanges) && y(t._mapper);
+        }, V = function(t) {
+            t.$nextTick(function() {
+                t.$forceUpdate(), t.$children.forEach(function(t) {
+                    return setTimeout(function() {
+                        return t.$forceUpdate();
+                    }, 0);
+                });
+            });
+        }, G = function(t, e) {
+            return H(t) ? K(t, e) : P({}, t, e);
+        }, Y = function() {
+            var t = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : [], e = arguments[1], n = arguments[2], r = [].concat(L(t));
+            return H(r[e]) ? r[e] = K(r[e], n) : H(n) ? r[e] = n : r[e] = P({}, r[e] || {}, n), 
+            r;
+        }, Z = function() {
+            var t = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : [], e = arguments[1], n = [].concat(L(t));
+            return n.splice(e, 1), n;
+        }, X = function(t) {
+            var e, n = "value" === t ? "input" : "update:" + t, r = "value" === t ? "" : t;
+            return {
+                methods: (e = {}, S(e, J("forwardInput", r), function(t) {
+                    this.$emit(n, t);
+                }), S(e, J("handleChange", r), function(e) {
+                    this.$emit(n, G(this[t], e)), V(this);
+                }), S(e, J("handleKeyChange", r), function(e, r) {
+                    this.$emit(n, function(t, e, n) {
+                        var r = G(t[e], n);
+                        return G(t, S({}, e, r));
+                    }(this[t], e, r)), V(this);
+                }), S(e, J("handleArrayKeyChange", r), function(e, r, i) {
+                    this.$emit(n, function() {
+                        var t = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : {}, e = arguments[1], n = arguments[2], r = arguments[3], i = Y(t[n] || [], e, r);
+                        return G(t, S({}, n, i));
+                    }(this[t], e, r, i)), V(this);
+                }), S(e, J("handleArrayChange", r), function(e, r) {
+                    this.$emit(n, Y(this[t], e, r)), V(this);
+                }), S(e, J("pushToArray", r), function(e) {
+                    this.$emit(n, function() {
+                        var t = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : [], e = arguments[1], n = [].concat(L(t));
+                        return n.push(e), n;
+                    }(this[t], e)), V(this);
+                }), S(e, J("pushToArrayKey", r), function(e, r) {
+                    this.$emit(n, function() {
+                        var t = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : {}, e = arguments[1], n = arguments[2], r = [].concat(L(t[e] || []));
+                        return r.push(n), G(t, S({}, e, r));
+                    }(this[t], e, r)), V(this);
+                }), S(e, J("removeFromArray", r), function(e) {
+                    this.$emit(n, Z(this[t], e)), V(this);
+                }), S(e, J("removeFromArrayKey", r), function(e, r) {
+                    this.$emit(n, function() {
+                        var t = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : {}, e = arguments[1], n = arguments[2], r = Z(t[n], e);
+                        return G(t, S({}, n, r));
+                    }(this[t], e, r)), V(this);
+                }), e)
+            };
+        }, tt = X("value");
+        e.AsyncDataMixin = W, e.DataFlowMixin = tt, e.createSyncMixin = X, e.to = function(t) {
+            return t.then(function(t) {
+                return [ null, t ];
+            }).catch(function(t) {
+                return [ t, void 0 ];
+            });
+        }, e.updateRecord = K, e.vdata = Q;
     }, /* 158 */
     /***/
     function(t, e, n) {

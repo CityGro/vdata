@@ -51,7 +51,6 @@
       [
         "env",
         {
-          "modules": "umd",
           "targets": {
             "browsers": [
               ">5% in US",
