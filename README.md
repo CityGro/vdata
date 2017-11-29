@@ -13,6 +13,14 @@
 $ yarn add js-data-http @citygro/vdata
 ```
 
+1. [usage](#usage)
+2. [`vdataConfig`](#vdataconfig-object)
+3. [dataflow](#dataflow)
+4. [asyncData](#asyncdata)
+5. [vdata](#vdata)
+6. [vQuery](#vquery)
+7. [utils](#utils)
+
 ## usage
 
 ```js
@@ -40,6 +48,8 @@ Vue.use(vdata, {
 
 ### `events: Array<string>`
 
+> first, familiarize yourself with [js-data events](http://api.js-data.io/js-data/3.0.1/DataStore.html#event:add).
+
 `JSData` events that should trigger a `vdata` update procedure.
 
 - add
@@ -53,8 +63,7 @@ a mapping of [`JSData` models](http://api.js-data.io/js-data/3.0.1/Mapper.html).
 ```
 {
   models: {
-    [name]: {
-      name: String,
+    name: {
       idAttribute: String
     }
   }
@@ -69,7 +78,7 @@ check the docs for your specific choice.
 ```
 {
   adapters: {
-    [name]: {
+    label: {
       adapter: AdapterInstance,
       default: Boolean
     }
@@ -95,4 +104,104 @@ export default {
   mixins: [DataFlowMixin],
   template: '<text-input :value="value.key" @input="handleChange({key: $event})" />'
 }
+```
+
+## `asyncData`
+
+```
+import {to} from '@citygro/vdata'
+
+export default {
+  // ...
+  asyncData: {
+    async prop () {
+      const [err, data] = await to(this.$store.findAll('model'))
+      if (err) {
+        console.error(err)
+      }
+      return data
+    },
+    propDefault: () => [],
+    propLazy: true
+  }
+  // ...
+}
+```
+
+### `asyncReload(propertyName?: string, skipLazy?: bool)`
+
+force reload asyncData, optionally by `propertyName`
+
+### `asyncData.[prop]()`
+
+an async function that resolves to the result of a query or any other promise
+
+### `asyncData.[prop]Default: any`
+
+the default value of `[prop]`. use an arrow function for `Object` and `Array` values
+
+### `asyncData.[prop]Lazy: bool`
+
+by default `[prop]` is invoked automatically when the component is created. if `[prop]Lazy === true`
+you will need to invoke `asyncReload()` or `asyncReload('prop')`
+
+## vdata
+
+> see [events](#events-arraystring)
+
+`vm.$vdata()` is invoked whenever a js-data event is fired and on `vm.$options.created()`.
+
+## vQuery
+
+`vQuery` automatically generates `asyncReload` and `vdata` using a simple declarative syntax.
+
+```
+{
+  vQuery: {
+    // use defaults
+    modelName: true,
+    // equivalent to the above declaration
+    myProp: {
+      model: 'modelName',
+      lazy: false,
+      id: false,
+      force: false
+    }
+  }
+}
+```
+
+### `vQuery[prop].model: string`
+
+specify the model to load, defaults to `prop`
+
+### `vQuery[prop].lazy: bool`
+
+equivalent to `asyncData.[prop]Lazy`
+
+### `vQuery[prop].id: any`
+
+find one record by id. if `false` find all records
+
+### `vQuery[proppp].force: bool`
+
+always fetch a fresh record
+
+## utils
+
+### `import {to} from '@citygro/vdata'`
+
+```
+async function foo () {
+  const [err, data] = await to(myAsyncTask())
+  if (err) {
+    // handle my error
+  }
+  const result data.map(/* transform */)
+  return result
+}
+```
+
+```
+import {to} from '@citygro/vdata'
 ```
