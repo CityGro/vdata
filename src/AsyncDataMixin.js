@@ -106,7 +106,7 @@ const createAsyncReload = (thisArg) => debounce(function (propertyName, skipLazy
 }, 50).bind(thisArg)
 
 export default {
-  created () {
+  beforeMount () {
     this._asyncReload = createAsyncReload(this)
     this.asyncReload(undefined, true)
   },

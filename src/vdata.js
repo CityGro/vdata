@@ -10,7 +10,7 @@ import registerSchemas from './registerSchemas'
 import {DataStore} from 'js-data'
 
 const hasVQuery = (o) => !!get(o, '$options.vQuery')
-const hasVdata = (o) => !!get(o, 'options.vdata')
+const hasVdata = (o) => !!get(o, '$options.vdata')
 
 /**
  * vdata plugin
@@ -20,7 +20,7 @@ export default {
     return (V) => {
       const options = fn(V)
       return defaults(options || {}, {
-        events: ['add', 'change', 'remove', 'manual']
+        events: ['add', 'change', 'remove', 'manual', 'afterDestroy', 'vm-created']
       })
     }
   },
@@ -64,12 +64,12 @@ export default {
         if (hasVdata(this)) {
           injectHandler(this, 'vdata', options.events, this.$options.vdata)
         }
-        if (hasVQuery(this)) {
-          processVQuery(this, store, options.events, this.$options.vQuery)
-        }
       },
       created () {
-        this.$vdata('manual')
+        if (hasVQuery(this)) {
+          processVQuery(this, options.events, this.$options.vQuery)
+        }
+        this.$vdata()
       },
       beforeDestroy () {
         if (hasVdata(this)) {

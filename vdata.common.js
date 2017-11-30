@@ -350,7 +350,7 @@ var createAsyncReload = function createAsyncReload(thisArg) {
 };
 
 var AsyncDataMixin = {
-  created: function created() {
+  beforeMount: function beforeMount() {
     this._asyncReload = createAsyncReload(this);
     this.asyncReload(undefined, true);
   },
@@ -439,14 +439,13 @@ var updateRecord = (function (record, diff) {
  *
  * @param {Vue} thisArg
  * @param {string} label
- * @param {JSData.DataStore} store
  * @param {string[]} events
  * @param {function} fn
  */
-var injectHandler = (function (vm, label, store, events, fn) {
+var injectHandler = (function (vm, label, events, fn) {
   vm['_' + label + 'Handler'] = debounce(function () {
-    var event = arguments[1];
-    if (includes(events, event)) {
+    var event = arguments[1] || '$vdata-call';
+    if (includes(events, event) || event === '$vdata-call') {
       if (process.env.NODE_ENV !== 'test') {
         console.log('[@citygro/vdata<' + vm._uid + '>] running for ' + event);
       }
@@ -458,37 +457,11 @@ var injectHandler = (function (vm, label, store, events, fn) {
   }
 });
 
-/**
- * creates an asyncData object using a vdata config object
- *
- * @param {Vue} thisArg
- * @param {JSData.DataStore} store
- * @param {array[]} q
- */
-var injectAsyncData = (function (vm, store, q) {
-  var asyncData = isEmpty(vm.$options.asyncData) ? {} : vm.$options.asyncData;
-  q.forEach(function (_ref) {
-    var _ref2 = slicedToArray(_ref, 2),
-        prop = _ref2[0],
-        options = _ref2[1];
-
-    var model = options.model || prop;
-    asyncData[prop + 'Lazy'] = options.lazy;
-    asyncData[prop + 'Default'] = isFunction(options.default) ? options.default.call(vm) : options.default;
-    asyncData[prop] = options.id ? function () {
-      return store.find(model, options.id, { force: options.force });
-    } : function () {
-      return store.findAll(model, { force: options.force });
-    };
-  });
-  vm.$options.asyncData = asyncData;
-});
-
 var defaultOpts = {
-  lazy: false,
-  sync: true,
+  force: false,
   id: false,
-  force: false
+  lazy: false,
+  sync: true
 };
 
 /**
@@ -507,8 +480,8 @@ var defaultOpts = {
  *
  * @param {object|boolean} options
  @ @returns object
- */
-var vQueryDefaults = (function (vm, options) {
+*/
+var vQueryDefaults = function vQueryDefaults(vm, options) {
   if (options === true) {
     return defaultOpts;
   } else if (isFunction(options)) {
@@ -516,6 +489,48 @@ var vQueryDefaults = (function (vm, options) {
   } else {
     return defaults({}, options, defaultOpts);
   }
+};
+
+/**
+ * @param {object} vm
+ * @param {object} vQuery
+ */
+var generateTerms = (function (vm, vQuery) {
+  return entries$1(vQuery).map(function (_ref) {
+    var _ref2 = slicedToArray(_ref, 2),
+        prop = _ref2[0],
+        opts = _ref2[1];
+
+    return [prop, vQueryDefaults(vm, opts)];
+  });
+});
+
+/**
+ * creates an asyncData object using a vdata config object
+ *
+ * @param {Vue} thisArg
+ * @param {JSData.DataStore} store
+ * @param {array[]} q
+ */
+var injectAsyncData = (function (vm) {
+  var q = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : [];
+
+  var asyncData = isEmpty(vm.$options.asyncData) ? {} : vm.$options.asyncData;
+  q.forEach(function (_ref) {
+    var _ref2 = slicedToArray(_ref, 2),
+        prop = _ref2[0],
+        options = _ref2[1];
+
+    var model = options.model || prop;
+    asyncData[prop + 'Lazy'] = options.lazy;
+    asyncData[prop + 'Default'] = isFunction(options.default) ? options.default.call(vm) : options.default;
+    asyncData[prop] = options.id ? function () {
+      return vm.$store.find(model, options.id, { force: options.force });
+    } : function () {
+      return vm.$store.findAll(model, { force: options.force });
+    };
+  });
+  vm.$options.asyncData = asyncData;
 });
 
 /**
@@ -524,24 +539,18 @@ var vQueryDefaults = (function (vm, options) {
  * @param {string[]} events
  * @param {object} vQuery
  */
-var processVQuery = (function (vm, store, events, vQuery) {
-  var q = entries$1(vQuery).map(function (_ref) {
-    var _ref2 = slicedToArray(_ref, 2),
-        prop = _ref2[0],
-        opts = _ref2[1];
-
-    return [prop, vQueryDefaults(vm, opts)];
-  });
-  injectAsyncData(vm, store, q);
+var processVQuery = (function (vm, events, vQuery) {
+  var q = generateTerms(vm, vQuery);
+  injectAsyncData(vm, q);
   injectHandler(vm, 'vQuery', events, function () {
-    q.forEach(function (_ref3) {
-      var _ref4 = slicedToArray(_ref3, 2),
-          prop = _ref4[0],
-          options = _ref4[1];
+    q.forEach(function (_ref) {
+      var _ref2 = slicedToArray(_ref, 2),
+          prop = _ref2[0],
+          options = _ref2[1];
 
       var model = options.model || prop;
       if (options.sync === true) {
-        vm[prop] = options.id ? store.get(model, options.id) : store.getAll(model);
+        vm[prop] = options.id ? vm.$store.get(model, options.id) : vm.$store.getAll(model);
       }
     });
   });
@@ -602,7 +611,7 @@ var hasVQuery = function hasVQuery(o) {
   return !!get(o, '$options.vQuery');
 };
 var hasVdata = function hasVdata(o) {
-  return !!get(o, 'options.vdata');
+  return !!get(o, '$options.vdata');
 };
 
 /**
@@ -613,7 +622,7 @@ var vdata = {
     return function (V) {
       var options = fn(V);
       return defaults(options || {}, {
-        events: ['add', 'change', 'remove', 'manual']
+        events: ['add', 'change', 'remove', 'manual', 'afterDestroy', 'vm-created']
       });
     };
   },
@@ -657,12 +666,12 @@ var vdata = {
         if (hasVdata(this)) {
           injectHandler(this, 'vdata', options.events, this.$options.vdata);
         }
-        if (hasVQuery(this)) {
-          processVQuery(this, store, options.events, this.$options.vQuery);
-        }
       },
       created: function created() {
-        this.$vdata('manual');
+        if (hasVQuery(this)) {
+          processVQuery(this, options.events, this.$options.vQuery);
+        }
+        this.$vdata();
       },
       beforeDestroy: function beforeDestroy() {
         if (hasVdata(this)) {

@@ -8,14 +8,13 @@ import includes from 'lodash/includes'
  *
  * @param {Vue} thisArg
  * @param {string} label
- * @param {JSData.DataStore} store
  * @param {string[]} events
  * @param {function} fn
  */
-export default (vm, label, store, events, fn) => {
+export default (vm, label, events, fn) => {
   vm[`_${label}Handler`] = debounce(function () {
-    const event = arguments[1]
-    if (includes(events, event)) {
+    const event = arguments[1] || '$vdata-call'
+    if (includes(events, event) || event === '$vdata-call') {
       if (process.env.NODE_ENV !== 'test') {
         console.log(`[@citygro/vdata<${vm._uid}>] running for ${event}`)
       }

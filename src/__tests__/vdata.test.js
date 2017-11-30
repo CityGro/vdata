@@ -14,7 +14,7 @@ describe('vdata', () => {
     document.body.innerHTML = '<div id="root"></div>'
     require('localstorage-polyfill')
     vdata = require('../vdata').default
-    Vue = require('vue')
+    Vue = require('vue/dist/vue.js')
     Vue.config.productionTip = false
     Adapter = require('js-data-localstorage').LocalStorageAdapter
     Vue.use(vdata, {
@@ -40,6 +40,18 @@ describe('vdata', () => {
     test('makes the store directly accessible', () => {
       const vm = new Vue()
       return Promise.all([
+        expect(vm.$store.vdataOptions.models).toEqual({
+          users: {
+            idAttribute: 'id',
+            name: 'users',
+            relations: {}
+          },
+          comments: {
+            idAttribute: 'id',
+            name: 'comments',
+            relations: {}
+          }
+        }),
         expect(vm.$store).toBeDefined(),
         expect(vm.$store.get).toBeDefined()
       ])
@@ -282,6 +294,7 @@ describe('vdata', () => {
 
   describe('vQuery', () => {
     test('generate default query + handler', () => {
+      jest.useFakeTimers()
       const vm = new Vue({
         data () {
           return {
@@ -291,13 +304,23 @@ describe('vdata', () => {
         vQuery: {
           comments: true
         }
-      })
+      }).$mount('#root')
       expect(vm.$options.asyncData.comments).toBeDefined()
       expect(vm.$options.asyncData.commentsDefault).toBe(undefined)
       expect(vm.$options.asyncData.commentsLazy).toBe(false)
       expect(vm._vQueryHandler).toBeDefined()
+      vm.$store.findAll = jest.fn(function () {
+        return Promise.resolve([])
+      })
+      vm.$store.getAll = jest.fn()
+      vm.$vdata()
+      vm.asyncReload()
+      jest.runAllTimers()
+      expect(vm.$store.findAll).toHaveBeenCalled()
+      expect(vm.$store.getAll).toHaveBeenCalled()
     })
     test('generate custom query + handler', () => {
+      jest.useFakeTimers()
       const vm = new Vue({
         data () {
           return {
@@ -316,11 +339,20 @@ describe('vdata', () => {
             }
           }
         }
-      })
+      }).$mount('#root')
       expect(vm.$options.asyncData.user).toBeDefined()
       expect(vm.$options.asyncData.userDefault).toEqual({})
       expect(vm.$options.asyncData.userLazy).toBe(true)
       expect(vm._vQueryHandler).toBeDefined()
+      vm.$store.find = jest.fn(function () {
+        return Promise.resolve({})
+      })
+      vm.$store.get = jest.fn()
+      vm.$vdata()
+      vm.asyncReload()
+      jest.runAllTimers()
+      expect(vm.$store.find).toHaveBeenCalled()
+      expect(vm.$store.get).toHaveBeenCalled()
     })
   })
 })

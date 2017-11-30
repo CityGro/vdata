@@ -2732,7 +2732,7 @@
                 }
             }, 50).bind(t);
         }, W = {
-            created: function() {
+            beforeMount: function() {
                 this._asyncReload = N(this), this.asyncReload(void 0, !0);
             },
             methods: {
@@ -2774,56 +2774,59 @@
                 }))(e), t;
             }(t, e);
             throw new TypeError("utils/updateRecord can only operate over a js-data/Record object");
-        }, B = function(t, e, n, r, i) {
+        }, B = function(t, e, n, r) {
             t["_" + e + "Handler"] = v(function() {
-                var e = arguments[1];
-                O(r, e) && (console.log("[@citygro/vdata<" + t._uid + ">] running for " + e), i.apply(t, [].concat(Array.prototype.slice.call(arguments))));
+                var e = arguments[1] || "$vdata-call";
+                (O(n, e) || "$vdata-call" === e) && (console.log("[@citygro/vdata<" + t._uid + ">] running for " + e), 
+                r.apply(t, [].concat(Array.prototype.slice.call(arguments))));
             }, 25, {
                 leading: !0
-            }), console.log("[@citygro/vdata#" + e + "<" + t._uid + ">] ready. listening on", r);
+            }), console.log("[@citygro/vdata#" + e + "<" + t._uid + ">] ready. listening on", n);
         }, $ = {
-            lazy: !1,
-            sync: !0,
+            force: !1,
             id: !1,
-            force: !1
-        }, z = function(t, e, n, r) {
-            var i = w(r).map(function(e) {
+            lazy: !1,
+            sync: !0
+        }, z = function(t, e) {
+            return w(e).map(function(e) {
                 var n = M(e, 2), r = n[0], i = n[1];
                 return [ r, function(t, e) {
                     return !0 === e ? $ : y(e) ? _(e.call(t), $) : _({}, e, $);
                 }(t, i) ];
             });
-            !function(t, e, n) {
-                var r = j(t.$options.asyncData) ? {} : t.$options.asyncData;
-                n.forEach(function(n) {
-                    var i = M(n, 2), o = i[0], a = i[1], u = a.model || o;
-                    r[o + "Lazy"] = a.lazy, r[o + "Default"] = y(a.default) ? a.default.call(t) : a.default, 
-                    r[o] = a.id ? function() {
-                        return e.find(u, a.id, {
-                            force: a.force
+        }, q = function(t, e, n) {
+            var r = z(t, n);
+            !function(t) {
+                var e = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : [], n = j(t.$options.asyncData) ? {} : t.$options.asyncData;
+                e.forEach(function(e) {
+                    var r = M(e, 2), i = r[0], o = r[1], a = o.model || i;
+                    n[i + "Lazy"] = o.lazy, n[i + "Default"] = y(o.default) ? o.default.call(t) : o.default, 
+                    n[i] = o.id ? function() {
+                        return t.$store.find(a, o.id, {
+                            force: o.force
                         });
                     } : function() {
-                        return e.findAll(u, {
-                            force: a.force
+                        return t.$store.findAll(a, {
+                            force: o.force
                         });
                     };
-                }), t.$options.asyncData = r;
-            }(t, e, i), B(t, "vQuery", 0, function() {
-                i.forEach(function(n) {
-                    var r = M(n, 2), i = r[0], o = r[1], a = o.model || i;
-                    !0 === o.sync && (t[i] = o.id ? e.get(a, o.id) : e.getAll(a));
+                }), t.$options.asyncData = n;
+            }(t, r), B(t, "vQuery", e, function() {
+                r.forEach(function(e) {
+                    var n = M(e, 2), r = n[0], i = n[1], o = i.model || r;
+                    !0 === i.sync && (t[r] = i.id ? t.$store.get(o, i.id) : t.$store.getAll(o));
                 });
             });
-        }, q = function(t) {
-            return !!A(t, "$options.vQuery");
         }, U = function(t) {
-            return !!A(t, "options.vdata");
-        }, Q = {
+            return !!A(t, "$options.vQuery");
+        }, Q = function(t) {
+            return !!A(t, "$options.vdata");
+        }, J = {
             createConfig: function(t) {
                 return function(e) {
                     var n = t(e);
                     return _(n || {}, {
-                        events: [ "add", "change", "remove", "manual" ]
+                        events: [ "add", "change", "remove", "manual", "afterDestroy", "vm-created" ]
                     });
                 };
             },
@@ -2865,31 +2868,31 @@
                 t.mixin({
                     methods: {
                         $vdata: function() {
-                            U(this) && this._vdataHandler.apply(this, [ n ].concat(Array.prototype.slice.call(arguments))), 
-                            q(this) && this._vQueryHandler.apply(this, [ n ].concat(Array.prototype.slice.call(arguments)));
+                            Q(this) && this._vdataHandler.apply(this, [ n ].concat(Array.prototype.slice.call(arguments))), 
+                            U(this) && this._vQueryHandler.apply(this, [ n ].concat(Array.prototype.slice.call(arguments)));
                         }
                     },
                     beforeCreate: function() {
-                        U(this) && B(this, "vdata", e.events, this.$options.vdata), q(this) && z(this, n, e.events, this.$options.vQuery);
+                        Q(this) && B(this, "vdata", e.events, this.$options.vdata);
                     },
                     created: function() {
-                        this.$vdata("manual");
+                        U(this) && q(this, e.events, this.$options.vQuery), this.$vdata();
                     },
                     beforeDestroy: function() {
-                        U(this) && n.off("all", this.$vdata);
+                        Q(this) && n.off("all", this.$vdata);
                     }
                 });
             }
-        }, J = function(t) {
+        }, H = function(t) {
             var e = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : "";
             return "" === e ? C(t) : "" + C(e) + function(t) {
                 var e = C(t), n = k([], e.charAt(0).toUpperCase(), R(e));
                 return I(n, "");
             }(t);
-        }, H = function() {
+        }, V = function() {
             var t = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : {};
             return y(t.hasChanges) && y(t._mapper);
-        }, V = function(t) {
+        }, G = function(t) {
             t.$nextTick(function() {
                 t.$forceUpdate(), t.$children.forEach(function(t) {
                     return setTimeout(function() {
@@ -2897,61 +2900,61 @@
                     }, 0);
                 });
             });
-        }, G = function(t, e) {
-            return H(t) ? K(t, e) : P({}, t, e);
-        }, Y = function() {
-            var t = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : [], e = arguments[1], n = arguments[2], r = [].concat(L(t));
-            return H(r[e]) ? r[e] = K(r[e], n) : H(n) ? r[e] = n : r[e] = P({}, r[e] || {}, n), 
-            r;
+        }, Y = function(t, e) {
+            return V(t) ? K(t, e) : P({}, t, e);
         }, Z = function() {
+            var t = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : [], e = arguments[1], n = arguments[2], r = [].concat(L(t));
+            return V(r[e]) ? r[e] = K(r[e], n) : V(n) ? r[e] = n : r[e] = P({}, r[e] || {}, n), 
+            r;
+        }, X = function() {
             var t = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : [], e = arguments[1], n = [].concat(L(t));
             return n.splice(e, 1), n;
-        }, X = function(t) {
+        }, tt = function(t) {
             var e, n = "value" === t ? "input" : "update:" + t, r = "value" === t ? "" : t;
             return {
-                methods: (e = {}, S(e, J("forwardInput", r), function(t) {
+                methods: (e = {}, S(e, H("forwardInput", r), function(t) {
                     this.$emit(n, t);
-                }), S(e, J("handleChange", r), function(e) {
-                    this.$emit(n, G(this[t], e)), V(this);
-                }), S(e, J("handleKeyChange", r), function(e, r) {
+                }), S(e, H("handleChange", r), function(e) {
+                    this.$emit(n, Y(this[t], e)), G(this);
+                }), S(e, H("handleKeyChange", r), function(e, r) {
                     this.$emit(n, function(t, e, n) {
-                        var r = G(t[e], n);
-                        return G(t, S({}, e, r));
-                    }(this[t], e, r)), V(this);
-                }), S(e, J("handleArrayKeyChange", r), function(e, r, i) {
+                        var r = Y(t[e], n);
+                        return Y(t, S({}, e, r));
+                    }(this[t], e, r)), G(this);
+                }), S(e, H("handleArrayKeyChange", r), function(e, r, i) {
                     this.$emit(n, function() {
-                        var t = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : {}, e = arguments[1], n = arguments[2], r = arguments[3], i = Y(t[n] || [], e, r);
-                        return G(t, S({}, n, i));
-                    }(this[t], e, r, i)), V(this);
-                }), S(e, J("handleArrayChange", r), function(e, r) {
-                    this.$emit(n, Y(this[t], e, r)), V(this);
-                }), S(e, J("pushToArray", r), function(e) {
+                        var t = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : {}, e = arguments[1], n = arguments[2], r = arguments[3], i = Z(t[n] || [], e, r);
+                        return Y(t, S({}, n, i));
+                    }(this[t], e, r, i)), G(this);
+                }), S(e, H("handleArrayChange", r), function(e, r) {
+                    this.$emit(n, Z(this[t], e, r)), G(this);
+                }), S(e, H("pushToArray", r), function(e) {
                     this.$emit(n, function() {
                         var t = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : [], e = arguments[1], n = [].concat(L(t));
                         return n.push(e), n;
-                    }(this[t], e)), V(this);
-                }), S(e, J("pushToArrayKey", r), function(e, r) {
+                    }(this[t], e)), G(this);
+                }), S(e, H("pushToArrayKey", r), function(e, r) {
                     this.$emit(n, function() {
                         var t = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : {}, e = arguments[1], n = arguments[2], r = [].concat(L(t[e] || []));
-                        return r.push(n), G(t, S({}, e, r));
-                    }(this[t], e, r)), V(this);
-                }), S(e, J("removeFromArray", r), function(e) {
-                    this.$emit(n, Z(this[t], e)), V(this);
-                }), S(e, J("removeFromArrayKey", r), function(e, r) {
+                        return r.push(n), Y(t, S({}, e, r));
+                    }(this[t], e, r)), G(this);
+                }), S(e, H("removeFromArray", r), function(e) {
+                    this.$emit(n, X(this[t], e)), G(this);
+                }), S(e, H("removeFromArrayKey", r), function(e, r) {
                     this.$emit(n, function() {
-                        var t = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : {}, e = arguments[1], n = arguments[2], r = Z(t[n], e);
-                        return G(t, S({}, n, r));
-                    }(this[t], e, r)), V(this);
+                        var t = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : {}, e = arguments[1], n = arguments[2], r = X(t[n], e);
+                        return Y(t, S({}, n, r));
+                    }(this[t], e, r)), G(this);
                 }), e)
             };
-        }, tt = X("value");
-        e.AsyncDataMixin = W, e.DataFlowMixin = tt, e.createSyncMixin = X, e.to = function(t) {
+        }, et = tt("value");
+        e.AsyncDataMixin = W, e.DataFlowMixin = et, e.createSyncMixin = tt, e.to = function(t) {
             return t.then(function(t) {
                 return [ null, t ];
             }).catch(function(t) {
                 return [ t, void 0 ];
             });
-        }, e.updateRecord = K, e.vdata = Q;
+        }, e.updateRecord = K, e.vdata = J;
     }, /* 158 */
     /***/
     function(t, e, n) {
