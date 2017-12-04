@@ -112,7 +112,11 @@ export default {
   },
   methods: {
     asyncReload () {
-      this._asyncReload.apply(this, arguments)
+      if (isFunction(this._asyncReload)) {
+        this._asyncReload.apply(this, arguments)
+      } else {
+        console.info(`[@citygro/vdata<${this._uid}>] vm.asyncReload is not available until the component is mounted!`)
+      }
     }
   },
   data () {
