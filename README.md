@@ -1,24 +1,22 @@
+@citygro/vdata -- reactive query model
+======================================
+
 [![build status](https://gitlab.com/citygro/vdata/badges/latest/build.svg)](https://gitlab.com/citygro/@citygro/vdata/commits/latest)
 [![coverage report](https://gitlab.com/citygro/vdata/badges/latest/coverage.svg)](https://gitlab.com/citygro/@citygro/vdata/commits/latest)
 [![npm downloads](https://img.shields.io/npm/dt/@citygro/vdata.svg)](https://npmjs.org/package/@citygro/vdata)
 [![npm version](https://img.shields.io/npm/v/@citygro/vdata.svg)](https://npmjs.org/package/@citygro/vdata)
 [![license](https://img.shields.io/npm/l/@citygro/vdata.svg)](https://gitlab.com/citygro/vdata/blob/latest/LICENSE)
 
-@citygro/vdata(3) -- reactive query model
-=========================================
-
-> `@citygro/vdata` requires `vue>=2.1.0`
-
 ```sh
-$ yarn add js-data-http @citygro/vdata
+yarn add js-data-$adapter @citygro/vdata
 ```
 
 1. [usage](#usage)
 2. [`vdataConfig`](#vdataconfig-object)
 3. [dataflow](#dataflow)
-4. [asyncData](#asyncdata)
-5. [vdata](#vdata)
-6. [vQuery](#vquery)
+4. [`asyncData`](#asyncdata)
+5. [`vdata`](#vdata)
+6. [`vQuery`](#vquery)
 7. [utils](#utils)
 
 ## usage
