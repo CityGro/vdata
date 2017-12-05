@@ -113,7 +113,7 @@ export const removeFromArrayKey = (value = {}, i, key) => {
  *
  * @param {string} valueProp - bind dataflow to this prop
  */
-export const createSyncMixin = (valueProp) => {
+export const createDataFlowMixin = (valueProp) => {
   const event = (valueProp === 'value') ? 'input' : `update:${valueProp}`
   const prefix = (valueProp === 'value') ? '' : valueProp
   return {

@@ -28,6 +28,7 @@ import Any from 'p-any'
 import debounce from 'lodash/debounce'
 import isFunction from 'lodash/isFunction'
 import keys from 'lodash/keys'
+import getMergedOptions from './getMergedOptions'
 
 let optionNames = [
   'Default',
@@ -38,7 +39,7 @@ const isOptionName = (key, names = optionNames) => names.find((n) => key.endsWit
 
 // name args optional
 const createAsyncReload = (thisArg) => debounce(function (propertyName, skipLazy = false) {
-  const asyncData = this.$options.asyncData
+  const asyncData = getMergedOptions(this, 'asyncData')
   if (asyncData) {
     let names = keys(asyncData)
       .filter((s) => !isOptionName(s))
@@ -106,7 +107,7 @@ const createAsyncReload = (thisArg) => debounce(function (propertyName, skipLazy
 }, 50).bind(thisArg)
 
 export default {
-  beforeMount () {
+  created () {
     this._asyncReload = createAsyncReload(this)
     this.asyncReload(undefined, true)
   },
@@ -115,12 +116,12 @@ export default {
       if (isFunction(this._asyncReload)) {
         this._asyncReload.apply(this, arguments)
       } else {
-        console.info(`[@citygro/vdata<${this._uid}>] vm.asyncReload is not available until the component is mounted!`)
+        console.info(`[@citygro/vdata<${this._uid}>] vm.asyncReload is not available until the component is created!`)
       }
     }
   },
   data () {
-    const asyncData = this.$options.asyncData
+    const asyncData = getMergedOptions(this, 'asyncData')
     if (asyncData) {
       const names = keys(asyncData).filter((s) => !isOptionName(s))
       const errorNames = names.map((s) => `${s}Error`)

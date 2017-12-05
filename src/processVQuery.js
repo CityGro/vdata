@@ -1,6 +1,7 @@
 import generateTerms from './generateTerms'
 import injectAsyncData from './injectAsyncData'
 import injectHandler from './injectHandler'
+import getMergedOptions from './getMergedOptions'
 
 /**
  * @param {object} vm
@@ -8,8 +9,8 @@ import injectHandler from './injectHandler'
  * @param {string[]} events
  * @param {object} vQuery
  */
-export default (vm, events, vQuery) => {
-  const q = generateTerms(vm, vQuery)
+export default (vm, events) => {
+  const q = generateTerms(vm, getMergedOptions(vm, 'vQuery'))
   injectAsyncData(vm, q)
   injectHandler(vm, 'vQuery', events, () => {
     q.forEach(([prop, options]) => {

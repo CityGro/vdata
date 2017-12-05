@@ -8,19 +8,37 @@ var Any = _interopDefault(require('p-any'));
 var debounce = _interopDefault(require('lodash/debounce'));
 var isFunction = _interopDefault(require('lodash/isFunction'));
 var keys = _interopDefault(require('lodash/keys'));
+var assign = _interopDefault(require('lodash/assign'));
+var get = _interopDefault(require('lodash/get'));
+var isEmpty = _interopDefault(require('lodash/isEmpty'));
 var each = _interopDefault(require('lodash/fp/each'));
 var entries = _interopDefault(require('lodash/fp/entries'));
 var flow = _interopDefault(require('lodash/fp/flow'));
 var defaults = _interopDefault(require('lodash/defaults'));
-var get = _interopDefault(require('lodash/get'));
 var includes = _interopDefault(require('lodash/includes'));
 var entries$1 = _interopDefault(require('lodash/entries'));
-var isEmpty = _interopDefault(require('lodash/isEmpty'));
 var jsData = require('js-data');
 var camelCase = _interopDefault(require('lodash/camelCase'));
 var concat = _interopDefault(require('lodash/concat'));
 var join = _interopDefault(require('lodash/join'));
 var tail = _interopDefault(require('lodash/tail'));
+var findIndex = _interopDefault(require('lodash/findIndex'));
+var isNumber = _interopDefault(require('lodash/isNumber'));
+var isString = _interopDefault(require('lodash/isString'));
+
+/**
+ * @param {Vue} vm - vue instance
+ * @param {string} prop - option name
+ */
+var getMergedOptions = (function (vm, prop) {
+  var options = get(vm, '$options.' + prop, {});
+  get(vm, '$options.mixins', []).filter(function (mixin) {
+    return mixin[prop];
+  }).forEach(function (mixin) {
+    options = assign(options, mixin[prop]);
+  });
+  return isEmpty(options) ? null : options;
+});
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) {
   return typeof obj;
@@ -240,7 +258,7 @@ var createAsyncReload = function createAsyncReload(thisArg) {
 
     var skipLazy = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
 
-    var asyncData = this.$options.asyncData;
+    var asyncData = getMergedOptions(this, 'asyncData');
     if (asyncData) {
       var _ret = function () {
         var names = keys(asyncData).filter(function (s) {
@@ -350,18 +368,22 @@ var createAsyncReload = function createAsyncReload(thisArg) {
 };
 
 var AsyncDataMixin = {
-  beforeMount: function beforeMount() {
+  created: function created() {
     this._asyncReload = createAsyncReload(this);
     this.asyncReload(undefined, true);
   },
 
   methods: {
     asyncReload: function asyncReload() {
-      this._asyncReload.apply(this, arguments);
+      if (isFunction(this._asyncReload)) {
+        this._asyncReload.apply(this, arguments);
+      } else {
+        console.info('[@citygro/vdata<' + this._uid + '>] vm.asyncReload is not available until the component is created!');
+      }
     }
   },
   data: function data() {
-    var asyncData = this.$options.asyncData;
+    var asyncData = getMergedOptions(this, 'asyncData');
     if (asyncData) {
       var names = keys(asyncData).filter(function (s) {
         return !isOptionName(s);
@@ -539,8 +561,8 @@ var injectAsyncData = (function (vm) {
  * @param {string[]} events
  * @param {object} vQuery
  */
-var processVQuery = (function (vm, events, vQuery) {
-  var q = generateTerms(vm, vQuery);
+var processVQuery = (function (vm, events) {
+  var q = generateTerms(vm, getMergedOptions(vm, 'vQuery'));
   injectAsyncData(vm, q);
   injectHandler(vm, 'vQuery', events, function () {
     q.forEach(function (_ref) {
@@ -650,7 +672,6 @@ var vdata = {
     if (process.env.NODE_ENV !== 'test') {
       console.log('[@citygro/vdata] store ready!', store);
     }
-    Vue.mixin(AsyncDataMixin);
     Vue.mixin({
       methods: {
         $vdata: function $vdata() {
@@ -669,7 +690,7 @@ var vdata = {
       },
       created: function created() {
         if (hasVQuery(this)) {
-          processVQuery(this, options.events, this.$options.vQuery);
+          processVQuery(this, options.events);
         }
         this.$vdata();
       },
@@ -679,6 +700,7 @@ var vdata = {
         }
       }
     });
+    Vue.mixin(AsyncDataMixin);
   }
 };
 
@@ -852,7 +874,7 @@ var removeFromArrayKey = function removeFromArrayKey() {
  *
  * @param {string} valueProp - bind dataflow to this prop
  */
-var createSyncMixin = function createSyncMixin(valueProp) {
+var createDataFlowMixin = function createDataFlowMixin(valueProp) {
   var _methods;
 
   var event = valueProp === 'value' ? 'input' : 'update:' + valueProp;
@@ -888,11 +910,48 @@ var createSyncMixin = function createSyncMixin(valueProp) {
   };
 };
 
-var DataFlowMixin = createSyncMixin('value');
+/**
+ * find the index of a record id in a collection
+ *
+ * @param {Array} collection
+ * @param {String|Number|Object} id
+ */
+var findRecordIndex = (function (collection, q) {
+  var id = isNumber(q) || isString(q) ? q : get(q, '_id') || get(q, '__tmp_id');
+  if (id) {
+    var i = findIndex(collection, function (record) {
+      if (record._id === undefined && record.__tmp_id === undefined) {
+        return false;
+      } else if (record._id === id) {
+        return true;
+      } else if (record.__tmp_id === id) {
+        return true;
+      } else if (record._id === undefined || record.__tmp_id === undefined) {
+        return false;
+      } else {
+        return false;
+      }
+    });
+    return i > -1 ? i : null;
+  } else {
+    return null;
+  }
+});
+
+var DataFlowMixin = createDataFlowMixin('value');
 
 exports.AsyncDataMixin = AsyncDataMixin;
 exports.DataFlowMixin = DataFlowMixin;
-exports.createSyncMixin = createSyncMixin;
+exports.findRecordIndex = findRecordIndex;
 exports.to = to;
 exports.updateRecord = updateRecord;
 exports.vdata = vdata;
+exports.handleChange = handleChange;
+exports.handleKeyChange = handleKeyChange;
+exports.handleArrayChange = handleArrayChange;
+exports.handleArrayKeyChange = handleArrayKeyChange;
+exports.pushToArray = pushToArray;
+exports.pushToArrayKey = pushToArrayKey;
+exports.removeFromArray = removeFromArray;
+exports.removeFromArrayKey = removeFromArrayKey;
+exports.createDataFlowMixin = createDataFlowMixin;

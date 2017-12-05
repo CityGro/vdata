@@ -32,7 +32,7 @@ describe('AsyncData', () => {
   let resolve = (done) => {
     return new Vue({
       template: `<div></div>`,
-      mixins: [ AsyncDataMixin ],
+      mixins: [AsyncDataMixin],
       asyncData: {
         sandbox () {
           return new Promise((resolve, reject) => {
@@ -140,5 +140,38 @@ describe('AsyncData', () => {
     lazyVm.asyncReload('sandbox')
     jest.runAllTimers()
     expect(spy).toHaveBeenCalledTimes(2)
+  })
+
+  test('merge options', () => {
+    Vue.mixin(AsyncDataMixin)
+    const AsyncOne = {
+      asyncData: {
+        one () {
+          return Promise.resolve(false)
+        }
+      }
+    }
+    const AsyncTwo = {
+      asyncData: {
+        two () {
+          return Promise.resolve(false)
+        }
+      }
+    }
+    const vm = new Vue({
+      template: `<div></div>`,
+      mixins: [
+        AsyncOne,
+        AsyncTwo
+      ],
+      asyncData: {
+        three () {
+          return Promise.resolve(false)
+        }
+      }
+    }).$mount()
+    expect(vm.onePromise).toBeDefined()
+    expect(vm.twoPromise).toBeDefined()
+    expect(vm.threePromise).toBeDefined()
   })
 })

@@ -48,7 +48,6 @@ export default {
     if (process.env.NODE_ENV !== 'test') {
       console.log('[@citygro/vdata] store ready!', store)
     }
-    Vue.mixin(AsyncDataMixin)
     Vue.mixin({
       methods: {
         $vdata () {
@@ -67,7 +66,7 @@ export default {
       },
       created () {
         if (hasVQuery(this)) {
-          processVQuery(this, options.events, this.$options.vQuery)
+          processVQuery(this, options.events)
         }
         this.$vdata()
       },
@@ -77,5 +76,6 @@ export default {
         }
       }
     })
+    Vue.mixin(AsyncDataMixin)
   }
 }
