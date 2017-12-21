@@ -468,7 +468,6 @@ var updateRecord = (function (record, diff) {
   }
 });
 
-var _arguments = arguments;
 /**
  * inject handler that will run on datastore events
  *
@@ -480,14 +479,16 @@ var _arguments = arguments;
  * @param {function} fn
  */
 var injectHandler = (function (vm, label, events, fn) {
-  vm['_' + label + 'Handler'] = function () {
-    var event = _arguments[1] || '$vdata-call';
+  vm['_' + label + 'Handler'] = function (store) {
+    var event = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '$vdata-call';
+    var collection = arguments[2];
+
     if (includes(events, event) || event === '$vdata-call') {
       if (process.env.NODE_ENV !== 'test') {
         console.log('[@citygro/vdata<' + vm._uid + '>] running for ' + event);
       }
       setTimeout(function () {
-        return fn.apply(vm, [].concat(Array.prototype.slice.call(_arguments)));
+        return fn.apply(vm, [store, event, collection]);
       }, 0);
     }
   };
@@ -691,12 +692,12 @@ var vdata = {
     }
     Vue.mixin({
       methods: {
-        $vdata: function $vdata() {
+        $vdata: function $vdata(event, collection) {
           if (hasVdata(this)) {
-            this._vdataHandler.apply(this, [store].concat(Array.prototype.slice.call(arguments)));
+            this._vdataHandler(store, event, collection);
           }
           if (hasVQuery(this)) {
-            this._vQueryHandler.apply(this, [store].concat(Array.prototype.slice.call(arguments)));
+            this._vQueryHandler(store, event, collection);
           }
         }
       },

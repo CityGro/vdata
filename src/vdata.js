@@ -50,12 +50,12 @@ export default {
     }
     Vue.mixin({
       methods: {
-        $vdata () {
+        $vdata (event, collection) {
           if (hasVdata(this)) {
-            this._vdataHandler(...[store, ...arguments])
+            this._vdataHandler(store, event, collection)
           }
           if (hasVQuery(this)) {
-            this._vQueryHandler(...[store, ...arguments])
+            this._vQueryHandler(store, event, collection)
           }
         }
       },

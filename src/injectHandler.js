@@ -11,13 +11,12 @@ import includes from 'lodash/includes'
  * @param {function} fn
  */
 export default (vm, label, events, fn) => {
-  vm[`_${label}Handler`] = () => {
-    const event = arguments[1] || '$vdata-call'
+  vm[`_${label}Handler`] = (store, event = '$vdata-call', collection) => {
     if (includes(events, event) || event === '$vdata-call') {
       if (process.env.NODE_ENV !== 'test') {
         console.log(`[@citygro/vdata<${vm._uid}>] running for ${event}`)
       }
-      setTimeout(() => fn.apply(vm, [...arguments]), 0)
+      setTimeout(() => fn.apply(vm, [store, event, collection]), 0)
     }
   }
   if (process.env.NODE_ENV !== 'test') {

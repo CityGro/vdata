@@ -2829,28 +2829,28 @@
                 }))(e), t;
             }(t, e);
             throw new TypeError("utils/updateRecord can only operate over a js-data/Record object");
-        }, U = arguments, Q = function(t, e, n, r) {
-            t["_" + e + "Handler"] = function() {
-                var e = U[1] || "$vdata-call";
-                (w(n, e) || "$vdata-call" === e) && (console.log("[@citygro/vdata<" + t._uid + ">] running for " + e), 
+        }, U = function(t, e, n, r) {
+            t["_" + e + "Handler"] = function(e) {
+                var i = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : "$vdata-call", o = arguments[2];
+                (w(n, i) || "$vdata-call" === i) && (console.log("[@citygro/vdata<" + t._uid + ">] running for " + i), 
                 setTimeout(function() {
-                    return r.apply(t, [].concat(Array.prototype.slice.call(U)));
+                    return r.apply(t, [ e, i, o ]);
                 }, 0));
             }, console.log("[@citygro/vdata#" + e + "<" + t._uid + ">] ready. listening on", n);
-        }, J = {
+        }, Q = {
             force: !1,
             id: !1,
             lazy: !1,
             sync: !0
-        }, H = function(t, e) {
+        }, J = function(t, e) {
             return j(e).map(function(e) {
                 var n = D(e, 2), r = n[0], i = n[1];
                 return [ r, function(t, e) {
-                    return !0 === e ? J : v(e) ? O(e.call(t), J) : O({}, e, J);
+                    return !0 === e ? Q : v(e) ? O(e.call(t), Q) : O({}, e, Q);
                 }(t, i) ];
             });
-        }, V = function(t, e) {
-            var n = H(t, N(t, "vQuery"));
+        }, H = function(t, e) {
+            var n = J(t, N(t, "vQuery"));
             !function(t) {
                 var e = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : [], n = x(t.$options.asyncData) ? {} : t.$options.asyncData;
                 e.forEach(function(e) {
@@ -2866,17 +2866,17 @@
                         });
                     };
                 }), t.$options.asyncData = n;
-            }(t, n), Q(t, "vQuery", e, function() {
+            }(t, n), U(t, "vQuery", e, function() {
                 n.forEach(function(e) {
                     var n = D(e, 2), r = n[0], i = n[1], o = i.model || r;
                     !0 === i.sync && (t[r] = i.id ? t.$store.get(o, i.id) : t.$store.getAll(o));
                 });
             });
-        }, G = function(t) {
+        }, V = function(t) {
             return !!m(t, "$options.vQuery");
-        }, Y = function(t) {
+        }, G = function(t) {
             return !!m(t, "$options.vdata");
-        }, Z = {
+        }, Y = {
             createConfig: function(t) {
                 return function(e) {
                     var n = t(e);
@@ -2921,32 +2921,31 @@
                     }) : console.error("[@citygro/vdata] missing event source!"));
                 }(t, e.externalEvents), console.log("[@citygro/vdata] store ready!", n), t.mixin({
                     methods: {
-                        $vdata: function() {
-                            Y(this) && this._vdataHandler.apply(this, [ n ].concat(Array.prototype.slice.call(arguments))), 
-                            G(this) && this._vQueryHandler.apply(this, [ n ].concat(Array.prototype.slice.call(arguments)));
+                        $vdata: function(t, e) {
+                            G(this) && this._vdataHandler(n, t, e), V(this) && this._vQueryHandler(n, t, e);
                         }
                     },
                     beforeCreate: function() {
-                        Y(this) && Q(this, "vdata", e.events, this.$options.vdata);
+                        G(this) && U(this, "vdata", e.events, this.$options.vdata);
                     },
                     created: function() {
-                        G(this) && V(this, e.events), this.$vdata(), this.$store.on("all", this.$vdata);
+                        V(this) && H(this, e.events), this.$vdata(), this.$store.on("all", this.$vdata);
                     },
                     beforeDestroy: function() {
-                        (Y(this) || G(this)) && n.off("all", this.$vdata);
+                        (G(this) || V(this)) && n.off("all", this.$vdata);
                     }
                 }), t.mixin(z);
             }
-        }, X = function(t) {
+        }, Z = function(t) {
             var e = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : "";
             return "" === e ? C(t) : "" + C(e) + function(t) {
                 var e = C(t), n = R([], e.charAt(0).toUpperCase(), k(e));
                 return I(n, "");
             }(t);
-        }, tt = function() {
+        }, X = function() {
             var t = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : {};
             return v(t.hasChanges) && v(t._mapper);
-        }, et = function(t) {
+        }, tt = function(t) {
             t.$nextTick(function() {
                 t.$forceUpdate(), t.$children.forEach(function(t) {
                     return setTimeout(function() {
@@ -2954,55 +2953,55 @@
                     }, 0);
                 });
             });
-        }, nt = function(t, e) {
-            return tt(t) ? q(t, e) : T({}, t, e);
-        }, rt = function(t, e, n) {
-            var r = nt(t[e], n);
-            return nt(t, L({}, e, r));
-        }, it = function() {
+        }, et = function(t, e) {
+            return X(t) ? q(t, e) : T({}, t, e);
+        }, nt = function(t, e, n) {
+            var r = et(t[e], n);
+            return et(t, L({}, e, r));
+        }, rt = function() {
             var t = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : [], e = arguments[1], n = arguments[2], r = [].concat(K(t));
-            return tt(r[e]) ? r[e] = q(r[e], n) : tt(n) ? r[e] = n : r[e] = T({}, r[e] || {}, n), 
+            return X(r[e]) ? r[e] = q(r[e], n) : X(n) ? r[e] = n : r[e] = T({}, r[e] || {}, n), 
             r;
+        }, it = function() {
+            var t = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : {}, e = arguments[1], n = arguments[2], r = arguments[3], i = rt(t[n] || [], e, r);
+            return et(t, L({}, n, i));
         }, ot = function() {
-            var t = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : {}, e = arguments[1], n = arguments[2], r = arguments[3], i = it(t[n] || [], e, r);
-            return nt(t, L({}, n, i));
-        }, at = function() {
             var t = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : [], e = arguments[1], n = [].concat(K(t));
             return n.push(e), n;
-        }, ut = function() {
+        }, at = function() {
             var t = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : {}, e = arguments[1], n = arguments[2], r = [].concat(K(t[e] || []));
-            return r.push(n), nt(t, L({}, e, r));
-        }, ct = function() {
+            return r.push(n), et(t, L({}, e, r));
+        }, ut = function() {
             var t = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : [], e = arguments[1], n = [].concat(K(t));
             return n.splice(e, 1), n;
-        }, st = function() {
-            var t = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : {}, e = arguments[1], n = arguments[2], r = ct(t[n], e);
-            return nt(t, L({}, n, r));
-        }, ft = function(t) {
+        }, ct = function() {
+            var t = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : {}, e = arguments[1], n = arguments[2], r = ut(t[n], e);
+            return et(t, L({}, n, r));
+        }, st = function(t) {
             var e, n = "value" === t ? "input" : "update:" + t, r = "value" === t ? "" : t;
             return {
-                methods: (e = {}, L(e, X("forwardInput", r), function(t) {
+                methods: (e = {}, L(e, Z("forwardInput", r), function(t) {
                     this.$emit(n, t);
-                }), L(e, X("handleChange", r), function(e) {
-                    this.$emit(n, nt(this[t], e)), et(this);
-                }), L(e, X("handleKeyChange", r), function(e, r) {
-                    this.$emit(n, rt(this[t], e, r)), et(this);
-                }), L(e, X("handleArrayKeyChange", r), function(e, r, i) {
-                    this.$emit(n, ot(this[t], e, r, i)), et(this);
-                }), L(e, X("handleArrayChange", r), function(e, r) {
-                    this.$emit(n, it(this[t], e, r)), et(this);
-                }), L(e, X("pushToArray", r), function(e) {
-                    this.$emit(n, at(this[t], e)), et(this);
-                }), L(e, X("pushToArrayKey", r), function(e, r) {
-                    this.$emit(n, ut(this[t], e, r)), et(this);
-                }), L(e, X("removeFromArray", r), function(e) {
-                    this.$emit(n, ct(this[t], e)), et(this);
-                }), L(e, X("removeFromArrayKey", r), function(e, r) {
-                    this.$emit(n, st(this[t], e, r)), et(this);
+                }), L(e, Z("handleChange", r), function(e) {
+                    this.$emit(n, et(this[t], e)), tt(this);
+                }), L(e, Z("handleKeyChange", r), function(e, r) {
+                    this.$emit(n, nt(this[t], e, r)), tt(this);
+                }), L(e, Z("handleArrayKeyChange", r), function(e, r, i) {
+                    this.$emit(n, it(this[t], e, r, i)), tt(this);
+                }), L(e, Z("handleArrayChange", r), function(e, r) {
+                    this.$emit(n, rt(this[t], e, r)), tt(this);
+                }), L(e, Z("pushToArray", r), function(e) {
+                    this.$emit(n, ot(this[t], e)), tt(this);
+                }), L(e, Z("pushToArrayKey", r), function(e, r) {
+                    this.$emit(n, at(this[t], e, r)), tt(this);
+                }), L(e, Z("removeFromArray", r), function(e) {
+                    this.$emit(n, ut(this[t], e)), tt(this);
+                }), L(e, Z("removeFromArrayKey", r), function(e, r) {
+                    this.$emit(n, ct(this[t], e, r)), tt(this);
                 }), e)
             };
-        }, lt = ft("value");
-        e.AsyncDataMixin = z, e.DataFlowMixin = lt, e.findRecordIndex = function(t, e) {
+        }, ft = st("value");
+        e.AsyncDataMixin = z, e.DataFlowMixin = ft, e.findRecordIndex = function(t, e) {
             var n = P(e) || S(e) ? e : m(e, "_id") || m(e, "__tmp_id");
             if (n) {
                 var r = F(t, function(t) {
@@ -3018,9 +3017,9 @@
             }).catch(function(t) {
                 return [ t, void 0 ];
             });
-        }, e.updateRecord = q, e.vdata = Z, e.handleChange = nt, e.handleKeyChange = rt, 
-        e.handleArrayChange = it, e.handleArrayKeyChange = ot, e.pushToArray = at, e.pushToArrayKey = ut, 
-        e.removeFromArray = ct, e.removeFromArrayKey = st, e.createDataFlowMixin = ft;
+        }, e.updateRecord = q, e.vdata = Y, e.handleChange = et, e.handleKeyChange = nt, 
+        e.handleArrayChange = rt, e.handleArrayKeyChange = it, e.pushToArray = ot, e.pushToArrayKey = at, 
+        e.removeFromArray = ut, e.removeFromArrayKey = ct, e.createDataFlowMixin = st;
     }, /* 161 */
     /***/
     function(t, e, n) {
