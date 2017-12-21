@@ -28,6 +28,8 @@
 import Vue from 'vue/dist/vue.js'
 import AsyncDataMixin from '../AsyncDataMixin'
 
+Vue.config.productionTip = false
+
 describe('AsyncData', () => {
   let resolve = (done) => {
     return new Vue({
@@ -144,7 +146,25 @@ describe('AsyncData', () => {
 
   test('merge options', () => {
     Vue.mixin(AsyncDataMixin)
+    const AsyncNeg = {
+      asyncData: {
+        neg () {
+          return Promise.resolve(false)
+        }
+      }
+    }
+    const AsyncZero = {
+      asyncData: {
+        zero () {
+          return Promise.resolve(false)
+        }
+      }
+    }
     const AsyncOne = {
+      mixins: [
+        AsyncNeg,
+        AsyncZero
+      ],
       asyncData: {
         one () {
           return Promise.resolve(false)
@@ -158,10 +178,8 @@ describe('AsyncData', () => {
         }
       }
     }
-    const vm = new Vue({
-      template: `<div></div>`,
+    const AsyncThree = {
       mixins: [
-        AsyncOne,
         AsyncTwo
       ],
       asyncData: {
@@ -169,9 +187,24 @@ describe('AsyncData', () => {
           return Promise.resolve(false)
         }
       }
+    }
+    const vm = new Vue({
+      template: `<div></div>`,
+      mixins: [
+        AsyncOne,
+        AsyncThree
+      ],
+      asyncData: {
+        four () {
+          return Promise.resolve(false)
+        }
+      }
     }).$mount()
+    expect(vm.negPromise).toBeDefined()
+    expect(vm.zeroPromise).toBeDefined()
     expect(vm.onePromise).toBeDefined()
     expect(vm.twoPromise).toBeDefined()
     expect(vm.threePromise).toBeDefined()
+    expect(vm.fourPromise).toBeDefined()
   })
 })

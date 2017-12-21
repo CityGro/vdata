@@ -69,9 +69,10 @@ export default {
           processVQuery(this, options.events)
         }
         this.$vdata()
+        this.$store.on('all', this.$vdata)
       },
       beforeDestroy () {
-        if (hasVdata(this)) {
+        if (hasVdata(this) || hasVQuery(this)) {
           store.off('all', this.$vdata)
         }
       }

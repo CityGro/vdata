@@ -1,26 +1,25 @@
-import debounce from 'lodash/debounce'
 import includes from 'lodash/includes'
 
 /**
  * inject handler that will run on datastore events
  *
- * DANGER: mutates thisArg
+ * DANGER: mutates vm
  *
- * @param {Vue} thisArg
+ * @param {Vue} vm
  * @param {string} label
  * @param {string[]} events
  * @param {function} fn
  */
 export default (vm, label, events, fn) => {
-  vm[`_${label}Handler`] = debounce(function () {
+  vm[`_${label}Handler`] = () => {
     const event = arguments[1] || '$vdata-call'
     if (includes(events, event) || event === '$vdata-call') {
       if (process.env.NODE_ENV !== 'test') {
         console.log(`[@citygro/vdata<${vm._uid}>] running for ${event}`)
       }
-      fn.apply(vm, [...arguments])
+      setTimeout(() => fn.apply(vm, [...arguments]), 0)
     }
-  }, 25, {leading: true})
+  }
   if (process.env.NODE_ENV !== 'test') {
     console.log(`[@citygro/vdata#${label}<${vm._uid}>] ready. listening on`, events)
   }

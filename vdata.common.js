@@ -5,7 +5,6 @@ Object.defineProperty(exports, '__esModule', { value: true });
 function _interopDefault (ex) { return (ex && (typeof ex === 'object') && 'default' in ex) ? ex['default'] : ex; }
 
 var Any = _interopDefault(require('p-any'));
-var debounce = _interopDefault(require('lodash/debounce'));
 var isFunction = _interopDefault(require('lodash/isFunction'));
 var keys = _interopDefault(require('lodash/keys'));
 var assign = _interopDefault(require('lodash/assign'));
@@ -25,20 +24,6 @@ var tail = _interopDefault(require('lodash/tail'));
 var findIndex = _interopDefault(require('lodash/findIndex'));
 var isNumber = _interopDefault(require('lodash/isNumber'));
 var isString = _interopDefault(require('lodash/isString'));
-
-/**
- * @param {Vue} vm - vue instance
- * @param {string} prop - option name
- */
-var getMergedOptions = (function (vm, prop) {
-  var options = get(vm, '$options.' + prop, {});
-  get(vm, '$options.mixins', []).filter(function (mixin) {
-    return mixin[prop];
-  }).forEach(function (mixin) {
-    options = assign(options, mixin[prop]);
-  });
-  return isEmpty(options) ? null : options;
-});
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) {
   return typeof obj;
@@ -216,6 +201,35 @@ var toConsumableArray = function (arr) {
   }
 };
 
+/**
+ * @param {Object[]} mixins
+ */
+var flattenMixinTree = function flattenMixinTree(mixins) {
+  var map = [];
+  mixins.forEach(function (mixin) {
+    if (mixin.mixins && mixin.mixins.length) {
+      map = [].concat(toConsumableArray(map), toConsumableArray(flattenMixinTree(mixin.mixins)));
+    }
+    map.push(mixin);
+  });
+  return map;
+};
+
+/**
+ * @param {Vue} vm - vue instance
+ * @param {string} prop - option name
+ */
+var getMergedOptions = (function (vm, prop) {
+  var options = get(vm, '$options.' + prop, {});
+  var mixins = get(vm, '$options.mixins', []);
+  flattenMixinTree(mixins).filter(function (mixin) {
+    return mixin[prop];
+  }).forEach(function (mixin) {
+    options = assign(options, mixin[prop]);
+  });
+  return isEmpty(options) ? null : options;
+});
+
 /** !
  * vue-async-data
  *
@@ -253,7 +267,7 @@ var isOptionName = function isOptionName(key) {
 
 // name args optional
 var createAsyncReload = function createAsyncReload(thisArg) {
-  return debounce(function (propertyName) {
+  return function (propertyName) {
     var _this = this;
 
     var skipLazy = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
@@ -364,7 +378,7 @@ var createAsyncReload = function createAsyncReload(thisArg) {
 
       if ((typeof _ret === 'undefined' ? 'undefined' : _typeof(_ret)) === "object") return _ret.v;
     }
-  }, 50).bind(thisArg);
+  }.bind(thisArg);
 };
 
 var AsyncDataMixin = {
@@ -454,26 +468,29 @@ var updateRecord = (function (record, diff) {
   }
 });
 
+var _arguments = arguments;
 /**
  * inject handler that will run on datastore events
  *
- * DANGER: mutates thisArg
+ * DANGER: mutates vm
  *
- * @param {Vue} thisArg
+ * @param {Vue} vm
  * @param {string} label
  * @param {string[]} events
  * @param {function} fn
  */
 var injectHandler = (function (vm, label, events, fn) {
-  vm['_' + label + 'Handler'] = debounce(function () {
-    var event = arguments[1] || '$vdata-call';
+  vm['_' + label + 'Handler'] = function () {
+    var event = _arguments[1] || '$vdata-call';
     if (includes(events, event) || event === '$vdata-call') {
       if (process.env.NODE_ENV !== 'test') {
         console.log('[@citygro/vdata<' + vm._uid + '>] running for ' + event);
       }
-      fn.apply(vm, [].concat(Array.prototype.slice.call(arguments)));
+      setTimeout(function () {
+        return fn.apply(vm, [].concat(Array.prototype.slice.call(_arguments)));
+      }, 0);
     }
-  }, 25, { leading: true });
+  };
   if (process.env.NODE_ENV !== 'test') {
     console.log('[@citygro/vdata#' + label + '<' + vm._uid + '>] ready. listening on', events);
   }
@@ -693,9 +710,10 @@ var vdata = {
           processVQuery(this, options.events);
         }
         this.$vdata();
+        this.$store.on('all', this.$vdata);
       },
       beforeDestroy: function beforeDestroy() {
-        if (hasVdata(this)) {
+        if (hasVdata(this) || hasVQuery(this)) {
           store.off('all', this.$vdata);
         }
       }

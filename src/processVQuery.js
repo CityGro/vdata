@@ -16,7 +16,9 @@ export default (vm, events) => {
     q.forEach(([prop, options]) => {
       const model = options.model || prop
       if (options.sync === true) {
-        vm[prop] = (options.id) ? vm.$store.get(model, options.id) : vm.$store.getAll(model)
+        vm[prop] = (options.id)
+          ? vm.$store.get(model, options.id)
+          : vm.$store.getAll(model)
       }
     })
   })

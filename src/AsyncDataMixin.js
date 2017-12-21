@@ -25,7 +25,6 @@
  */
 
 import Any from 'p-any'
-import debounce from 'lodash/debounce'
 import isFunction from 'lodash/isFunction'
 import keys from 'lodash/keys'
 import getMergedOptions from './getMergedOptions'
@@ -38,7 +37,7 @@ let optionNames = [
 const isOptionName = (key, names = optionNames) => names.find((n) => key.endsWith(n))
 
 // name args optional
-const createAsyncReload = (thisArg) => debounce(function (propertyName, skipLazy = false) {
+const createAsyncReload = (thisArg) => function (propertyName, skipLazy = false) {
   const asyncData = getMergedOptions(this, 'asyncData')
   if (asyncData) {
     let names = keys(asyncData)
@@ -104,7 +103,7 @@ const createAsyncReload = (thisArg) => debounce(function (propertyName, skipLazy
       })
     }
   }
-}, 50).bind(thisArg)
+}.bind(thisArg)
 
 export default {
   created () {
