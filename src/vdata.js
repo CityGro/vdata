@@ -1,15 +1,14 @@
 import AsyncDataMixin from './AsyncDataMixin'
+import createObjectFromEventData from './createObjectFromEventData'
 import defaults from 'lodash/defaults'
 import get from 'lodash/get'
 import injectHandler from './injectHandler'
 import isFunction from 'lodash/isFunction'
-import processVQuery from './processVQuery'
 import registerAdapters from './registerAdapters'
 import registerExternalEvents from './registerExternalEvents'
 import registerSchemas from './registerSchemas'
 import {DataStore} from 'js-data'
 
-const hasVQuery = (o) => !!get(o, '$options.vQuery')
 const hasVdata = (o) => !!get(o, '$options.vdata')
 
 /**
@@ -50,12 +49,9 @@ export default {
     }
     Vue.mixin({
       methods: {
-        $vdata (event, collection) {
+        $vdata () {
           if (hasVdata(this)) {
-            this._vdataHandler(store, event, collection)
-          }
-          if (hasVQuery(this)) {
-            this._vQueryHandler(store, event, collection)
+            this._vdataHandler(createObjectFromEventData(...arguments))
           }
         }
       },
@@ -65,14 +61,11 @@ export default {
         }
       },
       created () {
-        if (hasVQuery(this)) {
-          processVQuery(this, options.events)
-        }
         this.$vdata()
         this.$store.on('all', this.$vdata)
       },
       beforeDestroy () {
-        if (hasVdata(this) || hasVQuery(this)) {
+        if (hasVdata(this)) {
           store.off('all', this.$vdata)
         }
       }

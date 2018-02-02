@@ -14,7 +14,6 @@ var each = _interopDefault(require('lodash/fp/each'));
 var entries = _interopDefault(require('lodash/fp/entries'));
 var flow = _interopDefault(require('lodash/fp/flow'));
 var defaults = _interopDefault(require('lodash/defaults'));
-var includes = _interopDefault(require('lodash/includes'));
 var entries$1 = _interopDefault(require('lodash/entries'));
 var jsData = require('js-data');
 var camelCase = _interopDefault(require('lodash/camelCase'));
@@ -468,6 +467,133 @@ var updateRecord = (function (record, diff) {
   }
 });
 
+var _arguments = arguments;
+/**
+ * takes variable arguments depending on the event type that is emmitted by js-data.
+ *
+ * @see {@link http://api.js-data.io/js-data/3.0.1/Mapper.html#toc96__anchor}
+ */
+var createObjectFromEventData = (function () {
+  var data = {
+    event: _arguments[0],
+    collectionName: _arguments[1]
+  };
+  switch (data.event) {
+    case 'afterCreate':
+      // props, opts, result
+      data.props = _arguments[2];
+      data.opts = _arguments[3];
+      data.result = _arguments[4];
+      break;
+    case 'beforeDestroy':
+      // id, opts
+      data.id = _arguments[2];
+      data.opts = _arguments[3];
+      break;
+    case 'beforeFind':
+      // id, opts
+      data.id = _arguments[2];
+      data.opts = _arguments[3];
+      break;
+    case 'afterDestroy':
+      // id, opts, result
+      data.id = _arguments[2];
+      data.opts = _arguments[3];
+      data.result = _arguments[4];
+      break;
+    case 'afterFind':
+      // id, opts, result
+      data.id = _arguments[2];
+      data.opts = _arguments[3];
+      data.result = _arguments[4];
+      break;
+    case 'afterDestroyAll':
+      // data, query, opts, result
+      data.data = _arguments[2];
+      data.query = _arguments[3];
+      data.opts = _arguments[4];
+      data.result = _arguments[5];
+      break;
+    case 'afterFindAll':
+      // query, opts, result
+      data.query = _arguments[2];
+      data.opts = _arguments[3];
+      data.result = _arguments[4];
+      break;
+    case 'afterUpdate':
+      // id, props, opts, result
+      data.id = _arguments[2];
+      data.props = _arguments[3];
+      data.opts = _arguments[4];
+      data.result = _arguments[5];
+      break;
+    case 'beforeUpdate':
+      // id, props, opts
+      data.id = _arguments[2];
+      data.props = _arguments[3];
+      data.opts = _arguments[4];
+      break;
+    case 'beforeUpdateAll':
+      // props, query, opts
+      data.props = _arguments[2];
+      data.query = _arguments[3];
+      data.opts = _arguments[4];
+      break;
+    case 'afterUpdateAll':
+      // props, query, opts, result
+      data.props = _arguments[2];
+      data.query = _arguments[3];
+      data.opts = _arguments[4];
+      data.result = _arguments[5];
+      break;
+    case 'afterUpdateMany':
+      // records, opts, result
+      data.records = _arguments[2];
+      data.opts = _arguments[3];
+      data.result = _arguments[4];
+      break;
+    case 'afterCreateMany':
+      // records, opts, result
+      data.records = _arguments[2];
+      data.opts = _arguments[3];
+      data.result = _arguments[4];
+      break;
+    case 'beforeCreateMany':
+      // records, opts
+      data.records = _arguments[2];
+      data.opts = _arguments[3];
+      break;
+    case 'beforeUpdateMany':
+      // records, opts
+      data.records = _arguments[2];
+      data.opts = _arguments[3];
+      break;
+    case 'beforeCreate':
+      // query, opts
+      data.query = _arguments[2];
+      data.opts = _arguments[3];
+      break;
+    case 'beforeDestroyAll':
+      // query, opts
+      data.query = _arguments[2];
+      data.opts = _arguments[3];
+      break;
+    case 'beforeFindAll':
+      // query, opts
+      data.query = _arguments[2];
+      data.opts = _arguments[3];
+      break;
+  }
+  return data;
+});
+
+var includes = function includes() {
+  var collection = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
+  var item = arguments[1];
+
+  return collection.indexOf(item) >= 0;
+};
+
 /**
  * inject handler that will run on datastore events
  *
@@ -479,121 +605,16 @@ var updateRecord = (function (record, diff) {
  * @param {function} fn
  */
 var injectHandler = (function (vm, label, events, fn) {
-  vm['_' + label + 'Handler'] = function (store) {
-    var event = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '$vdata-call';
-    var collection = arguments[2];
-
-    if (includes(events, event) || event === '$vdata-call') {
-      if (process.env.NODE_ENV !== 'test') {
-        console.log('[@citygro/vdata<' + vm._uid + '>] running for ' + event);
-      }
+  vm['_' + label + 'Handler'] = function (message) {
+    if (includes(events, message.event) || message.event === '$vdata-call') {
       setTimeout(function () {
-        return fn.apply(vm, [store, event, collection]);
+        return fn.apply(vm, [message]);
       }, 0);
     }
   };
   if (process.env.NODE_ENV !== 'test') {
     console.log('[@citygro/vdata#' + label + '<' + vm._uid + '>] ready. listening on', events);
   }
-});
-
-var defaultOpts = {
-  force: false,
-  id: false,
-  lazy: false,
-  sync: true
-};
-
-/**
- * `options === true` creates a configuration with the following options:
- *
- * ```
- * {
- *  lazy: false,
- *  sync: true,
- *  id: false,
- *  force: false
- * }
- * ```
- *
- * which is also used as the defaults object if options is an object
- *
- * @param {object|boolean} options
- @ @returns object
-*/
-var vQueryDefaults = function vQueryDefaults(vm, options) {
-  if (options === true) {
-    return defaultOpts;
-  } else if (isFunction(options)) {
-    return defaults(options.call(vm), defaultOpts);
-  } else {
-    return defaults({}, options, defaultOpts);
-  }
-};
-
-/**
- * @param {object} vm
- * @param {object} vQuery
- */
-var generateTerms = (function (vm, vQuery) {
-  return entries$1(vQuery).map(function (_ref) {
-    var _ref2 = slicedToArray(_ref, 2),
-        prop = _ref2[0],
-        opts = _ref2[1];
-
-    return [prop, vQueryDefaults(vm, opts)];
-  });
-});
-
-/**
- * creates an asyncData object using a vdata config object
- *
- * @param {Vue} thisArg
- * @param {JSData.DataStore} store
- * @param {array[]} q
- */
-var injectAsyncData = (function (vm) {
-  var q = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : [];
-
-  var asyncData = isEmpty(vm.$options.asyncData) ? {} : vm.$options.asyncData;
-  q.forEach(function (_ref) {
-    var _ref2 = slicedToArray(_ref, 2),
-        prop = _ref2[0],
-        options = _ref2[1];
-
-    var model = options.model || prop;
-    asyncData[prop + 'Lazy'] = options.lazy;
-    asyncData[prop + 'Default'] = isFunction(options.default) ? options.default.call(vm) : options.default;
-    asyncData[prop] = options.id ? function () {
-      return vm.$store.find(model, options.id, { force: options.force });
-    } : function () {
-      return vm.$store.findAll(model, { force: options.force });
-    };
-  });
-  vm.$options.asyncData = asyncData;
-});
-
-/**
- * @param {object} vm
- * @param {object} store
- * @param {string[]} events
- * @param {object} vQuery
- */
-var processVQuery = (function (vm, events) {
-  var q = generateTerms(vm, getMergedOptions(vm, 'vQuery'));
-  injectAsyncData(vm, q);
-  injectHandler(vm, 'vQuery', events, function () {
-    q.forEach(function (_ref) {
-      var _ref2 = slicedToArray(_ref, 2),
-          prop = _ref2[0],
-          options = _ref2[1];
-
-      var model = options.model || prop;
-      if (options.sync === true) {
-        vm[prop] = options.id ? vm.$store.get(model, options.id) : vm.$store.getAll(model);
-      }
-    });
-  });
 });
 
 var registerAdapters = function ($store, adapters) {
@@ -647,9 +668,6 @@ var registerSchemas = function ($store) {
   });
 };
 
-var hasVQuery = function hasVQuery(o) {
-  return !!get(o, '$options.vQuery');
-};
 var hasVdata = function hasVdata(o) {
   return !!get(o, '$options.vdata');
 };
@@ -692,12 +710,9 @@ var vdata = {
     }
     Vue.mixin({
       methods: {
-        $vdata: function $vdata(event, collection) {
+        $vdata: function $vdata() {
           if (hasVdata(this)) {
-            this._vdataHandler(store, event, collection);
-          }
-          if (hasVQuery(this)) {
-            this._vQueryHandler(store, event, collection);
+            this._vdataHandler(createObjectFromEventData.apply(undefined, arguments));
           }
         }
       },
@@ -707,14 +722,11 @@ var vdata = {
         }
       },
       created: function created() {
-        if (hasVQuery(this)) {
-          processVQuery(this, options.events);
-        }
         this.$vdata();
         this.$store.on('all', this.$vdata);
       },
       beforeDestroy: function beforeDestroy() {
-        if (hasVdata(this) || hasVQuery(this)) {
+        if (hasVdata(this)) {
           store.off('all', this.$vdata);
         }
       }

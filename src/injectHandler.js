@@ -1,4 +1,6 @@
-import includes from 'lodash/includes'
+const includes = (collection = [], item) => {
+  return collection.indexOf(item) >= 0
+}
 
 /**
  * inject handler that will run on datastore events
@@ -11,12 +13,9 @@ import includes from 'lodash/includes'
  * @param {function} fn
  */
 export default (vm, label, events, fn) => {
-  vm[`_${label}Handler`] = (store, event = '$vdata-call', collection) => {
-    if (includes(events, event) || event === '$vdata-call') {
-      if (process.env.NODE_ENV !== 'test') {
-        console.log(`[@citygro/vdata<${vm._uid}>] running for ${event}`)
-      }
-      setTimeout(() => fn.apply(vm, [store, event, collection]), 0)
+  vm[`_${label}Handler`] = (message) => {
+    if (includes(events, message.event) || message.event === '$vdata-call') {
+      setTimeout(() => fn.apply(vm, [message]), 0)
     }
   }
   if (process.env.NODE_ENV !== 'test') {
