@@ -1,7 +1,7 @@
 /**
  * takes variable arguments depending on the event type that is emmitted by js-data.
  *
- * @see {@link http://api.js-data.io/js-data/3.0.1/Mapper.html#toc96__anchor}
+ * @see {@link http://api.js-data.io/js-data/3.0.1/SimpleStore.html#toc85__anchor}
  */
 export default () => {
   let data = {
@@ -9,6 +9,18 @@ export default () => {
     collectionName: arguments[1]
   }
   switch (data.event) {
+    case 'add':
+      // name, data, opts
+      data.data = arguments[2]
+      data.opts = arguments[3]
+      break
+    case 'change':
+      data.record = arguments[2]
+      data.changes = arguments[3]
+      break
+    case 'remove':
+      data.record = arguments[2]
+      break
     case 'afterCreate':
       // props, opts, result
       data.props = arguments[2]

@@ -297,12 +297,12 @@
     /***/
     function(t, e, n) {
         var r = n(4), i = n(1), o = n(24), a = n(14), u = "prototype", c = function(t, e, n) {
-            var s, f, l, p = t & c.F, d = t & c.G, h = t & c.S, v = t & c.P, y = t & c.B, g = t & c.W, m = d ? i : i[e] || (i[e] = {}), x = m[u], b = d ? r : h ? r[e] : (r[e] || {})[u];
+            var s, f, l, p = t & c.F, d = t & c.G, h = t & c.S, v = t & c.P, y = t & c.B, g = t & c.W, m = d ? i : i[e] || (i[e] = {}), b = m[u], x = d ? r : h ? r[e] : (r[e] || {})[u];
             d && (n = e);
             for (s in n) // contains in native
-            (f = !p && b && void 0 !== b[s]) && s in m || (// export native or passed
-            l = f ? b[s] : n[s], // prevent global pollution for namespaces
-            m[s] = d && "function" != typeof b[s] ? n[s] : y && f ? o(l, r) : g && b[s] == l ? function(t) {
+            (f = !p && x && void 0 !== x[s]) && s in m || (// export native or passed
+            l = f ? x[s] : n[s], // prevent global pollution for namespaces
+            m[s] = d && "function" != typeof x[s] ? n[s] : y && f ? o(l, r) : g && x[s] == l ? function(t) {
                 var e = function(e, n, r) {
                     if (this instanceof t) {
                         switch (arguments.length) {
@@ -322,7 +322,7 @@
                 return e[u] = t[u], e;
             }(l) : v && "function" == typeof l ? o(Function.call, l) : l, // export proto methods to core.%CONSTRUCTOR%.methods.%NAME%
             v && ((m.virtual || (m.virtual = {}))[s] = l, // export proto methods to core.%CONSTRUCTOR%.prototype.%NAME%
-            t & c.R && x && !x[s] && a(x, s, l)));
+            t & c.R && b && !b[s] && a(b, s, l)));
         };
         // type bitmap
         c.F = 1, // forced
@@ -1296,7 +1296,7 @@
     }, /* 81 */
     /***/
     function(t, e, n) {
-        var r = n(125), i = n(266), o = n(269), a = n(131), u = n(271), c = n(82), s = n(308), f = n(149), l = n(151), p = n(92), d = "Expected a function", h = 1, v = 2, y = 8, g = 16, m = 32, x = 64, b = Math.max;
+        var r = n(125), i = n(266), o = n(269), a = n(131), u = n(271), c = n(82), s = n(308), f = n(149), l = n(151), p = n(92), d = "Expected a function", h = 1, v = 2, y = 8, g = 16, m = 32, b = 64, x = Math.max;
         t.exports = /**
  * Creates a function that either curries or invokes `func` with optional
  * `this` binding and partially applied arguments.
@@ -1325,14 +1325,14 @@
         function(t, e, n, _, A, O, w, j) {
             var E = e & v;
             if (!E && "function" != typeof t) throw new TypeError(d);
-            var C = _ ? _.length : 0;
-            if (C || (e &= ~(m | x), _ = A = void 0), w = void 0 === w ? w : b(p(w), 0), j = void 0 === j ? j : p(j), 
-            C -= A ? A.length : 0, e & x) {
-                var k = _, R = A;
+            var k = _ ? _.length : 0;
+            if (k || (e &= ~(m | b), _ = A = void 0), w = void 0 === w ? w : x(p(w), 0), j = void 0 === j ? j : p(j), 
+            k -= A ? A.length : 0, e & b) {
+                var C = _, R = A;
                 _ = A = void 0;
             }
-            var I = E ? void 0 : c(t), F = [ t, e, n, _, A, k, R, O, w, j ];
-            if (I && s(F, I), t = F[0], e = F[1], n = F[2], _ = F[3], A = F[4], !(j = F[9] = void 0 === F[9] ? E ? 0 : t.length : b(F[9] - C, 0)) && e & (y | g) && (e &= ~(y | g)), 
+            var I = E ? void 0 : c(t), F = [ t, e, n, _, A, C, R, O, w, j ];
+            if (I && s(F, I), t = F[0], e = F[1], n = F[2], _ = F[3], A = F[4], !(j = F[9] = void 0 === F[9] ? E ? 0 : t.length : x(F[9] - k, 0)) && e & (y | g) && (e &= ~(y | g)), 
             e && e != h) P = e == y || e == g ? o(t, e, j) : e != m && e != (h | m) || A.length ? a.apply(void 0, F) : u(t, e, n, _); else var P = i(t, e, n);
             return l((I ? r : f)(P, F), t, e);
         };
@@ -1613,10 +1613,10 @@
         var r = n(35), i = n(12), o = n(109), a = n(14), u = n(13), c = n(18), s = n(188), f = n(37), l = n(106), p = n(2)("iterator"), d = !([].keys && "next" in [].keys()), h = "values", v = function() {
             return this;
         };
-        t.exports = function(t, e, n, y, g, m, x) {
+        t.exports = function(t, e, n, y, g, m, b) {
             s(n, e, y);
-            var b, _, A, O = function(t) {
-                if (!d && t in C) return C[t];
+            var x, _, A, O = function(t) {
+                if (!d && t in k) return k[t];
                 switch (t) {
                   case "keys":
                   case h:
@@ -1627,21 +1627,21 @@
                 return function() {
                     return new n(this, t);
                 };
-            }, w = e + " Iterator", j = g == h, E = !1, C = t.prototype, k = C[p] || C["@@iterator"] || g && C[g], R = k || O(g), I = g ? j ? O("entries") : R : void 0, F = "Array" == e ? C.entries || k : k;
+            }, w = e + " Iterator", j = g == h, E = !1, k = t.prototype, C = k[p] || k["@@iterator"] || g && k[g], R = C || O(g), I = g ? j ? O("entries") : R : void 0, F = "Array" == e ? k.entries || C : C;
             if (// Fix native
             F && (A = l(F.call(new t()))) !== Object.prototype && (// Set @@toStringTag to native iterators
             f(A, w, !0), // fix for some old engines
             r || u(A, p) || a(A, p, v)), // fix Array#{values, @@iterator}.name in V8 / FF
-            j && k && k.name !== h && (E = !0, R = function() {
-                return k.call(this);
+            j && C && C.name !== h && (E = !0, R = function() {
+                return C.call(this);
             }), // Define iterator
-            r && !x || !d && !E && C[p] || a(C, p, R), // Plug for library
-            c[e] = R, c[w] = v, g) if (b = {
+            r && !b || !d && !E && k[p] || a(k, p, R), // Plug for library
+            c[e] = R, c[w] = v, g) if (x = {
                 values: j ? R : O(h),
                 keys: m ? R : O("keys"),
                 entries: I
-            }, x) for (_ in b) _ in C || o(C, _, b[_]); else i(i.P + i.F * (d || E), e, b);
-            return b;
+            }, b) for (_ in x) _ in k || o(k, _, x[_]); else i(i.P + i.F * (d || E), e, x);
+            return x;
         };
     }, /* 102 */
     /***/
@@ -1751,7 +1751,7 @@
                 var e = y[t];
                 delete y[t], e();
             }
-        }, x = function(t) {
+        }, b = function(t) {
             m.call(t.data);
         };
         // Node.js 0.9+ & IE10+ has setImmediate, otherwise:
@@ -1765,9 +1765,9 @@
         }, // Node.js 0.8-
         "process" == n(23)(l) ? r = function(t) {
             l.nextTick(a(m, t, 1));
-        } : h ? (o = (i = new h()).port2, i.port1.onmessage = x, r = a(o.postMessage, o, 1)) : f.addEventListener && "function" == typeof postMessage && !f.importScripts ? (r = function(t) {
+        } : h ? (o = (i = new h()).port2, i.port1.onmessage = b, r = a(o.postMessage, o, 1)) : f.addEventListener && "function" == typeof postMessage && !f.importScripts ? (r = function(t) {
             f.postMessage(t + "", "*");
-        }, f.addEventListener("message", x, !1)) : r = g in s("script") ? function(t) {
+        }, f.addEventListener("message", b, !1)) : r = g in s("script") ? function(t) {
             c.appendChild(s("script"))[g] = function() {
                 c.removeChild(this), m.call(t);
             };
@@ -1870,12 +1870,12 @@
             var M, L = e & O, T = e & w, D = e & j;
             if (n && (M = P ? n(t, F, P, S) : n(t)), void 0 !== M) return M;
             if (!_(t)) return t;
-            var N = x(t);
+            var N = b(t);
             if (N) {
                 if (M = y(t), !L) return f(t, M);
             } else {
-                var K = v(t), W = K == C || K == k;
-                if (b(t)) return s(t, L);
+                var K = v(t), W = K == k || K == C;
+                if (x(t)) return s(t, L);
                 if (K == R || K == E || W && !P) {
                     if (M = T || W ? {} : m(t), !L) return T ? p(t, c(M, t)) : l(t, u(M, t));
                 } else {
@@ -1894,9 +1894,9 @@
                 a(M, o, r(i, e, n, o, t, S));
             }), M;
         }
-        var i = n(74), o = n(43), a = n(77), u = n(115), c = n(227), s = n(253), f = n(29), l = n(260), p = n(261), d = n(137), h = n(277), v = n(49), y = n(289), g = n(290), m = n(291), x = n(0), b = n(54), _ = n(6), A = n(11), O = 1, w = 2, j = 4, E = "[object Arguments]", C = "[object Function]", k = "[object GeneratorFunction]", R = "[object Object]", I = {};
+        var i = n(74), o = n(43), a = n(77), u = n(115), c = n(227), s = n(253), f = n(29), l = n(260), p = n(261), d = n(137), h = n(277), v = n(49), y = n(289), g = n(290), m = n(291), b = n(0), x = n(54), _ = n(6), A = n(11), O = 1, w = 2, j = 4, E = "[object Arguments]", k = "[object Function]", C = "[object GeneratorFunction]", R = "[object Object]", I = {};
         I[E] = I["[object Array]"] = I["[object ArrayBuffer]"] = I["[object DataView]"] = I["[object Boolean]"] = I["[object Date]"] = I["[object Float32Array]"] = I["[object Float64Array]"] = I["[object Int8Array]"] = I["[object Int16Array]"] = I["[object Int32Array]"] = I["[object Map]"] = I["[object Number]"] = I[R] = I["[object RegExp]"] = I["[object Set]"] = I["[object String]"] = I["[object Symbol]"] = I["[object Uint8Array]"] = I["[object Uint8ClampedArray]"] = I["[object Uint16Array]"] = I["[object Uint32Array]"] = !0, 
-        I["[object Error]"] = I[C] = I["[object WeakMap]"] = !1, t.exports = r;
+        I["[object Error]"] = I[k] = I["[object WeakMap]"] = !1, t.exports = r;
     }, /* 118 */
     /***/
     function(t, e) {
@@ -2159,19 +2159,19 @@
  * @param {number} [arity] The arity of `func`.
  * @returns {Function} Returns the new wrapped function.
  */
-        function r(t, e, n, x, b, _, A, O, w, j) {
+        function r(t, e, n, b, x, _, A, O, w, j) {
             function E() {
                 for (var d = arguments.length, h = Array(d), v = d; v--; ) h[v] = arguments[v];
                 if (I) var y = s(E), g = a(h, y);
-                if (x && (h = i(h, x, b, I)), _ && (h = o(h, _, A, I)), d -= g, I && d < j) {
+                if (b && (h = i(h, b, x, I)), _ && (h = o(h, _, A, I)), d -= g, I && d < j) {
                     var m = l(h, y);
                     return c(t, e, r, E.placeholder, n, h, m, O, w, j - d);
                 }
-                var S = k ? n : this, M = R ? S[t] : t;
-                return d = h.length, O ? h = f(h, O) : F && d > 1 && h.reverse(), C && w < d && (h.length = w), 
+                var S = C ? n : this, M = R ? S[t] : t;
+                return d = h.length, O ? h = f(h, O) : F && d > 1 && h.reverse(), k && w < d && (h.length = w), 
                 this && this !== p && this instanceof E && (M = P || u(M)), M.apply(S, h);
             }
-            var C = e & g, k = e & d, R = e & h, I = e & (v | y), F = e & m, P = R ? void 0 : u(t);
+            var k = e & g, C = e & d, R = e & h, I = e & (v | y), F = e & m, P = R ? void 0 : u(t);
             return E;
         }
         var i = n(128), o = n(129), a = n(263), u = n(47), c = n(132), s = n(139), f = n(314), l = n(86), p = n(3), d = 1, h = 2, v = 8, y = 16, g = 128, m = 512;
@@ -2198,10 +2198,10 @@
  * @returns {Function} Returns the new wrapped function.
  */
         function(t, e, n, p, d, h, v, y, g, m) {
-            var x = e & s;
-            e |= x ? f : l, (e &= ~(x ? l : f)) & c || (e &= ~(a | u));
-            var b = [ t, e, d, x ? h : void 0, x ? v : void 0, x ? void 0 : h, x ? void 0 : v, y, g, m ], _ = n.apply(void 0, b);
-            return r(t) && i(_, b), _.placeholder = p, o(_, t, e);
+            var b = e & s;
+            e |= b ? f : l, (e &= ~(b ? l : f)) & c || (e &= ~(a | u));
+            var x = [ t, e, d, b ? h : void 0, b ? v : void 0, b ? void 0 : h, b ? void 0 : v, y, g, m ], _ = n.apply(void 0, x);
+            return r(t) && i(_, x), _.placeholder = p, o(_, t, e);
         };
     }, /* 133 */
     /***/
@@ -2239,10 +2239,10 @@
             var v = -1, y = !0, g = n & u ? new r() : void 0;
             // Ignore non-index properties.
             for (f.set(t, e), f.set(e, t); ++v < p; ) {
-                var m = t[v], x = e[v];
-                if (c) var b = l ? c(x, m, v, e, t, f) : c(m, x, v, t, e, f);
-                if (void 0 !== b) {
-                    if (b) continue;
+                var m = t[v], b = e[v];
+                if (c) var x = l ? c(b, m, v, e, t, f) : c(m, b, v, t, e, f);
+                if (void 0 !== x) {
+                    if (x) continue;
                     y = !1;
                     break;
                 }
@@ -2254,7 +2254,7 @@
                         y = !1;
                         break;
                     }
-                } else if (m !== x && !s(m, x, n, c, f)) {
+                } else if (m !== b && !s(m, b, n, c, f)) {
                     y = !1;
                     break;
                 }
@@ -2625,7 +2625,7 @@
         Object.defineProperty(e, "__esModule", {
             value: !0
         });
-        var h = i(n(373)), v = i(n(55)), y = i(n(11)), g = i(n(330)), m = i(n(155)), x = i(n(355)), b = i(n(349)), _ = i(n(350)), A = i(n(351)), O = i(n(339)), w = i(n(340)), j = n(214), E = i(n(332)), C = i(n(335)), k = i(n(359)), R = i(n(365)), I = i(n(341)), F = i(n(356)), P = i(n(357)), S = "function" == typeof p.default && "symbol" === (0, 
+        var h = i(n(373)), v = i(n(55)), y = i(n(11)), g = i(n(330)), m = i(n(155)), b = i(n(355)), x = i(n(349)), _ = i(n(350)), A = i(n(351)), O = i(n(339)), w = i(n(340)), j = n(214), E = i(n(332)), k = i(n(335)), C = i(n(359)), R = i(n(365)), I = i(n(341)), F = i(n(356)), P = i(n(357)), S = "function" == typeof p.default && "symbol" === (0, 
         d.default)(l.default) ? function(t) {
             return void 0 === t ? "undefined" : (0, d.default)(t);
         } : function(t) {
@@ -2682,7 +2682,7 @@
                 return t[e];
             }).forEach(function(t) {
                 n = g(n, t[e]);
-            }), x(n) ? null : n;
+            }), b(n) ? null : n;
         }, K = [ "Default", "Lazy" ], W = function(t) {
             return (arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : K).find(function(e) {
                 return t.endsWith(e);
@@ -2783,7 +2783,7 @@
             }
         }, $ = function(t, e) {
             if (v(t._mapper)) return function(t, e) {
-                return A(_, b(function(e) {
+                return A(_, x(function(e) {
                     var n = T(e, 2), r = n[0], i = n[1];
                     t[r] = i;
                 }))(e), t;
@@ -2816,7 +2816,7 @@
                     }
                 }), function(t) {
                     var e = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : {};
-                    x(e) && console.error("[@citygro/vdata] you have not defined any models!"), w(e).forEach(function(e) {
+                    b(e) && console.error("[@citygro/vdata] you have not defined any models!"), w(e).forEach(function(e) {
                         var n = T(e, 2), r = n[0], i = n[1];
                         return t.defineMapper(r, i);
                     });
@@ -2830,7 +2830,7 @@
                     });
                 }(n, e.adapters), function(t) {
                     var e = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : {}, n = e.handlers || {}, r = e.emitter;
-                    !r && x(n) || (r ? w(n).forEach(function(e) {
+                    !r && b(n) || (r ? w(n).forEach(function(e) {
                         var n = T(e, 2), i = n[0], o = n[1];
                         r.on(i, o.bind(t));
                     }) : console.error("[@citygro/vdata] missing event source!"));
@@ -2843,6 +2843,19 @@
                                     collectionName: U[1]
                                 };
                                 switch (t.event) {
+                                  case "add":
+                                    // name, data, opts
+                                    t.data = U[2], t.opts = U[3];
+                                    break;
+
+                                  case "change":
+                                    t.record = U[2], t.changes = U[3];
+                                    break;
+
+                                  case "remove":
+                                    t.record = U[2];
+                                    break;
+
                                   case "afterCreate":
                                     // props, opts, result
                                     t.props = U[2], t.opts = U[3], t.result = U[4];
@@ -2935,8 +2948,8 @@
         }, Q = function(t) {
             var e = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : "";
             return "" === e ? E(t) : "" + E(e) + function(t) {
-                var e = E(t), n = C([], e.charAt(0).toUpperCase(), R(e));
-                return k(n, "");
+                var e = E(t), n = k([], e.charAt(0).toUpperCase(), R(e));
+                return C(n, "");
             }(t);
         }, H = function() {
             var t = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : {};
@@ -3226,11 +3239,11 @@
         (e = t.exports = function(t, e, n, l, p) {
             var d, h, v, y, g = p ? function() {
                 return t;
-            } : c(t), m = r(n, l, e ? 2 : 1), x = 0;
+            } : c(t), m = r(n, l, e ? 2 : 1), b = 0;
             if ("function" != typeof g) throw TypeError(t + " is not iterable!");
             // fast case for arrays with default iterator
             if (o(g)) {
-                for (d = u(t.length); d > x; x++) if ((y = e ? m(a(h = t[x])[0], h[1]) : m(t[x])) === s || y === f) return y;
+                for (d = u(t.length); d > b; b++) if ((y = e ? m(a(h = t[b])[0], h[1]) : m(t[b])) === s || y === f) return y;
             } else for (v = g.call(t); !(h = v.next()).done; ) if ((y = i(v, m, h.value, e)) === s || y === f) return y;
         }).BREAK = s, e.RETURN = f;
     }, /* 186 */
@@ -3567,7 +3580,7 @@
     /***/
     function(t, e, n) {
         "use strict";
-        var r, i, o, a = n(35), u = n(4), c = n(24), s = n(57), f = n(12), l = n(25), p = n(56), d = n(181), h = n(185), v = n(198), y = n(110).set, g = n(192)(), m = "Promise", x = u.TypeError, b = u.process, _ = u[m], A = "process" == s(b = u.process), O = function() {}, w = !!function() {
+        var r, i, o, a = n(35), u = n(4), c = n(24), s = n(57), f = n(12), l = n(25), p = n(56), d = n(181), h = n(185), v = n(198), y = n(110).set, g = n(192)(), m = "Promise", b = u.TypeError, x = u.process, _ = u[m], A = "process" == s(x = u.process), O = function() {}, w = !!function() {
             try {
                 // correct subclassing with @@species support
                 var t = _.resolve(1), e = (t.constructor = {})[n(2)("species")] = function(t) {
@@ -3582,12 +3595,12 @@
         }, E = function(t) {
             var e;
             return !(!l(t) || "function" != typeof (e = t.then)) && e;
-        }, C = function(t) {
-            return j(_, t) ? new k(t) : new i(t);
-        }, k = i = function(t) {
+        }, k = function(t) {
+            return j(_, t) ? new C(t) : new i(t);
+        }, C = i = function(t) {
             var e, n;
             this.promise = new t(function(t, r) {
-                if (void 0 !== e || void 0 !== n) throw x("Bad Promise constructor");
+                if (void 0 !== e || void 0 !== n) throw b("Bad Promise constructor");
                 e = t, n = r;
             }), this.resolve = p(e), this.reject = p(n);
         }, R = function(t) {
@@ -3607,7 +3620,7 @@
                         var n, o, a = i ? e.ok : e.fail, u = e.resolve, c = e.reject, s = e.domain;
                         try {
                             a ? (i || (2 == t._h && S(t), t._h = 1), !0 === a ? n = r : (s && s.enter(), n = a(r), 
-                            s && s.exit()), n === e.promise ? c(x("Promise-chain cycle")) : (o = E(n)) ? o.call(n, u, c) : u(n)) : c(r);
+                            s && s.exit()), n === e.promise ? c(b("Promise-chain cycle")) : (o = E(n)) ? o.call(n, u, c) : u(n)) : c(r);
                         } catch (t) {
                             c(t);
                         }
@@ -3620,7 +3633,7 @@
             y.call(u, function() {
                 var e, n, r, i = t._v;
                 if (P(t) && (e = R(function() {
-                    A ? b.emit("unhandledRejection", i, t) : (n = u.onunhandledrejection) ? n({
+                    A ? x.emit("unhandledRejection", i, t) : (n = u.onunhandledrejection) ? n({
                         promise: t,
                         reason: i
                     }) : (r = u.console) && r.error && r.error("Unhandled promise rejection", i);
@@ -3634,7 +3647,7 @@
         }, S = function(t) {
             y.call(u, function() {
                 var e;
-                A ? b.emit("rejectionHandled", t) : (e = u.onrejectionhandled) && e({
+                A ? x.emit("rejectionHandled", t) : (e = u.onrejectionhandled) && e({
                     promise: t,
                     reason: t._v
                 });
@@ -3649,7 +3662,7 @@
                 n._d = !0, n = n._w || n;
                 // unwrap
                 try {
-                    if (n === t) throw x("Promise can't be resolved itself");
+                    if (n === t) throw b("Promise can't be resolved itself");
                     (e = E(t)) ? g(function() {
                         var r = {
                             _w: n,
@@ -3690,16 +3703,16 @@
         }).prototype = n(196)(_.prototype, {
             // 25.4.5.3 Promise.prototype.then(onFulfilled, onRejected)
             then: function(t, e) {
-                var n = C(v(this, _));
+                var n = k(v(this, _));
                 return n.ok = "function" != typeof t || t, n.fail = "function" == typeof e && e, 
-                n.domain = A ? b.domain : void 0, this._c.push(n), this._a && this._a.push(n), this._s && I(this, !1), 
+                n.domain = A ? x.domain : void 0, this._c.push(n), this._a && this._a.push(n), this._s && I(this, !1), 
                 n.promise;
             },
             // 25.4.5.1 Promise.prototype.catch(onRejected)
             catch: function(t) {
                 return this.then(void 0, t);
             }
-        }), k = function() {
+        }), C = function() {
             var t = new r();
             this.promise = t, this.resolve = c(L, t, 1), this.reject = c(M, t, 1);
         }), f(f.G + f.W + f.F * !w, {
@@ -3708,7 +3721,7 @@
         f(f.S + f.F * !w, m, {
             // 25.4.4.5 Promise.reject(r)
             reject: function(t) {
-                var e = C(this);
+                var e = k(this);
                 return (0, e.reject)(t), e.promise;
             }
         }), f(f.S + f.F * (a || !w), m, {
@@ -3716,7 +3729,7 @@
             resolve: function(t) {
                 // instanceof instead of internal slot check because we should fix it without replacement native Promise core
                 if (t instanceof _ && j(t.constructor, this)) return t;
-                var e = C(this);
+                var e = k(this);
                 return (0, e.resolve)(t), e.promise;
             }
         }), f(f.S + f.F * !(w && n(102)(function(t) {
@@ -3724,7 +3737,7 @@
         })), m, {
             // 25.4.4.1 Promise.all(iterable)
             all: function(t) {
-                var e = this, n = C(e), r = n.resolve, i = n.reject, o = R(function() {
+                var e = this, n = k(e), r = n.resolve, i = n.reject, o = R(function() {
                     var n = [], o = 0, a = 1;
                     h(t, !1, function(t) {
                         var u = o++, c = !1;
@@ -3737,7 +3750,7 @@
             },
             // 25.4.4.4 Promise.race(iterable)
             race: function(t) {
-                var e = this, n = C(e), r = n.reject, i = R(function() {
+                var e = this, n = k(e), r = n.reject, i = R(function() {
                     h(t, !1, function(t) {
                         e.resolve(t).then(n.resolve, r);
                     });
@@ -3750,7 +3763,7 @@
     function(t, e, n) {
         "use strict";
         // ECMAScript 6 symbols shim
-        var r = n(4), i = n(13), o = n(8), a = n(12), u = n(109), c = n(191).KEY, s = n(17), f = n(63), l = n(37), p = n(39), d = n(2), h = n(68), v = n(67), y = n(190), g = n(184), m = n(187), x = n(7), b = n(9), _ = n(66), A = n(27), O = n(103), w = n(195), j = n(104), E = n(5), C = n(26), k = j.f, R = E.f, I = w.f, F = r.Symbol, P = r.JSON, S = P && P.stringify, M = "prototype", L = d("_hidden"), T = d("toPrimitive"), D = {}.propertyIsEnumerable, N = f("symbol-registry"), K = f("symbols"), W = f("op-symbols"), B = Object[M], q = "function" == typeof F, $ = r.QObject, U = !$ || !$[M] || !$[M].findChild, z = o && s(function() {
+        var r = n(4), i = n(13), o = n(8), a = n(12), u = n(109), c = n(191).KEY, s = n(17), f = n(63), l = n(37), p = n(39), d = n(2), h = n(68), v = n(67), y = n(190), g = n(184), m = n(187), b = n(7), x = n(9), _ = n(66), A = n(27), O = n(103), w = n(195), j = n(104), E = n(5), k = n(26), C = j.f, R = E.f, I = w.f, F = r.Symbol, P = r.JSON, S = P && P.stringify, M = "prototype", L = d("_hidden"), T = d("toPrimitive"), D = {}.propertyIsEnumerable, N = f("symbol-registry"), K = f("symbols"), W = f("op-symbols"), B = Object[M], q = "function" == typeof F, $ = r.QObject, U = !$ || !$[M] || !$[M].findChild, z = o && s(function() {
             return 7 != O(R({}, "a", {
                 get: function() {
                     return R(this, "a", {
@@ -3759,7 +3772,7 @@
                 }
             })).a;
         }) ? function(t, e, n) {
-            var r = k(B, e);
+            var r = C(B, e);
             r && delete B[e], R(t, e, n), r && t !== B && R(B, e, r);
         } : R, J = function(t) {
             var e = K[t] = O(F[M]);
@@ -3769,27 +3782,27 @@
         } : function(t) {
             return t instanceof F;
         }, H = function(t, e, n) {
-            return t === B && H(W, e, n), x(t), e = _(e, !0), x(n), i(K, e) ? (n.enumerable ? (i(t, L) && t[L][e] && (t[L][e] = !1), 
+            return t === B && H(W, e, n), b(t), e = _(e, !0), b(n), i(K, e) ? (n.enumerable ? (i(t, L) && t[L][e] && (t[L][e] = !1), 
             n = O(n, {
                 enumerable: A(0, !1)
             })) : (i(t, L) || R(t, L, A(1, {})), t[L][e] = !0), z(t, e, n)) : R(t, e, n);
         }, V = function(t, e) {
-            x(t);
-            for (var n, r = g(e = b(e)), i = 0, o = r.length; o > i; ) H(t, n = r[i++], e[n]);
+            b(t);
+            for (var n, r = g(e = x(e)), i = 0, o = r.length; o > i; ) H(t, n = r[i++], e[n]);
             return t;
         }, G = function(t) {
             var e = D.call(this, t = _(t, !0));
             return !(this === B && i(K, t) && !i(W, t)) && (!(e || !i(this, t) || !i(K, t) || i(this, L) && this[L][t]) || e);
         }, Y = function(t, e) {
-            if (t = b(t), e = _(e, !0), t !== B || !i(K, e) || i(W, e)) {
-                var n = k(t, e);
+            if (t = x(t), e = _(e, !0), t !== B || !i(K, e) || i(W, e)) {
+                var n = C(t, e);
                 return !n || !i(K, e) || i(t, L) && t[L][e] || (n.enumerable = !0), n;
             }
         }, Z = function(t) {
-            for (var e, n = I(b(t)), r = [], o = 0; n.length > o; ) i(K, e = n[o++]) || e == L || e == c || r.push(e);
+            for (var e, n = I(x(t)), r = [], o = 0; n.length > o; ) i(K, e = n[o++]) || e == L || e == c || r.push(e);
             return r;
         }, X = function(t) {
-            for (var e, n = t === B, r = I(n ? W : b(t)), o = [], a = 0; r.length > a; ) !i(K, e = r[a++]) || n && !i(B, e) || o.push(K[e]);
+            for (var e, n = t === B, r = I(n ? W : x(t)), o = [], a = 0; r.length > a; ) !i(K, e = r[a++]) || n && !i(B, e) || o.push(K[e]);
             return o;
         };
         // 19.4.1.1 Symbol([description])
@@ -3811,7 +3824,7 @@
             Symbol: F
         });
         for (var tt = "hasInstance,isConcatSpreadable,iterator,match,replace,search,species,split,toPrimitive,toStringTag,unscopables".split(","), et = 0; tt.length > et; ) d(tt[et++]);
-        for (var tt = C(d.store), et = 0; tt.length > et; ) v(tt[et++]);
+        for (var tt = k(d.store), et = 0; tt.length > et; ) v(tt[et++]);
         a(a.S + a.F * !q, "Symbol", {
             // 19.4.2.1 Symbol.for(key)
             for: function(t) {
@@ -4716,14 +4729,14 @@
                 return typeof t;
             } : function(t) {
                 return t && "function" == typeof Symbol && t.constructor === Symbol && t !== Symbol.prototype ? "symbol" : typeof t;
-            }, x = function(t, e, n) {
+            }, b = function(t, e, n) {
                 return e in t ? Object.defineProperty(t, e, {
                     value: n,
                     enumerable: !0,
                     configurable: !0,
                     writable: !0
                 }) : t[e] = n, t;
-            }, b = function(t) {
+            }, x = function(t) {
                 if (Array.isArray(t)) {
                     for (var e = 0, n = Array(t.length); e < t.length; e++) n[e] = t[e];
                     return n;
@@ -5962,9 +5975,9 @@
                     return;
                     t[r] = void 0;
                 }
-            }, C = function(t, e, n) {
-                t && t._set ? t._set("props." + e, n) : E.set(t, e, n);
             }, k = function(t, e, n) {
+                t && t._set ? t._set("props." + e, n) : E.set(t, e, n);
+            }, C = function(t, e, n) {
                 t && t._set ? t._set("links." + e, n) : E.set(t, e, n);
             };
             /**
@@ -7097,7 +7110,7 @@
                 },
                 // e.g. user hasMany post via "foreignKey", so find all posts of user
                 findExistingLinksByForeignKey: function(t) {
-                    if (void 0 !== t && null !== t) return this.relatedCollection.filter(x({}, this.foreignKey, t));
+                    if (void 0 !== t && null !== t) return this.relatedCollection.filter(b({}, this.foreignKey, t));
                 },
                 ensureLinkedDataHasProperType: function(t, e) {
                     var n = this.getRelation(), r = this.getLocalField(t);
@@ -7174,7 +7187,7 @@
                 // e.g. user hasMany group via "foreignKeys", so find all users of a group
                 findExistingLinksByLocalKeys: function(t) {
                     return this.relatedCollection.filter({
-                        where: x({}, this.mapper.idAttribute, {
+                        where: b({}, this.mapper.idAttribute, {
                             in: t
                         })
                     });
@@ -7182,7 +7195,7 @@
                 // e.g. group hasMany user via "localKeys", so find all groups that own a user
                 findExistingLinksByForeignKeys: function(t) {
                     return this.relatedCollection.filter({
-                        where: x({}, this.foreignKeys, {
+                        where: b({}, this.foreignKeys, {
                             contains: t
                         })
                     });
@@ -7491,7 +7504,7 @@
                 },
                 removeInverseRelation: function(t, e, n, r) {
                     var i = this;
-                    if (n.type === N) k(t, n.localField, void 0); else if (n.type === D) {
+                    if (n.type === N) C(t, n.localField, void 0); else if (n.type === D) {
                         // e.g. remove comment from otherPost.comments
                         var o = E.get(t, n.localField);
                         void 0 === e ? E.remove(o, function(t) {
@@ -7505,7 +7518,7 @@
                     var i = this;
                     // Update (set) inverse relation
                     if (n.type === N) // e.g. someUser.profile = profile
-                    k(t, n.localField, this); else if (n.type === D) {
+                    C(t, n.localField, this); else if (n.type === D) {
                         // e.g. add comment to somePost.comments
                         var o = E.get(t, n.localField);
                         void 0 === e ? E.noDupeAdd(o, this, function(t) {
@@ -7574,14 +7587,14 @@
                         var o = [], a = void 0;
                         return E.forEachRelation(i, e, function(t, r) {
                             var u = t.getRelation();
-                            if (r.raw = !1, E.isFunction(t.load)) a = t.load(i, t, n, e); else if ("hasMany" === t.type || "hasOne" === t.type) t.foreignKey ? a = q(u, "findAll")(x({}, t.foreignKey, E.get(n, i.idAttribute)), r).then(function(e) {
+                            if (r.raw = !1, E.isFunction(t.load)) a = t.load(i, t, n, e); else if ("hasMany" === t.type || "hasOne" === t.type) t.foreignKey ? a = q(u, "findAll")(b({}, t.foreignKey, E.get(n, i.idAttribute)), r).then(function(e) {
                                 return "hasOne" === t.type ? e.length ? e[0] : void 0 : e;
                             }) : t.localKeys ? a = q(u, "findAll")({
-                                where: x({}, u.idAttribute, {
+                                where: b({}, u.idAttribute, {
                                     in: E.get(n, t.localKeys)
                                 })
                             }) : t.foreignKeys && (a = q(u, "findAll")({
-                                where: x({}, t.foreignKeys, {
+                                where: b({}, t.foreignKeys, {
                                     contains: E.get(n, i.idAttribute)
                                 })
                             }, e)); else if ("belongsTo" === t.type) {
@@ -9234,8 +9247,8 @@
                             g || (// Track properties that are changing in the current event loop
                             m = []);
                             // Add changing properties to this array once at most
-                            var b = m.indexOf(t);
-                            y !== n && -1 === b && m.push(t), v === n && b >= 0 && m.splice(b, 1), // No changes in current event loop
+                            var x = m.indexOf(t);
+                            y !== n && -1 === x && m.push(t), v === n && x >= 0 && m.splice(x, 1), // No changes in current event loop
                             m.length || (g = !1, p(pt), p("changed"), // Cancel pending change event
                             f(dt) && (clearTimeout(f(dt)), p(dt))), // Changes detected in current event loop
                             !g && m.length && (l("changed", m), l(pt, !0), // Saving the timeout id allows us to batch all changes in the same
@@ -9249,7 +9262,7 @@
                                 p("changed"), p(dt), p(pt), !f("silent")) {
                                     var e = void 0;
                                     for (e = 0; e < m.length; e++) r.emit("change:" + m[e], r, E.get(r, m[e]));
-                                    var i = E.diffObjects(x({}, t, n), x({}, t, y));
+                                    var i = E.diffObjects(b({}, t, n), b({}, t, y));
                                     if (f("keepChangeHistory")) {
                                         var o = E.plainCopy(i);
                                         o.timestamp = new Date().getTime();
@@ -9318,7 +9331,7 @@
                 types: Z,
                 validate: lt,
                 validationKeywords: it
-            }), yt = "Mapper", gt = [ "beforeCreate", "beforeCreateMany" ], mt = [ "beforeCreate", "beforeCreateMany", "beforeUpdate", "beforeUpdateAll", "beforeUpdateMany" ], xt = function(t) {
+            }), yt = "Mapper", gt = [ "beforeCreate", "beforeCreateMany" ], mt = [ "beforeCreate", "beforeCreateMany", "beforeUpdate", "beforeUpdateAll", "beforeUpdateMany" ], bt = function(t) {
                 return function() {
                     for (var e = this, n = arguments.length, r = Array(n), i = 0; i < n; i++) r[i] = arguments[i];
                     var o = r[r.length - t], a = o.op;
@@ -9350,7 +9363,7 @@
                         e.emit.apply(e, [ a ].concat(r));
                     });
                 };
-            }, bt = xt(1), _t = xt(2), At = {
+            }, xt = bt(1), _t = bt(2), At = {
                 count: {
                     defaults: [ {}, {} ],
                     skip: !0,
@@ -9659,7 +9672,7 @@
    * @param {Object} opts The `opts` argument passed to {@link Mapper#create}.
    * @since 3.0.0
    */
-                beforeCreate: bt,
+                beforeCreate: xt,
                 /**
    * Mapper lifecycle hook called by {@link Mapper#createMany}. If this method
    * returns a promise then {@link Mapper#createMany} will wait for the promise
@@ -9670,7 +9683,7 @@
    * @param {Object} opts The `opts` argument passed to {@link Mapper#createMany}.
    * @since 3.0.0
    */
-                beforeCreateMany: bt,
+                beforeCreateMany: xt,
                 /**
    * Mapper lifecycle hook called by {@link Mapper#count}. If this method
    * returns a promise then {@link Mapper#count} will wait for the promise
@@ -9681,7 +9694,7 @@
    * @param {Object} opts The `opts` argument passed to {@link Mapper#count}.
    * @since 3.0.0
    */
-                beforeCount: bt,
+                beforeCount: xt,
                 /**
    * Mapper lifecycle hook called by {@link Mapper#destroy}. If this method
    * returns a promise then {@link Mapper#destroy} will wait for the promise
@@ -9692,7 +9705,7 @@
    * @param {Object} opts The `opts` argument passed to {@link Mapper#destroy}.
    * @since 3.0.0
    */
-                beforeDestroy: bt,
+                beforeDestroy: xt,
                 /**
    * Mapper lifecycle hook called by {@link Mapper#destroyAll}. If this method
    * returns a promise then {@link Mapper#destroyAll} will wait for the promise
@@ -9703,7 +9716,7 @@
    * @param {Object} opts The `opts` argument passed to {@link Mapper#destroyAll}.
    * @since 3.0.0
    */
-                beforeDestroyAll: bt,
+                beforeDestroyAll: xt,
                 /**
    * Mappers lifecycle hook called by {@link Mapper#find}. If this method
    * returns a promise then {@link Mapper#find} will wait for the promise
@@ -9714,7 +9727,7 @@
    * @param {Object} opts The `opts` argument passed to {@link Mapper#find}.
    * @since 3.0.0
    */
-                beforeFind: bt,
+                beforeFind: xt,
                 /**
    * Mapper lifecycle hook called by {@link Mapper#findAll}. If this method
    * returns a promise then {@link Mapper#findAll} will wait for the promise
@@ -9725,7 +9738,7 @@
    * @param {Object} opts The `opts` argument passed to {@link Mapper#findAll}.
    * @since 3.0.0
    */
-                beforeFindAll: bt,
+                beforeFindAll: xt,
                 /**
    * Mapper lifecycle hook called by {@link Mapper#sum}. If this method
    * returns a promise then {@link Mapper#sum} will wait for the promise
@@ -9737,7 +9750,7 @@
    * @param {Object} opts The `opts` argument passed to {@link Mapper#sum}.
    * @since 3.0.0
    */
-                beforeSum: bt,
+                beforeSum: xt,
                 /**
    * Mapper lifecycle hook called by {@link Mapper#update}. If this method
    * returns a promise then {@link Mapper#update} will wait for the promise
@@ -9749,7 +9762,7 @@
    * @param {Object} opts The `opts` argument passed to {@link Mapper#update}.
    * @since 3.0.0
    */
-                beforeUpdate: bt,
+                beforeUpdate: xt,
                 /**
    * Mapper lifecycle hook called by {@link Mapper#updateAll}. If this method
    * returns a promise then {@link Mapper#updateAll} will wait for the promise
@@ -9761,7 +9774,7 @@
    * @param {Object} opts The `opts` argument passed to {@link Mapper#updateAll}.
    * @since 3.0.0
    */
-                beforeUpdateAll: bt,
+                beforeUpdateAll: xt,
                 /**
    * Mapper lifecycle hook called by {@link Mapper#updateMany}. If this method
    * returns a promise then {@link Mapper#updateMany} will wait for the promise
@@ -9772,7 +9785,7 @@
    * @param {Object} opts The `opts` argument passed to {@link Mapper#updateMany}.
    * @since 3.0.0
    */
-                beforeUpdateMany: bt,
+                beforeUpdateMany: xt,
                 /**
    * This method is called at the end of most lifecycle methods. It does the
    * following:
@@ -10294,16 +10307,16 @@
                     var l = r[r.length - 1];
                     // Fill in "opts" with the Mapper's configuration
                     // before lifecycle hook
-                    return E._(l, this), f = l.adapter = this.getAdapterName(l), s = l.op = u, E.resolve(this[s].apply(this, b(r))).then(function(n) {
+                    return E._(l, this), f = l.adapter = this.getAdapterName(l), s = l.op = u, E.resolve(this[s].apply(this, x(r))).then(function(n) {
                         var i;
                         // Allow for re-assignment from lifecycle hook
                         // Now delegate to the adapter
                         return void 0 !== r[o.beforeAssign] && (r[o.beforeAssign] = void 0 === n ? r[o.beforeAssign] : n), 
-                        s = l.op = t, r = o.adapterArgs ? o.adapterArgs.apply(o, [ e ].concat(b(r))) : r, 
-                        e.dbg.apply(e, [ s ].concat(b(r))), E.resolve((i = e.getAdapter(f))[s].apply(i, [ e ].concat(b(r))));
+                        s = l.op = t, r = o.adapterArgs ? o.adapterArgs.apply(o, [ e ].concat(x(r))) : r, 
+                        e.dbg.apply(e, [ s ].concat(x(r))), E.resolve((i = e.getAdapter(f))[s].apply(i, [ e ].concat(x(r))));
                     }).then(function(t) {
                         // after lifecycle hook
-                        return t = e._end(t, l, !!o.skip), r.push(t), s = l.op = c, E.resolve(e[s].apply(e, b(r))).then(function(e) {
+                        return t = e._end(t, l, !!o.skip), r.push(t), s = l.op = c, E.resolve(e[s].apply(e, x(r))).then(function(e) {
                             // Allow for re-assignment from lifecycle hook
                             return void 0 === e ? t : e;
                         });
@@ -12458,7 +12471,7 @@
  * @returns {Constructor} Subclass of this Container class.
  * @since 3.0.0
  */
-            var Ct = [ /**
+            var kt = [ /**
  * Wrapper for {@link Collection#add}.
  *
  * @example <caption>SimpleStore#add</caption>
@@ -12681,7 +12694,7 @@
  * @see Collection#unsaved
  * @since 3.0.0
  */
-            "unsaved" ], kt = [ "addToCache", "cachedFind", "cachedFindAll", "cacheFind", "cacheFindAll", "hashQuery" ], Rt = function(t, e, n) {
+            "unsaved" ], Ct = [ "addToCache", "cachedFind", "cachedFindAll", "cacheFind", "cacheFindAll", "hashQuery" ], Rt = function(t, e, n) {
                 var r = this._completedQueries[t][e];
                 return E.isFunction(r) ? r(t, e, n) : r;
             }, It = {
@@ -12846,7 +12859,7 @@
    */
                 as: function(t) {
                     var e = {}, n = this;
-                    return kt.concat(jt).concat(Ct).forEach(function(r) {
+                    return Ct.concat(jt).concat(kt).forEach(function(r) {
                         e[r] = {
                             writable: !0,
                             value: function() {
@@ -13828,14 +13841,14 @@
                         e.forEach(function(e) {
                             var i = void 0, o = void 0;
                             if (!t.foreignKey || t.type !== N && t.type !== D ? t.type === D && t.localKeys ? o = {
-                                where: x({}, t.getRelation().idAttribute, {
+                                where: b({}, t.getRelation().idAttribute, {
                                     in: E.get(e, t.localKeys)
                                 })
                             } : t.type === D && t.foreignKeys ? o = {
-                                where: x({}, t.foreignKeys, {
+                                where: b({}, t.foreignKeys, {
                                     contains: t.getForeignKey(e)
                                 })
-                            } : t.type === T && (i = r.remove(t.relation, t.getForeignKey(e), n)) : o = x({}, t.foreignKey, t.getForeignKey(e)), 
+                            } : t.type === T && (i = r.remove(t.relation, t.getForeignKey(e), n)) : o = b({}, t.foreignKey, t.getForeignKey(e)), 
                             o && (i = r.removeAll(t.relation, o, n)), i) {
                                 if (E.isArray(i) && !i.length) return;
                                 t.type === N && (i = i[0]), t.setLocalField(e, i);
@@ -14120,7 +14133,7 @@
                     });
                 }
             };
-            Ct.forEach(function(t) {
+            kt.forEach(function(t) {
                 Ft[t] = function(e) {
                     for (var n, r = arguments.length, i = Array(r > 1 ? r - 1 : 0), o = 1; o < r; o++) i[o - 1] = arguments[o];
                     return (n = this.getCollection(e))[t].apply(n, i);
@@ -14207,11 +14220,11 @@
                                         void 0 !== v && this._get("$") && (s = n.get(e, v) || s), // Set locals
                                         // e.g. profile.user = someUser
                                         // or comment.post = somePost
-                                        k(this, a, s), C(this, c, v), o.updateIndex(this, f), d && this.setupInverseRelation(s, p, d, i);
+                                        C(this, a, s), k(this, c, v), o.updateIndex(this, f), d && this.setupInverseRelation(s, p, d, i);
                                     } else // Unset in-memory link only
                                     // e.g. profile.user = undefined
                                     // or comment.post = undefined
-                                    k(this, a, void 0);
+                                    C(this, a, void 0);
                                     return s;
                                 }
                             };
@@ -14228,7 +14241,7 @@
                                 var s = this;
                                 v && v.call(this, u);
                                 var l = E.get(this, a), p = E.get(this, i), d = t.getInverse(r), h = l ? E.get(l, t.getRelation().idAttribute) : void 0;
-                                if (l && void 0 !== h && h !== u) if (d.type === N) k(l, d.localField, void 0); else if (d.type === D) {
+                                if (l && void 0 !== h && h !== u) if (d.type === N) C(l, d.localField, void 0); else if (d.type === D) {
                                     var y = E.get(l, d.localField);
                                     void 0 === p ? E.remove(y, function(t) {
                                         return t === s;
@@ -14236,7 +14249,7 @@
                                         return t === s || p === E.get(t, i);
                                     });
                                 }
-                                if (C(this, c, u), o.updateIndex(this, f), void 0 === u || null === u) void 0 !== h && // Unset locals
+                                if (k(this, c, u), o.updateIndex(this, f), void 0 === u || null === u) void 0 !== h && // Unset locals
                                 E.set(this, a, void 0); else if (this._get("$")) {
                                     var g = n.get(e, u);
                                     g && E.set(this, a, g);
@@ -14256,7 +14269,7 @@
                                 set: function(o) {
                                     var s = this;
                                     o && !E.isArray(o) && (o = [ o ]);
-                                    var l = E.get(this, i), p = t.getRelation().idAttribute, d = t.getInverse(r), h = d.localField, v = this._get(u) || [], m = [], x = {};
+                                    var l = E.get(this, i), p = t.getRelation().idAttribute, d = t.getInverse(r), h = d.localField, v = this._get(u) || [], m = [], b = {};
                                     // e.g. post.comments = someComments
                                     if (o && o.forEach(function(t) {
                                         // e.g. comment.id
@@ -14272,35 +14285,35 @@
                                         }
                                         void 0 !== r && (s._get("$") && (// Prefer store record
                                         t = n.get(e, r) || t), // e.g. toLinkIds[comment.id] = comment
-                                        x[r] = t), m.push(t);
+                                        b[r] = t), m.push(t);
                                     }), c) v.forEach(function(t) {
                                         // e.g. comment.id
                                         var r = E.get(t, p);
-                                        (void 0 === r && -1 === m.indexOf(t) || void 0 !== r && !(r in x)) && (// Update (unset) inverse relation
+                                        (void 0 === r && -1 === m.indexOf(t) || void 0 !== r && !(r in b)) && (// Update (unset) inverse relation
                                         o && (// e.g. comment.post_id = undefined
-                                        C(t, c, void 0), // e.g. CommentCollection.updateIndex(comment, { index: 'post_id' })
+                                        k(t, c, void 0), // e.g. CommentCollection.updateIndex(comment, { index: 'post_id' })
                                         n.getCollection(e).updateIndex(t, f)), // e.g. comment.post = undefined
-                                        k(t, h, void 0));
+                                        C(t, h, void 0));
                                     }), m.forEach(function(t) {
                                         // Update (set) inverse relation
                                         // e.g. comment.post_id = post.id
-                                        C(t, c, l), // e.g. CommentCollection.updateIndex(comment, { index: 'post_id' })
+                                        k(t, c, l), // e.g. CommentCollection.updateIndex(comment, { index: 'post_id' })
                                         n.getCollection(e).updateIndex(t, f), // e.g. comment.post = post
-                                        k(t, h, s);
+                                        C(t, h, s);
                                     }); else if (y) {
                                         // Update locals
                                         // e.g. group.users = someUsers
                                         // Update (set) inverse relation
-                                        var b = m.map(function(t) {
+                                        var x = m.map(function(t) {
                                             return E.get(t, p);
                                         }).filter(function(t) {
                                             return void 0 !== t;
                                         });
                                         // e.g. group.user_ids = [1,2,3,...]
-                                        E.set(this, y, b), // Update (unset) inverse relation
+                                        E.set(this, y, x), // Update (unset) inverse relation
                                         d.foreignKeys && (v.forEach(function(t) {
                                             var e = E.get(t, p);
-                                            if (void 0 === e && -1 === m.indexOf(t) || void 0 !== e && !(e in x)) {
+                                            if (void 0 === e && -1 === m.indexOf(t) || void 0 !== e && !(e in b)) {
                                                 // Update inverse relation
                                                 // safeSetLink(child, inverseLocalField, undefined)
                                                 var n = E.get(t, h) || [];
@@ -14362,14 +14375,14 @@
                                 if (o === s) return s;
                                 var l = t.getInverse(r).localField;
                                 if (// Update (unset) inverse relation
-                                s && (C(s, c, void 0), n.getCollection(e).updateIndex(s, f), k(s, l, void 0)), o) {
+                                s && (k(s, c, void 0), n.getCollection(e).updateIndex(s, f), C(s, l, void 0)), o) {
                                     var p = E.get(o, t.getRelation().idAttribute);
                                     // Prefer store record
                                     void 0 !== p && (o = n.get(e, p) || o), // Set locals
-                                    k(this, a, o), // Update (set) inverse relation
-                                    C(o, c, E.get(this, i)), n.getCollection(e).updateIndex(o, f), k(o, l, this);
+                                    C(this, a, o), // Update (set) inverse relation
+                                    k(o, c, E.get(this, i)), n.getCollection(e).updateIndex(o, f), C(o, l, this);
                                 } else // Unset locals
-                                k(this, a, void 0);
+                                C(this, a, void 0);
                                 return o;
                             }
                         });
@@ -14385,11 +14398,11 @@
                                 };
                             }
                             if (t.set) {
-                                var x = l.set;
+                                var b = l.set;
                                 l.set = function(e) {
                                     var n = this;
                                     return t.set(t, this, e, function(t) {
-                                        return x.call(n, void 0 === t ? e : t);
+                                        return b.call(n, void 0 === t ? e : t);
                                     });
                                 };
                             }
@@ -14706,17 +14719,17 @@
  * @returns {boolean} Returns `true` if the objects are equivalent, else `false`.
  */
         function(t, e, n, y, g, m) {
-            var x = c(t), b = c(e), _ = x ? d : u(t), A = b ? d : u(e), O = (_ = _ == p ? h : _) == h, w = (A = A == p ? h : A) == h, j = _ == A;
+            var b = c(t), x = c(e), _ = b ? d : u(t), A = x ? d : u(e), O = (_ = _ == p ? h : _) == h, w = (A = A == p ? h : A) == h, j = _ == A;
             if (j && s(t)) {
                 if (!s(e)) return !1;
-                x = !0, O = !1;
+                b = !0, O = !1;
             }
-            if (j && !O) return m || (m = new r()), x || f(t) ? i(t, e, n, y, g, m) : o(t, e, _, n, y, g, m);
+            if (j && !O) return m || (m = new r()), b || f(t) ? i(t, e, n, y, g, m) : o(t, e, _, n, y, g, m);
             if (!(n & l)) {
-                var E = O && v.call(t, "__wrapped__"), C = w && v.call(e, "__wrapped__");
-                if (E || C) {
-                    var k = E ? t.value() : t, R = C ? e.value() : e;
-                    return m || (m = new r()), g(k, R, n, y, m);
+                var E = O && v.call(t, "__wrapped__"), k = w && v.call(e, "__wrapped__");
+                if (E || k) {
+                    var C = E ? t.value() : t, R = k ? e.value() : e;
+                    return m || (m = new r()), g(C, R, n, y, m);
                 }
             }
             return !!j && (m || (m = new r()), a(t, e, n, y, g, m));
@@ -15600,7 +15613,7 @@
     }, /* 275 */
     /***/
     function(t, e, n) {
-        var r = n(19), i = n(112), o = n(32), a = n(134), u = n(85), c = n(150), s = 1, f = 2, l = "[object Boolean]", p = "[object Date]", d = "[object Error]", h = "[object Map]", v = "[object Number]", y = "[object RegExp]", g = "[object Set]", m = "[object String]", x = "[object Symbol]", b = "[object ArrayBuffer]", _ = "[object DataView]", A = r ? r.prototype : void 0, O = A ? A.valueOf : void 0;
+        var r = n(19), i = n(112), o = n(32), a = n(134), u = n(85), c = n(150), s = 1, f = 2, l = "[object Boolean]", p = "[object Date]", d = "[object Error]", h = "[object Map]", v = "[object Number]", y = "[object RegExp]", g = "[object Set]", m = "[object String]", b = "[object Symbol]", x = "[object ArrayBuffer]", _ = "[object DataView]", A = r ? r.prototype : void 0, O = A ? A.valueOf : void 0;
         t.exports = /**
  * A specialized version of `baseIsEqualDeep` for comparing objects of
  * the same `toStringTag`.
@@ -15624,7 +15637,7 @@
                 if (t.byteLength != e.byteLength || t.byteOffset != e.byteOffset) return !1;
                 t = t.buffer, e = e.buffer;
 
-              case b:
+              case x:
                 return !(t.byteLength != e.byteLength || !w(new i(t), new i(e)));
 
               case l:
@@ -15648,17 +15661,17 @@
                 var E = u;
 
               case g:
-                var C = r & s;
-                if (E || (E = c), t.size != e.size && !C) return !1;
+                var k = r & s;
+                if (E || (E = c), t.size != e.size && !k) return !1;
                 // Assume cyclic values are equal.
-                var k = j.get(t);
-                if (k) return k == e;
+                var C = j.get(t);
+                if (C) return C == e;
                 r |= f, // Recursively compare objects (susceptible to call stack limits).
                 j.set(t, e);
                 var R = a(E(t), E(e), r, A, w, j);
                 return j.delete(t), R;
 
-              case x:
+              case b:
                 if (O) return O.call(t) == O.call(e);
             }
             return !1;
@@ -15694,18 +15707,18 @@
             c.set(t, e), c.set(e, t);
             for (var y = s; ++p < l; ) {
                 var g = t[d = f[p]], m = e[d];
-                if (a) var x = s ? a(m, g, d, e, t, c) : a(g, m, d, t, e, c);
+                if (a) var b = s ? a(m, g, d, e, t, c) : a(g, m, d, t, e, c);
                 // Recursively compare objects (susceptible to call stack limits).
-                if (!(void 0 === x ? g === m || u(g, m, n, a, c) : x)) {
+                if (!(void 0 === b ? g === m || u(g, m, n, a, c) : b)) {
                     v = !1;
                     break;
                 }
                 y || (y = "constructor" == d);
             }
             if (v && !y) {
-                var b = t.constructor, _ = e.constructor;
+                var x = t.constructor, _ = e.constructor;
                 // Non `Object` object instances with different constructors are not equal.
-                b != _ && "constructor" in t && "constructor" in e && !("function" == typeof b && b instanceof b && "function" == typeof _ && _ instanceof _) && (v = !1);
+                x != _ && "constructor" in t && "constructor" in e && !("function" == typeof x && x instanceof x && "function" == typeof _ && _ instanceof _) && (v = !1);
             }
             return c.delete(t), c.delete(e), v;
         };
@@ -15936,7 +15949,7 @@
     }, /* 290 */
     /***/
     function(t, e, n) {
-        var r = n(80), i = n(254), o = n(255), a = n(256), u = n(257), c = n(258), s = n(259), f = "[object Boolean]", l = "[object Date]", p = "[object Map]", d = "[object Number]", h = "[object RegExp]", v = "[object Set]", y = "[object String]", g = "[object Symbol]", m = "[object ArrayBuffer]", x = "[object DataView]", b = "[object Float32Array]", _ = "[object Float64Array]", A = "[object Int8Array]", O = "[object Int16Array]", w = "[object Int32Array]", j = "[object Uint8Array]", E = "[object Uint8ClampedArray]", C = "[object Uint16Array]", k = "[object Uint32Array]";
+        var r = n(80), i = n(254), o = n(255), a = n(256), u = n(257), c = n(258), s = n(259), f = "[object Boolean]", l = "[object Date]", p = "[object Map]", d = "[object Number]", h = "[object RegExp]", v = "[object Set]", y = "[object String]", g = "[object Symbol]", m = "[object ArrayBuffer]", b = "[object DataView]", x = "[object Float32Array]", _ = "[object Float64Array]", A = "[object Int8Array]", O = "[object Int16Array]", w = "[object Int32Array]", j = "[object Uint8Array]", E = "[object Uint8ClampedArray]", k = "[object Uint16Array]", C = "[object Uint32Array]";
         t.exports = /**
  * Initializes an object clone based on its `toStringTag`.
  *
@@ -15960,18 +15973,18 @@
               case l:
                 return new I(+t);
 
-              case x:
+              case b:
                 return i(t, R);
 
-              case b:
+              case x:
               case _:
               case A:
               case O:
               case w:
               case j:
               case E:
-              case C:
               case k:
+              case C:
                 return s(t, R);
 
               case p:
@@ -16302,15 +16315,15 @@
             // Compose partial arguments.
             var m = e[3];
             if (m) {
-                var x = t[3];
-                t[3] = x ? r(x, m, e[4]) : m, t[4] = x ? o(t[3], a) : e[4];
+                var b = t[3];
+                t[3] = b ? r(b, m, e[4]) : m, t[4] = b ? o(t[3], a) : e[4];
             }
             // Compose partial right arguments.
             // Use source `argPos` if available.
             // Use source `ary` if it's smaller.
             // Use source `arity` if one is not provided.
             // Use source `func` and merge bitmasks.
-            return (m = e[5]) && (x = t[5], t[5] = x ? i(x, m, e[6]) : m, t[6] = x ? o(t[5], a) : e[6]), 
+            return (m = e[5]) && (b = t[5], t[5] = b ? i(b, m, e[6]) : m, t[6] = b ? o(t[5], a) : e[6]), 
             (m = e[7]) && (t[7] = m), h & l && (t[8] = null == t[8] ? e[8] : d(t[8], e[8])), 
             null == t[9] && (t[9] = e[9]), t[0] = e[0], t[1] = v, t;
         };
@@ -16570,7 +16583,7 @@
     /***/
     function(t, e) {
         /** Used to compose unicode character classes. */
-        var n = "a-z\\xdf-\\xf6\\xf8-\\xff", r = "A-Z\\xc0-\\xd6\\xd8-\\xde", i = "\\xac\\xb1\\xd7\\xf7\\x00-\\x2f\\x3a-\\x40\\x5b-\\x60\\x7b-\\xbf\\u2000-\\u206f \\t\\x0b\\f\\xa0\\ufeff\\n\\r\\u2028\\u2029\\u1680\\u180e\\u2000\\u2001\\u2002\\u2003\\u2004\\u2005\\u2006\\u2007\\u2008\\u2009\\u200a\\u202f\\u205f\\u3000", o = "[" + i + "]", a = "\\d+", u = "[\\u2700-\\u27bf]", c = "[" + n + "]", s = "[^\\ud800-\\udfff" + i + a + "\\u2700-\\u27bf" + n + r + "]", f = "(?:\\ud83c[\\udde6-\\uddff]){2}", l = "[\\ud800-\\udbff][\\udc00-\\udfff]", p = "[" + r + "]", d = "(?:" + c + "|" + s + ")", h = "(?:" + p + "|" + s + ")", v = "(?:['’](?:d|ll|m|re|s|t|ve))?", y = "(?:['’](?:D|LL|M|RE|S|T|VE))?", g = "(?:[\\u0300-\\u036f\\ufe20-\\ufe2f\\u20d0-\\u20ff]|\\ud83c[\\udffb-\\udfff])?", m = "[\\ufe0e\\ufe0f]?", x = m + g + ("(?:\\u200d(?:" + [ "[^\\ud800-\\udfff]", f, l ].join("|") + ")" + m + g + ")*"), b = "(?:" + [ u, f, l ].join("|") + ")" + x, _ = RegExp([ p + "?" + c + "+" + v + "(?=" + [ o, p, "$" ].join("|") + ")", h + "+" + y + "(?=" + [ o, p + d, "$" ].join("|") + ")", p + "?" + d + "+" + v, p + "+" + y, "\\d*(?:(?:1ST|2ND|3RD|(?![123])\\dTH)\\b)", "\\d*(?:(?:1st|2nd|3rd|(?![123])\\dth)\\b)", a, b ].join("|"), "g");
+        var n = "a-z\\xdf-\\xf6\\xf8-\\xff", r = "A-Z\\xc0-\\xd6\\xd8-\\xde", i = "\\xac\\xb1\\xd7\\xf7\\x00-\\x2f\\x3a-\\x40\\x5b-\\x60\\x7b-\\xbf\\u2000-\\u206f \\t\\x0b\\f\\xa0\\ufeff\\n\\r\\u2028\\u2029\\u1680\\u180e\\u2000\\u2001\\u2002\\u2003\\u2004\\u2005\\u2006\\u2007\\u2008\\u2009\\u200a\\u202f\\u205f\\u3000", o = "[" + i + "]", a = "\\d+", u = "[\\u2700-\\u27bf]", c = "[" + n + "]", s = "[^\\ud800-\\udfff" + i + a + "\\u2700-\\u27bf" + n + r + "]", f = "(?:\\ud83c[\\udde6-\\uddff]){2}", l = "[\\ud800-\\udbff][\\udc00-\\udfff]", p = "[" + r + "]", d = "(?:" + c + "|" + s + ")", h = "(?:" + p + "|" + s + ")", v = "(?:['’](?:d|ll|m|re|s|t|ve))?", y = "(?:['’](?:D|LL|M|RE|S|T|VE))?", g = "(?:[\\u0300-\\u036f\\ufe20-\\ufe2f\\u20d0-\\u20ff]|\\ud83c[\\udffb-\\udfff])?", m = "[\\ufe0e\\ufe0f]?", b = m + g + ("(?:\\u200d(?:" + [ "[^\\ud800-\\udfff]", f, l ].join("|") + ")" + m + g + ")*"), x = "(?:" + [ u, f, l ].join("|") + ")" + b, _ = RegExp([ p + "?" + c + "+" + v + "(?=" + [ o, p, "$" ].join("|") + ")", h + "+" + y + "(?=" + [ o, p + d, "$" ].join("|") + ")", p + "?" + d + "+" + v, p + "+" + y, "\\d*(?:(?:1ST|2ND|3RD|(?![123])\\dTH)\\b)", "\\d*(?:(?:1st|2nd|3rd|(?![123])\\dth)\\b)", a, x ].join("|"), "g");
         t.exports = /**
  * Splits a Unicode `string` into an array of its words.
  *
@@ -17079,7 +17092,7 @@
                             }(T(r(t, n), e), n);
                         });
                     }(e, n);
-                    var i = !x && u.iterateeAry[t];
+                    var i = !b && u.iterateeAry[t];
                     if (i) /**
    * Creates a function that wraps `func` to invoke its iteratee, with up to `n`
    * arguments, ignoring any additional arguments.
@@ -17118,7 +17131,7 @@
  * @param {number} start The start position of the spread.
  * @returns {Function} Returns the new function.
  */
-                    return void 0 === i ? k(e, n) : function(t, e) {
+                    return void 0 === i ? C(e, n) : function(t, e) {
                         return function() {
                             for (var n = arguments.length, r = n - 1, i = Array(n); n--; ) i[n] = arguments[n];
                             var o = i[e], a = i.slice(0, e);
@@ -17165,7 +17178,7 @@
             function v(t, e) {
                 var n = u.aliasToReal[t] || t, r = u.remap[n] || n, i = f;
                 return function(t) {
-                    var o = x ? E : C, u = x ? E[r] : e, c = R(R({}, i), t);
+                    var o = b ? E : k, u = b ? E[r] : e, c = R(R({}, i), t);
                     return a(o, n, u, c);
                 };
             }
@@ -17231,8 +17244,8 @@
                 }), n.convert = v(r, e), u.placeholder[r] && (m = !0, n.placeholder = e.placeholder = j), 
                 n;
             }
-            var m, x = "function" == typeof e, b = e === Object(e);
-            if (b && (f = n, n = e, e = void 0), null == n) throw new TypeError();
+            var m, b = "function" == typeof e, x = e === Object(e);
+            if (x && (f = n, n = e, e = void 0), null == n) throw new TypeError();
             f || (f = {});
             var _ = {
                 cap: !("cap" in f) || f.cap,
@@ -17240,7 +17253,7 @@
                 fixed: !("fixed" in f) || f.fixed,
                 immutable: !("immutable" in f) || f.immutable,
                 rearg: !("rearg" in f) || f.rearg
-            }, A = "curry" in f && f.curry, O = "fixed" in f && f.fixed, w = "rearg" in f && f.rearg, j = x ? n : c, E = x ? n.runInContext() : void 0, C = x ? n : {
+            }, A = "curry" in f && f.curry, O = "fixed" in f && f.fixed, w = "rearg" in f && f.rearg, j = b ? n : c, E = b ? n.runInContext() : void 0, k = b ? n : {
                 ary: t.ary,
                 assign: t.assign,
                 clone: t.clone,
@@ -17253,7 +17266,7 @@
                 rearg: t.rearg,
                 toInteger: t.toInteger,
                 toPath: t.toPath
-            }, k = C.ary, R = C.assign, I = C.clone, F = C.curry, P = C.forEach, S = C.isArray, M = C.isFunction, L = C.keys, T = C.rearg, D = C.toInteger, N = C.toPath, K = L(u.aryMethod), W = {
+            }, C = k.ary, R = k.assign, I = k.clone, F = k.curry, P = k.forEach, S = k.isArray, M = k.isFunction, L = k.keys, T = k.rearg, D = k.toInteger, N = k.toPath, K = L(u.aryMethod), W = {
                 castArray: function(t) {
                     return function() {
                         var e = arguments[0];
@@ -17298,7 +17311,7 @@
                 }
             };
             /*--------------------------------------------------------------------------*/
-            if (!b) return g(e, n);
+            if (!x) return g(e, n);
             var B = n, q = [];
             // Convert remaining methods.
             // Assign to `_` leaving `_.prototype` unchanged to allow chaining.
