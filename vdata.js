@@ -2789,9 +2789,9 @@
                 }))(e), t;
             }(t, e);
             throw new TypeError("utils/updateRecord can only operate over a js-data/Record object");
-        }, U = arguments, z = function(t) {
+        }, U = function(t) {
             return !!m(t, "$options.vdata");
-        }, J = {
+        }, z = {
             createConfig: function(t) {
                 return function(e) {
                     var n = t(e);
@@ -2837,96 +2837,96 @@
                 }(t, e.externalEvents), console.log("[@citygro/vdata] store ready!", n), t.mixin({
                     methods: {
                         $vdata: function() {
-                            z(this) && this._vdataHandler(function() {
+                            U(this) && this._vdataHandler(function() {
                                 var t = {
-                                    event: U[0],
-                                    collectionName: U[1]
+                                    event: arguments[0],
+                                    collectionName: arguments[1]
                                 };
                                 switch (t.event) {
                                   case "add":
                                     // name, data, opts
-                                    t.data = U[2], t.opts = U[3];
+                                    t.data = arguments[2], t.opts = arguments[3];
                                     break;
 
                                   case "change":
-                                    t.record = U[2], t.changes = U[3];
+                                    t.record = arguments[2], t.changes = arguments[3];
                                     break;
 
                                   case "remove":
-                                    t.record = U[2];
+                                    t.record = arguments[2];
                                     break;
 
                                   case "afterCreate":
                                     // props, opts, result
-                                    t.props = U[2], t.opts = U[3], t.result = U[4];
+                                    t.props = arguments[2], t.opts = arguments[3], t.result = arguments[4];
                                     break;
 
                                   case "beforeDestroy":
                                   case "beforeFind":
                                     // id, opts
-                                    t.id = U[2], t.opts = U[3];
+                                    t.id = arguments[2], t.opts = arguments[3];
                                     break;
 
                                   case "afterDestroy":
                                   case "afterFind":
                                     // id, opts, result
-                                    t.id = U[2], t.opts = U[3], t.result = U[4];
+                                    t.id = arguments[2], t.opts = arguments[3], t.result = arguments[4];
                                     break;
 
                                   case "afterDestroyAll":
                                     // data, query, opts, result
-                                    t.data = U[2], t.query = U[3], t.opts = U[4], t.result = U[5];
+                                    t.data = arguments[2], t.query = arguments[3], t.opts = arguments[4], t.result = arguments[5];
                                     break;
 
                                   case "afterFindAll":
                                     // query, opts, result
-                                    t.query = U[2], t.opts = U[3], t.result = U[4];
+                                    t.query = arguments[2], t.opts = arguments[3], t.result = arguments[4];
                                     break;
 
                                   case "afterUpdate":
                                     // id, props, opts, result
-                                    t.id = U[2], t.props = U[3], t.opts = U[4], t.result = U[5];
+                                    t.id = arguments[2], t.props = arguments[3], t.opts = arguments[4], t.result = arguments[5];
                                     break;
 
                                   case "beforeUpdate":
                                     // id, props, opts
-                                    t.id = U[2], t.props = U[3], t.opts = U[4];
+                                    t.id = arguments[2], t.props = arguments[3], t.opts = arguments[4];
                                     break;
 
                                   case "beforeUpdateAll":
                                     // props, query, opts
-                                    t.props = U[2], t.query = U[3], t.opts = U[4];
+                                    t.props = arguments[2], t.query = arguments[3], t.opts = arguments[4];
                                     break;
 
                                   case "afterUpdateAll":
                                     // props, query, opts, result
-                                    t.props = U[2], t.query = U[3], t.opts = U[4], t.result = U[5];
+                                    t.props = arguments[2], t.query = arguments[3], t.opts = arguments[4], t.result = arguments[5];
                                     break;
 
                                   case "afterUpdateMany":
                                   case "afterCreateMany":
                                     // records, opts, result
-                                    t.records = U[2], t.opts = U[3], t.result = U[4];
+                                    t.records = arguments[2], t.opts = arguments[3], t.result = arguments[4];
                                     break;
 
                                   case "beforeCreateMany":
                                   case "beforeUpdateMany":
                                     // records, opts
-                                    t.records = U[2], t.opts = U[3];
+                                    t.records = arguments[2], t.opts = arguments[3];
                                     break;
 
                                   case "beforeCreate":
                                   case "beforeDestroyAll":
                                   case "beforeFindAll":
                                     // query, opts
-                                    t.query = U[2], t.opts = U[3];
+                                    t.query = arguments[2], t.opts = arguments[3];
                                 }
                                 return t;
                             }.apply(void 0, arguments));
                         }
                     },
                     beforeCreate: function() {
-                        z(this) && function(t, e, n, r) {
+                        U(this) && function(t, e, n, r) {
                             t["_" + e + "Handler"] = function(e) {
                                 ((function() {
                                     var t = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : [], e = arguments[1];
@@ -2941,20 +2941,20 @@
                         this.$vdata(), this.$store.on("all", this.$vdata);
                     },
                     beforeDestroy: function() {
-                        z(this) && n.off("all", this.$vdata);
+                        U(this) && n.off("all", this.$vdata);
                     }
                 }), t.mixin(q);
             }
-        }, Q = function(t) {
+        }, J = function(t) {
             var e = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : "";
             return "" === e ? E(t) : "" + E(e) + function(t) {
                 var e = E(t), n = k([], e.charAt(0).toUpperCase(), R(e));
                 return C(n, "");
             }(t);
-        }, H = function() {
+        }, Q = function() {
             var t = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : {};
             return v(t.hasChanges) && v(t._mapper);
-        }, V = function(t) {
+        }, H = function(t) {
             t.$nextTick(function() {
                 t.$forceUpdate(), t.$children.forEach(function(t) {
                     return setTimeout(function() {
@@ -2962,55 +2962,55 @@
                     }, 0);
                 });
             });
-        }, G = function(t, e) {
-            return H(t) ? $(t, e) : L({}, t, e);
-        }, Y = function(t, e, n) {
-            var r = G(t[e], n);
-            return G(t, M({}, e, r));
-        }, Z = function() {
+        }, V = function(t, e) {
+            return Q(t) ? $(t, e) : L({}, t, e);
+        }, G = function(t, e, n) {
+            var r = V(t[e], n);
+            return V(t, M({}, e, r));
+        }, Y = function() {
             var t = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : [], e = arguments[1], n = arguments[2], r = [].concat(D(t));
-            return H(r[e]) ? r[e] = $(r[e], n) : H(n) ? r[e] = n : r[e] = L({}, r[e] || {}, n), 
+            return Q(r[e]) ? r[e] = $(r[e], n) : Q(n) ? r[e] = n : r[e] = L({}, r[e] || {}, n), 
             r;
+        }, Z = function() {
+            var t = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : {}, e = arguments[1], n = arguments[2], r = arguments[3], i = Y(t[n] || [], e, r);
+            return V(t, M({}, n, i));
         }, X = function() {
-            var t = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : {}, e = arguments[1], n = arguments[2], r = arguments[3], i = Z(t[n] || [], e, r);
-            return G(t, M({}, n, i));
-        }, tt = function() {
             var t = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : [], e = arguments[1], n = [].concat(D(t));
             return n.push(e), n;
-        }, et = function() {
+        }, tt = function() {
             var t = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : {}, e = arguments[1], n = arguments[2], r = [].concat(D(t[e] || []));
-            return r.push(n), G(t, M({}, e, r));
-        }, nt = function() {
+            return r.push(n), V(t, M({}, e, r));
+        }, et = function() {
             var t = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : [], e = arguments[1], n = [].concat(D(t));
             return n.splice(e, 1), n;
-        }, rt = function() {
-            var t = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : {}, e = arguments[1], n = arguments[2], r = nt(t[n], e);
-            return G(t, M({}, n, r));
-        }, it = function(t) {
+        }, nt = function() {
+            var t = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : {}, e = arguments[1], n = arguments[2], r = et(t[n], e);
+            return V(t, M({}, n, r));
+        }, rt = function(t) {
             var e, n = "value" === t ? "input" : "update:" + t, r = "value" === t ? "" : t;
             return {
-                methods: (e = {}, M(e, Q("forwardInput", r), function(t) {
+                methods: (e = {}, M(e, J("forwardInput", r), function(t) {
                     this.$emit(n, t);
-                }), M(e, Q("handleChange", r), function(e) {
-                    this.$emit(n, G(this[t], e)), V(this);
-                }), M(e, Q("handleKeyChange", r), function(e, r) {
-                    this.$emit(n, Y(this[t], e, r)), V(this);
-                }), M(e, Q("handleArrayKeyChange", r), function(e, r, i) {
-                    this.$emit(n, X(this[t], e, r, i)), V(this);
-                }), M(e, Q("handleArrayChange", r), function(e, r) {
-                    this.$emit(n, Z(this[t], e, r)), V(this);
-                }), M(e, Q("pushToArray", r), function(e) {
-                    this.$emit(n, tt(this[t], e)), V(this);
-                }), M(e, Q("pushToArrayKey", r), function(e, r) {
-                    this.$emit(n, et(this[t], e, r)), V(this);
-                }), M(e, Q("removeFromArray", r), function(e) {
-                    this.$emit(n, nt(this[t], e)), V(this);
-                }), M(e, Q("removeFromArrayKey", r), function(e, r) {
-                    this.$emit(n, rt(this[t], e, r)), V(this);
+                }), M(e, J("handleChange", r), function(e) {
+                    this.$emit(n, V(this[t], e)), H(this);
+                }), M(e, J("handleKeyChange", r), function(e, r) {
+                    this.$emit(n, G(this[t], e, r)), H(this);
+                }), M(e, J("handleArrayKeyChange", r), function(e, r, i) {
+                    this.$emit(n, Z(this[t], e, r, i)), H(this);
+                }), M(e, J("handleArrayChange", r), function(e, r) {
+                    this.$emit(n, Y(this[t], e, r)), H(this);
+                }), M(e, J("pushToArray", r), function(e) {
+                    this.$emit(n, X(this[t], e)), H(this);
+                }), M(e, J("pushToArrayKey", r), function(e, r) {
+                    this.$emit(n, tt(this[t], e, r)), H(this);
+                }), M(e, J("removeFromArray", r), function(e) {
+                    this.$emit(n, et(this[t], e)), H(this);
+                }), M(e, J("removeFromArrayKey", r), function(e, r) {
+                    this.$emit(n, nt(this[t], e, r)), H(this);
                 }), e)
             };
-        }, ot = it("value");
-        e.AsyncDataMixin = q, e.DataFlowMixin = ot, e.findRecordIndex = function(t, e) {
+        }, it = rt("value");
+        e.AsyncDataMixin = q, e.DataFlowMixin = it, e.findRecordIndex = function(t, e) {
             var n = F(e) || P(e) ? e : m(e, "_id") || m(e, "__tmp_id");
             if (n) {
                 var r = I(t, function(t) {
@@ -3026,9 +3026,9 @@
             }).catch(function(t) {
                 return [ t, void 0 ];
             });
-        }, e.updateRecord = $, e.vdata = J, e.handleChange = G, e.handleKeyChange = Y, e.handleArrayChange = Z, 
-        e.handleArrayKeyChange = X, e.pushToArray = tt, e.pushToArrayKey = et, e.removeFromArray = nt, 
-        e.removeFromArrayKey = rt, e.createDataFlowMixin = it;
+        }, e.updateRecord = $, e.vdata = z, e.handleChange = V, e.handleKeyChange = G, e.handleArrayChange = Y, 
+        e.handleArrayKeyChange = Z, e.pushToArray = X, e.pushToArrayKey = tt, e.removeFromArray = et, 
+        e.removeFromArrayKey = nt, e.createDataFlowMixin = rt;
     }, /* 159 */
     /***/
     function(t, e, n) {

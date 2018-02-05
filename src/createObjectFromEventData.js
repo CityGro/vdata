@@ -3,7 +3,7 @@
  *
  * @see {@link http://api.js-data.io/js-data/3.0.1/SimpleStore.html#toc85__anchor}
  */
-export default () => {
+export default function () {
   let data = {
     event: arguments[0],
     collectionName: arguments[1]

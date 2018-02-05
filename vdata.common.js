@@ -467,137 +467,136 @@ var updateRecord = (function (record, diff) {
   }
 });
 
-var _arguments = arguments;
 /**
  * takes variable arguments depending on the event type that is emmitted by js-data.
  *
  * @see {@link http://api.js-data.io/js-data/3.0.1/SimpleStore.html#toc85__anchor}
  */
-var createObjectFromEventData = (function () {
+var createObjectFromEventData = function () {
   var data = {
-    event: _arguments[0],
-    collectionName: _arguments[1]
+    event: arguments[0],
+    collectionName: arguments[1]
   };
   switch (data.event) {
     case 'add':
       // name, data, opts
-      data.data = _arguments[2];
-      data.opts = _arguments[3];
+      data.data = arguments[2];
+      data.opts = arguments[3];
       break;
     case 'change':
-      data.record = _arguments[2];
-      data.changes = _arguments[3];
+      data.record = arguments[2];
+      data.changes = arguments[3];
       break;
     case 'remove':
-      data.record = _arguments[2];
+      data.record = arguments[2];
       break;
     case 'afterCreate':
       // props, opts, result
-      data.props = _arguments[2];
-      data.opts = _arguments[3];
-      data.result = _arguments[4];
+      data.props = arguments[2];
+      data.opts = arguments[3];
+      data.result = arguments[4];
       break;
     case 'beforeDestroy':
       // id, opts
-      data.id = _arguments[2];
-      data.opts = _arguments[3];
+      data.id = arguments[2];
+      data.opts = arguments[3];
       break;
     case 'beforeFind':
       // id, opts
-      data.id = _arguments[2];
-      data.opts = _arguments[3];
+      data.id = arguments[2];
+      data.opts = arguments[3];
       break;
     case 'afterDestroy':
       // id, opts, result
-      data.id = _arguments[2];
-      data.opts = _arguments[3];
-      data.result = _arguments[4];
+      data.id = arguments[2];
+      data.opts = arguments[3];
+      data.result = arguments[4];
       break;
     case 'afterFind':
       // id, opts, result
-      data.id = _arguments[2];
-      data.opts = _arguments[3];
-      data.result = _arguments[4];
+      data.id = arguments[2];
+      data.opts = arguments[3];
+      data.result = arguments[4];
       break;
     case 'afterDestroyAll':
       // data, query, opts, result
-      data.data = _arguments[2];
-      data.query = _arguments[3];
-      data.opts = _arguments[4];
-      data.result = _arguments[5];
+      data.data = arguments[2];
+      data.query = arguments[3];
+      data.opts = arguments[4];
+      data.result = arguments[5];
       break;
     case 'afterFindAll':
       // query, opts, result
-      data.query = _arguments[2];
-      data.opts = _arguments[3];
-      data.result = _arguments[4];
+      data.query = arguments[2];
+      data.opts = arguments[3];
+      data.result = arguments[4];
       break;
     case 'afterUpdate':
       // id, props, opts, result
-      data.id = _arguments[2];
-      data.props = _arguments[3];
-      data.opts = _arguments[4];
-      data.result = _arguments[5];
+      data.id = arguments[2];
+      data.props = arguments[3];
+      data.opts = arguments[4];
+      data.result = arguments[5];
       break;
     case 'beforeUpdate':
       // id, props, opts
-      data.id = _arguments[2];
-      data.props = _arguments[3];
-      data.opts = _arguments[4];
+      data.id = arguments[2];
+      data.props = arguments[3];
+      data.opts = arguments[4];
       break;
     case 'beforeUpdateAll':
       // props, query, opts
-      data.props = _arguments[2];
-      data.query = _arguments[3];
-      data.opts = _arguments[4];
+      data.props = arguments[2];
+      data.query = arguments[3];
+      data.opts = arguments[4];
       break;
     case 'afterUpdateAll':
       // props, query, opts, result
-      data.props = _arguments[2];
-      data.query = _arguments[3];
-      data.opts = _arguments[4];
-      data.result = _arguments[5];
+      data.props = arguments[2];
+      data.query = arguments[3];
+      data.opts = arguments[4];
+      data.result = arguments[5];
       break;
     case 'afterUpdateMany':
       // records, opts, result
-      data.records = _arguments[2];
-      data.opts = _arguments[3];
-      data.result = _arguments[4];
+      data.records = arguments[2];
+      data.opts = arguments[3];
+      data.result = arguments[4];
       break;
     case 'afterCreateMany':
       // records, opts, result
-      data.records = _arguments[2];
-      data.opts = _arguments[3];
-      data.result = _arguments[4];
+      data.records = arguments[2];
+      data.opts = arguments[3];
+      data.result = arguments[4];
       break;
     case 'beforeCreateMany':
       // records, opts
-      data.records = _arguments[2];
-      data.opts = _arguments[3];
+      data.records = arguments[2];
+      data.opts = arguments[3];
       break;
     case 'beforeUpdateMany':
       // records, opts
-      data.records = _arguments[2];
-      data.opts = _arguments[3];
+      data.records = arguments[2];
+      data.opts = arguments[3];
       break;
     case 'beforeCreate':
       // query, opts
-      data.query = _arguments[2];
-      data.opts = _arguments[3];
+      data.query = arguments[2];
+      data.opts = arguments[3];
       break;
     case 'beforeDestroyAll':
       // query, opts
-      data.query = _arguments[2];
-      data.opts = _arguments[3];
+      data.query = arguments[2];
+      data.opts = arguments[3];
       break;
     case 'beforeFindAll':
       // query, opts
-      data.query = _arguments[2];
-      data.opts = _arguments[3];
+      data.query = arguments[2];
+      data.opts = arguments[3];
       break;
   }
   return data;
-});
+};
 
 var includes = function includes() {
   var collection = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
