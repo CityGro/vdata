@@ -2671,29 +2671,29 @@
                 return n;
             }
             return (0, a.default)(t);
-        }, N = function(t, e) {
-            var n = m(t, "$options." + e, {});
-            return function t(e) {
-                var n = [];
-                return e.forEach(function(e) {
-                    e.mixins && e.mixins.length && (n = [].concat(D(n), D(t(e.mixins)))), n.push(e);
-                }), n;
-            }(m(t, "$options.mixins", [])).filter(function(t) {
+        }, N = function t() {
+            var e = [];
+            return (arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : []).forEach(function(n) {
+                n.mixins && n.mixins.length && (e = [].concat(D(e), D(t(n.mixins)))), e.push(n);
+            }), e;
+        }, K = function(t, e) {
+            var n = m(t, "$options." + e, {}), r = m(t, "$options.mixins", []);
+            return N(r).filter(function(t) {
                 return t[e];
             }).forEach(function(t) {
                 n = g(n, t[e]);
             }), b(n) ? null : n;
-        }, K = [ "Default", "Lazy" ], W = function(t) {
-            return (arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : K).find(function(e) {
+        }, W = [ "Default", "Lazy" ], B = function(t) {
+            return (arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : W).find(function(e) {
                 return t.endsWith(e);
             });
-        }, B = function(t) {
+        }, q = function(t) {
             return function(t) {
-                var e = this, n = arguments.length > 1 && void 0 !== arguments[1] && arguments[1], r = N(this, "asyncData");
+                var e = this, n = arguments.length > 1 && void 0 !== arguments[1] && arguments[1], r = K(this, "asyncData");
                 if (r) {
                     var i = function() {
                         var i = y(r).filter(function(t) {
-                            return !W(t);
+                            return !B(t);
                         }).filter(function(e) {
                             return void 0 === t || e === t;
                         }).filter(function(t) {
@@ -2746,9 +2746,9 @@
                     if ("object" === (void 0 === i ? "undefined" : S(i))) return i.v;
                 }
             }.bind(t);
-        }, q = {
+        }, $ = {
             created: function() {
-                this._asyncReload = B(this), this.asyncReload(void 0, !0);
+                this._asyncReload = q(this), this.asyncReload(void 0, !0);
             },
             methods: {
                 asyncReload: function() {
@@ -2756,10 +2756,10 @@
                 }
             },
             data: function() {
-                var t = N(this, "asyncData");
+                var t = K(this, "asyncData");
                 if (t) {
                     var e = y(t).filter(function(t) {
-                        return !W(t);
+                        return !B(t);
                     }), n = e.map(function(t) {
                         return t + "Error";
                     }), r = {
@@ -2781,7 +2781,7 @@
                 }
                 return {};
             }
-        }, $ = function(t, e) {
+        }, U = function(t, e) {
             if (v(t._mapper)) return function(t, e) {
                 return A(_, x(function(e) {
                     var n = T(e, 2), r = n[0], i = n[1];
@@ -2789,9 +2789,9 @@
                 }))(e), t;
             }(t, e);
             throw new TypeError("utils/updateRecord can only operate over a js-data/Record object");
-        }, U = function(t) {
+        }, z = {}, J = function(t) {
             return !!m(t, "$options.vdata");
-        }, z = {
+        }, Q = {
             createConfig: function(t) {
                 return function(e) {
                     var n = t(e);
@@ -2837,7 +2837,7 @@
                 }(t, e.externalEvents), console.log("[@citygro/vdata] store ready!", n), t.mixin({
                     methods: {
                         $vdata: function() {
-                            U(this) && this._vdataHandler(function() {
+                            J(this) && this._vdataHandler.run(function() {
                                 var t = {
                                     event: arguments[0],
                                     collectionName: arguments[1]
@@ -2926,35 +2926,47 @@
                         }
                     },
                     beforeCreate: function() {
-                        U(this) && function(t, e, n, r) {
-                            t["_" + e + "Handler"] = function(e) {
-                                ((function() {
-                                    var t = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : [], e = arguments[1];
-                                    return t.indexOf(e) >= 0;
-                                })(n, e.event) || "$vdata-call" === e.event) && setTimeout(function() {
-                                    return r.apply(t, [ e ]);
-                                }, 0);
-                            }, console.log("[@citygro/vdata#" + e + "<" + t._uid + ">] ready. listening on", n);
-                        }(this, "vdata", e.events, this.$options.vdata);
+                        J(this) && (this._vdataHandler = function(t, e) {
+                            return z[t._uid] = N(t.$options.mixins).filter(function(t) {
+                                return !!t.vdata;
+                            }).map(function(t) {
+                                return t.vdata;
+                            }), t.$options.vdata && z[t._uid].push(t.$options.vdata), console.log("[@citygro/vdata<" + t._uid + ">] ready. listening on", e), 
+                            {
+                                run: function(n) {
+                                    ((function() {
+                                        var t = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : [], e = arguments[1];
+                                        return t.indexOf(e) >= 0;
+                                    })(e, n.event) || "$vdata-call" === n.event) && z[t._uid].forEach(function(e) {
+                                        setTimeout(function() {
+                                            return e.apply(t, [ n ]);
+                                        }, 0);
+                                    });
+                                },
+                                destroy: function() {
+                                    delete z[t._uid];
+                                }
+                            };
+                        }(this, e.events, this.$options.vdata));
                     },
                     created: function() {
-                        this.$vdata(), this.$store.on("all", this.$vdata);
+                        this.$vdata("$vdata-call"), this.$store.on("all", this.$vdata);
                     },
                     beforeDestroy: function() {
-                        U(this) && n.off("all", this.$vdata);
+                        J(this) && (n.off("all", this.$vdata), this._vdataHandler.destroy());
                     }
-                }), t.mixin(q);
+                }), t.mixin($);
             }
-        }, J = function(t) {
+        }, H = function(t) {
             var e = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : "";
             return "" === e ? E(t) : "" + E(e) + function(t) {
                 var e = E(t), n = k([], e.charAt(0).toUpperCase(), R(e));
                 return C(n, "");
             }(t);
-        }, Q = function() {
+        }, V = function() {
             var t = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : {};
             return v(t.hasChanges) && v(t._mapper);
-        }, H = function(t) {
+        }, G = function(t) {
             t.$nextTick(function() {
                 t.$forceUpdate(), t.$children.forEach(function(t) {
                     return setTimeout(function() {
@@ -2962,55 +2974,55 @@
                     }, 0);
                 });
             });
-        }, V = function(t, e) {
-            return Q(t) ? $(t, e) : L({}, t, e);
-        }, G = function(t, e, n) {
-            var r = V(t[e], n);
-            return V(t, M({}, e, r));
-        }, Y = function() {
-            var t = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : [], e = arguments[1], n = arguments[2], r = [].concat(D(t));
-            return Q(r[e]) ? r[e] = $(r[e], n) : Q(n) ? r[e] = n : r[e] = L({}, r[e] || {}, n), 
-            r;
-        }, Z = function() {
-            var t = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : {}, e = arguments[1], n = arguments[2], r = arguments[3], i = Y(t[n] || [], e, r);
-            return V(t, M({}, n, i));
+        }, Y = function(t, e) {
+            return V(t) ? U(t, e) : L({}, t, e);
+        }, Z = function(t, e, n) {
+            var r = Y(t[e], n);
+            return Y(t, M({}, e, r));
         }, X = function() {
-            var t = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : [], e = arguments[1], n = [].concat(D(t));
-            return n.push(e), n;
+            var t = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : [], e = arguments[1], n = arguments[2], r = [].concat(D(t));
+            return V(r[e]) ? r[e] = U(r[e], n) : V(n) ? r[e] = n : r[e] = L({}, r[e] || {}, n), 
+            r;
         }, tt = function() {
-            var t = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : {}, e = arguments[1], n = arguments[2], r = [].concat(D(t[e] || []));
-            return r.push(n), V(t, M({}, e, r));
+            var t = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : {}, e = arguments[1], n = arguments[2], r = arguments[3], i = X(t[n] || [], e, r);
+            return Y(t, M({}, n, i));
         }, et = function() {
             var t = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : [], e = arguments[1], n = [].concat(D(t));
-            return n.splice(e, 1), n;
+            return n.push(e), n;
         }, nt = function() {
-            var t = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : {}, e = arguments[1], n = arguments[2], r = et(t[n], e);
-            return V(t, M({}, n, r));
-        }, rt = function(t) {
+            var t = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : {}, e = arguments[1], n = arguments[2], r = [].concat(D(t[e] || []));
+            return r.push(n), Y(t, M({}, e, r));
+        }, rt = function() {
+            var t = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : [], e = arguments[1], n = [].concat(D(t));
+            return n.splice(e, 1), n;
+        }, it = function() {
+            var t = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : {}, e = arguments[1], n = arguments[2], r = rt(t[n], e);
+            return Y(t, M({}, n, r));
+        }, ot = function(t) {
             var e, n = "value" === t ? "input" : "update:" + t, r = "value" === t ? "" : t;
             return {
-                methods: (e = {}, M(e, J("forwardInput", r), function(t) {
+                methods: (e = {}, M(e, H("forwardInput", r), function(t) {
                     this.$emit(n, t);
-                }), M(e, J("handleChange", r), function(e) {
-                    this.$emit(n, V(this[t], e)), H(this);
-                }), M(e, J("handleKeyChange", r), function(e, r) {
-                    this.$emit(n, G(this[t], e, r)), H(this);
-                }), M(e, J("handleArrayKeyChange", r), function(e, r, i) {
-                    this.$emit(n, Z(this[t], e, r, i)), H(this);
-                }), M(e, J("handleArrayChange", r), function(e, r) {
-                    this.$emit(n, Y(this[t], e, r)), H(this);
-                }), M(e, J("pushToArray", r), function(e) {
-                    this.$emit(n, X(this[t], e)), H(this);
-                }), M(e, J("pushToArrayKey", r), function(e, r) {
-                    this.$emit(n, tt(this[t], e, r)), H(this);
-                }), M(e, J("removeFromArray", r), function(e) {
-                    this.$emit(n, et(this[t], e)), H(this);
-                }), M(e, J("removeFromArrayKey", r), function(e, r) {
-                    this.$emit(n, nt(this[t], e, r)), H(this);
+                }), M(e, H("handleChange", r), function(e) {
+                    this.$emit(n, Y(this[t], e)), G(this);
+                }), M(e, H("handleKeyChange", r), function(e, r) {
+                    this.$emit(n, Z(this[t], e, r)), G(this);
+                }), M(e, H("handleArrayKeyChange", r), function(e, r, i) {
+                    this.$emit(n, tt(this[t], e, r, i)), G(this);
+                }), M(e, H("handleArrayChange", r), function(e, r) {
+                    this.$emit(n, X(this[t], e, r)), G(this);
+                }), M(e, H("pushToArray", r), function(e) {
+                    this.$emit(n, et(this[t], e)), G(this);
+                }), M(e, H("pushToArrayKey", r), function(e, r) {
+                    this.$emit(n, nt(this[t], e, r)), G(this);
+                }), M(e, H("removeFromArray", r), function(e) {
+                    this.$emit(n, rt(this[t], e)), G(this);
+                }), M(e, H("removeFromArrayKey", r), function(e, r) {
+                    this.$emit(n, it(this[t], e, r)), G(this);
                 }), e)
             };
-        }, it = rt("value");
-        e.AsyncDataMixin = q, e.DataFlowMixin = it, e.findRecordIndex = function(t, e) {
+        }, at = ot("value");
+        e.AsyncDataMixin = $, e.DataFlowMixin = at, e.findRecordIndex = function(t, e) {
             var n = F(e) || P(e) ? e : m(e, "_id") || m(e, "__tmp_id");
             if (n) {
                 var r = I(t, function(t) {
@@ -3026,9 +3038,9 @@
             }).catch(function(t) {
                 return [ t, void 0 ];
             });
-        }, e.updateRecord = $, e.vdata = z, e.handleChange = V, e.handleKeyChange = G, e.handleArrayChange = Y, 
-        e.handleArrayKeyChange = Z, e.pushToArray = X, e.pushToArrayKey = tt, e.removeFromArray = et, 
-        e.removeFromArrayKey = nt, e.createDataFlowMixin = rt;
+        }, e.updateRecord = U, e.vdata = Q, e.handleChange = Y, e.handleKeyChange = Z, e.handleArrayChange = X, 
+        e.handleArrayKeyChange = tt, e.pushToArray = et, e.pushToArrayKey = nt, e.removeFromArray = rt, 
+        e.removeFromArrayKey = it, e.createDataFlowMixin = ot;
     }, /* 159 */
     /***/
     function(t, e, n) {

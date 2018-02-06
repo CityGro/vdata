@@ -2,7 +2,7 @@ import AsyncDataMixin from './AsyncDataMixin'
 import createObjectFromEventData from './createObjectFromEventData'
 import defaults from 'lodash/defaults'
 import get from 'lodash/get'
-import injectHandler from './injectHandler'
+import createHandler from './createHandler'
 import isFunction from 'lodash/isFunction'
 import registerAdapters from './registerAdapters'
 import registerExternalEvents from './registerExternalEvents'
@@ -51,22 +51,23 @@ export default {
       methods: {
         $vdata () {
           if (hasVdata(this)) {
-            this._vdataHandler(createObjectFromEventData(...arguments))
+            this._vdataHandler.run(createObjectFromEventData(...arguments))
           }
         }
       },
       beforeCreate () {
         if (hasVdata(this)) {
-          injectHandler(this, 'vdata', options.events, this.$options.vdata)
+          this._vdataHandler = createHandler(this, options.events, this.$options.vdata)
         }
       },
       created () {
-        this.$vdata()
+        this.$vdata('$vdata-call')
         this.$store.on('all', this.$vdata)
       },
       beforeDestroy () {
         if (hasVdata(this)) {
           store.off('all', this.$vdata)
+          this._vdataHandler.destroy()
         }
       }
     })

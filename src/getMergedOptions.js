@@ -1,20 +1,7 @@
 import assign from 'lodash/assign'
+import flattenMixinTree from './flattenMixinTree'
 import get from 'lodash/get'
 import isEmpty from 'lodash/isEmpty'
-
-/**
- * @param {Object[]} mixins
- */
-const flattenMixinTree = (mixins) => {
-  let map = []
-  mixins.forEach((mixin) => {
-    if (mixin.mixins && mixin.mixins.length) {
-      map = [...map, ...flattenMixinTree(mixin.mixins)]
-    }
-    map.push(mixin)
-  })
-  return map
-}
 
 /**
  * @param {Vue} vm - vue instance

@@ -203,15 +203,17 @@ var toConsumableArray = function (arr) {
 /**
  * @param {Object[]} mixins
  */
-var flattenMixinTree = function flattenMixinTree(mixins) {
-  var map = [];
+var flattenMixinTree = function flattenMixinTree() {
+  var mixins = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
+
+  var arr = [];
   mixins.forEach(function (mixin) {
     if (mixin.mixins && mixin.mixins.length) {
-      map = [].concat(toConsumableArray(map), toConsumableArray(flattenMixinTree(mixin.mixins)));
+      arr = [].concat(toConsumableArray(arr), toConsumableArray(flattenMixinTree(mixin.mixins)));
     }
-    map.push(mixin);
+    arr.push(mixin);
   });
-  return map;
+  return arr;
 };
 
 /**
@@ -605,6 +607,8 @@ var includes = function includes() {
   return collection.indexOf(item) >= 0;
 };
 
+var handlers = {};
+
 /**
  * inject handler that will run on datastore events
  *
@@ -615,17 +619,32 @@ var includes = function includes() {
  * @param {string[]} events
  * @param {function} fn
  */
-var injectHandler = (function (vm, label, events, fn) {
-  vm['_' + label + 'Handler'] = function (message) {
-    if (includes(events, message.event) || message.event === '$vdata-call') {
-      setTimeout(function () {
-        return fn.apply(vm, [message]);
-      }, 0);
+var createHandler = (function (vm, events) {
+  handlers[vm._uid] = flattenMixinTree(vm.$options.mixins).filter(function (mixin) {
+    return !!mixin.vdata;
+  }).map(function (mixin) {
+    return mixin.vdata;
+  });
+  if (vm.$options.vdata) {
+    handlers[vm._uid].push(vm.$options.vdata);
+  }
+  if (process.env.NODE_ENV !== 'test') {
+    console.log('[@citygro/vdata<' + vm._uid + '>] ready. listening on', events);
+  }
+  return {
+    run: function run(message) {
+      if (includes(events, message.event) || message.event === '$vdata-call') {
+        handlers[vm._uid].forEach(function (fn) {
+          setTimeout(function () {
+            return fn.apply(vm, [message]);
+          }, 0);
+        });
+      }
+    },
+    destroy: function destroy() {
+      delete handlers[vm._uid];
     }
   };
-  if (process.env.NODE_ENV !== 'test') {
-    console.log('[@citygro/vdata#' + label + '<' + vm._uid + '>] ready. listening on', events);
-  }
 });
 
 var registerAdapters = function ($store, adapters) {
@@ -723,22 +742,23 @@ var vdata = {
       methods: {
         $vdata: function $vdata() {
           if (hasVdata(this)) {
-            this._vdataHandler(createObjectFromEventData.apply(undefined, arguments));
+            this._vdataHandler.run(createObjectFromEventData.apply(undefined, arguments));
           }
         }
       },
       beforeCreate: function beforeCreate() {
         if (hasVdata(this)) {
-          injectHandler(this, 'vdata', options.events, this.$options.vdata);
+          this._vdataHandler = createHandler(this, options.events, this.$options.vdata);
         }
       },
       created: function created() {
-        this.$vdata();
+        this.$vdata('$vdata-call');
         this.$store.on('all', this.$vdata);
       },
       beforeDestroy: function beforeDestroy() {
         if (hasVdata(this)) {
           store.off('all', this.$vdata);
+          this._vdataHandler.destroy();
         }
       }
     });
