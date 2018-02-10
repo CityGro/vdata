@@ -108,10 +108,10 @@ const createAsyncReload = (thisArg) => function (propertyName, skipLazy = false)
 export default {
   created () {
     this._asyncReload = createAsyncReload(this)
-    this.asyncReload(undefined, true)
+    this.$asyncReload(undefined, true)
   },
   methods: {
-    asyncReload () {
+    $asyncReload () {
       if (isFunction(this._asyncReload)) {
         this._asyncReload.apply(this, arguments)
       } else {

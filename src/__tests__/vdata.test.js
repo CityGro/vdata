@@ -1,7 +1,5 @@
 /* global describe, test, beforeEach, jest, expect */
 
-import updateVm from '../updateVm'
-
 describe('vdata', () => {
   let Adapter
   let Vue
@@ -18,10 +16,13 @@ describe('vdata', () => {
     Vue.use(vdata, {
       models: {
         users: {
-          idAttribute: 'id'
-        },
-        comments: {
-          idAttribute: 'id'
+          idAttribute: 'id',
+          schema: {
+            type: 'object',
+            properties: {
+              name: {type: 'string'}
+            }
+          }
         }
       },
       adapters: {
@@ -30,32 +31,22 @@ describe('vdata', () => {
         }
       }
     })
-    Vue.$store.create('users', {id: 1, name: 'omanizer'})
-    Vue.$store.create('comments', {id: 1, userId: 1})
   })
 
   describe('plugin', () => {
     test('makes the store directly accessible', () => {
       const vm = new Vue()
       return Promise.all([
-        expect(vm.$store.vdataOptions.models).toEqual({
-          users: {
-            idAttribute: 'id',
-            name: 'users',
-            relations: {}
-          },
-          comments: {
-            idAttribute: 'id',
-            name: 'comments',
-            relations: {}
-          }
-        }),
         expect(vm.$store).toBeDefined(),
-        expect(vm.$store.get).toBeDefined()
+        expect(vm.$store.find).toBeDefined(),
+        expect(vm.$store.findAll).toBeDefined(),
+        expect(vm.$store.get).toBeDefined(),
+        expect(vm.$store.getAll).toBeDefined()
       ])
     })
 
     test('can pass data via props', () => {
+      jest.useFakeTimers()
       Vue.config.isUnknownElement = () => false
       const Babby = Vue.component('babby', {
         render (createElement) {
@@ -85,68 +76,48 @@ describe('vdata', () => {
         },
         props: ['user']
       })
-      const vm = new Vue({
-        render (h) {
-          const self = this
-          return h(Parent, {
-            props: {
-              user: self.user
+      return Vue.$store.create('users', {name: 'omanizer'}).then(({id}) => {
+        const vm = new Vue({
+          render (h) {
+            const self = this
+            return h(Parent, {
+              props: {
+                user: self.user
+              }
+            })
+          },
+          data () {
+            return {
+              user: this.$store.get('users', id)
             }
-          })
-        },
-        data () {
-          return {
-            user: {name: 'anon'}
-          }
-        },
-        vdata (store) {
-          const user = store.get('users', 1)
-          if (user) {
-            this.user = user
-          }
-        },
-        methods: {
-          rename (to) {
-            return new Promise((resolve) => {
+          },
+          vdata () {
+            const user = this.$store.get('users', id)
+            if (user) {
+              this.user = user
+            }
+          },
+          methods: {
+            rename (to) {
               this.user.name = to
-              resolve(this.user)
-            })
+              return this.user.save()
+            }
           }
-        }
-      }).$mount('#root')
-      return Promise.all([
-        expect(vm.$children).toHaveLength(1),
-        expect(vm.$options.vdata).toBeDefined(),
-        vm.$nextTick().then(() => {
-          return Promise.all([
-            Promise.all([
-              expect(vm.user).toBeDefined(),
-              expect(vm.user.name).toBe('anon')
-            ]),
-            vm.rename('xj9').then((user) => {
-              return Promise.all([
-                expect(user.name).toBe('xj9')
-              ])
-            })
-          ])
-        })
-      ])
-    })
-  })
-
-  describe('utils/updateVm', () => {
-    test('applies diffs in a way that triggers js-data change detection', () => {
-      const vm = new Vue({
-        data () {
-          return {user: {}}
-        }
+        }).$mount('#root')
+        jest.runAllTimers()
+        return Promise.all([
+          expect(id).toBeDefined(),
+          expect(vm.$children).toHaveLength(1),
+          expect(vm.$options.vdata).toBeDefined(),
+          expect(vm.user).toBeDefined(),
+          expect(vm.user.name).toBe('omanizer'),
+          vm.rename('xj9')
+            .then((user) => Promise.all([
+              expect(user).toBeDefined(),
+              expect(user.name).toBe('xj9')
+            ]))
+        ])
       })
-      vm.user = vm.$store.createRecord('users', {id: 13, name: 'foo'})
-      const updated = updateVm(vm, 'user', {name: 'bar'})
-      return Promise.all([
-        expect(updated.name).toEqual('bar'),
-        expect(updated.hasChanges()).toBe(true)
-      ])
     })
   })
 })

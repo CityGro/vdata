@@ -142,7 +142,7 @@ export default {
 }
 ```
 
-### `asyncReload(propertyName?: string, skipLazy?: bool)`
+### `$asyncReload(propertyName?: string, skipLazy?: bool)`
 
 force reload asyncData, optionally by `propertyName`
 
@@ -164,44 +164,6 @@ you will need to invoke `asyncReload()` or `asyncReload('prop')`
 > see [events](#events-arraystring)
 
 `vm.$vdata()` is invoked whenever a js-data event is fired and on `vm.$options.created()`.
-
-## vQuery
-
-> this is a BETA feature
-
-`vQuery` automatically generates `asyncReload` and `vdata` using a simple declarative syntax.
-
-```
-{
-  vQuery: {
-    // use defaults
-    modelName: true,
-    // equivalent to the above declaration
-    myProp: {
-      model: 'modelName',
-      lazy: false,
-      id: false,
-      force: false
-    }
-  }
-}
-```
-
-### `vQuery[prop].model: string`
-
-specify the model to load, defaults to `prop`
-
-### `vQuery[prop].lazy: bool`
-
-equivalent to `asyncData.[prop]Lazy`
-
-### `vQuery[prop].id: any`
-
-find one record by id. if `false` find all records
-
-### `vQuery[prop].force: bool`
-
-always fetch a fresh record
 
 ## utils
 

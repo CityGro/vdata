@@ -139,7 +139,7 @@ describe('AsyncData', () => {
     }).$mount()
     expect(lazyVm.sandboxLoading).toEqual(false)
     expect(spy).not.toHaveBeenCalled()
-    lazyVm.asyncReload('sandbox')
+    lazyVm.$asyncReload('sandbox')
     jest.runAllTimers()
     expect(spy).toHaveBeenCalledTimes(2)
   })

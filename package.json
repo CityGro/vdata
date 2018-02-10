@@ -116,6 +116,7 @@
   },
   "dependencies": {
     "js-data": "^3.0.1",
+    "json-stable-stringify": "^1.0.1",
     "lodash": "^4.17.2",
     "p-any": "^1.1.0"
   }

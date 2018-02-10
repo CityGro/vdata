@@ -4,10 +4,7 @@ import defaults from 'lodash/defaults'
 import get from 'lodash/get'
 import createHandler from './createHandler'
 import isFunction from 'lodash/isFunction'
-import registerAdapters from './registerAdapters'
-import registerExternalEvents from './registerExternalEvents'
-import registerSchemas from './registerSchemas'
-import {DataStore} from 'js-data'
+import Store from './Store'
 
 const hasVdata = (o) => !!get(o, '$options.vdata')
 
@@ -19,12 +16,13 @@ export default {
     return (V) => {
       const options = fn(V)
       return defaults(options || {}, {
-        events: ['add', 'change', 'remove', 'manual', 'afterDestroy', 'vm-created']
+        events: ['add', 'change', 'remove', 'afterDestroy', 'vm-created']
       })
     }
   },
   install (Vue, options) {
-    const store = new DataStore()
+    options = (isFunction(options)) ? options(Vue) : options
+    const store = Store.create(options)
     Object.defineProperty(Vue, '$store', {
       get () {
         return store
@@ -35,17 +33,8 @@ export default {
         return store
       }
     })
-    options = (isFunction(options)) ? options(Vue) : options
-    Object.defineProperty(store, 'vdataOptions', {
-      get () {
-        return options
-      }
-    })
-    registerSchemas(store, options.models)
-    registerAdapters(store, options.adapters)
-    registerExternalEvents(Vue, options.externalEvents)
     if (process.env.NODE_ENV !== 'test') {
-      console.log('[@citygro/vdata] store ready!', store)
+      console.log('[@citygro/vdata] $store ready!', store)
     }
     Vue.mixin({
       methods: {
@@ -57,11 +46,11 @@ export default {
       },
       beforeCreate () {
         if (hasVdata(this)) {
-          this._vdataHandler = createHandler(this, options.events, this.$options.vdata)
+          this._vdataHandler = createHandler(this, options.events)
         }
       },
       created () {
-        this.$vdata('$vdata-call')
+        this.$vdata('vm-created')
         this.$store.on('all', this.$vdata)
       },
       beforeDestroy () {

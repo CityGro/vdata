@@ -1,19 +1,21 @@
-import AsyncDataMixin from './AsyncDataMixin'
+import createIndex from './createIndex'
+import createMixinForItemByResourceAndId from './createMixinForItemByResourceAndId.js'
+import createMixinForListByResource from './createMixinForListByResource'
 import to from './to'
-import updateRecord from './updateRecord'
 import vdata from './vdata'
-import {createDataFlowMixin} from './dataFlow'
-import findRecordIndex from './findRecordIndex'
+import {createDataFlowMixin} from './DataFlow'
+import Record from './Record'
 
 const DataFlowMixin = createDataFlowMixin('value')
 
-export * from './dataFlow'
+export * from './DataFlow'
 
 export {
-  AsyncDataMixin,
   DataFlowMixin,
-  findRecordIndex,
+  Record,
+  createIndex,
+  createMixinForItemByResourceAndId,
+  createMixinForListByResource,
   to,
-  updateRecord,
   vdata
 }
