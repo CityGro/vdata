@@ -100,7 +100,7 @@ describe('vdata', () => {
           methods: {
             rename (to) {
               this.user.name = to
-              return this.user.save()
+              return this.$store.save('users', this.user)
             }
           }
         }).$mount('#root')
