@@ -2,10 +2,7 @@ import Record from './Record'
 import registerAdapters from './registerAdapters'
 import registerSchemas from './registerSchemas'
 import stringify from 'json-stable-stringify'
-import updateRecord from './updateRecord'
 import {DataStore} from 'js-data'
-
-const toPlainObject = (o) => JSON.parse(JSON.stringify(o))
 
 export default {
   create (options) {
