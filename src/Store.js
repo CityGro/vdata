@@ -56,7 +56,7 @@ export default {
      */
     Store.prototype.save = function (collection, data, opts) {
       const record = store.createRecord(collection, data)
-      return updateRecord(record, toPlainObject(record))
+      return record
         .save(opts)
         .then(Record.create)
     }
@@ -77,10 +77,10 @@ export default {
      *
      */
     Store.prototype.find = function (collection, queryOptions, options = {}) {
-      const result = store.find(collection, queryOptions, options)
-      return (options.raw === true)
-        ? result
-        : result.then(Record.create)
+      return store.find(collection, queryOptions, options)
+        .then((result) => (result === undefined || options.raw === true)
+          ? result
+          : Record.create(result))
     }
     /**
      *

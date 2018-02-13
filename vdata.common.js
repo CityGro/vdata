@@ -854,35 +854,12 @@ var registerSchemas = function ($store) {
   });
 };
 
-var applyDiff = function applyDiff(record, diff) {
-  var set$$1 = flow(entries$1, each(function (_ref) {
-    var _ref2 = slicedToArray(_ref, 2),
-        key = _ref2[0],
-        value = _ref2[1];
-
-    record[key] = value;
-  }));
-  set$$1(diff);
-  return record;
-};
-
 /**
  * update record
  *
  * @param {object} record
  * @param {object} diff
  */
-var updateRecord = (function (record, diff) {
-  if (isFunction(record._mapper)) {
-    return applyDiff(record, diff);
-  } else {
-    throw new TypeError('utils/updateRecord can only operate over a js-data/Record object');
-  }
-});
-
-var toPlainObject = function toPlainObject(o) {
-  return JSON.parse(JSON.stringify(o));
-};
 
 var Store = {
   create: function create(options) {
@@ -933,7 +910,7 @@ var Store = {
      */
     Store.prototype.save = function (collection, data, opts) {
       var record = store.createRecord(collection, data);
-      return updateRecord(record, toPlainObject(record)).save(opts).then(Record.create);
+      return record.save(opts).then(Record.create);
     };
     /**
      *
@@ -953,8 +930,9 @@ var Store = {
     Store.prototype.find = function (collection, queryOptions) {
       var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
 
-      var result = store.find(collection, queryOptions, options);
-      return options.raw === true ? result : result.then(Record.create);
+      return store.find(collection, queryOptions, options).then(function (result) {
+        return result === undefined || options.raw === true ? result : Record.create(result);
+      });
     };
     /**
      *
