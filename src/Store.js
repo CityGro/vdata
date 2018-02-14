@@ -73,7 +73,7 @@ export default {
     Store.prototype.save = function (collection, data, options) {
       const record = store.createRecord(collection, data)
       return record
-        .save(opts)
+        .save(options)
         .then(Record.create)
     }
     /**
@@ -119,8 +119,8 @@ export default {
       if (id) {
         return store.find(collection, id, options)
           .then((result) => (result === undefined || options.raw === true)
-                ? result
-                : Record.create(result))
+            ? result
+            : Record.create(result))
       } else {
         return Promise.resolve()
       }

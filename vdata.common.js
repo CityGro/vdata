@@ -919,7 +919,7 @@ var Store = {
      */
     Store.prototype.save = function (collection, data, options) {
       var record = store.createRecord(collection, data);
-      return record.save(opts).then(Record.create);
+      return record.save(options).then(Record.create);
     };
     /**
      * @param {string} collection

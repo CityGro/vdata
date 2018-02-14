@@ -1796,7 +1796,7 @@
             }, n.prototype.revert = function(t, n, r) {
                 return e.createRecord(t, n).revert(r);
             }, n.prototype.save = function(t, n, r) {
-                return e.createRecord(t, n).save(opts).then(J.create);
+                return e.createRecord(t, n).save(r).then(J.create);
             }, n.prototype.add = function(t, n, r) {
                 e.add(t, n, r);
             }, n.prototype.remove = function(t, n, r) {
