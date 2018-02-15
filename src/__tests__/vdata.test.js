@@ -1,5 +1,7 @@
 /* global describe, test, beforeEach, jest, expect */
 
+import stringify from 'json-stable-stringify'
+
 describe('vdata', () => {
   let Adapter
   let Vue
@@ -20,7 +22,9 @@ describe('vdata', () => {
           schema: {
             type: 'object',
             properties: {
-              name: {type: 'string'}
+              name: {type: 'string'},
+              tags: {type: 'array'},
+              achievements: {type: 'array'}
             }
           }
         }
@@ -116,6 +120,47 @@ describe('vdata', () => {
               expect(user).toBeDefined(),
               expect(user.name).toBe('xj9')
             ]))
+        ])
+      })
+    })
+    test('always returns new objects', () => {
+      return Vue.$store.create('users', {
+        name: 'r14c',
+        tags: ['cool'],
+        achievements: [
+          {name: 'jeff'}
+        ]
+      }).then(({id}) => {
+        const user0 = Vue.$store.get('users', id)
+        const user0String = stringify(user0)
+        let user1 = Vue.$store.get('users', id)
+        user1.name = 'r14d'
+        let user2 = Vue.$store.get('users', id)
+        user2.achievements[0].name = 'bob'
+        user2.achievements[0].found = true
+        const user3 = Vue.$store.get('users', id)
+        user3.tags.push('lame')
+        let user4 = Vue.$store.get('users', id)
+        user4.achievements.push({goatHerder: 'alpha'})
+        let user5 = Vue.$store.get('users', id)
+        user5.accessControl = {godMode: true}
+        const user5String = stringify(user5)
+        let user6 = Vue.$store.get('users', id)
+        return Promise.all([
+          expect(id).toBeDefined(),
+          expect(id).toEqual(user0.id),
+          expect(Vue.$store.hasChanges('users', id, user0)).toBe(false),
+          expect(Vue.$store.hasChanges('users', id, user1)).toBe(true),
+          expect(Vue.$store.hasChanges('users', id, user2)).toBe(true),
+          expect(Vue.$store.hasChanges('users', id, user3)).toBe(true),
+          expect(Vue.$store.hasChanges('users', id, user4)).toBe(true),
+          expect(Vue.$store.hasChanges('users', id, user5)).toBe(true),
+          expect(user0String === stringify(user1)).toBe(false),
+          expect(user0String === stringify(user2)).toBe(false),
+          expect(user0String === stringify(user3)).toBe(false),
+          expect(user0String === stringify(user4)).toBe(false),
+          expect(user0String === stringify(user5)).toBe(false),
+          expect(user5String === stringify(user6)).toBe(false)
         ])
       })
     })

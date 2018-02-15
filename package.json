@@ -16,7 +16,7 @@
   ],
   "scripts": {
     "lint": "eslint src",
-    "test": "npm run lint && NODE_ENV=test jest --coverage",
+    "test": "npm run lint && NODE_ENV=test jest --no-cache --coverage",
     "build": "npm run build:cjs && npm run build:umd",
     "build:umd": "webpack --config webpack.conf.umd.js",
     "build:cjs": "rollup -c rollup.conf.cjs.js",

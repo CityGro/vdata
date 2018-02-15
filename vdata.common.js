@@ -811,10 +811,14 @@ var createHandler = (function (vm, events) {
   };
 });
 
+var deepClone = function deepClone(obj) {
+  return JSON.parse(JSON.stringify(obj));
+};
+
 var Record = {
   create: function create(jsDataRecord) {
     var Record = function Record(record) {
-      Object.assign(this, _extends({}, record.toJSON(), _extends({}, record)));
+      Object.assign(this, deepClone(_extends({}, record.toJSON(), _extends({}, record))));
     };
     Record.prototype._collection = jsDataRecord._mapper().name;
     return new Record(jsDataRecord);
