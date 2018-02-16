@@ -5,6 +5,7 @@ import to from './to'
  * @param {string} options.collectionName
  * @param {string} options.localPropertyName
  * @param {object} options.queryOptions
+ * @param {object} options.requestOptions
  * @return {object}
  */
 export default function (options) {
@@ -12,6 +13,7 @@ export default function (options) {
   const localPropertyName = options.localPropertyName || collectionName
   const localPropertyForceName = `${localPropertyName}Force`
   const queryOptions = options.queryOptions || {}
+  const requestOptions = options.requestOptions
 
   return {
     data () {
@@ -21,7 +23,7 @@ export default function (options) {
       }
     },
     vdata (event) {
-      if (event.collectionName === collectionName) {
+      if (!this.asyncLoading && event.collectionName === collectionName) {
         this[localPropertyName] = this.$store.getAll(collectionName) || []
       }
     },
@@ -31,6 +33,7 @@ export default function (options) {
           collectionName,
           queryOptions,
           {
+            ...requestOptions,
             force: this[localPropertyForceName]
           }
         ))

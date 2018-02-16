@@ -5,6 +5,7 @@ import to from './to'
  * @param {string} options.collectionName
  * @param {string} options.idPropertyName
  * @param {string} options.localPropertyName
+ * @param {object} options.requestOptions
  */
 export default function (options) {
   const collectionName = options.collectionName
@@ -12,6 +13,7 @@ export default function (options) {
   const localPropertyName = options.localPropertyName || collectionName.slice(0, -1)
   const localPropertyForceName = `${localPropertyName}Force`
   const idType = options.idType || String
+  const requestOptions = options.requestOptions || {}
 
   return {
     props: {
@@ -27,7 +29,7 @@ export default function (options) {
       }
     },
     vdata (event) {
-      if (this[idPropertyName] && event.collectionName === collectionName) {
+      if (!this.asyncLoading && this[idPropertyName] && event.collectionName === collectionName) {
         this[localPropertyName] = this.$store.get(
           collectionName,
           this[idPropertyName]
@@ -46,7 +48,10 @@ export default function (options) {
             [err, result] = await to(this.$store.find(
               collectionName,
               this[idPropertyName],
-              {force}
+              {
+                ...requestOptions,
+                force
+              }
             ))
           }
         } else {

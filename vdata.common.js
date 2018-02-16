@@ -251,6 +251,7 @@ var toConsumableArray = function (arr) {
  * @param {string} options.collectionName
  * @param {string} options.idPropertyName
  * @param {string} options.localPropertyName
+ * @param {object} options.requestOptions
  */
 var createMixinForItemByResourceAndId = function (options) {
   var collectionName = options.collectionName;
@@ -258,6 +259,7 @@ var createMixinForItemByResourceAndId = function (options) {
   var localPropertyName = options.localPropertyName || collectionName.slice(0, -1);
   var localPropertyForceName = localPropertyName + 'Force';
   var idType = options.idType || String;
+  var requestOptions = options.requestOptions || {};
 
   return {
     props: defineProperty({}, idPropertyName, {
@@ -270,7 +272,7 @@ var createMixinForItemByResourceAndId = function (options) {
       return _ref = {}, defineProperty(_ref, localPropertyName, null), defineProperty(_ref, localPropertyForceName, false), _ref;
     },
     vdata: function vdata(event) {
-      if (this[idPropertyName] && event.collectionName === collectionName) {
+      if (!this.asyncLoading && this[idPropertyName] && event.collectionName === collectionName) {
         this[localPropertyName] = this.$store.get(collectionName, this[idPropertyName]) || null;
       }
     },
@@ -303,7 +305,9 @@ var createMixinForItemByResourceAndId = function (options) {
                 }
 
                 _context.next = 7;
-                return to(_this.$store.find(collectionName, _this[idPropertyName], { force: force }));
+                return to(_this.$store.find(collectionName, _this[idPropertyName], _extends({}, requestOptions, {
+                  force: force
+                })));
 
               case 7:
                 _ref2 = _context.sent;
@@ -344,6 +348,7 @@ var createMixinForItemByResourceAndId = function (options) {
  * @param {string} options.collectionName
  * @param {string} options.localPropertyName
  * @param {object} options.queryOptions
+ * @param {object} options.requestOptions
  * @return {object}
  */
 var createMixinForListByResource = function (options) {
@@ -351,6 +356,7 @@ var createMixinForListByResource = function (options) {
   var localPropertyName = options.localPropertyName || collectionName;
   var localPropertyForceName = localPropertyName + 'Force';
   var queryOptions = options.queryOptions || {};
+  var requestOptions = options.requestOptions;
 
   return {
     data: function data() {
@@ -359,7 +365,7 @@ var createMixinForListByResource = function (options) {
       return _ref = {}, defineProperty(_ref, localPropertyName, []), defineProperty(_ref, localPropertyForceName, false), _ref;
     },
     vdata: function vdata(event) {
-      if (event.collectionName === collectionName) {
+      if (!this.asyncLoading && event.collectionName === collectionName) {
         this[localPropertyName] = this.$store.getAll(collectionName) || [];
       }
     },
@@ -375,9 +381,9 @@ var createMixinForListByResource = function (options) {
             switch (_context.prev = _context.next) {
               case 0:
                 _context.next = 2;
-                return to(_this.$store.findAll(collectionName, queryOptions, {
+                return to(_this.$store.findAll(collectionName, queryOptions, _extends({}, requestOptions, {
                   force: _this[localPropertyForceName]
-                }));
+                })));
 
               case 2:
                 _ref2 = _context.sent;
