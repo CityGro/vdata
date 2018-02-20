@@ -1828,11 +1828,11 @@
             }, n.prototype.get = function(t, n) {
                 var r = e.get(t, n);
                 if (r) return B.create(r);
-            }, n.prototype.getAll = function(t, n) {
-                var r = this;
-                return n ? n.map(function(e) {
-                    return r.get(t, e);
-                }) : e.getAll(t);
+            }, n.prototype.getAll = function(t) {
+                var n = this, r = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : [];
+                return r.length ? r.map(function(e) {
+                    return n.get(t, e);
+                }) : e.getAll(t).map(B.create);
             }, n.prototype.clear = function() {
                 e.clear();
             }, n.prototype.on = function(t, n) {

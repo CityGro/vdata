@@ -1080,12 +1080,14 @@ var Store = {
      * @param {string} collection
      * @param {string[]} [keys]
      */
-    Store.prototype.getAll = function (collection, keys$$1) {
+    Store.prototype.getAll = function (collection) {
       var _this = this;
 
-      return keys$$1 ? keys$$1.map(function (key) {
+      var keys$$1 = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : [];
+
+      return keys$$1.length ? keys$$1.map(function (key) {
         return _this.get(collection, key);
-      }) : store.getAll(collection);
+      }) : store.getAll(collection).map(Record.create);
     };
     /**
      *

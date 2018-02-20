@@ -165,10 +165,10 @@ export default {
      * @param {string} collection
      * @param {string[]} [keys]
      */
-    Store.prototype.getAll = function (collection, keys) {
-      return (keys)
+    Store.prototype.getAll = function (collection, keys = []) {
+      return (keys.length)
         ? keys.map((key) => this.get(collection, key))
-        : store.getAll(collection)
+        : store.getAll(collection).map(Record.create)
     }
     /**
      *
