@@ -22,12 +22,18 @@ export default {
       this.models = options.models
     }
     /**
+     * @param {string} id
+     */
+    Store.prototype.isValidId = function (id) {
+      return id !== null && id !== undefined && id !== ''
+    }
+    /**
      * @param {string} collection
      * @param {string} id
      * @param {object} data
      */
     Store.prototype.hasChanges = function (collection, id, data) {
-      if (id) {
+      if (this.isValidId(id)) {
         const record = this.get(collection, id)
         const a = stringify(record)
         const b = stringify(data)
@@ -116,7 +122,7 @@ export default {
      * @async
      */
     Store.prototype.find = function (collection, id, options = {}) {
-      if (id) {
+      if (this.isValidId(id)) {
         return store.find(collection, id, options)
           .then((result) => (result === undefined || options.raw === true)
             ? result

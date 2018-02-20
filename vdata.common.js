@@ -4,11 +4,11 @@ Object.defineProperty(exports, '__esModule', { value: true });
 
 function _interopDefault (ex) { return (ex && (typeof ex === 'object') && 'default' in ex) ? ex['default'] : ex; }
 
+var get = _interopDefault(require('lodash/get'));
 var Any = _interopDefault(require('p-any'));
 var isFunction = _interopDefault(require('lodash/isFunction'));
 var keys = _interopDefault(require('lodash/keys'));
 var assign = _interopDefault(require('lodash/assign'));
-var get = _interopDefault(require('lodash/get'));
 var isEmpty = _interopDefault(require('lodash/isEmpty'));
 var defaults = _interopDefault(require('lodash/defaults'));
 var entries = _interopDefault(require('lodash/entries'));
@@ -246,6 +246,10 @@ var toConsumableArray = function (arr) {
   }
 };
 
+var deepClone = function deepClone(obj) {
+  return JSON.parse(JSON.stringify(obj));
+};
+
 /**
  * @param {object} options
  * @param {string} options.collectionName
@@ -254,12 +258,19 @@ var toConsumableArray = function (arr) {
  * @param {object} options.requestOptions
  */
 var createMixinForItemByResourceAndId = function (options) {
+  var _methods;
+
   var collectionName = options.collectionName;
   var idPropertyName = options.idPropertyName || 'id';
   var localPropertyName = options.localPropertyName || collectionName.slice(0, -1);
-  var localPropertyForceName = localPropertyName + 'Force';
+  var recordPrimaryKey = options.recordPrimaryKey || '_id';
+  var getIdMethodName = localPropertyName + 'RecordId';
+  var hasChangesComputedName = localPropertyName + 'HasChanges';
+  var saveMethodName = localPropertyName + 'Save';
+  var asyncLoadingName = localPropertyName + 'Loading';
   var idType = options.idType || String;
   var requestOptions = options.requestOptions || {};
+  var requestOptionsName = localPropertyName + 'RequestOptions';
 
   return {
     props: defineProperty({}, idPropertyName, {
@@ -269,11 +280,12 @@ var createMixinForItemByResourceAndId = function (options) {
     data: function data() {
       var _ref;
 
-      return _ref = {}, defineProperty(_ref, localPropertyName, null), defineProperty(_ref, localPropertyForceName, false), _ref;
+      return _ref = {}, defineProperty(_ref, localPropertyName, null), defineProperty(_ref, requestOptionsName, deepClone(requestOptions)), _ref;
     },
     vdata: function vdata(event) {
-      if (!this.asyncLoading && this[idPropertyName] && event.collectionName === collectionName) {
-        this[localPropertyName] = this.$store.get(collectionName, this[idPropertyName]) || null;
+      var recordId = this[getIdMethodName]();
+      if (!this[asyncLoadingName] && recordId !== null && event.collectionName === collectionName) {
+        this[localPropertyName] = this.$store.get(collectionName, recordId) || null;
       }
     },
 
@@ -281,55 +293,54 @@ var createMixinForItemByResourceAndId = function (options) {
       var _this = this;
 
       return asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee() {
-        var force, err, result, _ref2, _ref3;
+        var force, recordId, err, result, _ref2, _ref3;
 
         return regeneratorRuntime.wrap(function _callee$(_context) {
           while (1) {
             switch (_context.prev = _context.next) {
               case 0:
-                force = _this[localPropertyForceName];
+                force = _this[requestOptionsName].force;
+                recordId = _this[getIdMethodName]();
                 err = void 0, result = void 0;
 
-                if (!_this[idPropertyName]) {
-                  _context.next = 13;
+                if (!(recordId !== null)) {
+                  _context.next = 14;
                   break;
                 }
 
                 if (!force) {
-                  result = _this.$store.get(collectionName, _this[idPropertyName]);
+                  result = _this.$store.get(collectionName, recordId);
                 }
 
                 if (result) {
-                  _context.next = 11;
+                  _context.next = 12;
                   break;
                 }
 
-                _context.next = 7;
-                return to(_this.$store.find(collectionName, _this[idPropertyName], _extends({}, requestOptions, {
-                  force: force
-                })));
+                _context.next = 8;
+                return to(_this.$store.find(collectionName, recordId, _this[requestOptionsName]));
 
-              case 7:
+              case 8:
                 _ref2 = _context.sent;
                 _ref3 = slicedToArray(_ref2, 2);
                 err = _ref3[0];
                 result = _ref3[1];
 
-              case 11:
-                _context.next = 14;
+              case 12:
+                _context.next = 15;
                 break;
 
-              case 13:
+              case 14:
                 result = _this.$store.createRecord(collectionName);
 
-              case 14:
+              case 15:
                 if (err) {
                   console.error(err);
                   result = null;
                 }
                 return _context.abrupt('return', result);
 
-              case 16:
+              case 17:
               case 'end':
                 return _context.stop();
             }
@@ -339,7 +350,54 @@ var createMixinForItemByResourceAndId = function (options) {
     }),
     watch: defineProperty({}, idPropertyName, function () {
       this.$asyncReload(localPropertyName);
-    })
+    }),
+    computed: defineProperty({}, hasChangesComputedName, function () {
+      return this.$store.hasChanges(collectionName, this[getIdMethodName](), this[localPropertyName]);
+    }),
+    methods: (_methods = {}, defineProperty(_methods, getIdMethodName, function () {
+      var id = this[idPropertyName] || get(this, localPropertyName + '.' + recordPrimaryKey, null);
+      return this.$store.isValidId(id) ? id : null;
+    }), defineProperty(_methods, saveMethodName, function () {
+      var _this2 = this;
+
+      return asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee2() {
+        var _ref4, _ref5, err, response;
+
+        return regeneratorRuntime.wrap(function _callee2$(_context2) {
+          while (1) {
+            switch (_context2.prev = _context2.next) {
+              case 0:
+                _context2.next = 2;
+                return to(_this2.$store.save(collectionName, _this2[localPropertyName]));
+
+              case 2:
+                _ref4 = _context2.sent;
+                _ref5 = slicedToArray(_ref4, 2);
+                err = _ref5[0];
+                response = _ref5[1];
+
+                if (!err) {
+                  _context2.next = 8;
+                  break;
+                }
+
+                throw err;
+
+              case 8:
+                if (response) {
+                  _this2[localPropertyName] = response;
+                  _this2.$emit('update:' + idPropertyName, response[recordPrimaryKey]);
+                }
+                return _context2.abrupt('return', _this2[localPropertyName]);
+
+              case 10:
+              case 'end':
+                return _context2.stop();
+            }
+          }
+        }, _callee2, _this2);
+      }))();
+    }), _methods)
   };
 };
 
@@ -817,14 +875,14 @@ var createHandler = (function (vm, events) {
   };
 });
 
-var deepClone = function deepClone(obj) {
+var deepClone$1 = function deepClone$1(obj) {
   return JSON.parse(JSON.stringify(obj));
 };
 
 var Record = {
   create: function create(jsDataRecord) {
     var Record = function Record(record) {
-      Object.assign(this, deepClone(_extends({}, record.toJSON(), _extends({}, record))));
+      Object.assign(this, deepClone$1(_extends({}, record.toJSON(), _extends({}, record))));
     };
     Record.prototype._collection = jsDataRecord._mapper().name;
     return new Record(jsDataRecord);
@@ -879,12 +937,18 @@ var Store = {
       this.models = options.models;
     };
     /**
+     * @param {string} id
+     */
+    Store.prototype.isValidId = function (id) {
+      return id !== null && id !== undefined && id !== '';
+    };
+    /**
      * @param {string} collection
      * @param {string} id
      * @param {object} data
      */
     Store.prototype.hasChanges = function (collection, id, data) {
-      if (id) {
+      if (this.isValidId(id)) {
         var record = this.get(collection, id);
         var a = stringify(record);
         var b = stringify(data);
@@ -972,7 +1036,7 @@ var Store = {
     Store.prototype.find = function (collection, id) {
       var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
 
-      if (id) {
+      if (this.isValidId(id)) {
         return store.find(collection, id, options).then(function (result) {
           return result === undefined || options.raw === true ? result : Record.create(result);
         });
