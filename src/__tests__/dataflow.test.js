@@ -31,8 +31,8 @@ describe('vdata/dataflow', () => {
         }
       }
     })
-    Vue.$store.create('users', {id: 1, name: 'omanizer'})
-    Vue.$store.create('comments', {id: 1, userId: 1})
+    Vue.$store.create('users', {name: 'omanizer'})
+    Vue.$store.create('comments', {userId: 1})
   })
 
   describe('utils/formatMethod', () => {

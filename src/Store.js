@@ -77,10 +77,22 @@ export default {
      * @async
      */
     Store.prototype.save = function (collection, data, options) {
-      const record = store.createRecord(collection, data)
-      return record
-        .save(options)
-        .then(Record.create)
+      const idAttribute = this.models[collection].idAttribute
+      if (this.isValidId(data[idAttribute])) {
+        const record = store.createRecord(collection, data)
+        return record
+          .save(options)
+          .then(Record.create)
+          .catch((err) => {
+            throw err
+          })
+      } else {
+        return store.create(collection, data)
+          .then(Record.create)
+          .catch((err) => {
+            throw err
+          })
+      }
     }
     /**
      * @param {string} collection
@@ -109,11 +121,11 @@ export default {
     /**
      * @param {string} collection
      * @param {object} data
+     * @deprecated
      * @async
      */
-    Store.prototype.create = function (collection, data) {
-      return store.create(collection, data)
-        .then(Record.create)
+    Store.prototype.create = function (collection, data, options) {
+      return this.save(collection, data, options)
     }
     /**
      * @param {string} collection

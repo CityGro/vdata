@@ -1,5 +1,6 @@
-import to from './to'
 import get from 'lodash/get'
+import to from './to'
+
 const deepClone = (obj) => JSON.parse(JSON.stringify(obj))
 
 /**
@@ -11,8 +12,10 @@ const deepClone = (obj) => JSON.parse(JSON.stringify(obj))
  */
 export default function (options) {
   const collectionName = options.collectionName
-  const idPropertyName = options.idPropertyName || 'id'
   const localPropertyName = options.localPropertyName || collectionName.slice(0, -1)
+  const idPropertyName = options.idPropertyName || 'id' // FIXME `${localPropertyName}Id`
+  const templateName = options.templateName || `${localPropertyName}Template`
+  const template = options.template || {}
   const recordPrimaryKey = options.recordPrimaryKey || '_id'
   const getIdMethodName = `${localPropertyName}RecordId`
   const hasChangesComputedName = `${localPropertyName}HasChanges`
@@ -27,6 +30,10 @@ export default function (options) {
       [idPropertyName]: {
         type: idType,
         default: null
+      },
+      [templateName]: {
+        type: Object,
+        default: () => deepClone(template)
       }
     },
     data () {
@@ -65,7 +72,10 @@ export default function (options) {
             ))
           }
         } else {
-          result = this.$store.createRecord(collectionName)
+          result = this.$store.createRecord(
+            collectionName,
+            this[templateName]
+          )
         }
         if (err) {
           console.error(err)

@@ -1566,29 +1566,31 @@
                 return n;
             }
             return (0, u.default)(t);
-        }, T = function t() {
+        }, T = function(t) {
+            return JSON.parse((0, a.default)(t));
+        }, D = function t() {
             var e = [];
             return (arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : []).forEach(function(n) {
                 n.mixins && n.mixins.length && (e = [].concat(N(e), N(t(n.mixins)))), e.push(n);
             }), e;
-        }, D = function(t, e) {
+        }, K = function(t, e) {
             var n = y(t, "$options." + e, {}), r = y(t, "$options.mixins", []);
-            return T(r).filter(function(t) {
+            return D(r).filter(function(t) {
                 return t[e];
             }).forEach(function(t) {
                 n = x(n, t[e]);
             }), _(n) ? null : n;
-        }, K = [ "Default", "Lazy" ], $ = function(t) {
-            return (arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : K).find(function(e) {
+        }, $ = [ "Default", "Lazy" ], q = function(t) {
+            return (arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : $).find(function(e) {
                 return t.endsWith(e);
             });
-        }, q = function(t) {
+        }, J = function(t) {
             return function(t) {
-                var e = this, n = arguments.length > 1 && void 0 !== arguments[1] && arguments[1], r = D(this, "asyncData");
+                var e = this, n = arguments.length > 1 && void 0 !== arguments[1] && arguments[1], r = K(this, "asyncData");
                 if (r) {
                     var i = function() {
                         var i = b(r).filter(function(t) {
-                            return !$(t);
+                            return !q(t);
                         }).filter(function(e) {
                             return void 0 === t || e === t;
                         }).filter(function(t) {
@@ -1641,9 +1643,9 @@
                     if ("object" === (void 0 === i ? "undefined" : P(i))) return i.v;
                 }
             }.bind(t);
-        }, J = {
+        }, U = {
             created: function() {
-                this._asyncReload = q(this), this.$asyncReload(void 0, !0);
+                this._asyncReload = J(this), this.$asyncReload(void 0, !0);
             },
             methods: {
                 $asyncReload: function() {
@@ -1651,10 +1653,10 @@
                 }
             },
             data: function() {
-                var t = D(this, "asyncData");
+                var t = K(this, "asyncData");
                 if (t) {
                     var e = b(t).filter(function(t) {
-                        return !$(t);
+                        return !q(t);
                     }), n = e.map(function(t) {
                         return t + "Error";
                     }), r = {
@@ -1676,7 +1678,7 @@
                 }
                 return {};
             }
-        }, U = {}, B = {
+        }, B = {}, Q = {
             create: function(t) {
                 var e = function(t) {
                     (0, f.default)(this, function(t) {
@@ -1685,7 +1687,7 @@
                 };
                 return e.prototype._collection = t._mapper().name, new e(t);
             }
-        }, Q = function(t) {
+        }, z = function(t) {
             var e = new j.DataStore(), n = function(t, e) {
                 !function(t) {
                     var e = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : {};
@@ -1751,6 +1753,7 @@
             /**
      * @param {string} collection
      * @param {object} data
+     * @deprecated
      * @async
      */
             /**
@@ -1803,36 +1806,44 @@
             }, n.prototype.revert = function(t, n, r) {
                 return e.createRecord(t, n).revert(r);
             }, n.prototype.save = function(t, n, r) {
-                return e.createRecord(t, n).save(r).then(B.create);
+                var i = this.models[t].idAttribute;
+                if (this.isValidId(n[i])) {
+                    return e.createRecord(t, n).save(r).then(Q.create).catch(function(t) {
+                        throw t;
+                    });
+                }
+                return e.create(t, n).then(Q.create).catch(function(t) {
+                    throw t;
+                });
             }, n.prototype.add = function(t, n, r) {
                 e.add(t, n, r);
             }, n.prototype.remove = function(t, n, r) {
                 e.remove(t, n, r);
             }, n.prototype.removeAll = function(t, n, r) {
                 e.removeAll(t, n, r);
-            }, n.prototype.create = function(t, n) {
-                return e.create(t, n).then(B.create);
+            }, n.prototype.create = function(t, e, n) {
+                return this.save(t, e, n);
             }, n.prototype.find = function(t, n) {
                 var r = arguments.length > 2 && void 0 !== arguments[2] ? arguments[2] : {};
                 return this.isValidId(n) ? e.find(t, n, r).then(function(t) {
-                    return void 0 === t || !0 === r.raw ? t : B.create(t);
+                    return void 0 === t || !0 === r.raw ? t : Q.create(t);
                 }) : d.default.resolve();
             }, n.prototype.findAll = function(t, n) {
                 var r = arguments.length > 2 && void 0 !== arguments[2] ? arguments[2] : {}, i = e.findAll(t, n, r);
                 return !0 === r.raw ? i : i.then(function(t) {
-                    return t.map(B.create);
+                    return t.map(Q.create);
                 });
             }, n.prototype.createRecord = function(t, n) {
                 var r = e.createRecord(t, n);
-                return B.create(r);
+                return Q.create(r);
             }, n.prototype.get = function(t, n) {
                 var r = e.get(t, n);
-                if (r) return B.create(r);
+                if (r) return Q.create(r);
             }, n.prototype.getAll = function(t) {
                 var n = this, r = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : [];
                 return r.length ? r.map(function(e) {
                     return n.get(t, e);
-                }) : e.getAll(t).map(B.create);
+                }) : e.getAll(t).map(Q.create);
             }, n.prototype.clear = function() {
                 e.clear();
             }, n.prototype.on = function(t, n) {
@@ -1840,9 +1851,9 @@
             }, n.prototype.off = function(t, n) {
                 e.off(t, n);
             }, new n(e, t);
-        }, z = function(t) {
+        }, H = function(t) {
             return !!y(t, "$options.vdata");
-        }, H = {
+        }, G = {
             createConfig: function(t) {
                 return function(e) {
                     var n = t(e);
@@ -1853,7 +1864,7 @@
             },
             install: function(t, e) {
                 e = m(e) ? e(t) : e;
-                var n = Q(e);
+                var n = z(e);
                 Object.defineProperty(t, "$store", {
                     get: function() {
                         return n;
@@ -1865,7 +1876,7 @@
                 }), console.log("[@citygro/vdata] $store ready!", n), t.mixin({
                     methods: {
                         $vdata: function() {
-                            z(this) && this._vdataHandler.run(function() {
+                            H(this) && this._vdataHandler.run(function() {
                                 var t = {
                                     event: arguments[0],
                                     collectionName: arguments[1]
@@ -1954,25 +1965,25 @@
                         }
                     },
                     beforeCreate: function() {
-                        z(this) && (this._vdataHandler = function(t, e) {
-                            return U[t._uid] = T(t.$options.mixins).filter(function(t) {
+                        H(this) && (this._vdataHandler = function(t, e) {
+                            return B[t._uid] = D(t.$options.mixins).filter(function(t) {
                                 return !!t.vdata;
                             }).map(function(t) {
                                 return t.vdata;
-                            }), t.$options.vdata && U[t._uid].push(t.$options.vdata), console.log("[@citygro/vdata<" + t._uid + ">] ready. listening on", e), 
+                            }), t.$options.vdata && B[t._uid].push(t.$options.vdata), console.log("[@citygro/vdata<" + t._uid + ">] ready. listening on", e), 
                             {
                                 run: function(n) {
                                     ((function() {
                                         var t = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : [], e = arguments[1];
                                         return t.indexOf(e) >= 0;
-                                    })(e, n.event) || "$vdata-call" === n.event) && U[t._uid].forEach(function(e) {
+                                    })(e, n.event) || "$vdata-call" === n.event) && B[t._uid].forEach(function(e) {
                                         setTimeout(function() {
                                             return e.apply(t, [ n ]);
                                         }, 0);
                                     });
                                 },
                                 destroy: function() {
-                                    delete U[t._uid];
+                                    delete B[t._uid];
                                 }
                             };
                         }(this, e.events));
@@ -1981,168 +1992,171 @@
                         this.$vdata("vm-created"), this.$store.on("all", this.$vdata);
                     },
                     beforeDestroy: function() {
-                        z(this) && (n.off("all", this.$vdata), this._vdataHandler.destroy());
+                        H(this) && (n.off("all", this.$vdata), this._vdataHandler.destroy());
                     }
-                }), t.mixin(J);
+                }), t.mixin(U);
             }
-        }, G = function(t) {
+        }, V = function(t) {
             var e = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : "";
             return "" === e ? E(t) : "" + E(e) + function(t) {
                 var e = E(t), n = C([], e.charAt(0).toUpperCase(), S(e));
                 return k(n, "");
             }(t);
-        }, V = function(t) {
+        }, W = function(t) {
             var e = t.value, n = t.diff;
             return L({}, e, n);
-        }, W = function(t) {
-            var e = t.value, n = t.key, r = t.diff, i = V({
+        }, Y = function(t) {
+            var e = t.value, n = t.key, r = t.diff, i = W({
                 value: e[n],
                 diff: r
             });
-            return V({
+            return W({
                 value: e,
                 diff: I({}, n, i)
             });
-        }, Y = function(t) {
+        }, Z = function(t) {
             var e = t.value, n = void 0 === e ? [] : e, r = t.index, i = t.diff, o = [].concat(N(n));
             return o[r] = L({}, o[r] || {}, i), o;
-        }, Z = function(t) {
-            var e = t.value, n = void 0 === e ? {} : e, r = t.index, i = t.key, o = t.diff, a = Y({
+        }, X = function(t) {
+            var e = t.value, n = void 0 === e ? {} : e, r = t.index, i = t.key, o = t.diff, a = Z({
                 value: n[i] || [],
                 index: r,
                 diff: o
             });
-            return V({
+            return W({
                 value: n,
                 diff: I({}, i, a)
             });
-        }, X = function(t) {
+        }, tt = function(t) {
             var e = t.value, n = void 0 === e ? [] : e, r = t.diff, i = [].concat(N(n));
             return i.push(r), i;
-        }, tt = function(t) {
+        }, et = function(t) {
             var e = t.value, n = void 0 === e ? {} : e, r = t.key, i = t.diff, o = [].concat(N(n[r] || []));
-            return o.push(i), V({
+            return o.push(i), W({
                 value: n,
                 diff: I({}, r, o)
             });
-        }, et = function(t) {
+        }, nt = function(t) {
             var e = t.value, n = void 0 === e ? [] : e, r = t.index, i = [].concat(N(n));
             return i.splice(r, 1), i;
-        }, nt = function(t) {
-            var e = t.value, n = void 0 === e ? {} : e, r = t.index, i = t.key, o = et({
+        }, rt = function(t) {
+            var e = t.value, n = void 0 === e ? {} : e, r = t.index, i = t.key, o = nt({
                 value: n[i],
                 index: r
             });
-            return V({
+            return W({
                 value: n,
                 diff: I({}, i, o)
             });
-        }, rt = function(t) {
+        }, it = function(t) {
             var e, n = "value" === t ? "input" : "update:" + t, r = "value" === t ? "" : t;
             return {
-                methods: (e = {}, I(e, G("forwardInput", r), function(t) {
+                methods: (e = {}, I(e, V("forwardInput", r), function(t) {
                     this.$emit(n, t);
-                }), I(e, G("handleChange", r), function(e) {
-                    this.$emit(n, V({
+                }), I(e, V("handleChange", r), function(e) {
+                    this.$emit(n, W({
                         value: this[t],
                         diff: e
                     }));
-                }), I(e, G("handleKeyChange", r), function(e, r) {
-                    this.$emit(n, W({
+                }), I(e, V("handleKeyChange", r), function(e, r) {
+                    this.$emit(n, Y({
                         value: this[t],
                         key: e,
                         diff: r
                     }));
-                }), I(e, G("handleArrayKeyChange", r), function(e, r, i) {
-                    this.$emit(n, Z({
+                }), I(e, V("handleArrayKeyChange", r), function(e, r, i) {
+                    this.$emit(n, X({
                         value: this[t],
                         index: e,
                         key: r,
                         diff: i
                     }));
-                }), I(e, G("handleArrayChange", r), function(e, r) {
-                    this.$emit(n, Y({
+                }), I(e, V("handleArrayChange", r), function(e, r) {
+                    this.$emit(n, Z({
                         value: this[t],
                         index: e,
                         diff: r
                     }));
-                }), I(e, G("pushToArray", r), function(e) {
-                    this.$emit(n, X({
+                }), I(e, V("pushToArray", r), function(e) {
+                    this.$emit(n, tt({
                         value: this[t],
                         diff: e
                     }));
-                }), I(e, G("pushToArrayKey", r), function(e, r) {
-                    this.$emit(n, tt({
+                }), I(e, V("pushToArrayKey", r), function(e, r) {
+                    this.$emit(n, et({
                         value: this[t],
                         key: e,
                         diff: r
                     }));
-                }), I(e, G("removeFromArray", r), function(e) {
-                    this.$emit(n, et({
+                }), I(e, V("removeFromArray", r), function(e) {
+                    this.$emit(n, nt({
                         value: this[t],
                         index: e
                     }));
-                }), I(e, G("removeFromArrayKey", r), function(e, r) {
-                    this.$emit(n, nt({
+                }), I(e, V("removeFromArrayKey", r), function(e, r) {
+                    this.$emit(n, rt({
                         value: this[t],
                         index: e,
                         key: r
                     }));
                 }), e)
             };
-        }, it = rt("value");
-        e.DataFlowMixin = it, e.Record = B, e.createIndex = function(t, e) {
+        }, ot = it("value");
+        e.DataFlowMixin = ot, e.Record = Q, e.createIndex = function(t, e) {
             var n = {};
             return t.forEach(function(t) {
                 n[t[e]] = t;
             }), n;
         }, e.createMixinForItemByResourceAndId = function(t) {
-            var e, n = t.collectionName, r = t.idPropertyName || "id", i = t.localPropertyName || n.slice(0, -1), u = t.recordPrimaryKey || "_id", c = i + "RecordId", s = i + "HasChanges", f = i + "Save", l = i + "Loading", d = t.idType || String, p = t.requestOptions || {}, h = i + "RequestOptions";
+            var e, n, r = t.collectionName, i = t.localPropertyName || r.slice(0, -1), a = t.idPropertyName || "id", u = t.templateName || i + "Template", c = t.template || {}, s = t.recordPrimaryKey || "_id", f = i + "RecordId", l = i + "HasChanges", d = i + "Save", p = i + "Loading", h = t.idType || String, v = t.requestOptions || {}, g = i + "RequestOptions";
             return {
-                props: I({}, r, {
-                    type: d,
+                props: (e = {}, I(e, a, {
+                    type: h,
                     default: null
-                }),
+                }), I(e, u, {
+                    type: Object,
+                    default: function() {
+                        return T(c);
+                    }
+                }), e),
                 data: function() {
                     var t;
-                    return t = {}, I(t, i, null), I(t, h, function(t) {
-                        return JSON.parse((0, a.default)(t));
-                    }(p)), t;
+                    return t = {}, I(t, i, null), I(t, g, T(v)), t;
                 },
                 vdata: function(t) {
-                    var e = this[c]();
-                    this[l] || null === e || t.collectionName !== n || (this[i] = this.$store.get(n, e) || null);
+                    var e = this[f]();
+                    this[p] || null === e || t.collectionName !== r || (this[i] = this.$store.get(r, e) || null);
                 },
                 asyncData: I({}, i, function() {
                     var t = this;
                     /*#__PURE__*/
                     return F(o.default.mark(function e() {
-                        var r, i, a, u, s, f;
+                        var n, i, a, c, s, l;
                         return o.default.wrap(function(e) {
                             for (;;) switch (e.prev = e.next) {
                               case 0:
-                                if (r = t[h].force, i = t[c](), a = void 0, u = void 0, null === i) {
+                                if (n = t[g].force, i = t[f](), a = void 0, c = void 0, null === i) {
                                     e.next = 14;
                                     break;
                                 }
-                                if (r || (u = t.$store.get(n, i)), u) {
+                                if (n || (c = t.$store.get(r, i)), c) {
                                     e.next = 12;
                                     break;
                                 }
-                                return e.next = 8, R(t.$store.find(n, i, t[h]));
+                                return e.next = 8, R(t.$store.find(r, i, t[g]));
 
                               case 8:
-                                s = e.sent, f = M(s, 2), a = f[0], u = f[1];
+                                s = e.sent, l = M(s, 2), a = l[0], c = l[1];
 
                               case 12:
                                 e.next = 15;
                                 break;
 
                               case 14:
-                                u = t.$store.createRecord(n);
+                                c = t.$store.createRecord(r, t[u]);
 
                               case 15:
-                                return a && (console.error(a), u = null), e.abrupt("return", u);
+                                return a && (console.error(a), c = null), e.abrupt("return", c);
 
                               case 17:
                               case "end":
@@ -2151,34 +2165,34 @@
                         }, e, t);
                     }))();
                 }),
-                watch: I({}, r, function() {
+                watch: I({}, a, function() {
                     this.$asyncReload(i);
                 }),
-                computed: I({}, s, function() {
-                    return this.$store.hasChanges(n, this[c](), this[i]);
+                computed: I({}, l, function() {
+                    return this.$store.hasChanges(r, this[f](), this[i]);
                 }),
-                methods: (e = {}, I(e, c, function() {
-                    var t = this[r] || y(this, i + "." + u, null);
+                methods: (n = {}, I(n, f, function() {
+                    var t = this[a] || y(this, i + "." + s, null);
                     return this.$store.isValidId(t) ? t : null;
-                }), I(e, f, function() {
+                }), I(n, d, function() {
                     var t = this;
                     /*#__PURE__*/
                     return F(o.default.mark(function e() {
-                        var a, c, s, f;
+                        var n, u, c, f;
                         return o.default.wrap(function(e) {
                             for (;;) switch (e.prev = e.next) {
                               case 0:
-                                return e.next = 2, R(t.$store.save(n, t[i]));
+                                return e.next = 2, R(t.$store.save(r, t[i]));
 
                               case 2:
-                                if (a = e.sent, c = M(a, 2), s = c[0], f = c[1], !s) {
+                                if (n = e.sent, u = M(n, 2), c = u[0], f = u[1], !c) {
                                     e.next = 8;
                                     break;
                                 }
-                                throw s;
+                                throw c;
 
                               case 8:
-                                return f && (t[i] = f, t.$emit("update:" + r, f[u])), e.abrupt("return", t[i]);
+                                return f && (t[i] = f, t.$emit("update:" + a, f[s])), e.abrupt("return", t[i]);
 
                               case 10:
                               case "end":
@@ -2186,7 +2200,7 @@
                             }
                         }, e, t);
                     }))();
-                }), e)
+                }), n)
             };
         }, e.createMixinForListByResource = function(t) {
             var e = t.collectionName, n = t.localPropertyName || e, r = n + "Force", i = t.queryOptions || {}, a = t.requestOptions;
@@ -2222,9 +2236,9 @@
                     }))();
                 })
             };
-        }, e.to = R, e.vdata = H, e.handleChange = V, e.handleKeyChange = W, e.handleArrayChange = Y, 
-        e.handleArrayKeyChange = Z, e.pushToArray = X, e.pushToArrayKey = tt, e.removeFromArray = et, 
-        e.removeFromArrayKey = nt, e.createDataFlowMixin = rt;
+        }, e.to = R, e.vdata = G, e.handleChange = W, e.handleKeyChange = Y, e.handleArrayChange = Z, 
+        e.handleArrayKeyChange = X, e.pushToArray = tt, e.pushToArrayKey = et, e.removeFromArray = nt, 
+        e.removeFromArrayKey = rt, e.createDataFlowMixin = it;
     }, /* 98 */
     /***/
     function(t, e, n) {

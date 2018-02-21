@@ -258,11 +258,13 @@ var deepClone = function deepClone(obj) {
  * @param {object} options.requestOptions
  */
 var createMixinForItemByResourceAndId = function (options) {
-  var _methods;
+  var _props, _methods;
 
   var collectionName = options.collectionName;
-  var idPropertyName = options.idPropertyName || 'id';
   var localPropertyName = options.localPropertyName || collectionName.slice(0, -1);
+  var idPropertyName = options.idPropertyName || 'id'; // FIXME `${localPropertyName}Id`
+  var templateName = options.templateName || localPropertyName + 'Template';
+  var template = options.template || {};
   var recordPrimaryKey = options.recordPrimaryKey || '_id';
   var getIdMethodName = localPropertyName + 'RecordId';
   var hasChangesComputedName = localPropertyName + 'HasChanges';
@@ -273,10 +275,15 @@ var createMixinForItemByResourceAndId = function (options) {
   var requestOptionsName = localPropertyName + 'RequestOptions';
 
   return {
-    props: defineProperty({}, idPropertyName, {
+    props: (_props = {}, defineProperty(_props, idPropertyName, {
       type: idType,
       default: null
-    }),
+    }), defineProperty(_props, templateName, {
+      type: Object,
+      default: function _default() {
+        return deepClone(template);
+      }
+    }), _props),
     data: function data() {
       var _ref;
 
@@ -331,7 +338,7 @@ var createMixinForItemByResourceAndId = function (options) {
                 break;
 
               case 14:
-                result = _this.$store.createRecord(collectionName);
+                result = _this.$store.createRecord(collectionName, _this[templateName]);
 
               case 15:
                 if (err) {
@@ -992,8 +999,17 @@ var Store = {
      * @async
      */
     Store.prototype.save = function (collection, data, options) {
-      var record = store.createRecord(collection, data);
-      return record.save(options).then(Record.create);
+      var idAttribute = this.models[collection].idAttribute;
+      if (this.isValidId(data[idAttribute])) {
+        var record = store.createRecord(collection, data);
+        return record.save(options).then(Record.create).catch(function (err) {
+          throw err;
+        });
+      } else {
+        return store.create(collection, data).then(Record.create).catch(function (err) {
+          throw err;
+        });
+      }
     };
     /**
      * @param {string} collection
@@ -1022,10 +1038,11 @@ var Store = {
     /**
      * @param {string} collection
      * @param {object} data
+     * @deprecated
      * @async
      */
-    Store.prototype.create = function (collection, data) {
-      return store.create(collection, data).then(Record.create);
+    Store.prototype.create = function (collection, data, options) {
+      return this.save(collection, data, options);
     };
     /**
      * @param {string} collection
