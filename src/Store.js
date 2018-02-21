@@ -125,7 +125,7 @@ export default {
      * @async
      */
     Store.prototype.create = function (collection, data, options) {
-      return this.save(collection, data, options)
+      return store.create(collection, data, options).then(Record.create)
     }
     /**
      * @param {string} collection
