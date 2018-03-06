@@ -26,7 +26,7 @@ export default function (options) {
   const requestOptions = options.requestOptions || {}
   const requestOptionsName = `${localPropertyName}RequestOptions`
   const captureName = `${localPropertyName}Capture`
-  const capture = pop(options.requestOptions, 'capture', false)
+  const capture = pop(requestOptions, 'capture', false)
 
   return {
     props: {

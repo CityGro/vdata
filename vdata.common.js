@@ -319,7 +319,7 @@ var createMixinForItemByResourceAndId = function (options) {
   var requestOptions = options.requestOptions || {};
   var requestOptionsName = localPropertyName + 'RequestOptions';
   var captureName = localPropertyName + 'Capture';
-  var capture = pop(options.requestOptions, 'capture', false);
+  var capture = pop(requestOptions, 'capture', false);
 
   return {
     props: (_props = {}, defineProperty(_props, idPropertyName, {
