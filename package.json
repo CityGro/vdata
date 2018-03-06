@@ -15,13 +15,14 @@
     "js-data"
   ],
   "scripts": {
-    "lint": "eslint src",
-    "test": "npm run lint && NODE_ENV=test jest --no-cache --coverage",
-    "build": "npm run build:cjs && npm run build:umd",
-    "build:umd": "webpack --config webpack.conf.umd.js",
+    "build": "npm run build:doc && npm run build:cjs && npm run build:umd",
     "build:cjs": "rollup -c rollup.conf.cjs.js",
+    "build:doc": "jsdoc2md --template README.hbs --files src/*.js > README.md",
+    "build:umd": "webpack --config webpack.conf.umd.js",
+    "lint": "eslint src",
+    "publish-script": "./bin/publish",
     "start": "cross-env BABEL_ENV=test node example/dev-server.js",
-    "publish-script": "./bin/publish"
+    "test": "npm run lint && NODE_ENV=test jest --no-cache --coverage"
   },
   "jest": {
     "moduleFileExtensions": [
@@ -97,6 +98,7 @@
     "jest": "^21.2.1",
     "js-data-http": "3.0.0-beta.8",
     "js-data-localstorage": "3.0.0-beta.2",
+    "jsdoc-to-markdown": "^4.0.1",
     "jsdom": "^9.8.3",
     "json-server": "^0.9.5",
     "localstorage-polyfill": "^1.0.1",
@@ -115,6 +117,7 @@
     "vue": ">=2.1.0"
   },
   "dependencies": {
+    "@r14c/async-utils": "0.1.1",
     "js-data": "^3.0.1",
     "json-stable-stringify": "^1.0.1",
     "lodash": "^4.17.2",

@@ -11,171 +11,148 @@
 yarn add js-data-$adapter @citygro/vdata
 ```
 
-1. [usage](#usage)
-2. [`vdataConfig`](#vdataconfig-object)
-3. [dataflow](#dataflow)
-4. [`asyncData`](#asyncdata)
-5. [`vdata`](#vdata)
-6. [`vQuery`](#vquery)
-7. [utils](#utils)
+## Constants
 
-## usage
+<dl>
+<dt><a href="#handleChange">handleChange</a></dt>
+<dd></dd>
+<dt><a href="#handleKeyChange">handleKeyChange</a></dt>
+<dd></dd>
+<dt><a href="#handleArrayChange">handleArrayChange</a></dt>
+<dd></dd>
+<dt><a href="#handleArrayKeyChange">handleArrayKeyChange</a></dt>
+<dd></dd>
+<dt><a href="#pushToArray">pushToArray</a></dt>
+<dd></dd>
+<dt><a href="#pushToArrayKey">pushToArrayKey</a></dt>
+<dd></dd>
+<dt><a href="#removeFromArray">removeFromArray</a></dt>
+<dd></dd>
+<dt><a href="#removeFromArrayKey">removeFromArrayKey</a></dt>
+<dd></dd>
+<dt><a href="#createDataFlowMixin">createDataFlowMixin</a></dt>
+<dd><p>create a dataflow mixin for a given value prop.</p>
+<p>a &#39;value&#39; dataflow implements the <code>v-model</code> interface.</p>
+<p>custom dataflows follow a pattern: methods are prefixed with the <code>valueProp</code>
+name and <code>update:${valueProp}</code> is emitted.</p>
+</dd>
+</dl>
 
-```js
-import Vue from 'vue'
-import {vdata} from '@citygro/vdata'
-import HttpAdapter from 'js-data-http'
+## Functions
 
-Vue.use(vdata, {
-  models: {
-    user: {
-      // options
-    }
-  },
-  adapters: {
-    http: {
-      adapter: new HttpAdapter()
-    }
-  }
-})
+<dl>
+<dt><a href="#flattenMixinTree">flattenMixinTree(mixins)</a></dt>
+<dd></dd>
+</dl>
 
-// doTheThing()
-```
+<a name="handleChange"></a>
 
-## `vdataConfig: object`
+## handleChange
+**Kind**: global constant  
 
-### `events: string[]`
+| Param | Type |
+| --- | --- |
+| value | <code>object</code> | 
+| diff | <code>object</code> | 
 
-> first, familiarize yourself with [js-data events](http://api.js-data.io/js-data/3.0.1/DataStore.html#event:add).
+<a name="handleKeyChange"></a>
 
-`JSData` events that should trigger a `vdata` update procedure.
+## handleKeyChange
+**Kind**: global constant  
 
-- add
-- change
-- remove
+| Param | Type |
+| --- | --- |
+| value | <code>object</code> | 
+| key | <code>string</code> | 
+| diff | <code>object</code> | 
 
-### `models: object`
+<a name="handleArrayChange"></a>
 
-a mapping of [`JSData` models](http://api.js-data.io/js-data/3.0.1/Mapper.html).
+## handleArrayChange
+**Kind**: global constant  
 
-```
-{
-  models: {
-    name: {
-      idAttribute: String
-    }
-  }
-}
-```
+| Param | Type |
+| --- | --- |
+| value | <code>object</code> | 
+| i | <code>number</code> | 
+| diff | <code>object</code> | 
 
-### `adapters: object`
+<a name="handleArrayKeyChange"></a>
 
-a mapping of `JSData` adapter instances. each adapter has its own options,
-check the docs for your specific choice.
+## handleArrayKeyChange
+**Kind**: global constant  
 
-```
-{
-  adapters: {
-    label: {
-      adapter: AdapterInstance,
-      default: Boolean
-    }
-  }
-}
-```
+| Param | Type |
+| --- | --- |
+| value | <code>object</code> | 
+| i | <code>number</code> | 
+| key | <code>string</code> | 
+| diff | <code>object</code> | 
 
-## dataflow
+<a name="pushToArray"></a>
 
-> this is a BETA feature
+## pushToArray
+**Kind**: global constant  
 
-`vdata` provides a rich vocabulary for working with and modifying complex
-data.
+| Param | Type |
+| --- | --- |
+| value | <code>array</code> | 
+| diff | <code>object</code> | 
 
-### `handleChange(diff: object)`
+<a name="pushToArrayKey"></a>
 
-> see this [in a fiddle](https://jsfiddle.net/v4wtgkmg/1/)
+## pushToArrayKey
+**Kind**: global constant  
 
-```
-// ...
-import {DataFlowMixin} from '@citygro/vdata'
+| Param | Type |
+| --- | --- |
+| value | <code>object</code> | 
+| key | <code>string</code> | 
+| diff | <code>object</code> | 
 
-export default {
-  name: 'my-editor',
-  mixins: [DataFlowMixin],
-  template: '<text-input :value="value.key" @input="handleChange({key: $event})" />'
-}
-```
+<a name="removeFromArray"></a>
 
-### `handleKeyChange(key: string, diff: object)`
+## removeFromArray
+**Kind**: global constant  
 
-### `handleArrayChange(i: number, diff: object)`
+| Param | Type |
+| --- | --- |
+| value | <code>array</code> | 
+| i | <code>number</code> | 
 
-### `handleArrayKeyChange(i: number, key: string, diff: object)`
+<a name="removeFromArrayKey"></a>
 
-### `pushToArray(diff: any)`
+## removeFromArrayKey
+**Kind**: global constant  
 
-### `pushToArrayKey(key: string, diff: any)`
+| Param | Type |
+| --- | --- |
+| value | <code>object</code> | 
+| i | <code>number</code> | 
+| key | <code>string</code> | 
 
-### `removeFromArray(i: number)`
+<a name="createDataFlowMixin"></a>
 
-### `removeFromArrayKey(i: number, key: string)`
+## createDataFlowMixin
+create a dataflow mixin for a given value prop.
 
-## `asyncData`
+a 'value' dataflow implements the `v-model` interface.
 
-```
-import {to} from '@citygro/vdata'
+custom dataflows follow a pattern: methods are prefixed with the `valueProp`
+name and `update:${valueProp}` is emitted.
 
-export default {
-  // ...
-  asyncData: {
-    async prop () {
-      const [err, data] = await to(this.$store.findAll('model'))
-      if (err) {
-        console.error(err)
-      }
-      return data
-    },
-    propDefault: () => [],
-    propLazy: true
-  }
-  // ...
-}
-```
+**Kind**: global constant  
 
-### `$asyncReload(propertyName?: string, skipLazy?: bool)`
+| Param | Type | Description |
+| --- | --- | --- |
+| valueProp | <code>string</code> | bind dataflow to this prop |
 
-force reload asyncData, optionally by `propertyName`
+<a name="flattenMixinTree"></a>
 
-### `asyncData.[prop]()`
+## flattenMixinTree(mixins)
+**Kind**: global function  
 
-an async function that resolves to the result of a query or any other promise
+| Param | Type |
+| --- | --- |
+| mixins | <code>Array.&lt;Object&gt;</code> | 
 
-### `asyncData.[prop]Default: any`
-
-the default value of `[prop]`. use an arrow function for `Object` and `Array` values
-
-### `asyncData.[prop]Lazy: bool`
-
-by default `[prop]` is invoked automatically when the component is created. if `[prop]Lazy === true`
-you will need to invoke `asyncReload()` or `asyncReload('prop')`
-
-## vdata
-
-> see [events](#events-arraystring)
-
-`vm.$vdata()` is invoked whenever a js-data event is fired and on `vm.$options.created()`.
-
-## utils
-
-### `import {to} from '@citygro/vdata'`
-
-```
-async function foo () {
-  const [err, data] = await to(myAsyncTask())
-  if (err) {
-    // handle my error
-  }
-  const result data.map(/* transform */)
-  return result
-}
-```

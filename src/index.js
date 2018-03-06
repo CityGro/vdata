@@ -1,10 +1,10 @@
+import Record from './Record'
 import createIndex from './createIndex'
 import createMixinForItemByResourceAndId from './createMixinForItemByResourceAndId.js'
 import createMixinForListByResource from './createMixinForListByResource'
-import to from './to'
+import to from '@r14c/async-utils/to'
 import vdata from './vdata'
 import {createDataFlowMixin} from './DataFlow'
-import Record from './Record'
 
 const DataFlowMixin = createDataFlowMixin('value')
 

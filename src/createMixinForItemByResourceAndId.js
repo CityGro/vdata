@@ -1,7 +1,8 @@
+import clone from 'lodash/cloneDeep'
 import get from 'lodash/get'
-import to from './to'
-
-const deepClone = (obj) => JSON.parse(JSON.stringify(obj))
+import pop from './pop'
+import rebase from './rebase'
+import to from '@r14c/async-utils/to'
 
 /**
  * @param {object} options
@@ -24,6 +25,8 @@ export default function (options) {
   const idType = options.idType || String
   const requestOptions = options.requestOptions || {}
   const requestOptionsName = `${localPropertyName}RequestOptions`
+  const captureName = `${localPropertyName}Capture`
+  const capture = pop(options.requestOptions, 'capture', false)
 
   return {
     props: {
@@ -33,14 +36,18 @@ export default function (options) {
       },
       [templateName]: {
         type: Object,
-        default: () => deepClone(template)
+        default: () => clone(template)
       }
     },
     data () {
-      return {
+      let data = {
         [localPropertyName]: null,
-        [requestOptionsName]: deepClone(requestOptions)
+        [requestOptionsName]: clone(requestOptions)
       }
+      if (capture) {
+        data[captureName] = null
+      }
+      return data
     },
     vdata (event) {
       const recordId = this[getIdMethodName]()
@@ -49,10 +56,18 @@ export default function (options) {
         recordId !== null &&
         event.collectionName === collectionName
       ) {
-        this[localPropertyName] = this.$store.get(
-          collectionName,
-          recordId
-        ) || null
+        if (capture) {
+          this[localPropertyName] = rebase(
+            this[captureName],
+            this.$store.get(collectionName, recordId) || {},
+            this[localPropertyName]
+          )
+        } else {
+          this[localPropertyName] = this.$store.get(
+            collectionName,
+            recordId
+          ) || null
+        }
       }
     },
     asyncData: {
@@ -81,6 +96,9 @@ export default function (options) {
           console.error(err)
           result = null
         }
+        if (capture) {
+          this[captureName] = clone(result)
+        }
         return result
       }
     },
@@ -107,10 +125,18 @@ export default function (options) {
         return this.$store.isValidId(id) ? id : null
       },
       async [saveMethodName] () {
+        const recordId = this[getIdMethodName]()
+        const value = (capture)
+          ? rebase(
+            this[captureName],
+            this.$store.get(collectionName, recordId) || {},
+            this[localPropertyName]
+          )
+          : this[localPropertyName]
         const [err, response] = await to(
           this.$store.save(
             collectionName,
-            this[localPropertyName]
+            value
           )
         )
         if (err) { throw err }

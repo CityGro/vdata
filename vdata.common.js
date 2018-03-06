@@ -4,7 +4,15 @@ Object.defineProperty(exports, '__esModule', { value: true });
 
 function _interopDefault (ex) { return (ex && (typeof ex === 'object') && 'default' in ex) ? ex['default'] : ex; }
 
+var flow = _interopDefault(require('lodash/fp/flow'));
+var clone = _interopDefault(require('lodash/cloneDeep'));
 var get = _interopDefault(require('lodash/get'));
+var isEqual = _interopDefault(require('lodash/isEqual'));
+var isObject = _interopDefault(require('lodash/isObject'));
+var transform = _interopDefault(require('lodash/transform'));
+var merge = _interopDefault(require('lodash/merge'));
+var tail = _interopDefault(require('lodash/tail'));
+var to = _interopDefault(require('@r14c/async-utils/to'));
 var Any = _interopDefault(require('p-any'));
 var isFunction = _interopDefault(require('lodash/isFunction'));
 var keys = _interopDefault(require('lodash/keys'));
@@ -17,31 +25,8 @@ var jsData = require('js-data');
 var camelCase = _interopDefault(require('lodash/camelCase'));
 var concat = _interopDefault(require('lodash/concat'));
 var join = _interopDefault(require('lodash/join'));
-var tail = _interopDefault(require('lodash/tail'));
 
-/**
- * @param {object[]} collection
- * @param {string} key
- */
-var createIndex = (function (collection, key) {
-  var index = {};
-  collection.forEach(function (item) {
-    index[item[key]] = item;
-  });
-  return index;
-});
-
-/**
- * @param {Promise} promise
- * @return {Promise}
- */
-var to = (function (promise) {
-  return promise.then(function (data) {
-    return [null, data];
-  }).catch(function (err) {
-    return [err, undefined];
-  });
-});
+var jsonClone = flow(JSON.stringify, JSON.parse);
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) {
   return typeof obj;
@@ -246,8 +231,55 @@ var toConsumableArray = function (arr) {
   }
 };
 
-var deepClone = function deepClone(obj) {
-  return JSON.parse(JSON.stringify(obj));
+var Record = {
+  create: function create(jsDataRecord) {
+    var Record = function Record(record) {
+      Object.assign(this, jsonClone(_extends({}, record.toJSON(), _extends({}, record))));
+    };
+    Record.prototype._collection = jsDataRecord._mapper().name;
+    return new Record(jsDataRecord);
+  }
+};
+
+/**
+ * @param {object[]} collection
+ * @param {string} key
+ */
+var createIndex = (function (collection, key) {
+  var index = {};
+  collection.forEach(function (item) {
+    index[item[key]] = item;
+  });
+  return index;
+});
+
+var pop = (function (o, key, fallback) {
+  var value = o[key];
+  delete o[key];
+  return value === undefined ? fallback : value;
+});
+
+/**
+ * @param {object} base
+ * @param {object} object
+ * @return {object} diff
+ */
+function difference(base, object) {
+  function changes(object, base) {
+    return transform(object, function (result, value, key) {
+      if (!isEqual(value, base[key])) {
+        result[key] = isObject(value) && isObject(base[key]) ? changes(value, base[key]) : value;
+      }
+    });
+  }
+  return changes(object, base);
+}
+
+var rebase = function () {
+  var base = arguments[0];
+  return merge.apply(undefined, [jsonClone(base)].concat(toConsumableArray(tail(arguments).map(function (commit) {
+    return difference(base, commit);
+  }))));
 };
 
 /**
@@ -273,6 +305,8 @@ var createMixinForItemByResourceAndId = function (options) {
   var idType = options.idType || String;
   var requestOptions = options.requestOptions || {};
   var requestOptionsName = localPropertyName + 'RequestOptions';
+  var captureName = localPropertyName + 'Capture';
+  var capture = pop(options.requestOptions, 'capture', false);
 
   return {
     props: (_props = {}, defineProperty(_props, idPropertyName, {
@@ -281,18 +315,26 @@ var createMixinForItemByResourceAndId = function (options) {
     }), defineProperty(_props, templateName, {
       type: Object,
       default: function _default() {
-        return deepClone(template);
+        return clone(template);
       }
     }), _props),
     data: function data() {
-      var _ref;
+      var _data;
 
-      return _ref = {}, defineProperty(_ref, localPropertyName, null), defineProperty(_ref, requestOptionsName, deepClone(requestOptions)), _ref;
+      var data = (_data = {}, defineProperty(_data, localPropertyName, null), defineProperty(_data, requestOptionsName, clone(requestOptions)), _data);
+      if (capture) {
+        data[captureName] = null;
+      }
+      return data;
     },
     vdata: function vdata(event) {
       var recordId = this[getIdMethodName]();
       if (!this[asyncLoadingName] && recordId !== null && event.collectionName === collectionName) {
-        this[localPropertyName] = this.$store.get(collectionName, recordId) || null;
+        if (capture) {
+          this[localPropertyName] = rebase(this[captureName], this.$store.get(collectionName, recordId) || {}, this[localPropertyName]);
+        } else {
+          this[localPropertyName] = this.$store.get(collectionName, recordId) || null;
+        }
       }
     },
 
@@ -300,7 +342,7 @@ var createMixinForItemByResourceAndId = function (options) {
       var _this = this;
 
       return asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee() {
-        var force, recordId, err, result, _ref2, _ref3;
+        var force, recordId, err, result, _ref, _ref2;
 
         return regeneratorRuntime.wrap(function _callee$(_context) {
           while (1) {
@@ -328,10 +370,10 @@ var createMixinForItemByResourceAndId = function (options) {
                 return to(_this.$store.find(collectionName, recordId, _this[requestOptionsName]));
 
               case 8:
-                _ref2 = _context.sent;
-                _ref3 = slicedToArray(_ref2, 2);
-                err = _ref3[0];
-                result = _ref3[1];
+                _ref = _context.sent;
+                _ref2 = slicedToArray(_ref, 2);
+                err = _ref2[0];
+                result = _ref2[1];
 
               case 12:
                 _context.next = 15;
@@ -345,9 +387,12 @@ var createMixinForItemByResourceAndId = function (options) {
                   console.error(err);
                   result = null;
                 }
+                if (capture) {
+                  _this[captureName] = clone(result);
+                }
                 return _context.abrupt('return', result);
 
-              case 17:
+              case 18:
               case 'end':
                 return _context.stop();
             }
@@ -368,36 +413,38 @@ var createMixinForItemByResourceAndId = function (options) {
       var _this2 = this;
 
       return asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee2() {
-        var _ref4, _ref5, err, response;
+        var recordId, value, _ref3, _ref4, err, response;
 
         return regeneratorRuntime.wrap(function _callee2$(_context2) {
           while (1) {
             switch (_context2.prev = _context2.next) {
               case 0:
-                _context2.next = 2;
-                return to(_this2.$store.save(collectionName, _this2[localPropertyName]));
+                recordId = _this2[getIdMethodName]();
+                value = capture ? rebase(_this2[captureName], _this2.$store.get(collectionName, recordId) || {}, _this2[localPropertyName]) : _this2[localPropertyName];
+                _context2.next = 4;
+                return to(_this2.$store.save(collectionName, value));
 
-              case 2:
-                _ref4 = _context2.sent;
-                _ref5 = slicedToArray(_ref4, 2);
-                err = _ref5[0];
-                response = _ref5[1];
+              case 4:
+                _ref3 = _context2.sent;
+                _ref4 = slicedToArray(_ref3, 2);
+                err = _ref4[0];
+                response = _ref4[1];
 
                 if (!err) {
-                  _context2.next = 8;
+                  _context2.next = 10;
                   break;
                 }
 
                 throw err;
 
-              case 8:
+              case 10:
                 if (response) {
                   _this2[localPropertyName] = response;
                   _this2.$emit('update:' + idPropertyName, response[recordPrimaryKey]);
                 }
                 return _context2.abrupt('return', _this2[localPropertyName]);
 
-              case 10:
+              case 12:
               case 'end':
                 return _context2.stop();
             }
@@ -881,20 +928,6 @@ var createHandler = (function (vm, events) {
     }
   };
 });
-
-var deepClone$1 = function deepClone$1(obj) {
-  return JSON.parse(JSON.stringify(obj));
-};
-
-var Record = {
-  create: function create(jsDataRecord) {
-    var Record = function Record(record) {
-      Object.assign(this, deepClone$1(_extends({}, record.toJSON(), _extends({}, record))));
-    };
-    Record.prototype._collection = jsDataRecord._mapper().name;
-    return new Record(jsDataRecord);
-  }
-};
 
 var registerAdapters = function ($store, adapters) {
   var adaptersMap = entries(adapters);
