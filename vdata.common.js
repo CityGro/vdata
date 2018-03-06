@@ -12,7 +12,6 @@ var isObject = _interopDefault(require('lodash/isObject'));
 var transform = _interopDefault(require('lodash/transform'));
 var merge = _interopDefault(require('lodash/merge'));
 var tail = _interopDefault(require('lodash/tail'));
-var to = _interopDefault(require('@r14c/async-utils/to'));
 var Any = _interopDefault(require('p-any'));
 var isFunction = _interopDefault(require('lodash/isFunction'));
 var keys = _interopDefault(require('lodash/keys'));
@@ -280,6 +279,20 @@ var rebase = function () {
   return merge.apply(undefined, [jsonClone(base)].concat(toConsumableArray(tail(arguments).map(function (commit) {
     return difference(base, commit);
   }))));
+};
+
+/**
+ * @param {Promise} promise
+ * @return {Promise}
+ * @alias module:to
+ * @async
+ */
+var to = function to(promise) {
+  return promise.then(function (data) {
+    return [null, data];
+  }).catch(function (err) {
+    return [err, undefined];
+  });
 };
 
 /**

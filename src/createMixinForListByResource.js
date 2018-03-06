@@ -1,4 +1,4 @@
-import to from '@r14c/async-utils/to'
+import to from './to'
 
 /**
  * @param {object} options

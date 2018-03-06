@@ -2,7 +2,7 @@ import clone from 'lodash/cloneDeep'
 import get from 'lodash/get'
 import pop from './pop'
 import rebase from './rebase'
-import to from '@r14c/async-utils/to'
+import to from './to'
 
 /**
  * @param {object} options

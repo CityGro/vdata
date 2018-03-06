@@ -2,7 +2,7 @@ import Record from './Record'
 import createIndex from './createIndex'
 import createMixinForItemByResourceAndId from './createMixinForItemByResourceAndId.js'
 import createMixinForListByResource from './createMixinForListByResource'
-import to from '@r14c/async-utils/to'
+import to from './to'
 import vdata from './vdata'
 import {createDataFlowMixin} from './DataFlow'
 

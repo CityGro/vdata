@@ -11,6 +11,13 @@
 yarn add js-data-$adapter @citygro/vdata
 ```
 
+## Modules
+
+<dl>
+<dt><a href="#module_to">to</a></dt>
+<dd></dd>
+</dl>
+
 ## Constants
 
 <dl>
@@ -43,7 +50,21 @@ name and <code>update:${valueProp}</code> is emitted.</p>
 <dl>
 <dt><a href="#flattenMixinTree">flattenMixinTree(mixins)</a></dt>
 <dd></dd>
+<dt><a href="#exp_module_to--to">to(promise)</a> ⇒ <code>Promise</code> ⏏</dt>
+<dd></dd>
 </dl>
+
+<a name="module_to"></a>
+
+## to
+<a name="exp_module_to--to"></a>
+
+### to(promise) ⇒ <code>Promise</code> ⏏
+**Kind**: global method of [<code>to</code>](#module_to)  
+
+| Param | Type |
+| --- | --- |
+| promise | <code>Promise</code> | 
 
 <a name="handleChange"></a>
 
