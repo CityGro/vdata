@@ -28,20 +28,6 @@ var join = _interopDefault(require('lodash/join'));
 
 var jsonClone = flow(JSON.stringify, JSON.parse);
 
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) {
-  return typeof obj;
-} : function (obj) {
-  return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
-};
-
-
-
-
-
-
-
-
-
 var asyncToGenerator = function (fn) {
   return function () {
     var gen = fn.apply(this, arguments);
@@ -609,122 +595,74 @@ var createAsyncReload = function createAsyncReload(thisArg) {
 
     var skipLazy = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
 
+    var promises = [];
     var asyncData = getMergedOptions(this, 'asyncData');
     if (asyncData) {
-      var _ret = function () {
-        var names = keys(asyncData).filter(function (s) {
-          return !isOptionName(s);
-        }).filter(function (s) {
-          return propertyName === undefined || s === propertyName;
-        }).filter(function (s) {
-          return skipLazy === false || !asyncData[s + 'Lazy'];
-        });
-        if (propertyName !== undefined && names.length === 0) {
-          throw new Error('asyncData cannot find "' + propertyName, _this);
-        }
-
-        var _loop = function _loop(prop) {
-          // helpers
-          var setData = function setData(data) {
-            _this[prop] = data;
-            var promise = asyncData[prop].bind(_this);
-            _this[prop + 'Promise'] = promise;
-            return promise;
-          };
-          var setError = function setError(err) {
-            _this[prop + 'Error'] = err;
-            if (err) {
-              console.error('[@citygro/vdata<' + _this._uid + '>]', err);
-              _this.asyncError = true;
-            } else {
-              _this.asyncError = !!names.find(function (n) {
-                return _this[n + 'Error'];
-              });
-            }
-          };
-          var setLoading = function setLoading(flag) {
-            _this[prop + 'Loading'] = flag;
-            if (flag) {
-              _this.asyncLoading = true;
-            } else {
-              _this.asyncLoading = !!names.find(function (n) {
-                return _this[n + 'Loading'];
-              });
-            }
-          };
-          var setTimer = function setTimer() {
-            var timeout = asyncData[prop + 'Timeout'] || -1;
-            if (timeout > 0) {
-              clearTimeout(_this['_' + prop + 'Timer']);
-              _this['_' + prop + 'Timer'] = setTimeout(function () {
-                _this._asyncReload.cancel();
-              }, timeout);
-            }
-          };
-          var cancelTimer = function cancelTimer() {
-            if (_this['_' + prop + 'Timer']) {
-              clearTimeout(_this['_' + prop + 'Timer']);
-            }
-          };
-          setLoading(true);
-          setError(undefined);
-          setTimer();
-          if (typeof asyncData[prop] !== 'function') {
-            console.error('asyncData.' + prop + ' must be funtion. actual: ' + asyncData[prop], _this);
-            return 'continue';
+      var names = keys(asyncData).filter(function (s) {
+        return !isOptionName(s);
+      }).filter(function (s) {
+        return propertyName === undefined || s === propertyName;
+      }).filter(function (s) {
+        return skipLazy === false || !asyncData[s + 'Lazy'];
+      });
+      if (propertyName !== undefined && names.length === 0) {
+        throw new Error('asyncData cannot find "' + propertyName, this);
+      }
+      names.forEach(function (prop) {
+        // helpers
+        var setError = function setError(err) {
+          _this[prop + 'Error'] = err;
+          if (err) {
+            console.error('[@citygro/vdata<' + _this._uid + '>]', err);
+            _this.asyncError = true;
+          } else {
+            _this.asyncError = !!names.find(function (n) {
+              return _this[n + 'Error'];
+            });
           }
-          return {
-            v: {
-              v: asyncData[prop].apply(_this).then(function (res) {
-                var promise = setData(res);
-                setLoading(false);
-                cancelTimer();
-                return promise;
-              }).catch(function (err) {
-                setError(err);
-                setLoading(false);
-                cancelTimer();
-              })
-            }
-          };
         };
-
-        var _iteratorNormalCompletion = true;
-        var _didIteratorError = false;
-        var _iteratorError = undefined;
-
-        try {
-          for (var _iterator = names[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-            var prop = _step.value;
-
-            var _ret2 = _loop(prop);
-
-            switch (_ret2) {
-              case 'continue':
-                continue;
-
-              default:
-                if ((typeof _ret2 === 'undefined' ? 'undefined' : _typeof(_ret2)) === "object") return _ret2.v;
-            }
+        var setLoading = function setLoading(flag) {
+          _this[prop + 'Loading'] = flag;
+          if (flag) {
+            _this.asyncLoading = true;
+          } else {
+            _this.asyncLoading = !!names.find(function (n) {
+              return _this[n + 'Loading'];
+            });
           }
-        } catch (err) {
-          _didIteratorError = true;
-          _iteratorError = err;
-        } finally {
-          try {
-            if (!_iteratorNormalCompletion && _iterator.return) {
-              _iterator.return();
-            }
-          } finally {
-            if (_didIteratorError) {
-              throw _iteratorError;
-            }
+        };
+        var cancelTimer = function cancelTimer() {
+          if (_this['_' + prop + 'Timer']) {
+            clearTimeout(_this['_' + prop + 'Timer']);
           }
+        };
+        setLoading(true);
+        setError(undefined);
+        var timeout = asyncData[prop + 'Timeout'] || -1;
+        if (timeout > 0) {
+          clearTimeout(_this['_' + prop + 'Timer']);
+          _this['_' + prop + 'Timer'] = setTimeout(function () {
+            _this._asyncReload.cancel();
+          }, timeout);
         }
-      }();
-
-      if ((typeof _ret === 'undefined' ? 'undefined' : _typeof(_ret)) === "object") return _ret.v;
+        if (typeof asyncData[prop] !== 'function') {
+          console.error('asyncData.' + prop + ' must be funtion. actual: ' + asyncData[prop], _this);
+        } else {
+          var promise = asyncData[prop].apply(_this).then(function (data) {
+            _this[prop] = data;
+            _this[prop + 'Promise'] = promise;
+            setLoading(false);
+            cancelTimer();
+          }).catch(function (err) {
+            setError(err);
+            setLoading(false);
+            cancelTimer();
+          });
+          promises.push(promise);
+        }
+      });
     }
+    return Promise.all(promises);
   }.bind(thisArg);
 };
 
@@ -737,7 +675,9 @@ var AsyncDataMixin = {
   methods: {
     $asyncReload: function $asyncReload(propertyName) {
       if (isFunction(this._asyncReload)) {
-        return this._asyncReload.apply(this, arguments);
+        return this._asyncReload.apply(this, arguments).then(function () {
+          return true;
+        });
       } else {
         console.info('[@citygro/vdata<' + this._uid + '>] vm.asyncReload is not available until the component is created!');
         return Promise.resolve(null);
@@ -745,6 +685,8 @@ var AsyncDataMixin = {
     }
   },
   data: function data() {
+    var _this2 = this;
+
     var asyncData = getMergedOptions(this, 'asyncData');
     if (asyncData) {
       var names = keys(asyncData).filter(function (s) {
@@ -765,8 +707,8 @@ var AsyncDataMixin = {
       };
       names.forEach(function (name) {
         var asyncDefault = asyncData[name + 'Default'];
-        dataObj[name] = isFunction(asyncDefault) ? asyncDefault() : asyncDefault;
-        dataObj[name + 'Promise'] = asyncData[name];
+        dataObj[name] = isFunction(asyncDefault) ? asyncDefault.apply(_this2) : asyncDefault;
+        dataObj[name + 'Promise'] = null;
         dataObj[name + 'Loading'] = !asyncData[name + 'Lazy'];
       });
       errorNames.forEach(function (name) {

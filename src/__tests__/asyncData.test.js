@@ -106,7 +106,6 @@ describe('AsyncData', () => {
       expect(resolveVm.asyncError).toEqual(false)
       done()
     })
-    expect(resolveVm.asyncError).toEqual(false)
   })
 
   test('Reject promise.', (done) => {
@@ -116,7 +115,6 @@ describe('AsyncData', () => {
       expect(rejectVm.asyncError).toEqual(true)
       done()
     })
-    expect(rejectVm.asyncError).toEqual(false)
   })
 
   test('lazy reload.', () => {

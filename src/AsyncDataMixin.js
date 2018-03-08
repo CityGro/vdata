@@ -40,6 +40,7 @@ const isOptionName = (key, names = optionNames) => names.find((n) => key.endsWit
 
 // name args optional
 const createAsyncReload = (thisArg) => function (propertyName, skipLazy = false) {
+  let promises = []
   const asyncData = getMergedOptions(this, 'asyncData')
   if (asyncData) {
     let names = keys(asyncData)
@@ -49,14 +50,8 @@ const createAsyncReload = (thisArg) => function (propertyName, skipLazy = false)
     if (propertyName !== undefined && names.length === 0) {
       throw new Error(`asyncData cannot find "${propertyName}`, this)
     }
-    for (let prop of names) {
+    names.forEach((prop) => {
       // helpers
-      const setData = (data) => {
-        this[prop] = data
-        const promise = asyncData[prop].bind(this)
-        this[`${prop}Promise`] = promise
-        return promise
-      }
       const setError = (err) => {
         this[`${prop}Error`] = err
         if (err) {
@@ -74,15 +69,6 @@ const createAsyncReload = (thisArg) => function (propertyName, skipLazy = false)
           this.asyncLoading = !!names.find((n) => this[`${n}Loading`])
         }
       }
-      const setTimer = () => {
-        const timeout = asyncData[`${prop}Timeout`] || -1
-        if (timeout > 0) {
-          clearTimeout(this[`_${prop}Timer`])
-          this[`_${prop}Timer`] = setTimeout(() => {
-            this._asyncReload.cancel()
-          }, timeout)
-        }
-      }
       const cancelTimer = () => {
         if (this[`_${prop}Timer`]) {
           clearTimeout(this[`_${prop}Timer`])
@@ -90,26 +76,34 @@ const createAsyncReload = (thisArg) => function (propertyName, skipLazy = false)
       }
       setLoading(true)
       setError(undefined)
-      setTimer()
+      const timeout = asyncData[`${prop}Timeout`] || -1
+      if (timeout > 0) {
+        clearTimeout(this[`_${prop}Timer`])
+        this[`_${prop}Timer`] = setTimeout(() => {
+          this._asyncReload.cancel()
+        }, timeout)
+      }
       if (typeof asyncData[prop] !== 'function') {
         console.error(`asyncData.${prop} must be funtion. actual: ${asyncData[prop]}`, this)
-        continue
+      } else {
+        const promise = asyncData[prop]
+          .apply(this)
+          .then((data) => {
+            this[prop] = data
+            this[`${prop}Promise`] = promise
+            setLoading(false)
+            cancelTimer()
+          })
+          .catch((err) => {
+            setError(err)
+            setLoading(false)
+            cancelTimer()
+          })
+        promises.push(promise)
       }
-      return asyncData[prop]
-        .apply(this)
-        .then((res) => {
-          const promise = setData(res)
-          setLoading(false)
-          cancelTimer()
-          return promise
-        })
-        .catch((err) => {
-          setError(err)
-          setLoading(false)
-          cancelTimer()
-        })
-    }
+    })
   }
+  return Promise.all(promises)
 }.bind(thisArg)
 
 export default {
@@ -120,7 +114,9 @@ export default {
   methods: {
     $asyncReload (propertyName) {
       if (isFunction(this._asyncReload)) {
-        return this._asyncReload.apply(this, arguments)
+        return this._asyncReload
+          .apply(this, arguments)
+          .then(() => true)
       } else {
         console.info(`[@citygro/vdata<${this._uid}>] vm.asyncReload is not available until the component is created!`)
         return Promise.resolve(null)
@@ -140,8 +136,8 @@ export default {
       }
       names.forEach((name) => {
         const asyncDefault = asyncData[`${name}Default`]
-        dataObj[name] = (isFunction(asyncDefault)) ? asyncDefault() : asyncDefault
-        dataObj[`${name}Promise`] = asyncData[name]
+        dataObj[name] = (isFunction(asyncDefault)) ? asyncDefault.apply(this) : asyncDefault
+        dataObj[`${name}Promise`] = null
         dataObj[`${name}Loading`] = !asyncData[`${name}Lazy`]
       })
       errorNames.forEach((name) => {
