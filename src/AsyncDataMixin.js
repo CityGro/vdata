@@ -1,6 +1,8 @@
 /** !
  * vue-async-data
  *
+ * includes modifications which are subject to the terms outlined in LICENSE
+ *
  * The MIT License (MIT)
  *
  * Copyright (c) 2017 kamijin-fanta
@@ -45,16 +47,17 @@ const createAsyncReload = (thisArg) => function (propertyName, skipLazy = false)
       .filter((s) => propertyName === undefined || s === propertyName)
       .filter((s) => skipLazy === false || !asyncData[`${s}Lazy`])
     if (propertyName !== undefined && names.length === 0) {
-      console.error(`asyncData.${propertyName} cannot find.`, this)
-      return
+      throw new Error(`asyncData cannot find "${propertyName}`, this)
     }
     for (let prop of names) {
-      // helper
-      let setData = (data) => {
+      // helpers
+      const setData = (data) => {
         this[prop] = data
-        this[`${prop}Promise`] = asyncData[prop].bind(this)
+        const promise = asyncData[prop].bind(this)
+        this[`${prop}Promise`] = promise
+        return promise
       }
-      let setError = (err) => {
+      const setError = (err) => {
         this[`${prop}Error`] = err
         if (err) {
           console.error(`[@citygro/vdata<${this._uid}>]`, err)
@@ -63,7 +66,7 @@ const createAsyncReload = (thisArg) => function (propertyName, skipLazy = false)
           this.asyncError = !!names.find((n) => this[`${n}Error`])
         }
       }
-      let setLoading = (flag) => {
+      const setLoading = (flag) => {
         this[`${prop}Loading`] = flag
         if (flag) {
           this.asyncLoading = true
@@ -71,7 +74,7 @@ const createAsyncReload = (thisArg) => function (propertyName, skipLazy = false)
           this.asyncLoading = !!names.find((n) => this[`${n}Loading`])
         }
       }
-      let setTimer = () => {
+      const setTimer = () => {
         const timeout = asyncData[`${prop}Timeout`] || -1
         if (timeout > 0) {
           clearTimeout(this[`_${prop}Timer`])
@@ -80,7 +83,7 @@ const createAsyncReload = (thisArg) => function (propertyName, skipLazy = false)
           }, timeout)
         }
       }
-      let cancelTimer = () => {
+      const cancelTimer = () => {
         if (this[`_${prop}Timer`]) {
           clearTimeout(this[`_${prop}Timer`])
         }
@@ -92,15 +95,19 @@ const createAsyncReload = (thisArg) => function (propertyName, skipLazy = false)
         console.error(`asyncData.${prop} must be funtion. actual: ${asyncData[prop]}`, this)
         continue
       }
-      asyncData[prop].apply(this).then((res) => {
-        setData(res)
-        setLoading(false)
-        cancelTimer()
-      }).catch((err) => {
-        setError(err)
-        setLoading(false)
-        cancelTimer()
-      })
+      return asyncData[prop]
+        .apply(this)
+        .then((res) => {
+          const promise = setData(res)
+          setLoading(false)
+          cancelTimer()
+          return promise
+        })
+        .catch((err) => {
+          setError(err)
+          setLoading(false)
+          cancelTimer()
+        })
     }
   }
 }.bind(thisArg)
@@ -111,11 +118,12 @@ export default {
     this.$asyncReload(undefined, true)
   },
   methods: {
-    $asyncReload () {
+    $asyncReload (propertyName) {
       if (isFunction(this._asyncReload)) {
-        this._asyncReload.apply(this, arguments)
+        return this._asyncReload.apply(this, arguments)
       } else {
         console.info(`[@citygro/vdata<${this._uid}>] vm.asyncReload is not available until the component is created!`)
+        return Promise.resolve(null)
       }
     }
   },

@@ -18,6 +18,7 @@ var keys = _interopDefault(require('lodash/keys'));
 var assign = _interopDefault(require('lodash/assign'));
 var isEmpty = _interopDefault(require('lodash/isEmpty'));
 var defaults = _interopDefault(require('lodash/defaults'));
+var isArray = _interopDefault(require('lodash/isArray'));
 var entries = _interopDefault(require('lodash/entries'));
 var stringify = _interopDefault(require('json-stable-stringify'));
 var jsData = require('js-data');
@@ -567,6 +568,8 @@ var getMergedOptions = (function (vm, prop) {
 /** !
  * vue-async-data
  *
+ * includes modifications which are subject to the terms outlined in LICENSE
+ *
  * The MIT License (MIT)
  *
  * Copyright (c) 2017 kamijin-fanta
@@ -617,17 +620,16 @@ var createAsyncReload = function createAsyncReload(thisArg) {
           return skipLazy === false || !asyncData[s + 'Lazy'];
         });
         if (propertyName !== undefined && names.length === 0) {
-          console.error('asyncData.' + propertyName + ' cannot find.', _this);
-          return {
-            v: void 0
-          };
+          throw new Error('asyncData cannot find "' + propertyName, _this);
         }
 
         var _loop = function _loop(prop) {
-          // helper
+          // helpers
           var setData = function setData(data) {
             _this[prop] = data;
-            _this[prop + 'Promise'] = asyncData[prop].bind(_this);
+            var promise = asyncData[prop].bind(_this);
+            _this[prop + 'Promise'] = promise;
+            return promise;
           };
           var setError = function setError(err) {
             _this[prop + 'Error'] = err;
@@ -671,15 +673,20 @@ var createAsyncReload = function createAsyncReload(thisArg) {
             console.error('asyncData.' + prop + ' must be funtion. actual: ' + asyncData[prop], _this);
             return 'continue';
           }
-          asyncData[prop].apply(_this).then(function (res) {
-            setData(res);
-            setLoading(false);
-            cancelTimer();
-          }).catch(function (err) {
-            setError(err);
-            setLoading(false);
-            cancelTimer();
-          });
+          return {
+            v: {
+              v: asyncData[prop].apply(_this).then(function (res) {
+                var promise = setData(res);
+                setLoading(false);
+                cancelTimer();
+                return promise;
+              }).catch(function (err) {
+                setError(err);
+                setLoading(false);
+                cancelTimer();
+              })
+            }
+          };
         };
 
         var _iteratorNormalCompletion = true;
@@ -692,7 +699,13 @@ var createAsyncReload = function createAsyncReload(thisArg) {
 
             var _ret2 = _loop(prop);
 
-            if (_ret2 === 'continue') continue;
+            switch (_ret2) {
+              case 'continue':
+                continue;
+
+              default:
+                if ((typeof _ret2 === 'undefined' ? 'undefined' : _typeof(_ret2)) === "object") return _ret2.v;
+            }
           }
         } catch (err) {
           _didIteratorError = true;
@@ -722,11 +735,12 @@ var AsyncDataMixin = {
   },
 
   methods: {
-    $asyncReload: function $asyncReload() {
+    $asyncReload: function $asyncReload(propertyName) {
       if (isFunction(this._asyncReload)) {
-        this._asyncReload.apply(this, arguments);
+        return this._asyncReload.apply(this, arguments);
       } else {
         console.info('[@citygro/vdata<' + this._uid + '>] vm.asyncReload is not available until the component is created!');
+        return Promise.resolve(null);
       }
     }
   },
@@ -1143,14 +1157,16 @@ var Store = {
      * @param {string} collection
      * @param {string[]} [keys]
      */
-    Store.prototype.getAll = function (collection) {
+    Store.prototype.getAll = function (collection, keys$$1) {
       var _this = this;
 
-      var keys$$1 = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : [];
-
-      return keys$$1.length ? keys$$1.map(function (key) {
-        return _this.get(collection, key);
-      }) : store.getAll(collection).map(Record.create);
+      if (isArray(keys$$1)) {
+        return keys$$1.length ? keys$$1.map(function (key) {
+          return _this.get(collection, key);
+        }) : [];
+      } else {
+        return store.getAll(collection).map(Record.create);
+      }
     };
     /**
      *

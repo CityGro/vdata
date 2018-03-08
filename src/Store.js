@@ -1,4 +1,5 @@
 import Record from './Record'
+import isArray from 'lodash/isArray'
 import registerAdapters from './registerAdapters'
 import registerSchemas from './registerSchemas'
 import stringify from 'json-stable-stringify'
@@ -177,10 +178,14 @@ export default {
      * @param {string} collection
      * @param {string[]} [keys]
      */
-    Store.prototype.getAll = function (collection, keys = []) {
-      return (keys.length)
-        ? keys.map((key) => this.get(collection, key))
-        : store.getAll(collection).map(Record.create)
+    Store.prototype.getAll = function (collection, keys) {
+      if (isArray(keys)) {
+        return (keys.length)
+          ? keys.map((key) => this.get(collection, key))
+          : []
+      } else {
+        return store.getAll(collection).map(Record.create)
+      }
     }
     /**
      *
