@@ -142,6 +142,11 @@ describe('AsyncData', () => {
     expect(promise).toBeInstanceOf(Promise)
     jest.runAllTimers()
     expect(spy).toHaveBeenCalledTimes(2)
+    const promiseAll = lazyVm.$asyncReload()
+    return Promise.all([
+      promise.then((value) => expect(value).toEqual('OK!')),
+      promiseAll.then((value) => expect(value).toEqual({sandbox: 'OK!'}))
+    ])
   })
 
   test('merge options', () => {

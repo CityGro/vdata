@@ -13,10 +13,12 @@ var transform = _interopDefault(require('lodash/transform'));
 var merge = _interopDefault(require('lodash/merge'));
 var tail = _interopDefault(require('lodash/tail'));
 var Any = _interopDefault(require('p-any'));
-var isFunction = _interopDefault(require('lodash/isFunction'));
-var keys = _interopDefault(require('lodash/keys'));
+var fromPairs = _interopDefault(require('lodash/fp/fromPairs'));
 var assign = _interopDefault(require('lodash/assign'));
 var isEmpty = _interopDefault(require('lodash/isEmpty'));
+var isFunction = _interopDefault(require('lodash/isFunction'));
+var keys = _interopDefault(require('lodash/keys'));
+var zip = _interopDefault(require('lodash/fp/zip'));
 var defaults = _interopDefault(require('lodash/defaults'));
 var isArray = _interopDefault(require('lodash/isArray'));
 var entries = _interopDefault(require('lodash/entries'));
@@ -595,9 +597,9 @@ var createAsyncReload = function createAsyncReload(thisArg) {
 
     var skipLazy = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
 
-    var promises = [];
     var asyncData = getMergedOptions(this, 'asyncData');
     if (asyncData) {
+      var promises = [];
       var names = keys(asyncData).filter(function (s) {
         return !isOptionName(s);
       }).filter(function (s) {
@@ -653,6 +655,7 @@ var createAsyncReload = function createAsyncReload(thisArg) {
             _this[prop + 'Promise'] = promise;
             setLoading(false);
             cancelTimer();
+            return data;
           }).catch(function (err) {
             setError(err);
             setLoading(false);
@@ -661,8 +664,10 @@ var createAsyncReload = function createAsyncReload(thisArg) {
           promises.push(promise);
         }
       });
+      return Promise.all(promises).then(flow(zip(names), fromPairs));
+    } else {
+      return Promise.resolve({});
     }
-    return Promise.all(promises);
   }.bind(thisArg);
 };
 
@@ -675,8 +680,8 @@ var AsyncDataMixin = {
   methods: {
     $asyncReload: function $asyncReload(propertyName) {
       if (isFunction(this._asyncReload)) {
-        return this._asyncReload.apply(this, arguments).then(function () {
-          return true;
+        return this._asyncReload.apply(this, arguments).then(function (result) {
+          return propertyName ? result[propertyName] : result;
         });
       } else {
         console.info('[@citygro/vdata<' + this._uid + '>] vm.asyncReload is not available until the component is created!');

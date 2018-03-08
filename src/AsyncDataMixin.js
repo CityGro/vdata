@@ -27,9 +27,12 @@
  */
 
 import Any from 'p-any'
+import flow from 'lodash/fp/flow'
+import fromPairs from 'lodash/fp/fromPairs'
+import getMergedOptions from './getMergedOptions'
 import isFunction from 'lodash/isFunction'
 import keys from 'lodash/keys'
-import getMergedOptions from './getMergedOptions'
+import zip from 'lodash/fp/zip'
 
 let optionNames = [
   'Default',
@@ -40,9 +43,9 @@ const isOptionName = (key, names = optionNames) => names.find((n) => key.endsWit
 
 // name args optional
 const createAsyncReload = (thisArg) => function (propertyName, skipLazy = false) {
-  let promises = []
   const asyncData = getMergedOptions(this, 'asyncData')
   if (asyncData) {
+    let promises = []
     let names = keys(asyncData)
       .filter((s) => !isOptionName(s))
       .filter((s) => propertyName === undefined || s === propertyName)
@@ -93,6 +96,7 @@ const createAsyncReload = (thisArg) => function (propertyName, skipLazy = false)
             this[`${prop}Promise`] = promise
             setLoading(false)
             cancelTimer()
+            return data
           })
           .catch((err) => {
             setError(err)
@@ -102,8 +106,10 @@ const createAsyncReload = (thisArg) => function (propertyName, skipLazy = false)
         promises.push(promise)
       }
     })
+    return Promise.all(promises).then(flow(zip(names), fromPairs))
+  } else {
+    return Promise.resolve({})
   }
-  return Promise.all(promises)
 }.bind(thisArg)
 
 export default {
@@ -116,7 +122,7 @@ export default {
       if (isFunction(this._asyncReload)) {
         return this._asyncReload
           .apply(this, arguments)
-          .then(() => true)
+          .then((result) => (propertyName) ? result[propertyName] : result)
       } else {
         console.info(`[@citygro/vdata<${this._uid}>] vm.asyncReload is not available until the component is created!`)
         return Promise.resolve(null)
