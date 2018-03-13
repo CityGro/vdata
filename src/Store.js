@@ -88,7 +88,7 @@ export default {
             throw err
           })
       } else {
-        return store.create(collection, data)
+        return store.create(collection, data, options)
           .then(Record.create)
           .catch((err) => {
             throw err
