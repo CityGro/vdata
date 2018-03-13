@@ -3051,7 +3051,7 @@
                         throw t;
                     });
                 }
-                return e.create(t, n).then(q.create).catch(function(t) {
+                return e.create(t, n, r).then(q.create).catch(function(t) {
                     throw t;
                 });
             }, n.prototype.add = function(t, n, r) {

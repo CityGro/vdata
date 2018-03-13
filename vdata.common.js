@@ -1013,7 +1013,7 @@ var Store = {
           throw err;
         });
       } else {
-        return store.create(collection, data).then(Record.create).catch(function (err) {
+        return store.create(collection, data, options).then(Record.create).catch(function (err) {
           throw err;
         });
       }
