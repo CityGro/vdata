@@ -1,3 +1,4 @@
+import camelCase from 'lodash/camelCase'
 import to from './to'
 
 /**
@@ -10,7 +11,7 @@ import to from './to'
  */
 export default function (options) {
   const collectionName = options.collectionName
-  const localPropertyName = options.localPropertyName || collectionName
+  const localPropertyName = options.localPropertyName || camelCase(collectionName)
   const localPropertyForceName = `${localPropertyName}Force`
   const queryOptions = options.queryOptions || {}
   const requestOptions = options.requestOptions

@@ -1,8 +1,10 @@
+import camelCase from 'lodash/camelCase'
 import clone from 'lodash/cloneDeep'
 import get from 'lodash/get'
 import pop from './pop'
 import rebase from './rebase'
 import to from './to'
+import fastDiff from './fastDiff'
 
 /**
  * @param {object} options
@@ -13,7 +15,7 @@ import to from './to'
  */
 export default function (options) {
   const collectionName = options.collectionName
-  const localPropertyName = options.localPropertyName || collectionName.slice(0, -1)
+  const localPropertyName = options.localPropertyName || camelCase(collectionName).slice(0, -1)
   const idPropertyName = options.idPropertyName || 'id' // FIXME `${localPropertyName}Id`
   const templateName = options.templateName || `${localPropertyName}Template`
   const template = options.template || {}
@@ -109,11 +111,16 @@ export default function (options) {
     },
     computed: {
       [hasChangesComputedName] () {
-        return this.$store.hasChanges(
-          collectionName,
-          this[getIdMethodName](),
-          this[localPropertyName]
-        )
+        const localState = this[localPropertyName]
+        if (this[capture]) {
+          return fastDiff(this[captureName], localState)
+        } else {
+          return this.$store.hasChanges(
+            collectionName,
+            this[getIdMethodName](),
+            localState
+          )
+        }
       }
     },
     methods: {

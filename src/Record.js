@@ -10,7 +10,6 @@ export default {
         ...{...record}
       }))
     }
-    Record.prototype._collection = jsDataRecord._mapper().name
     return new Record(jsDataRecord)
   }
 }

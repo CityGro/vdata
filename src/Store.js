@@ -1,8 +1,8 @@
 import Record from './Record'
+import fastDiff from './fastDiff'
 import isArray from 'lodash/isArray'
 import registerAdapters from './registerAdapters'
 import registerSchemas from './registerSchemas'
-import stringify from 'json-stable-stringify'
 import {DataStore} from 'js-data'
 
 export default {
@@ -36,9 +36,7 @@ export default {
     Store.prototype.hasChanges = function (collection, id, data) {
       if (this.isValidId(id)) {
         const record = this.get(collection, id)
-        const a = stringify(record)
-        const b = stringify(data)
-        return a !== b
+        return fastDiff(record, data)
       } else {
         return true
       }

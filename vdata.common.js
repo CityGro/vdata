@@ -5,6 +5,7 @@ Object.defineProperty(exports, '__esModule', { value: true });
 function _interopDefault (ex) { return (ex && (typeof ex === 'object') && 'default' in ex) ? ex['default'] : ex; }
 
 var flow = _interopDefault(require('lodash/fp/flow'));
+var camelCase = _interopDefault(require('lodash/camelCase'));
 var clone = _interopDefault(require('lodash/cloneDeep'));
 var get = _interopDefault(require('lodash/get'));
 var isEqual = _interopDefault(require('lodash/isEqual'));
@@ -12,6 +13,7 @@ var isObject = _interopDefault(require('lodash/isObject'));
 var transform = _interopDefault(require('lodash/transform'));
 var merge = _interopDefault(require('lodash/merge'));
 var tail = _interopDefault(require('lodash/tail'));
+var stringify = _interopDefault(require('json-stable-stringify'));
 var Any = _interopDefault(require('p-any'));
 var fromPairs = _interopDefault(require('lodash/fp/fromPairs'));
 var assign = _interopDefault(require('lodash/assign'));
@@ -22,9 +24,7 @@ var zip = _interopDefault(require('lodash/fp/zip'));
 var defaults = _interopDefault(require('lodash/defaults'));
 var isArray = _interopDefault(require('lodash/isArray'));
 var entries = _interopDefault(require('lodash/entries'));
-var stringify = _interopDefault(require('json-stable-stringify'));
 var jsData = require('js-data');
-var camelCase = _interopDefault(require('lodash/camelCase'));
 var concat = _interopDefault(require('lodash/concat'));
 var join = _interopDefault(require('lodash/join'));
 
@@ -224,7 +224,6 @@ var Record = {
     var Record = function Record(record) {
       Object.assign(this, jsonClone(_extends({}, record.toJSON(), _extends({}, record))));
     };
-    Record.prototype._collection = jsDataRecord._mapper().name;
     return new Record(jsDataRecord);
   }
 };
@@ -285,6 +284,17 @@ var to = function to(promise) {
 };
 
 /**
+ * quickly determine if two objects differ
+ *
+ * @param {Object} a
+ * @param {Object} b
+ * @returns {Boolean}
+ */
+var fastDiff = (function (a, b) {
+  return stringify(a) !== stringify(b);
+});
+
+/**
  * @param {object} options
  * @param {string} options.collectionName
  * @param {string} options.idPropertyName
@@ -295,7 +305,7 @@ var createMixinForItemByResourceAndId = function (options) {
   var _props, _methods;
 
   var collectionName = options.collectionName;
-  var localPropertyName = options.localPropertyName || collectionName.slice(0, -1);
+  var localPropertyName = options.localPropertyName || camelCase(collectionName).slice(0, -1);
   var idPropertyName = options.idPropertyName || 'id'; // FIXME `${localPropertyName}Id`
   var templateName = options.templateName || localPropertyName + 'Template';
   var template = options.template || {};
@@ -406,7 +416,12 @@ var createMixinForItemByResourceAndId = function (options) {
       this.$asyncReload(localPropertyName);
     }),
     computed: defineProperty({}, hasChangesComputedName, function () {
-      return this.$store.hasChanges(collectionName, this[getIdMethodName](), this[localPropertyName]);
+      var localState = this[localPropertyName];
+      if (this[capture]) {
+        return fastDiff(this[captureName], localState);
+      } else {
+        return this.$store.hasChanges(collectionName, this[getIdMethodName](), localState);
+      }
     }),
     methods: (_methods = {}, defineProperty(_methods, getIdMethodName, function () {
       var id = this[idPropertyName] || get(this, localPropertyName + '.' + recordPrimaryKey, null);
@@ -467,7 +482,7 @@ var createMixinForItemByResourceAndId = function (options) {
  */
 var createMixinForListByResource = function (options) {
   var collectionName = options.collectionName;
-  var localPropertyName = options.localPropertyName || collectionName;
+  var localPropertyName = options.localPropertyName || camelCase(collectionName);
   var localPropertyForceName = localPropertyName + 'Force';
   var queryOptions = options.queryOptions || {};
   var requestOptions = options.requestOptions;
@@ -964,9 +979,7 @@ var Store = {
     Store.prototype.hasChanges = function (collection, id, data) {
       if (this.isValidId(id)) {
         var record = this.get(collection, id);
-        var a = stringify(record);
-        var b = stringify(data);
-        return a !== b;
+        return fastDiff(record, data);
       } else {
         return true;
       }

@@ -2741,7 +2741,7 @@
         Object.defineProperty(e, "__esModule", {
             value: !0
         });
-        var h = i(n(354)), v = i(n(342)), y = i(n(159)), g = i(n(360)), m = i(n(4)), x = i(n(376)), b = i(n(365)), _ = i(n(370)), w = i(n(383)), O = i(n(355)), A = i(n(337)), j = i(n(359)), E = i(n(25)), k = i(n(11)), C = i(n(356)), R = i(n(347)), I = i(n(0)), S = i(n(348)), F = i(n(225)), P = n(224), M = i(n(339)), L = i(n(343)), T = i(n(363)), N = h(p.default, JSON.parse), D = function(t) {
+        var h = i(n(354)), v = i(n(339)), y = i(n(342)), g = i(n(159)), m = i(n(360)), x = i(n(4)), b = i(n(376)), _ = i(n(365)), w = i(n(370)), O = i(n(225)), A = i(n(383)), j = i(n(355)), E = i(n(337)), k = i(n(359)), C = i(n(25)), R = i(n(11)), I = i(n(356)), S = i(n(347)), F = i(n(0)), P = i(n(348)), M = n(224), L = i(n(343)), T = i(n(363)), N = h(p.default, JSON.parse), D = function(t) {
             return function() {
                 var e = t.apply(this, arguments);
                 return new l.default(function(t, n) {
@@ -2803,14 +2803,13 @@
             return (0, a.default)(t);
         }, q = {
             create: function(t) {
-                var e = function(t) {
+                return new function(t) {
                     (0, s.default)(this, N(W({}, t.toJSON(), W({}, t))));
-                };
-                return e.prototype._collection = t._mapper().name, new e(t);
+                }(t);
             }
         }, z = function() {
             var t = arguments[0];
-            return b.apply(void 0, [ N(t) ].concat($(_(arguments).map(function(e) {
+            return _.apply(void 0, [ N(t) ].concat($(w(arguments).map(function(e) {
                 /**
  * @param {object} base
  * @param {object} object
@@ -2818,8 +2817,8 @@
  */
                 return function(t, e) {
                     function n(t, e) {
-                        return x(t, function(t, r, i) {
-                            g(r, e[i]) || (t[i] = m(r) && m(e[i]) ? n(r, e[i]) : r);
+                        return b(t, function(t, r, i) {
+                            m(r, e[i]) || (t[i] = x(r) && x(e[i]) ? n(r, e[i]) : r);
                         });
                     }
                     return n(e, t);
@@ -2831,30 +2830,32 @@
             }).catch(function(t) {
                 return [ t, void 0 ];
             });
-        }, J = function t() {
+        }, J = function(t, e) {
+            return O(t) !== O(e);
+        }, Q = function t() {
             var e = [];
             return (arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : []).forEach(function(n) {
                 n.mixins && n.mixins.length && (e = [].concat($(e), $(t(n.mixins)))), e.push(n);
             }), e;
-        }, Q = function(t, e) {
-            var n = y(t, "$options." + e, {}), r = y(t, "$options.mixins", []);
-            return J(r).filter(function(t) {
+        }, V = function(t, e) {
+            var n = g(t, "$options." + e, {}), r = g(t, "$options.mixins", []);
+            return Q(r).filter(function(t) {
                 return t[e];
             }).forEach(function(t) {
-                n = A(n, t[e]);
-            }), j(n) ? null : n;
-        }, V = [ "Default", "Lazy" ], H = function(t) {
-            return (arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : V).find(function(e) {
+                n = E(n, t[e]);
+            }), k(n) ? null : n;
+        }, H = [ "Default", "Lazy" ], G = function(t) {
+            return (arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : H).find(function(e) {
                 return t.endsWith(e);
             });
-        }, G = {
+        }, Y = {
             created: function() {
                 this._asyncReload = function(t) {
                     return function(t) {
-                        var e = this, n = arguments.length > 1 && void 0 !== arguments[1] && arguments[1], r = Q(this, "asyncData");
+                        var e = this, n = arguments.length > 1 && void 0 !== arguments[1] && arguments[1], r = V(this, "asyncData");
                         if (r) {
-                            var i = [], o = k(r).filter(function(t) {
-                                return !H(t);
+                            var i = [], o = R(r).filter(function(t) {
+                                return !G(t);
                             }).filter(function(e) {
                                 return void 0 === t || e === t;
                             }).filter(function(t) {
@@ -2886,7 +2887,7 @@
                                     });
                                     i.push(s);
                                 }
-                            }), l.default.all(i).then(h(C(o), O));
+                            }), l.default.all(i).then(h(I(o), j));
                         }
                         return l.default.resolve({});
                     }.bind(t);
@@ -2894,17 +2895,17 @@
             },
             methods: {
                 $asyncReload: function(t) {
-                    return E(this._asyncReload) ? this._asyncReload.apply(this, arguments).then(function(e) {
+                    return C(this._asyncReload) ? this._asyncReload.apply(this, arguments).then(function(e) {
                         return t ? e[t] : e;
                     }) : (console.info("[@citygro/vdata<" + this._uid + ">] vm.asyncReload is not available until the component is created!"), 
                     l.default.resolve(null));
                 }
             },
             data: function() {
-                var t = this, e = Q(this, "asyncData");
+                var t = this, e = V(this, "asyncData");
                 if (e) {
-                    var n = k(e).filter(function(t) {
-                        return !H(t);
+                    var n = R(e).filter(function(t) {
+                        return !G(t);
                     }), r = n.map(function(t) {
                         return t + "Error";
                     }), i = {
@@ -2913,29 +2914,29 @@
                         asyncAll: l.default.all(n.map(function(t) {
                             return e[t];
                         })),
-                        asyncAny: w(n.map(function(t) {
+                        asyncAny: A(n.map(function(t) {
                             return e[t];
                         }))
                     };
                     return n.forEach(function(n) {
                         var r = e[n + "Default"];
-                        i[n] = E(r) ? r.apply(t) : r, i[n + "Promise"] = null, i[n + "Loading"] = !e[n + "Lazy"];
+                        i[n] = C(r) ? r.apply(t) : r, i[n + "Promise"] = null, i[n + "Loading"] = !e[n + "Lazy"];
                     }), r.forEach(function(t) {
                         i[t] = void 0;
                     }), i;
                 }
                 return {};
             }
-        }, Y = {}, Z = function(t) {
-            var e = new P.DataStore(), n = function(t, e) {
+        }, Z = {}, X = function(t) {
+            var e = new M.DataStore(), n = function(t, e) {
                 !function(t) {
                     var e = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : {};
-                    j(e) && console.error("[@citygro/vdata] you have not defined any models!"), S(e).forEach(function(e) {
+                    k(e) && console.error("[@citygro/vdata] you have not defined any models!"), P(e).forEach(function(e) {
                         var n = B(e, 2), r = n[0], i = n[1];
                         return t.defineMapper(r, i);
                     });
                 }(t, e.models), function(t, e) {
-                    var n = S(e);
+                    var n = P(e);
                     n.forEach(function(e) {
                         var r = B(e, 2), i = r[0], o = r[1];
                         1 === n.length ? t.registerAdapter(i, o.adapter, o.options || {
@@ -3035,7 +3036,7 @@
             }, n.prototype.hasChanges = function(t, e, n) {
                 if (this.isValidId(e)) {
                     var r = this.get(t, e);
-                    return F(r) !== F(n);
+                    return J(r, n);
                 }
                 return !0;
             }, n.prototype.commit = function(t, n, r) {
@@ -3080,7 +3081,7 @@
                 if (r) return q.create(r);
             }, n.prototype.getAll = function(t, n) {
                 var r = this;
-                return I(n) ? n.length ? n.map(function(e) {
+                return F(n) ? n.length ? n.map(function(e) {
                     return r.get(t, e);
                 }) : [] : e.getAll(t).map(q.create);
             }, n.prototype.clear = function() {
@@ -3090,20 +3091,20 @@
             }, n.prototype.off = function(t, n) {
                 e.off(t, n);
             }, new n(e, t);
-        }, X = function(t) {
-            return !!y(t, "$options.vdata");
-        }, tt = {
+        }, tt = function(t) {
+            return !!g(t, "$options.vdata");
+        }, et = {
             createConfig: function(t) {
                 return function(e) {
                     var n = t(e);
-                    return R(n || {}, {
+                    return S(n || {}, {
                         events: [ "add", "change", "remove", "afterDestroy", "vm-created" ]
                     });
                 };
             },
             install: function(t, e) {
-                e = E(e) ? e(t) : e;
-                var n = Z(e);
+                e = C(e) ? e(t) : e;
+                var n = X(e);
                 Object.defineProperty(t, "$store", {
                     get: function() {
                         return n;
@@ -3115,7 +3116,7 @@
                 }), console.log("[@citygro/vdata] $store ready!", n), t.mixin({
                     methods: {
                         $vdata: function() {
-                            X(this) && this._vdataHandler.run(function() {
+                            tt(this) && this._vdataHandler.run(function() {
                                 var t = {
                                     event: arguments[0],
                                     collectionName: arguments[1]
@@ -3204,25 +3205,25 @@
                         }
                     },
                     beforeCreate: function() {
-                        X(this) && (this._vdataHandler = function(t, e) {
-                            return Y[t._uid] = J(t.$options.mixins).filter(function(t) {
+                        tt(this) && (this._vdataHandler = function(t, e) {
+                            return Z[t._uid] = Q(t.$options.mixins).filter(function(t) {
                                 return !!t.vdata;
                             }).map(function(t) {
                                 return t.vdata;
-                            }), t.$options.vdata && Y[t._uid].push(t.$options.vdata), console.log("[@citygro/vdata<" + t._uid + ">] ready. listening on", e), 
+                            }), t.$options.vdata && Z[t._uid].push(t.$options.vdata), console.log("[@citygro/vdata<" + t._uid + ">] ready. listening on", e), 
                             {
                                 run: function(n) {
                                     ((function() {
                                         var t = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : [], e = arguments[1];
                                         return t.indexOf(e) >= 0;
-                                    })(e, n.event) || "$vdata-call" === n.event) && Y[t._uid].forEach(function(e) {
+                                    })(e, n.event) || "$vdata-call" === n.event) && Z[t._uid].forEach(function(e) {
                                         setTimeout(function() {
                                             return e.apply(t, [ n ]);
                                         }, 0);
                                     });
                                 },
                                 destroy: function() {
-                                    delete Y[t._uid];
+                                    delete Z[t._uid];
                                 }
                             };
                         }(this, e.events));
@@ -3231,126 +3232,126 @@
                         this.$vdata("vm-created"), this.$store.on("all", this.$vdata);
                     },
                     beforeDestroy: function() {
-                        X(this) && (n.off("all", this.$vdata), this._vdataHandler.destroy());
+                        tt(this) && (n.off("all", this.$vdata), this._vdataHandler.destroy());
                     }
-                }), t.mixin(G);
+                }), t.mixin(Y);
             }
-        }, et = function(t) {
+        }, nt = function(t) {
             var e = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : "";
-            return "" === e ? M(t) : "" + M(e) + function(t) {
-                var e = M(t), n = L([], e.charAt(0).toUpperCase(), _(e));
+            return "" === e ? v(t) : "" + v(e) + function(t) {
+                var e = v(t), n = L([], e.charAt(0).toUpperCase(), w(e));
                 return T(n, "");
             }(t);
-        }, nt = function(t) {
+        }, rt = function(t) {
             var e = t.value, n = t.diff;
             return W({}, e, n);
-        }, rt = function(t) {
-            var e = t.value, n = t.key, r = t.diff, i = nt({
+        }, it = function(t) {
+            var e = t.value, n = t.key, r = t.diff, i = rt({
                 value: e[n],
                 diff: r
             });
-            return nt({
+            return rt({
                 value: e,
                 diff: K({}, n, i)
             });
-        }, it = function(t) {
+        }, ot = function(t) {
             var e = t.value, n = void 0 === e ? [] : e, r = t.index, i = t.diff, o = [].concat($(n));
             return o[r] = W({}, o[r] || {}, i), o;
-        }, ot = function(t) {
-            var e = t.value, n = void 0 === e ? {} : e, r = t.index, i = t.key, o = t.diff, a = it({
+        }, at = function(t) {
+            var e = t.value, n = void 0 === e ? {} : e, r = t.index, i = t.key, o = t.diff, a = ot({
                 value: n[i] || [],
                 index: r,
                 diff: o
             });
-            return nt({
+            return rt({
                 value: n,
                 diff: K({}, i, a)
             });
-        }, at = function(t) {
+        }, ut = function(t) {
             var e = t.value, n = void 0 === e ? [] : e, r = t.diff, i = [].concat($(n));
             return i.push(r), i;
-        }, ut = function(t) {
+        }, ct = function(t) {
             var e = t.value, n = void 0 === e ? {} : e, r = t.key, i = t.diff, o = [].concat($(n[r] || []));
-            return o.push(i), nt({
+            return o.push(i), rt({
                 value: n,
                 diff: K({}, r, o)
             });
-        }, ct = function(t) {
+        }, st = function(t) {
             var e = t.value, n = void 0 === e ? [] : e, r = t.index, i = [].concat($(n));
             return i.splice(r, 1), i;
-        }, st = function(t) {
-            var e = t.value, n = void 0 === e ? {} : e, r = t.index, i = t.key, o = ct({
+        }, ft = function(t) {
+            var e = t.value, n = void 0 === e ? {} : e, r = t.index, i = t.key, o = st({
                 value: n[i],
                 index: r
             });
-            return nt({
+            return rt({
                 value: n,
                 diff: K({}, i, o)
             });
-        }, ft = function(t) {
+        }, lt = function(t) {
             var e, n = "value" === t ? "input" : "update:" + t, r = "value" === t ? "" : t;
             return {
-                methods: (e = {}, K(e, et("forwardInput", r), function(t) {
+                methods: (e = {}, K(e, nt("forwardInput", r), function(t) {
                     this.$emit(n, t);
-                }), K(e, et("handleChange", r), function(e) {
-                    this.$emit(n, nt({
+                }), K(e, nt("handleChange", r), function(e) {
+                    this.$emit(n, rt({
                         value: this[t],
                         diff: e
                     }));
-                }), K(e, et("handleKeyChange", r), function(e, r) {
-                    this.$emit(n, rt({
+                }), K(e, nt("handleKeyChange", r), function(e, r) {
+                    this.$emit(n, it({
                         value: this[t],
                         key: e,
                         diff: r
                     }));
-                }), K(e, et("handleArrayKeyChange", r), function(e, r, i) {
-                    this.$emit(n, ot({
+                }), K(e, nt("handleArrayKeyChange", r), function(e, r, i) {
+                    this.$emit(n, at({
                         value: this[t],
                         index: e,
                         key: r,
                         diff: i
                     }));
-                }), K(e, et("handleArrayChange", r), function(e, r) {
-                    this.$emit(n, it({
+                }), K(e, nt("handleArrayChange", r), function(e, r) {
+                    this.$emit(n, ot({
                         value: this[t],
                         index: e,
                         diff: r
                     }));
-                }), K(e, et("pushToArray", r), function(e) {
-                    this.$emit(n, at({
+                }), K(e, nt("pushToArray", r), function(e) {
+                    this.$emit(n, ut({
                         value: this[t],
                         diff: e
                     }));
-                }), K(e, et("pushToArrayKey", r), function(e, r) {
-                    this.$emit(n, ut({
+                }), K(e, nt("pushToArrayKey", r), function(e, r) {
+                    this.$emit(n, ct({
                         value: this[t],
                         key: e,
                         diff: r
                     }));
-                }), K(e, et("removeFromArray", r), function(e) {
-                    this.$emit(n, ct({
+                }), K(e, nt("removeFromArray", r), function(e) {
+                    this.$emit(n, st({
                         value: this[t],
                         index: e
                     }));
-                }), K(e, et("removeFromArrayKey", r), function(e, r) {
-                    this.$emit(n, st({
+                }), K(e, nt("removeFromArrayKey", r), function(e, r) {
+                    this.$emit(n, ft({
                         value: this[t],
                         index: e,
                         key: r
                     }));
                 }), e)
             };
-        }, lt = ft("value");
-        e.DataFlowMixin = lt, e.Record = q, e.createIndex = function(t, e) {
+        }, pt = lt("value");
+        e.DataFlowMixin = pt, e.Record = q, e.createIndex = function(t, e) {
             var n = {};
             return t.forEach(function(t) {
                 n[t[e]] = t;
             }), n;
         }, e.createMixinForItemByResourceAndId = function(t) {
-            var e, n, r = t.collectionName, i = t.localPropertyName || r.slice(0, -1), a = t.idPropertyName || "id", u = t.templateName || i + "Template", c = t.template || {}, s = t.recordPrimaryKey || "_id", f = i + "RecordId", l = i + "HasChanges", p = i + "Save", d = i + "Loading", h = t.idType || String, g = t.requestOptions || {}, m = i + "RequestOptions", x = i + "Capture", b = function(t, e, n) {
+            var e, n, r = t.collectionName, i = t.localPropertyName || v(r).slice(0, -1), a = t.idPropertyName || "id", u = t.templateName || i + "Template", c = t.template || {}, s = t.recordPrimaryKey || "_id", f = i + "RecordId", l = i + "HasChanges", p = i + "Save", d = i + "Loading", h = t.idType || String, m = t.requestOptions || {}, x = i + "RequestOptions", b = i + "Capture", _ = function(t, e, n) {
                 var r = t[e];
                 return delete t[e], void 0 === r ? n : r;
-            }(g, "capture", !1);
+            }(m, "capture", !1);
             return {
                 props: (e = {}, K(e, a, {
                     type: h,
@@ -3358,16 +3359,16 @@
                 }), K(e, u, {
                     type: Object,
                     default: function() {
-                        return v(c);
+                        return y(c);
                     }
                 }), e),
                 data: function() {
-                    var t, e = (t = {}, K(t, i, null), K(t, m, v(g)), t);
-                    return b && (e[x] = null), e;
+                    var t, e = (t = {}, K(t, i, null), K(t, x, y(m)), t);
+                    return _ && (e[b] = null), e;
                 },
                 vdata: function(t) {
                     var e = this[f]();
-                    this[d] || null === e || t.collectionName !== r || (this[i] = b ? z(this[x], this.$store.get(r, e) || {}, this[i]) : this.$store.get(r, e) || null);
+                    this[d] || null === e || t.collectionName !== r || (this[i] = _ ? z(this[b], this.$store.get(r, e) || {}, this[i]) : this.$store.get(r, e) || null);
                 },
                 asyncData: K({}, i, function() {
                     var t = this;
@@ -3377,7 +3378,7 @@
                         return o.default.wrap(function(e) {
                             for (;;) switch (e.prev = e.next) {
                               case 0:
-                                if (n = t[m].force, i = t[f](), a = void 0, c = void 0, null === i) {
+                                if (n = t[x].force, i = t[f](), a = void 0, c = void 0, null === i) {
                                     e.next = 14;
                                     break;
                                 }
@@ -3385,7 +3386,7 @@
                                     e.next = 12;
                                     break;
                                 }
-                                return e.next = 8, U(t.$store.find(r, i, t[m]));
+                                return e.next = 8, U(t.$store.find(r, i, t[x]));
 
                               case 8:
                                 s = e.sent, l = B(s, 2), a = l[0], c = l[1];
@@ -3398,7 +3399,7 @@
                                 c = t.$store.createRecord(r, t[u]);
 
                               case 15:
-                                return a && (console.error(a), c = null), b && (t[x] = v(c)), e.abrupt("return", c);
+                                return a && (console.error(a), c = null), _ && (t[b] = y(c)), e.abrupt("return", c);
 
                               case 18:
                               case "end":
@@ -3411,10 +3412,11 @@
                     this.$asyncReload(i);
                 }),
                 computed: K({}, l, function() {
-                    return this.$store.hasChanges(r, this[f](), this[i]);
+                    var t = this[i];
+                    return this[_] ? J(this[b], t) : this.$store.hasChanges(r, this[f](), t);
                 }),
                 methods: (n = {}, K(n, f, function() {
-                    var t = this[a] || y(this, i + "." + s, null);
+                    var t = this[a] || g(this, i + "." + s, null);
                     return this.$store.isValidId(t) ? t : null;
                 }), K(n, p, function() {
                     var t = this;
@@ -3424,7 +3426,7 @@
                         return o.default.wrap(function(e) {
                             for (;;) switch (e.prev = e.next) {
                               case 0:
-                                return n = t[f](), u = b ? z(t[x], t.$store.get(r, n) || {}, t[i]) : t[i], e.next = 4, 
+                                return n = t[f](), u = _ ? z(t[b], t.$store.get(r, n) || {}, t[i]) : t[i], e.next = 4, 
                                 U(t.$store.save(r, u));
 
                               case 4:
@@ -3446,7 +3448,7 @@
                 }), n)
             };
         }, e.createMixinForListByResource = function(t) {
-            var e = t.collectionName, n = t.localPropertyName || e, r = n + "Force", i = t.queryOptions || {}, a = t.requestOptions;
+            var e = t.collectionName, n = t.localPropertyName || v(e), r = n + "Force", i = t.queryOptions || {}, a = t.requestOptions;
             return {
                 data: function() {
                     var t;
@@ -3479,9 +3481,9 @@
                     }))();
                 })
             };
-        }, e.to = U, e.vdata = tt, e.handleChange = nt, e.handleKeyChange = rt, e.handleArrayChange = it, 
-        e.handleArrayKeyChange = ot, e.pushToArray = at, e.pushToArrayKey = ut, e.removeFromArray = ct, 
-        e.removeFromArrayKey = st, e.createDataFlowMixin = ft;
+        }, e.to = U, e.vdata = et, e.handleChange = rt, e.handleKeyChange = it, e.handleArrayChange = ot, 
+        e.handleArrayKeyChange = at, e.pushToArray = ut, e.pushToArrayKey = ct, e.removeFromArray = st, 
+        e.removeFromArrayKey = ft, e.createDataFlowMixin = lt;
     }, /* 164 */
     /***/
     function(t, e, n) {
