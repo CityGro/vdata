@@ -7,13 +7,13 @@ function _interopDefault (ex) { return (ex && (typeof ex === 'object') && 'defau
 var flow = _interopDefault(require('lodash/fp/flow'));
 var camelCase = _interopDefault(require('lodash/camelCase'));
 var clone = _interopDefault(require('lodash/cloneDeep'));
+var stringify = _interopDefault(require('json-stable-stringify'));
 var get = _interopDefault(require('lodash/get'));
+var merge = _interopDefault(require('lodash/merge'));
 var isEqual = _interopDefault(require('lodash/isEqual'));
 var isObject = _interopDefault(require('lodash/isObject'));
 var transform = _interopDefault(require('lodash/transform'));
-var merge = _interopDefault(require('lodash/merge'));
 var tail = _interopDefault(require('lodash/tail'));
-var stringify = _interopDefault(require('json-stable-stringify'));
 var Any = _interopDefault(require('p-any'));
 var fromPairs = _interopDefault(require('lodash/fp/fromPairs'));
 var assign = _interopDefault(require('lodash/assign'));
@@ -240,6 +240,17 @@ var createIndex = (function (collection, key) {
   return index;
 });
 
+/**
+ * quickly determine if two objects differ
+ *
+ * @param {Object} a
+ * @param {Object} b
+ * @returns {Boolean}
+ */
+var fastDiff = (function (a, b) {
+  return stringify(a) !== stringify(b);
+});
+
 var pop = (function (o, key, fallback) {
   var value = o[key];
   delete o[key];
@@ -284,17 +295,6 @@ var to = function to(promise) {
 };
 
 /**
- * quickly determine if two objects differ
- *
- * @param {Object} a
- * @param {Object} b
- * @returns {Boolean}
- */
-var fastDiff = (function (a, b) {
-  return stringify(a) !== stringify(b);
-});
-
-/**
  * @param {object} options
  * @param {string} options.collectionName
  * @param {string} options.idPropertyName
@@ -319,6 +319,7 @@ var createMixinForItemByResourceAndId = function (options) {
   var requestOptionsName = localPropertyName + 'RequestOptions';
   var captureName = localPropertyName + 'Capture';
   var capture = pop(requestOptions, 'capture', false);
+  var requestOptionsOverrideName = localPropertyName + 'RequestOptionsOverride';
 
   return {
     props: (_props = {}, defineProperty(_props, idPropertyName, {
@@ -329,11 +330,16 @@ var createMixinForItemByResourceAndId = function (options) {
       default: function _default() {
         return clone(template);
       }
+    }), defineProperty(_props, requestOptionsOverrideName, {
+      type: Object,
+      default: function _default() {
+        return {};
+      }
     }), _props),
     data: function data() {
       var _data;
 
-      var data = (_data = {}, defineProperty(_data, localPropertyName, null), defineProperty(_data, requestOptionsName, clone(requestOptions)), _data);
+      var data = (_data = {}, defineProperty(_data, localPropertyName, null), defineProperty(_data, requestOptionsName, merge({}, clone(requestOptions), this[requestOptionsOverrideName])), _data);
       if (capture) {
         data[captureName] = null;
       }

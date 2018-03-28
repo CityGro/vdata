@@ -1,10 +1,11 @@
 import camelCase from 'lodash/camelCase'
 import clone from 'lodash/cloneDeep'
+import fastDiff from './fastDiff'
 import get from 'lodash/get'
+import merge from 'lodash/merge'
 import pop from './pop'
 import rebase from './rebase'
 import to from './to'
-import fastDiff from './fastDiff'
 
 /**
  * @param {object} options
@@ -29,6 +30,7 @@ export default function (options) {
   const requestOptionsName = `${localPropertyName}RequestOptions`
   const captureName = `${localPropertyName}Capture`
   const capture = pop(requestOptions, 'capture', false)
+  const requestOptionsOverrideName = `${localPropertyName}RequestOptionsOverride`
 
   return {
     props: {
@@ -39,12 +41,16 @@ export default function (options) {
       [templateName]: {
         type: Object,
         default: () => clone(template)
+      },
+      [requestOptionsOverrideName]: {
+        type: Object,
+        default: () => ({})
       }
     },
     data () {
       let data = {
         [localPropertyName]: null,
-        [requestOptionsName]: clone(requestOptions)
+        [requestOptionsName]: merge({}, clone(requestOptions), this[requestOptionsOverrideName])
       }
       if (capture) {
         data[captureName] = null
