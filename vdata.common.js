@@ -306,7 +306,7 @@ var createMixinForItemByResourceAndId = function (options) {
 
   var collectionName = options.collectionName;
   var localPropertyName = options.localPropertyName || camelCase(collectionName).slice(0, -1);
-  var idPropertyName = options.idPropertyName || 'id'; // FIXME `${localPropertyName}Id`
+  var idPropertyName = options.idPropertyName || '_id'; // FIXME `${localPropertyName}Id`
   var templateName = options.templateName || localPropertyName + 'Template';
   var template = options.template || {};
   var recordPrimaryKey = options.recordPrimaryKey || '_id';
@@ -405,7 +405,7 @@ var createMixinForItemByResourceAndId = function (options) {
                   console.error(err);
                   result = null;
                 }
-                if (capture) {
+                if (capture && !_this[captureName]) {
                   _this[captureName] = clone(result);
                 }
                 return _context.abrupt('return', result);
@@ -419,7 +419,9 @@ var createMixinForItemByResourceAndId = function (options) {
       }))();
     }),
     watch: defineProperty({}, idPropertyName, function () {
-      this.$asyncReload(localPropertyName);
+      if (!capture) {
+        this.$asyncReload(localPropertyName);
+      }
     }),
     computed: defineProperty({}, hasChangesComputedName, function () {
       var localState = this[localPropertyName];
@@ -443,7 +445,7 @@ var createMixinForItemByResourceAndId = function (options) {
             switch (_context2.prev = _context2.next) {
               case 0:
                 recordId = _this2[getIdMethodName]();
-                value = capture ? rebase(_this2[captureName], _this2.$store.get(collectionName, recordId) || {}, _this2[localPropertyName]) : _this2[localPropertyName];
+                value = capture ? rebase(_this2[captureName], recordId ? _this2.$store.get(collectionName, recordId) : {}, _this2[localPropertyName]) : _this2[localPropertyName];
                 _context2.next = 4;
                 return to(_this2.$store.save(collectionName, value));
 

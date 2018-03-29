@@ -17,7 +17,7 @@ import to from './to'
 export default function (options) {
   const collectionName = options.collectionName
   const localPropertyName = options.localPropertyName || camelCase(collectionName).slice(0, -1)
-  const idPropertyName = options.idPropertyName || 'id' // FIXME `${localPropertyName}Id`
+  const idPropertyName = options.idPropertyName || '_id' // FIXME `${localPropertyName}Id`
   const templateName = options.templateName || `${localPropertyName}Template`
   const template = options.template || {}
   const recordPrimaryKey = options.recordPrimaryKey || '_id'
@@ -104,7 +104,7 @@ export default function (options) {
           console.error(err)
           result = null
         }
-        if (capture) {
+        if (capture && !this[captureName]) {
           this[captureName] = clone(result)
         }
         return result
@@ -112,7 +112,9 @@ export default function (options) {
     },
     watch: {
       [idPropertyName] () {
-        this.$asyncReload(localPropertyName)
+        if (!capture) {
+          this.$asyncReload(localPropertyName)
+        }
       }
     },
     computed: {
@@ -137,12 +139,13 @@ export default function (options) {
         )
         return this.$store.isValidId(id) ? id : null
       },
+      // what if this is a NEW record?
       async [saveMethodName] () {
         const recordId = this[getIdMethodName]()
         const value = (capture)
           ? rebase(
             this[captureName],
-            this.$store.get(collectionName, recordId) || {},
+            (recordId) ? this.$store.get(collectionName, recordId) : {},
             this[localPropertyName]
           )
           : this[localPropertyName]
@@ -152,7 +155,9 @@ export default function (options) {
             value
           )
         )
-        if (err) { throw err }
+        if (err) {
+          throw err
+        }
         if (response) {
           this[localPropertyName] = response
           this.$emit(`update:${idPropertyName}`, response[recordPrimaryKey])

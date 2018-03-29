@@ -3348,7 +3348,7 @@
                 n[t[e]] = t;
             }), n;
         }, e.createMixinForItemByResourceAndId = function(t) {
-            var e, n, r = t.collectionName, i = t.localPropertyName || v(r).slice(0, -1), a = t.idPropertyName || "id", u = t.templateName || i + "Template", c = t.template || {}, s = t.recordPrimaryKey || "_id", f = i + "RecordId", l = i + "HasChanges", p = i + "Save", d = i + "Loading", h = t.idType || String, g = t.requestOptions || {}, b = i + "RequestOptions", _ = i + "Capture", O = function(t, e, n) {
+            var e, n, r = t.collectionName, i = t.localPropertyName || v(r).slice(0, -1), a = t.idPropertyName || "_id", u = t.templateName || i + "Template", c = t.template || {}, s = t.recordPrimaryKey || "_id", f = i + "RecordId", l = i + "HasChanges", p = i + "Save", d = i + "Loading", h = t.idType || String, g = t.requestOptions || {}, b = i + "RequestOptions", _ = i + "Capture", O = function(t, e, n) {
                 var r = t[e];
                 return delete t[e], void 0 === r ? n : r;
             }(g, "capture", !1), w = i + "RequestOptionsOverride";
@@ -3404,7 +3404,7 @@
                                 c = t.$store.createRecord(r, t[u]);
 
                               case 15:
-                                return a && (console.error(a), c = null), O && (t[_] = y(c)), e.abrupt("return", c);
+                                return a && (console.error(a), c = null), O && !t[_] && (t[_] = y(c)), e.abrupt("return", c);
 
                               case 18:
                               case "end":
@@ -3414,7 +3414,7 @@
                     }))();
                 }),
                 watch: K({}, a, function() {
-                    this.$asyncReload(i);
+                    O || this.$asyncReload(i);
                 }),
                 computed: K({}, l, function() {
                     var t = this[i];
@@ -3431,7 +3431,7 @@
                         return o.default.wrap(function(e) {
                             for (;;) switch (e.prev = e.next) {
                               case 0:
-                                return n = t[f](), u = O ? U(t[_], t.$store.get(r, n) || {}, t[i]) : t[i], e.next = 4, 
+                                return n = t[f](), u = O ? U(t[_], n ? t.$store.get(r, n) : {}, t[i]) : t[i], e.next = 4, 
                                 J(t.$store.save(r, u));
 
                               case 4:
