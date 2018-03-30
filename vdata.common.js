@@ -301,7 +301,7 @@ var to = function to(promise) {
  * @param {string} options.localPropertyName
  * @param {object} options.requestOptions
  */
-var createMixinForItemByResourceAndId = function (options) {
+var createMixinForItemById = function (options) {
   var _props, _methods;
 
   var collectionName = options.collectionName;
@@ -566,7 +566,7 @@ var flattenMixinTree = function flattenMixinTree() {
  * @param {string} prop - option name
  */
 var getMergedOptions = (function (vm, prop) {
-  var options = get(vm, '$options.' + prop, {});
+  var options = clone(get(vm, '$options.' + prop, {}));
   var mixins = get(vm, '$options.mixins', []);
   flattenMixinTree(mixins).filter(function (mixin) {
     return mixin[prop];
@@ -906,9 +906,6 @@ var createHandler = (function (vm, events) {
   });
   if (vm.$options.vdata) {
     handlers[vm._uid].push(vm.$options.vdata);
-  }
-  if (process.env.NODE_ENV !== 'test') {
-    console.log('[@citygro/vdata<' + vm._uid + '>] ready. listening on', events);
   }
   return {
     run: function run(message) {
@@ -1398,9 +1395,16 @@ var createDataFlowMixin = function createDataFlowMixin(valueProp) {
 
 var DataFlowMixin = createDataFlowMixin('value');
 
+// this name is DEPRECATE
+var createMixinForItemByResourceAndId = function createMixinForItemByResourceAndId(options) {
+  console.warn('[@citygro/vdata] createMixinForItemByResourceAndId -> createMixinForItemById', 'this name is DEPRECATED and will be removed in a future release');
+  return createMixinForItemById(options);
+};
+
 exports.DataFlowMixin = DataFlowMixin;
 exports.Record = Record;
 exports.createIndex = createIndex;
+exports.createMixinForItemById = createMixinForItemById;
 exports.createMixinForItemByResourceAndId = createMixinForItemByResourceAndId;
 exports.createMixinForListByResource = createMixinForListByResource;
 exports.to = to;

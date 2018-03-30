@@ -23,9 +23,6 @@ export default (vm, events) => {
   if (vm.$options.vdata) {
     handlers[vm._uid].push(vm.$options.vdata)
   }
-  if (process.env.NODE_ENV !== 'test') {
-    console.log(`[@citygro/vdata<${vm._uid}>] ready. listening on`, events)
-  }
   return {
     run (message) {
       if (includes(events, message.event) || message.event === '$vdata-call') {
