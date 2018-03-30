@@ -10,8 +10,10 @@ const DataFlowMixin = createDataFlowMixin('value')
 
 // this name is DEPRECATE
 const createMixinForItemByResourceAndId = (options) => {
-  console.warn('[@citygro/vdata] createMixinForItemByResourceAndId -> createMixinForItemById',
-               'this name is DEPRECATED and will be removed in a future release')
+  console.warn(
+    '[@citygro/vdata] createMixinForItemByResourceAndId -> createMixinForItemById',
+    'this name is DEPRECATED and will be removed in a future release'
+  )
   return createMixinForItemById(options)
 }
 
