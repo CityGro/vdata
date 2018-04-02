@@ -405,7 +405,8 @@ var createMixinForItemById = function createMixinForItemById(options) {
   }
 
   if (!options.idPropertyName) {
-    console.warn('[@citygro/vdata#createMixinForItemById]', 'options.idPropertyName will default to `${localPropertyName}Id` in future versions of vdata');
+    console.warn('[@citygro/vdata#createMixinForItemById]', 'options.idPropertyName will default to `${localPropertyName}Id` in future versions of vdata' // eslint-disable-line no-template-curly-in-string
+    );
   }
 
   return {

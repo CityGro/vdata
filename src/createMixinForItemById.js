@@ -118,7 +118,7 @@ const createMixinForItemById = function (options) {
   if (!options.idPropertyName) {
     console.warn(
       '[@citygro/vdata#createMixinForItemById]',
-      'options.idPropertyName will default to `${localPropertyName}Id` in future versions of vdata'
+      'options.idPropertyName will default to `${localPropertyName}Id` in future versions of vdata' // eslint-disable-line no-template-curly-in-string
     )
   }
 
