@@ -295,18 +295,98 @@ var to = function to(promise) {
 };
 
 /**
+ * create a mixin that configures a vm to manipulate a single record. you can
+ * use a prop to ask for a record by id or specify a template to create a new
+ * record that is pre-populated with some initial state.
+ *
+ * ```
+ * // @/queries/UserById.js
+ * import {createMixinForItemById} from '@citygro/vdata'
+ *
+ * export default {
+ *   mixins: [
+ *     createMixinForItemById({
+ *       idPropertyName: 'userId',
+ *       collectionName: 'users',
+ *       localPropertyName: 'user',
+ *       requestOptions: {
+ *         capture: false
+ *       }
+ *    })
+ *   ]
+ * }
+ * ```
+ *
+ * a vm which consumes this mixin will have the following props, methods, data,
+ * &c. it will also be configured to react to changes to data in the store and
+ * update itself accordingly.
+ *
+ * ```
+ * {
+ *   props: {
+ *     userid: String,
+ *     userRequestOptionsOverride: Object
+ *   },
+ *   data: {
+ *     user: Object,
+ *   },
+ *   methods: {
+ *     userSave: Function,
+ *   },
+ *   computed: {
+ *     asyncLoading: Boolean,
+ *     userLoading: Boolean,
+ *     userHasChanges: Boolean
+ *   }
+ * }
+ * ```
+ *
+ * `@/queries/UserById` defines a query that fetches and captures the initial state
+ * for a user record. lets say we have a particular editor that provides read-only
+ * access to a particular resource for some users and read/write access for
+ * others.
+ *
+ * for the case where the editor should be read/write we can default some props
+ * in the vm to change its behavior depending on the permissions of the current
+ * user.
+ *
+ * ```
+ * // UserEditor.js
+ * import UserById from '@/queries/UserById'
+ *
+ * export default {
+ *   mixins: [
+ *     UserById
+ *   ],
+ *   props: {
+ *     userRequestOptionsOverride: {
+ *       default () {
+ *         return {
+ *           capture: this.$session.hasPermissionToEditUsers()
+ *         }
+ *       }
+ *     }
+ *   } // ...
+ * }
+ * ```
+ *
+ * @alias module:createMixinForItemById
  * @param {object} options
  * @param {string} options.collectionName
- * @param {string} options.idPropertyName
- * @param {string} options.localPropertyName
- * @param {object} options.requestOptions
+ * @param {string} options.localPropertyName - the vm data where the result of the query will be stored
+ * @param {string} [options.idPropertyName="id"] - the name of the prop you will use to specify the id of the requested record
+ * @param {object} [options.requestOptions] - control some of the behavior of the query
+ * @param {boolean} [options.requestOptions.force=false] - always fetch the latest record
+ * @param {boolean} [options.requestOptions.capture=false] - capture the initial state of the record, implies `force = true`
+ * @param {object} [options.template={}] - the default template for this query
+ * @return {object} item-by-id query mixin
  */
-var createMixinForItemById = function (options) {
+var createMixinForItemById = function createMixinForItemById(options) {
   var _props, _methods;
 
   var collectionName = options.collectionName;
   var localPropertyName = options.localPropertyName || camelCase(collectionName).slice(0, -1);
-  var idPropertyName = options.idPropertyName || '_id'; // FIXME `${localPropertyName}Id`
+  var idPropertyName = options.idPropertyName || 'id'; // FIXME `${localPropertyName}Id`
   var templateName = options.templateName || localPropertyName + 'Template';
   var template = options.template || {};
   var recordPrimaryKey = options.recordPrimaryKey || '_id';
@@ -320,6 +400,14 @@ var createMixinForItemById = function (options) {
   var captureName = localPropertyName + 'Capture';
   var capture = pop(requestOptions, 'capture', false);
   var requestOptionsOverrideName = localPropertyName + 'RequestOptionsOverride';
+
+  if (!collectionName) {
+    throw new Error('[@citygro/vdata#createMixinForItemById] options.collectionName is required');
+  }
+
+  if (!options.idPropertyName) {
+    console.warn('[@citygro/vdata#createMixinForItemById]', 'options.idPropertyName will default to `${localPropertyName}Id` in future versions of vdata');
+  }
 
   return {
     props: (_props = {}, defineProperty(_props, idPropertyName, {
@@ -340,7 +428,7 @@ var createMixinForItemById = function (options) {
       var _data;
 
       var data = (_data = {}, defineProperty(_data, localPropertyName, null), defineProperty(_data, requestOptionsName, merge({}, clone(requestOptions), this[requestOptionsOverrideName])), _data);
-      if (capture) {
+      if (capture || this[requestOptionsOverrideName].capture) {
         data[captureName] = null;
       }
       return data;
@@ -348,7 +436,7 @@ var createMixinForItemById = function (options) {
     vdata: function vdata(event) {
       var recordId = this[getIdMethodName]();
       if (!this[asyncLoadingName] && recordId !== null && event.collectionName === collectionName) {
-        if (capture) {
+        if (capture || this[requestOptionsOverrideName].capture) {
           this[localPropertyName] = rebase(this[captureName], this.$store.get(collectionName, recordId) || {}, this[localPropertyName]);
         } else {
           this[localPropertyName] = this.$store.get(collectionName, recordId) || null;
@@ -360,18 +448,24 @@ var createMixinForItemById = function (options) {
       var _this = this;
 
       return asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee() {
-        var force, recordId, err, result, _ref, _ref2;
+        var forceOption, captureOption, force, recordId, err, result, _ref, _ref2;
 
         return regeneratorRuntime.wrap(function _callee$(_context) {
           while (1) {
             switch (_context.prev = _context.next) {
               case 0:
-                force = _this[requestOptionsName].force;
+                forceOption = requestOptions.force || _this[requestOptionsOverrideName].force;
+                captureOption = capture || _this[requestOptionsOverrideName].capture;
+
+                if (forceOption && captureOption) {
+                  console.warn('[@citygro/vdata#createMixinForItemById]', '`requestOptions.capture = true` implies `requestOptions.force = true`, setting both options is not necessary');
+                }
+                force = forceOption || captureOption;
                 recordId = _this[getIdMethodName]();
                 err = void 0, result = void 0;
 
                 if (!(recordId !== null)) {
-                  _context.next = 14;
+                  _context.next = 17;
                   break;
                 }
 
@@ -380,37 +474,37 @@ var createMixinForItemById = function (options) {
                 }
 
                 if (result) {
-                  _context.next = 12;
+                  _context.next = 15;
                   break;
                 }
 
-                _context.next = 8;
+                _context.next = 11;
                 return to(_this.$store.find(collectionName, recordId, _this[requestOptionsName]));
 
-              case 8:
+              case 11:
                 _ref = _context.sent;
                 _ref2 = slicedToArray(_ref, 2);
                 err = _ref2[0];
                 result = _ref2[1];
 
-              case 12:
-                _context.next = 15;
+              case 15:
+                _context.next = 18;
                 break;
 
-              case 14:
+              case 17:
                 result = _this.$store.createRecord(collectionName, _this[templateName]);
 
-              case 15:
+              case 18:
                 if (err) {
                   console.error(err);
                   result = null;
                 }
-                if (capture && !_this[captureName]) {
+                if (captureOption && !_this[captureName]) {
                   _this[captureName] = clone(result);
                 }
                 return _context.abrupt('return', result);
 
-              case 18:
+              case 21:
               case 'end':
                 return _context.stop();
             }
@@ -1395,9 +1489,8 @@ var createDataFlowMixin = function createDataFlowMixin(valueProp) {
 
 var DataFlowMixin = createDataFlowMixin('value');
 
-// this name is DEPRECATE
 var createMixinForItemByResourceAndId = function createMixinForItemByResourceAndId(options) {
-  console.warn('[@citygro/vdata] createMixinForItemByResourceAndId -> createMixinForItemById', 'this name is DEPRECATED and will be removed in a future release');
+  console.warn('[@citygro/vdata] rename createMixinForItemByResourceAndId -> createMixinForItemById', '"createMixinForItemByResourceAndId" is DEPRECATED and will be removed in a future release');
   return createMixinForItemById(options);
 };
 

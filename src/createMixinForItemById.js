@@ -8,16 +8,96 @@ import rebase from './rebase'
 import to from './to'
 
 /**
+ * create a mixin that configures a vm to manipulate a single record. you can
+ * use a prop to ask for a record by id or specify a template to create a new
+ * record that is pre-populated with some initial state.
+ *
+ * ```
+ * // @/queries/UserById.js
+ * import {createMixinForItemById} from '@citygro/vdata'
+ *
+ * export default {
+ *   mixins: [
+ *     createMixinForItemById({
+ *       idPropertyName: 'userId',
+ *       collectionName: 'users',
+ *       localPropertyName: 'user',
+ *       requestOptions: {
+ *         capture: false
+ *       }
+ *    })
+ *   ]
+ * }
+ * ```
+ *
+ * a vm which consumes this mixin will have the following props, methods, data,
+ * &c. it will also be configured to react to changes to data in the store and
+ * update itself accordingly.
+ *
+ * ```
+ * {
+ *   props: {
+ *     userid: String,
+ *     userRequestOptionsOverride: Object
+ *   },
+ *   data: {
+ *     user: Object,
+ *   },
+ *   methods: {
+ *     userSave: Function,
+ *   },
+ *   computed: {
+ *     asyncLoading: Boolean,
+ *     userLoading: Boolean,
+ *     userHasChanges: Boolean
+ *   }
+ * }
+ * ```
+ *
+ * `@/queries/UserById` defines a query that fetches and captures the initial state
+ * for a user record. lets say we have a particular editor that provides read-only
+ * access to a particular resource for some users and read/write access for
+ * others.
+ *
+ * for the case where the editor should be read/write we can default some props
+ * in the vm to change its behavior depending on the permissions of the current
+ * user.
+ *
+ * ```
+ * // UserEditor.js
+ * import UserById from '@/queries/UserById'
+ *
+ * export default {
+ *   mixins: [
+ *     UserById
+ *   ],
+ *   props: {
+ *     userRequestOptionsOverride: {
+ *       default () {
+ *         return {
+ *           capture: this.$session.hasPermissionToEditUsers()
+ *         }
+ *       }
+ *     }
+ *   } // ...
+ * }
+ * ```
+ *
+ * @alias module:createMixinForItemById
  * @param {object} options
  * @param {string} options.collectionName
- * @param {string} options.idPropertyName
- * @param {string} options.localPropertyName
- * @param {object} options.requestOptions
+ * @param {string} options.localPropertyName - the vm data where the result of the query will be stored
+ * @param {string} [options.idPropertyName="id"] - the name of the prop you will use to specify the id of the requested record
+ * @param {object} [options.requestOptions] - control some of the behavior of the query
+ * @param {boolean} [options.requestOptions.force=false] - always fetch the latest record
+ * @param {boolean} [options.requestOptions.capture=false] - capture the initial state of the record, implies `force = true`
+ * @param {object} [options.template={}] - the default template for this query
+ * @return {object} item-by-id query mixin
  */
-export default function (options) {
+const createMixinForItemById = function (options) {
   const collectionName = options.collectionName
   const localPropertyName = options.localPropertyName || camelCase(collectionName).slice(0, -1)
-  const idPropertyName = options.idPropertyName || '_id' // FIXME `${localPropertyName}Id`
+  const idPropertyName = options.idPropertyName || 'id' // FIXME `${localPropertyName}Id`
   const templateName = options.templateName || `${localPropertyName}Template`
   const template = options.template || {}
   const recordPrimaryKey = options.recordPrimaryKey || '_id'
@@ -31,6 +111,17 @@ export default function (options) {
   const captureName = `${localPropertyName}Capture`
   const capture = pop(requestOptions, 'capture', false)
   const requestOptionsOverrideName = `${localPropertyName}RequestOptionsOverride`
+
+  if (!collectionName) {
+    throw new Error('[@citygro/vdata#createMixinForItemById] options.collectionName is required')
+  }
+
+  if (!options.idPropertyName) {
+    console.warn(
+      '[@citygro/vdata#createMixinForItemById]',
+      'options.idPropertyName will default to `${localPropertyName}Id` in future versions of vdata'
+    )
+  }
 
   return {
     props: {
@@ -52,7 +143,7 @@ export default function (options) {
         [localPropertyName]: null,
         [requestOptionsName]: merge({}, clone(requestOptions), this[requestOptionsOverrideName])
       }
-      if (capture) {
+      if (capture || this[requestOptionsOverrideName].capture) {
         data[captureName] = null
       }
       return data
@@ -64,7 +155,7 @@ export default function (options) {
         recordId !== null &&
         event.collectionName === collectionName
       ) {
-        if (capture) {
+        if (capture || this[requestOptionsOverrideName].capture) {
           this[localPropertyName] = rebase(
             this[captureName],
             this.$store.get(collectionName, recordId) || {},
@@ -80,7 +171,15 @@ export default function (options) {
     },
     asyncData: {
       async [localPropertyName] () {
-        const force = this[requestOptionsName].force
+        const forceOption = requestOptions.force || this[requestOptionsOverrideName].force
+        const captureOption = capture || this[requestOptionsOverrideName].capture
+        if (forceOption && captureOption) {
+          console.warn(
+            '[@citygro/vdata#createMixinForItemById]',
+            '`requestOptions.capture = true` implies `requestOptions.force = true`, setting both options is not necessary'
+          )
+        }
+        const force = forceOption || captureOption
         const recordId = this[getIdMethodName]()
         let err, result
         if (recordId !== null) {
@@ -104,7 +203,7 @@ export default function (options) {
           console.error(err)
           result = null
         }
-        if (capture && !this[captureName]) {
+        if (captureOption && !this[captureName]) {
           this[captureName] = clone(result)
         }
         return result
@@ -167,3 +266,8 @@ export default function (options) {
     }
   }
 }
+
+/**
+ * @module createMixinForItemById
+ */
+export default createMixinForItemById

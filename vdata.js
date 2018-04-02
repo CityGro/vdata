@@ -1332,20 +1332,20 @@
  * @param {Object} [stack] Tracks traversed objects and their clone counterparts.
  * @returns {*} Returns the cloned value.
  */
-        function r(t, e, n, S, F, P) {
+        function r(t, e, n, F, S, P) {
             var M, L = e & O, T = e & A, N = e & j;
-            if (n && (M = F ? n(t, S, F, P) : n(t)), void 0 !== M) return M;
+            if (n && (M = S ? n(t, F, S, P) : n(t)), void 0 !== M) return M;
             if (!_(t)) return t;
             var D = x(t);
             if (D) {
                 if (M = y(t), !L) return f(t, M);
             } else {
-                var K = v(t), W = K == k || K == R;
+                var K = v(t), W = K == k || K == I;
                 if (b(t)) return s(t, L);
-                if (K == C || K == E || W && !F) {
+                if (K == R || K == E || W && !S) {
                     if (M = T || W ? {} : m(t), !L) return T ? p(t, c(M, t)) : l(t, u(M, t));
                 } else {
-                    if (!I[K]) return F ? t : {};
+                    if (!C[K]) return S ? t : {};
                     M = g(t, K, r, L);
                 }
             }
@@ -1360,9 +1360,9 @@
                 a(M, o, r(i, e, n, o, t, P));
             }), M;
         }
-        var i = n(47), o = n(49), a = n(80), u = n(120), c = n(240), s = n(131), f = n(21), l = n(269), p = n(270), d = n(141), h = n(285), v = n(56), y = n(297), g = n(298), m = n(146), x = n(0), b = n(24), _ = n(4), w = n(11), O = 1, A = 2, j = 4, E = "[object Arguments]", k = "[object Function]", R = "[object GeneratorFunction]", C = "[object Object]", I = {};
-        I[E] = I["[object Array]"] = I["[object ArrayBuffer]"] = I["[object DataView]"] = I["[object Boolean]"] = I["[object Date]"] = I["[object Float32Array]"] = I["[object Float64Array]"] = I["[object Int8Array]"] = I["[object Int16Array]"] = I["[object Int32Array]"] = I["[object Map]"] = I["[object Number]"] = I[C] = I["[object RegExp]"] = I["[object Set]"] = I["[object String]"] = I["[object Symbol]"] = I["[object Uint8Array]"] = I["[object Uint8ClampedArray]"] = I["[object Uint16Array]"] = I["[object Uint32Array]"] = !0, 
-        I["[object Error]"] = I[k] = I["[object WeakMap]"] = !1, t.exports = r;
+        var i = n(47), o = n(49), a = n(80), u = n(120), c = n(240), s = n(131), f = n(21), l = n(269), p = n(270), d = n(141), h = n(285), v = n(56), y = n(297), g = n(298), m = n(146), x = n(0), b = n(24), _ = n(4), w = n(11), O = 1, A = 2, j = 4, E = "[object Arguments]", k = "[object Function]", I = "[object GeneratorFunction]", R = "[object Object]", C = {};
+        C[E] = C["[object Array]"] = C["[object ArrayBuffer]"] = C["[object DataView]"] = C["[object Boolean]"] = C["[object Date]"] = C["[object Float32Array]"] = C["[object Float64Array]"] = C["[object Int8Array]"] = C["[object Int16Array]"] = C["[object Int32Array]"] = C["[object Map]"] = C["[object Number]"] = C[R] = C["[object RegExp]"] = C["[object Set]"] = C["[object String]"] = C["[object Symbol]"] = C["[object Uint8Array]"] = C["[object Uint8ClampedArray]"] = C["[object Uint16Array]"] = C["[object Uint32Array]"] = !0, 
+        C["[object Error]"] = C[k] = C["[object WeakMap]"] = !1, t.exports = r;
     }, /* 83 */
     /***/
     function(t, e, n) {
@@ -1498,13 +1498,13 @@
             var k = _ ? _.length : 0;
             if (k || (e &= ~(m | x), _ = w = void 0), A = void 0 === A ? A : b(p(A), 0), j = void 0 === j ? j : p(j), 
             k -= w ? w.length : 0, e & x) {
-                var R = _, C = w;
+                var I = _, R = w;
                 _ = w = void 0;
             }
-            var I = E ? void 0 : c(t), S = [ t, e, n, _, w, R, C, O, A, j ];
-            if (I && s(S, I), t = S[0], e = S[1], n = S[2], _ = S[3], w = S[4], !(j = S[9] = void 0 === S[9] ? E ? 0 : t.length : b(S[9] - k, 0)) && e & (y | g) && (e &= ~(y | g)), 
-            e && e != h) F = e == y || e == g ? o(t, e, j) : e != m && e != (h | m) || w.length ? a.apply(void 0, S) : u(t, e, n, _); else var F = i(t, e, n);
-            return l((I ? r : f)(F, S), t, e);
+            var C = E ? void 0 : c(t), F = [ t, e, n, _, w, I, R, O, A, j ];
+            if (C && s(F, C), t = F[0], e = F[1], n = F[2], _ = F[3], w = F[4], !(j = F[9] = void 0 === F[9] ? E ? 0 : t.length : b(F[9] - k, 0)) && e & (y | g) && (e &= ~(y | g)), 
+            e && e != h) S = e == y || e == g ? o(t, e, j) : e != m && e != (h | m) || w.length ? a.apply(void 0, F) : u(t, e, n, _); else var S = i(t, e, n);
+            return l((C ? r : f)(S, F), t, e);
         };
     }, /* 90 */
     /***/
@@ -1714,19 +1714,19 @@
                 return function() {
                     return new n(this, t);
                 };
-            }, O = e + " Iterator", A = "values" == y, j = !1, E = t.prototype, k = E[p] || E["@@iterator"] || y && E[y], R = k || w(y), C = y ? A ? w("entries") : R : void 0, I = "Array" == e ? E.entries || k : k;
+            }, O = e + " Iterator", A = "values" == y, j = !1, E = t.prototype, k = E[p] || E["@@iterator"] || y && E[y], I = k || w(y), R = y ? A ? w("entries") : I : void 0, C = "Array" == e ? E.entries || k : k;
             if (// Fix native
-            I && (_ = l(I.call(new t()))) !== Object.prototype && (// Set @@toStringTag to native iterators
+            C && (_ = l(C.call(new t()))) !== Object.prototype && (// Set @@toStringTag to native iterators
             f(_, O, !0), // fix for some old engines
             r || u(_, p) || a(_, p, h)), // fix Array#{values, @@iterator}.name in V8 / FF
-            A && k && "values" !== k.name && (j = !0, R = function() {
+            A && k && "values" !== k.name && (j = !0, I = function() {
                 return k.call(this);
             }), // Define iterator
-            r && !m || !d && !j && E[p] || a(E, p, R), // Plug for library
-            c[e] = R, c[O] = h, y) if (x = {
-                values: A ? R : w("values"),
-                keys: g ? R : w("keys"),
-                entries: C
+            r && !m || !d && !j && E[p] || a(E, p, I), // Plug for library
+            c[e] = I, c[O] = h, y) if (x = {
+                values: A ? I : w("values"),
+                keys: g ? I : w("keys"),
+                entries: R
             }, m) for (b in x) b in E || o(E, b, x[b]); else i(i.P + i.F * (d || j), e, x);
             return x;
         };
@@ -2208,16 +2208,16 @@
         function r(t, e, n, x, b, _, w, O, A, j) {
             function E() {
                 for (var d = arguments.length, h = Array(d), v = d; v--; ) h[v] = arguments[v];
-                if (I) var y = s(E), g = a(h, y);
-                if (x && (h = i(h, x, b, I)), _ && (h = o(h, _, w, I)), d -= g, I && d < j) {
+                if (C) var y = s(E), g = a(h, y);
+                if (x && (h = i(h, x, b, C)), _ && (h = o(h, _, w, C)), d -= g, C && d < j) {
                     var m = l(h, y);
                     return c(t, e, r, E.placeholder, n, h, m, O, A, j - d);
                 }
-                var P = R ? n : this, M = C ? P[t] : t;
-                return d = h.length, O ? h = f(h, O) : S && d > 1 && h.reverse(), k && A < d && (h.length = A), 
-                this && this !== p && this instanceof E && (M = F || u(M)), M.apply(P, h);
+                var P = I ? n : this, M = R ? P[t] : t;
+                return d = h.length, O ? h = f(h, O) : F && d > 1 && h.reverse(), k && A < d && (h.length = A), 
+                this && this !== p && this instanceof E && (M = S || u(M)), M.apply(P, h);
             }
-            var k = e & g, R = e & d, C = e & h, I = e & (v | y), S = e & m, F = C ? void 0 : u(t);
+            var k = e & g, I = e & d, R = e & h, C = e & (v | y), F = e & m, S = R ? void 0 : u(t);
             return E;
         }
         var i = n(133), o = n(134), a = n(272), u = n(53), c = n(136), s = n(143), f = n(321), l = n(94), p = n(3), d = 1, h = 2, v = 8, y = 16, g = 128, m = 512;
@@ -2741,7 +2741,7 @@
         Object.defineProperty(e, "__esModule", {
             value: !0
         });
-        var h = i(n(354)), v = i(n(339)), y = i(n(342)), g = i(n(225)), m = i(n(159)), x = i(n(365)), b = i(n(360)), _ = i(n(4)), w = i(n(376)), O = i(n(370)), A = i(n(383)), j = i(n(355)), E = i(n(337)), k = i(n(359)), R = i(n(25)), C = i(n(11)), I = i(n(356)), S = i(n(347)), F = i(n(0)), P = i(n(348)), M = n(224), L = i(n(343)), T = i(n(363)), N = h(p.default, JSON.parse), D = function(t) {
+        var h = i(n(354)), v = i(n(339)), y = i(n(342)), g = i(n(225)), m = i(n(159)), x = i(n(365)), b = i(n(360)), _ = i(n(4)), w = i(n(376)), O = i(n(370)), A = i(n(383)), j = i(n(355)), E = i(n(337)), k = i(n(359)), I = i(n(25)), R = i(n(11)), C = i(n(356)), F = i(n(347)), S = i(n(0)), P = i(n(348)), M = n(224), L = i(n(343)), T = i(n(363)), N = h(p.default, JSON.parse), D = function(t) {
             return function() {
                 var e = t.apply(this, arguments);
                 return new l.default(function(t, n) {
@@ -2833,11 +2833,13 @@
                 return [ t, void 0 ];
             });
         }, Q = function(t) {
-            var e, n, r = t.collectionName, i = t.localPropertyName || v(r).slice(0, -1), a = t.idPropertyName || "_id", u = t.templateName || i + "Template", c = t.template || {}, s = t.recordPrimaryKey || "_id", f = i + "RecordId", l = i + "HasChanges", p = i + "Save", d = i + "Loading", h = t.idType || String, g = t.requestOptions || {}, b = i + "RequestOptions", _ = i + "Capture", w = function(t, e, n) {
+            var e, n, r = t.collectionName, i = t.localPropertyName || v(r).slice(0, -1), a = t.idPropertyName || "id", u = t.templateName || i + "Template", c = t.template || {}, s = t.recordPrimaryKey || "_id", f = i + "RecordId", l = i + "HasChanges", p = i + "Save", d = i + "Loading", h = t.idType || String, g = t.requestOptions || {}, b = i + "RequestOptions", _ = i + "Capture", w = function(t, e, n) {
                 var r = t[e];
                 return delete t[e], void 0 === r ? n : r;
             }(g, "capture", !1), O = i + "RequestOptionsOverride";
-            return {
+            if (!r) throw new Error("[@citygro/vdata#createMixinForItemById] options.collectionName is required");
+            return t.idPropertyName || console.warn("[@citygro/vdata#createMixinForItemById]", "options.idPropertyName will default to `${localPropertyName}Id` in future versions of vdata"), 
+            {
                 props: (e = {}, K(e, a, {
                     type: h,
                     default: null
@@ -2854,44 +2856,45 @@
                 }), e),
                 data: function() {
                     var t, e = (t = {}, K(t, i, null), K(t, b, x({}, y(g), this[O])), t);
-                    return w && (e[_] = null), e;
+                    return (w || this[O].capture) && (e[_] = null), e;
                 },
                 vdata: function(t) {
                     var e = this[f]();
-                    this[d] || null === e || t.collectionName !== r || (this[i] = w ? U(this[_], this.$store.get(r, e) || {}, this[i]) : this.$store.get(r, e) || null);
+                    this[d] || null === e || t.collectionName !== r || (w || this[O].capture ? this[i] = U(this[_], this.$store.get(r, e) || {}, this[i]) : this[i] = this.$store.get(r, e) || null);
                 },
                 asyncData: K({}, i, function() {
                     var t = this;
                     /*#__PURE__*/
                     return D(o.default.mark(function e() {
-                        var n, i, a, c, s, l;
+                        var n, i, a, c, s, l, p, d;
                         return o.default.wrap(function(e) {
                             for (;;) switch (e.prev = e.next) {
                               case 0:
-                                if (n = t[b].force, i = t[f](), a = void 0, c = void 0, null === i) {
-                                    e.next = 14;
+                                if (n = g.force || t[O].force, i = w || t[O].capture, n && i && console.warn("[@citygro/vdata#createMixinForItemById]", "`requestOptions.capture = true` implies `requestOptions.force = true`, setting both options is not necessary"), 
+                                a = n || i, c = t[f](), s = void 0, l = void 0, null === c) {
+                                    e.next = 17;
                                     break;
                                 }
-                                if (n || (c = t.$store.get(r, i)), c) {
-                                    e.next = 12;
+                                if (a || (l = t.$store.get(r, c)), l) {
+                                    e.next = 15;
                                     break;
                                 }
-                                return e.next = 8, J(t.$store.find(r, i, t[b]));
+                                return e.next = 11, J(t.$store.find(r, c, t[b]));
 
-                              case 8:
-                                s = e.sent, l = B(s, 2), a = l[0], c = l[1];
-
-                              case 12:
-                                e.next = 15;
-                                break;
-
-                              case 14:
-                                c = t.$store.createRecord(r, t[u]);
+                              case 11:
+                                p = e.sent, d = B(p, 2), s = d[0], l = d[1];
 
                               case 15:
-                                return a && (console.error(a), c = null), w && !t[_] && (t[_] = y(c)), e.abrupt("return", c);
+                                e.next = 18;
+                                break;
+
+                              case 17:
+                                l = t.$store.createRecord(r, t[u]);
 
                               case 18:
+                                return s && (console.error(s), l = null), i && !t[_] && (t[_] = y(l)), e.abrupt("return", l);
+
+                              case 21:
                               case "end":
                                 return e.stop();
                             }
@@ -2959,7 +2962,7 @@
                     return function(t) {
                         var e = this, n = arguments.length > 1 && void 0 !== arguments[1] && arguments[1], r = H(this, "asyncData");
                         if (r) {
-                            var i = [], o = C(r).filter(function(t) {
+                            var i = [], o = R(r).filter(function(t) {
                                 return !Y(t);
                             }).filter(function(e) {
                                 return void 0 === t || e === t;
@@ -2992,7 +2995,7 @@
                                     });
                                     i.push(s);
                                 }
-                            }), l.default.all(i).then(h(I(o), j));
+                            }), l.default.all(i).then(h(C(o), j));
                         }
                         return l.default.resolve({});
                     }.bind(t);
@@ -3000,7 +3003,7 @@
             },
             methods: {
                 $asyncReload: function(t) {
-                    return R(this._asyncReload) ? this._asyncReload.apply(this, arguments).then(function(e) {
+                    return I(this._asyncReload) ? this._asyncReload.apply(this, arguments).then(function(e) {
                         return t ? e[t] : e;
                     }) : (console.info("[@citygro/vdata<" + this._uid + ">] vm.asyncReload is not available until the component is created!"), 
                     l.default.resolve(null));
@@ -3009,7 +3012,7 @@
             data: function() {
                 var t = this, e = H(this, "asyncData");
                 if (e) {
-                    var n = C(e).filter(function(t) {
+                    var n = R(e).filter(function(t) {
                         return !Y(t);
                     }), r = n.map(function(t) {
                         return t + "Error";
@@ -3025,7 +3028,7 @@
                     };
                     return n.forEach(function(n) {
                         var r = e[n + "Default"];
-                        i[n] = R(r) ? r.apply(t) : r, i[n + "Promise"] = null, i[n + "Loading"] = !e[n + "Lazy"];
+                        i[n] = I(r) ? r.apply(t) : r, i[n + "Promise"] = null, i[n + "Loading"] = !e[n + "Lazy"];
                     }), r.forEach(function(t) {
                         i[t] = void 0;
                     }), i;
@@ -3186,7 +3189,7 @@
                 if (r) return q.create(r);
             }, n.prototype.getAll = function(t, n) {
                 var r = this;
-                return F(n) ? n.length ? n.map(function(e) {
+                return S(n) ? n.length ? n.map(function(e) {
                     return r.get(t, e);
                 }) : [] : e.getAll(t).map(q.create);
             }, n.prototype.clear = function() {
@@ -3202,13 +3205,13 @@
             createConfig: function(t) {
                 return function(e) {
                     var n = t(e);
-                    return S(n || {}, {
+                    return F(n || {}, {
                         events: [ "add", "change", "remove", "afterDestroy", "vm-created" ]
                     });
                 };
             },
             install: function(t, e) {
-                e = R(e) ? e(t) : e;
+                e = I(e) ? e(t) : e;
                 var n = tt(e);
                 Object.defineProperty(t, "$store", {
                     get: function() {
@@ -3452,7 +3455,7 @@
                 n[t[e]] = t;
             }), n;
         }, e.createMixinForItemById = Q, e.createMixinForItemByResourceAndId = function(t) {
-            return console.warn("[@citygro/vdata] createMixinForItemByResourceAndId -> createMixinForItemById", "this name is DEPRECATED and will be removed in a future release"), 
+            return console.warn("[@citygro/vdata] rename createMixinForItemByResourceAndId -> createMixinForItemById", '"createMixinForItemByResourceAndId" is DEPRECATED and will be removed in a future release'), 
             Q(t);
         }, e.createMixinForListByResource = function(t) {
             var e = t.collectionName, n = t.localPropertyName || v(e), r = n + "Force", i = t.queryOptions || {}, a = t.requestOptions;
@@ -4093,14 +4096,14 @@
             var e;
             return !(!l(t) || "function" != typeof (e = t.then)) && e;
         }, k = function(t) {
-            return j(_, t) ? new R(t) : new i(t);
-        }, R = i = function(t) {
+            return j(_, t) ? new I(t) : new i(t);
+        }, I = i = function(t) {
             var e, n;
             this.promise = new t(function(t, r) {
                 if (void 0 !== e || void 0 !== n) throw x("Bad Promise constructor");
                 e = t, n = r;
             }), this.resolve = p(e), this.reject = p(n);
-        }, C = function(t) {
+        }, R = function(t) {
             try {
                 t();
             } catch (t) {
@@ -4108,7 +4111,7 @@
                     error: t
                 };
             }
-        }, I = function(t, e) {
+        }, C = function(t, e) {
             if (!t._n) {
                 t._n = !0;
                 var n = t._c;
@@ -4123,23 +4126,23 @@
                         }
                     }; n.length > o; ) a(n[o++]);
                     // variable length - can't use forEach
-                    t._c = [], t._n = !1, e && !t._h && S(t);
+                    t._c = [], t._n = !1, e && !t._h && F(t);
                 });
             }
-        }, S = function(t) {
+        }, F = function(t) {
             y.call(u, function() {
                 var e, n, r, i = t._v;
-                if (F(t) && (e = C(function() {
+                if (S(t) && (e = R(function() {
                     w ? b.emit("unhandledRejection", i, t) : (n = u.onunhandledrejection) ? n({
                         promise: t,
                         reason: i
                     }) : (r = u.console) && r.error && r.error("Unhandled promise rejection", i);
                 }), // Browsers should not trigger `rejectionHandled` event if it was handled here, NodeJS - should
-                t._h = w || F(t) ? 2 : 1), t._a = void 0, e) throw e.error;
+                t._h = w || S(t) ? 2 : 1), t._a = void 0, e) throw e.error;
             });
-        }, F = function(t) {
+        }, S = function(t) {
             if (1 == t._h) return !1;
-            for (var e, n = t._a || t._c, r = 0; n.length > r; ) if ((e = n[r++]).fail || !F(e.promise)) return !1;
+            for (var e, n = t._a || t._c, r = 0; n.length > r; ) if ((e = n[r++]).fail || !S(e.promise)) return !1;
             return !0;
         }, P = function(t) {
             y.call(u, function() {
@@ -4152,7 +4155,7 @@
         }, M = function(t) {
             var e = this;
             e._d || (e._d = !0, // unwrap
-            (e = e._w || e)._v = t, e._s = 2, e._a || (e._a = e._c.slice()), I(e, !0));
+            (e = e._w || e)._v = t, e._s = 2, e._a || (e._a = e._c.slice()), C(e, !0));
         }, L = function(t) {
             var e, n = this;
             if (!n._d) {
@@ -4171,7 +4174,7 @@
                         } catch (t) {
                             M.call(r, t);
                         }
-                    }) : (n._v = t, n._s = 1, I(n, !1));
+                    }) : (n._v = t, n._s = 1, C(n, !1));
                 } catch (t) {
                     M.call({
                         _w: n,
@@ -4202,14 +4205,14 @@
             then: function(t, e) {
                 var n = k(v(this, _));
                 return n.ok = "function" != typeof t || t, n.fail = "function" == typeof e && e, 
-                n.domain = w ? b.domain : void 0, this._c.push(n), this._a && this._a.push(n), this._s && I(this, !1), 
+                n.domain = w ? b.domain : void 0, this._c.push(n), this._a && this._a.push(n), this._s && C(this, !1), 
                 n.promise;
             },
             // 25.4.5.1 Promise.prototype.catch(onRejected)
             catch: function(t) {
                 return this.then(void 0, t);
             }
-        }), R = function() {
+        }), I = function() {
             var t = new r();
             this.promise = t, this.resolve = c(L, t, 1), this.reject = c(M, t, 1);
         }), f(f.G + f.W + f.F * !A, {
@@ -4234,7 +4237,7 @@
         })), m, {
             // 25.4.4.1 Promise.all(iterable)
             all: function(t) {
-                var e = this, n = k(e), r = n.resolve, i = n.reject, o = C(function() {
+                var e = this, n = k(e), r = n.resolve, i = n.reject, o = R(function() {
                     var n = [], o = 0, a = 1;
                     h(t, !1, function(t) {
                         var u = o++, c = !1;
@@ -4247,7 +4250,7 @@
             },
             // 25.4.4.4 Promise.race(iterable)
             race: function(t) {
-                var e = this, n = k(e), r = n.reject, i = C(function() {
+                var e = this, n = k(e), r = n.reject, i = R(function() {
                     h(t, !1, function(t) {
                         e.resolve(t).then(n.resolve, r);
                     });
@@ -4260,29 +4263,29 @@
     function(t, e, n) {
         "use strict";
         // ECMAScript 6 symbols shim
-        var r = n(5), i = n(13), o = n(8), a = n(12), u = n(112), c = n(201).KEY, s = n(17), f = n(68), l = n(42), p = n(44), d = n(2), h = n(73), v = n(72), y = n(200), g = n(194), m = n(197), x = n(7), b = n(9), _ = n(71), w = n(31), O = n(106), A = n(205), j = n(107), E = n(6), k = n(30), R = j.f, C = E.f, I = A.f, S = r.Symbol, F = r.JSON, P = F && F.stringify, M = "prototype", L = d("_hidden"), T = d("toPrimitive"), N = {}.propertyIsEnumerable, D = f("symbol-registry"), K = f("symbols"), W = f("op-symbols"), B = Object[M], $ = "function" == typeof S, q = r.QObject, z = !q || !q[M] || !q[M].findChild, U = o && s(function() {
-            return 7 != O(C({}, "a", {
+        var r = n(5), i = n(13), o = n(8), a = n(12), u = n(112), c = n(201).KEY, s = n(17), f = n(68), l = n(42), p = n(44), d = n(2), h = n(73), v = n(72), y = n(200), g = n(194), m = n(197), x = n(7), b = n(9), _ = n(71), w = n(31), O = n(106), A = n(205), j = n(107), E = n(6), k = n(30), I = j.f, R = E.f, C = A.f, F = r.Symbol, S = r.JSON, P = S && S.stringify, M = "prototype", L = d("_hidden"), T = d("toPrimitive"), N = {}.propertyIsEnumerable, D = f("symbol-registry"), K = f("symbols"), W = f("op-symbols"), B = Object[M], $ = "function" == typeof F, q = r.QObject, z = !q || !q[M] || !q[M].findChild, U = o && s(function() {
+            return 7 != O(R({}, "a", {
                 get: function() {
-                    return C(this, "a", {
+                    return R(this, "a", {
                         value: 7
                     }).a;
                 }
             })).a;
         }) ? function(t, e, n) {
-            var r = R(B, e);
-            r && delete B[e], C(t, e, n), r && t !== B && C(B, e, r);
-        } : C, J = function(t) {
-            var e = K[t] = O(S[M]);
+            var r = I(B, e);
+            r && delete B[e], R(t, e, n), r && t !== B && R(B, e, r);
+        } : R, J = function(t) {
+            var e = K[t] = O(F[M]);
             return e._k = t, e;
-        }, Q = $ && "symbol" == typeof S.iterator ? function(t) {
+        }, Q = $ && "symbol" == typeof F.iterator ? function(t) {
             return "symbol" == typeof t;
         } : function(t) {
-            return t instanceof S;
+            return t instanceof F;
         }, V = function(t, e, n) {
             return t === B && V(W, e, n), x(t), e = _(e, !0), x(n), i(K, e) ? (n.enumerable ? (i(t, L) && t[L][e] && (t[L][e] = !1), 
             n = O(n, {
                 enumerable: w(0, !1)
-            })) : (i(t, L) || C(t, L, w(1, {})), t[L][e] = !0), U(t, e, n)) : C(t, e, n);
+            })) : (i(t, L) || R(t, L, w(1, {})), t[L][e] = !0), U(t, e, n)) : R(t, e, n);
         }, H = function(t, e) {
             x(t);
             for (var n, r = g(e = b(e)), i = 0, o = r.length; o > i; ) V(t, n = r[i++], e[n]);
@@ -4292,19 +4295,19 @@
             return !(this === B && i(K, t) && !i(W, t)) && (!(e || !i(this, t) || !i(K, t) || i(this, L) && this[L][t]) || e);
         }, Y = function(t, e) {
             if (t = b(t), e = _(e, !0), t !== B || !i(K, e) || i(W, e)) {
-                var n = R(t, e);
+                var n = I(t, e);
                 return !n || !i(K, e) || i(t, L) && t[L][e] || (n.enumerable = !0), n;
             }
         }, Z = function(t) {
-            for (var e, n = I(b(t)), r = [], o = 0; n.length > o; ) i(K, e = n[o++]) || e == L || e == c || r.push(e);
+            for (var e, n = C(b(t)), r = [], o = 0; n.length > o; ) i(K, e = n[o++]) || e == L || e == c || r.push(e);
             return r;
         }, X = function(t) {
-            for (var e, n = t === B, r = I(n ? W : b(t)), o = [], a = 0; r.length > a; ) !i(K, e = r[a++]) || n && !i(B, e) || o.push(K[e]);
+            for (var e, n = t === B, r = C(n ? W : b(t)), o = [], a = 0; r.length > a; ) !i(K, e = r[a++]) || n && !i(B, e) || o.push(K[e]);
             return o;
         };
         // 19.4.1.1 Symbol([description])
-        $ || (u((S = function() {
-            if (this instanceof S) throw TypeError("Symbol is not a constructor!");
+        $ || (u((F = function() {
+            if (this instanceof F) throw TypeError("Symbol is not a constructor!");
             var t = p(arguments.length > 0 ? arguments[0] : void 0), e = function(n) {
                 this === B && e.call(W, n), i(this, L) && i(this[L], t) && (this[L][t] = !1), U(this, t, w(1, n));
             };
@@ -4318,14 +4321,14 @@
         h.f = function(t) {
             return J(d(t));
         }), a(a.G + a.W + a.F * !$, {
-            Symbol: S
+            Symbol: F
         });
         for (var tt = "hasInstance,isConcatSpreadable,iterator,match,replace,search,species,split,toPrimitive,toStringTag,unscopables".split(","), et = 0; tt.length > et; ) d(tt[et++]);
         for (var tt = k(d.store), et = 0; tt.length > et; ) v(tt[et++]);
         a(a.S + a.F * !$, "Symbol", {
             // 19.4.2.1 Symbol.for(key)
             for: function(t) {
-                return i(D, t += "") ? D[t] : D[t] = S(t);
+                return i(D, t += "") ? D[t] : D[t] = F(t);
             },
             // 19.4.2.5 Symbol.keyFor(sym)
             keyFor: function(t) {
@@ -4354,8 +4357,8 @@
             // 19.1.2.8 Object.getOwnPropertySymbols(O)
             getOwnPropertySymbols: X
         }), // 24.3.2 JSON.stringify(value [, replacer [, space]])
-        F && a(a.S + a.F * (!$ || s(function() {
-            var t = S();
+        S && a(a.S + a.F * (!$ || s(function() {
+            var t = F();
             // MS Edge converts symbol values to JSON as {}
             // WebKit converts symbol values to JSON as null
             // V8 throws on boxed symbols
@@ -4369,12 +4372,12 @@
                     var e, n, r = [ t ], i = 1; arguments.length > i; ) r.push(arguments[i++]);
                     return "function" == typeof (e = r[1]) && (n = e), !n && m(e) || (e = function(t, e) {
                         if (n && (e = n.call(this, t, e)), !Q(e)) return e;
-                    }), r[1] = e, P.apply(F, r);
+                    }), r[1] = e, P.apply(S, r);
                 }
             }
         }), // 19.4.3.4 Symbol.prototype[@@toPrimitive](hint)
-        S[M][T] || n(14)(S[M], T, S[M].valueOf), // 19.4.3.5 Symbol.prototype[@@toStringTag]
-        l(S, "Symbol"), // 20.2.1.9 Math[@@toStringTag]
+        F[M][T] || n(14)(F[M], T, F[M].valueOf), // 19.4.3.5 Symbol.prototype[@@toStringTag]
+        l(F, "Symbol"), // 20.2.1.9 Math[@@toStringTag]
         l(Math, "Math", !0), // 24.3.3 JSON[@@toStringTag]
         l(r.JSON, "JSON", !0);
     }, /* 221 */
@@ -4833,7 +4836,7 @@
                 this.isIndex = !0, this.keys = [], this.values = [];
             }
             function l(t, e) {
-                E.classCallCheck(this, l), C.call(this, e), t && !E.isArray(t) && (e = t, t = []), 
+                E.classCallCheck(this, l), R.call(this, e), t && !E.isArray(t) && (e = t, t = []), 
                 E.isString(e) && (e = {
                     idAttribute: e
                 }), // Default values for arguments
@@ -4923,7 +4926,7 @@
    * @since 3.0.0
    * @type {string}
    */
-                if (E.classCallCheck(this, d), C.call(this), t || (t = {}), // Prepare certain properties to be non-enumerable
+                if (E.classCallCheck(this, d), R.call(this), t || (t = {}), // Prepare certain properties to be non-enumerable
                 Object.defineProperties(this, {
                     _adapters: {
                         value: void 0,
@@ -5105,7 +5108,7 @@
  * @since 3.0.0
  */
             function h(t) {
-                E.classCallCheck(this, h), C.call(this), t || (t = {}), Object.defineProperties(this, {
+                E.classCallCheck(this, h), R.call(this), t || (t = {}), Object.defineProperties(this, {
                     /**
      * The adapters registered with this Container, which are also shared by all
      * Mappers in this Container.
@@ -5187,7 +5190,7 @@
             }
             function v(t) {
                 E.classCallCheck(this, v), t || (t = {}), // Fill in any missing options with the defaults
-                E.fillIn(t, It), h.call(this, t), this.collectionClass = this.collectionClass || Y, 
+                E.fillIn(t, Ct), h.call(this, t), this.collectionClass = this.collectionClass || Y, 
                 this._collections = {}, this._pendingQueries = {}, this._completedQueries = {};
             }
             /**
@@ -5220,7 +5223,7 @@
             }
             function g(t) {
                 E.classCallCheck(this, g), t || (t = {}), // Fill in any missing options with the defaults
-                E.fillIn(t, Lt), t.collectionClass || (t.collectionClass = Mt), Ft.call(this, t);
+                E.fillIn(t, Lt), t.collectionClass || (t.collectionClass = Mt), St.call(this, t);
             }
             var m = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function(t) {
                 return typeof t;
@@ -6474,7 +6477,7 @@
                 }
             }, k = function(t, e, n) {
                 t && t._set ? t._set("props." + e, n) : E.set(t, e, n);
-            }, R = function(t, e, n) {
+            }, I = function(t, e, n) {
                 t && t._set ? t._set("links." + e, n) : E.set(t, e, n);
             };
             /**
@@ -6531,7 +6534,7 @@
  * @since 3.0.0
  */
             e.extend = E.extend;
-            var C = e.extend({
+            var R = e.extend({
                 constructor: n
             });
             /**
@@ -6693,14 +6696,14 @@
             }, function(t) {
                 this._listeners = t;
             });
-            var I = "Index inaccessible after first operation", S = {
+            var C = "Index inaccessible after first operation", F = {
                 limit: "",
                 offset: "",
                 orderBy: "",
                 skip: "",
                 sort: "",
                 where: ""
-            }, F = /([.*+?^=!:${}()|[\]/\\])/g, P = /%/g, M = /_/g, L = C.extend({
+            }, S = /([.*+?^=!:${}()|[\]/\\])/g, P = /%/g, M = /_/g, L = R.extend({
                 constructor: r,
                 _applyWhereFromObject: function(t) {
                     var e = [], n = [], r = [];
@@ -6987,7 +6990,7 @@
        * @since 3.0.0
        */
                         (E.isObject(t.where) || E.isArray(t.where)) && (r = t.where), E.forOwn(t, function(t, e) {
-                            e in S || e in r || (r[e] = {
+                            e in F || e in r || (r[e] = {
                                 "==": t
                             });
                         });
@@ -7158,7 +7161,7 @@
    * @since 3.0.0
    */
                 get: function(t, e) {
-                    if (t || (t = []), e || (e = {}), this.data) throw E.err("Query#get")(500, I);
+                    if (t || (t = []), e || (e = {}), this.data) throw E.err("Query#get")(500, C);
                     return t && !E.isArray(t) && (t = [ t ]), t.length ? (this.data = this.collection.getIndex(e.index).get(t), 
                     this) : (this.getData(), this);
                 },
@@ -7183,7 +7186,7 @@
    */
                 getAll: function() {
                     var t = this, e = {};
-                    if (this.data) throw E.err("Query#getAll")(500, I);
+                    if (this.data) throw E.err("Query#getAll")(500, C);
                     for (var n = arguments.length, r = Array(n), i = 0; i < n; i++) r[i] = arguments[i];
                     if (!r.length || 1 === r.length && E.isObject(r[0])) return this.getData(), this;
                     r.length && E.isObject(r[r.length - 1]) && (e = r[r.length - 1], r.pop());
@@ -7214,7 +7217,7 @@
    */
                 like: function(t, e) {
                     return new RegExp("^" + function(t) {
-                        return t.replace(F, "\\$1");
+                        return t.replace(S, "\\$1");
                     }(t).replace(P, ".*").replace(M, ".") + "$", e);
                 },
                 /**
@@ -7763,7 +7766,7 @@
                     for (var r = arguments.length, i = Array(r), o = 0; o < r; o++) i[o] = arguments[o];
                     return n[e].apply(n, [ t.name ].concat(i));
                 } : t[e].bind(t);
-            }, q = "creating", z = "noValidate", U = "keepChangeHistory", J = "previous", Q = C.extend({
+            }, q = "creating", z = "noValidate", U = "keepChangeHistory", J = "previous", Q = R.extend({
                 constructor: o,
                 /**
    * Returns the {@link Mapper} paired with this record's class, if any.
@@ -8001,7 +8004,7 @@
                 },
                 removeInverseRelation: function(t, e, n, r) {
                     var i = this;
-                    if (n.type === D) R(t, n.localField, void 0); else if (n.type === N) {
+                    if (n.type === D) I(t, n.localField, void 0); else if (n.type === N) {
                         // e.g. remove comment from otherPost.comments
                         var o = E.get(t, n.localField);
                         void 0 === e ? E.remove(o, function(t) {
@@ -8015,7 +8018,7 @@
                     var i = this;
                     // Update (set) inverse relation
                     if (n.type === D) // e.g. someUser.profile = profile
-                    R(t, n.localField, this); else if (n.type === N) {
+                    I(t, n.localField, this); else if (n.type === N) {
                         // e.g. add comment to somePost.comments
                         var o = E.get(t, n.localField);
                         void 0 === e ? E.noDupeAdd(o, this, function(t) {
@@ -8534,7 +8537,7 @@
    * @default "merge"
    */
                 onConflict: "merge"
-            }, Y = C.extend({
+            }, Y = R.extend({
                 constructor: l,
                 /**
    * Used to bind to events emitted by records in this Collection.
@@ -9645,7 +9648,7 @@
                 string: function(t, e, n) {
                     return ot(ft, t, e, n);
                 }
-            }, vt = C.extend({
+            }, vt = R.extend({
                 constructor: p,
                 /**
    * This adds ES5 getters/setters to the target based on the "properties" in
@@ -10022,7 +10025,7 @@
    * @type {boolean}
    */
                 validateOnSet: !0
-            }, At = C.extend({
+            }, At = R.extend({
                 constructor: d,
                 /**
    * Mapper lifecycle hook called by {@link Mapper#count}. If this method
@@ -12915,7 +12918,7 @@
                     for (var n, r = arguments.length, i = Array(r > 1 ? r - 1 : 0), o = 1; o < r; o++) i[o - 1] = arguments[o];
                     return (n = this.getMapper(e))[t].apply(n, i);
                 };
-            }), C.extend(Et);
+            }), R.extend(Et);
             /**
  * Create a subclass of this Container:
  * @example <caption>Container.extend</caption>
@@ -13191,10 +13194,10 @@
  * @see Collection#unsaved
  * @since 3.0.0
  */
-            "unsaved" ], Rt = [ "addToCache", "cachedFind", "cachedFindAll", "cacheFind", "cacheFindAll", "hashQuery" ], Ct = function(t, e, n) {
+            "unsaved" ], It = [ "addToCache", "cachedFind", "cachedFindAll", "cacheFind", "cacheFindAll", "hashQuery" ], Rt = function(t, e, n) {
                 var r = this._completedQueries[t][e];
                 return E.isFunction(r) ? r(t, e, n) : r;
-            }, It = {
+            }, Ct = {
                 /**
    * Whether to use the pending query if a `find` request for the specified
    * record is currently underway. Can be set to `true`, `false`, or to a
@@ -13217,7 +13220,7 @@
    * @type {boolean|Function}
    */
                 usePendingFindAll: !0
-            }, St = {
+            }, Ft = {
                 constructor: v,
                 /**
    * Internal method used to handle Mapper responses.
@@ -13356,7 +13359,7 @@
    */
                 as: function(t) {
                     var e = {}, n = this;
-                    return Rt.concat(jt).concat(kt).forEach(function(r) {
+                    return It.concat(jt).concat(kt).forEach(function(r) {
                         e[r] = {
                             writable: !0,
                             value: function() {
@@ -13420,7 +13423,7 @@
    * @param {Object} opts The `opts` argument passed to {@link SimpleStore#find}.
    * @since 3.0.0
    */
-                cachedFind: Ct,
+                cachedFind: Rt,
                 /**
    * Retrieve a cached `findAll` result, if any. This method is called during
    * {@link SimpleStore#findAll} to determine if {@link Mapper#findAll} needs to be
@@ -13466,7 +13469,7 @@
    * @param {Object} opts The `opts` argument passed to {@link SimpleStore#findAll}.
    * @since 3.0.0
    */
-                cachedFindAll: Ct,
+                cachedFindAll: Rt,
                 /**
    * Mark a {@link Mapper#find} result as cached by adding an entry to
    * {@link SimpleStore#_completedQueries}. By default, once a `find` entry is
@@ -14631,12 +14634,12 @@
                 }
             };
             kt.forEach(function(t) {
-                St[t] = function(e) {
+                Ft[t] = function(e) {
                     for (var n, r = arguments.length, i = Array(r > 1 ? r - 1 : 0), o = 1; o < r; o++) i[o - 1] = arguments[o];
                     return (n = this.getCollection(e))[t].apply(n, i);
                 };
             });
-            var Ft = h.extend(St), Pt = "LinkedCollection", Mt = Y.extend({
+            var St = h.extend(Ft), Pt = "LinkedCollection", Mt = Y.extend({
                 constructor: y,
                 _addMeta: function(t, e) {
                     // Track when this record was added
@@ -14690,7 +14693,7 @@
                 constructor: g,
                 defineMapper: function(t, e) {
                     // Complexity of this method is beyond simply using => functions to bind context
-                    var n = this, r = Ft.prototype.defineMapper.call(n, t, e), i = r.idAttribute, o = this.getCollection(t);
+                    var n = this, r = St.prototype.defineMapper.call(n, t, e), i = r.idAttribute, o = this.getCollection(t);
                     return r.relationList.forEach(function(t) {
                         var e = t.relation, a = t.localField, u = "links." + a, c = t.foreignKey, s = t.type, f = {
                             index: c
@@ -14717,11 +14720,11 @@
                                         void 0 !== v && this._get("$") && (s = n.get(e, v) || s), // Set locals
                                         // e.g. profile.user = someUser
                                         // or comment.post = somePost
-                                        R(this, a, s), k(this, c, v), o.updateIndex(this, f), d && this.setupInverseRelation(s, p, d, i);
+                                        I(this, a, s), k(this, c, v), o.updateIndex(this, f), d && this.setupInverseRelation(s, p, d, i);
                                     } else // Unset in-memory link only
                                     // e.g. profile.user = undefined
                                     // or comment.post = undefined
-                                    R(this, a, void 0);
+                                    I(this, a, void 0);
                                     return s;
                                 }
                             };
@@ -14738,7 +14741,7 @@
                                 var s = this;
                                 v && v.call(this, u);
                                 var l = E.get(this, a), p = E.get(this, i), d = t.getInverse(r), h = l ? E.get(l, t.getRelation().idAttribute) : void 0;
-                                if (l && void 0 !== h && h !== u) if (d.type === D) R(l, d.localField, void 0); else if (d.type === N) {
+                                if (l && void 0 !== h && h !== u) if (d.type === D) I(l, d.localField, void 0); else if (d.type === N) {
                                     var y = E.get(l, d.localField);
                                     void 0 === p ? E.remove(y, function(t) {
                                         return t === s;
@@ -14790,13 +14793,13 @@
                                         o && (// e.g. comment.post_id = undefined
                                         k(t, c, void 0), // e.g. CommentCollection.updateIndex(comment, { index: 'post_id' })
                                         n.getCollection(e).updateIndex(t, f)), // e.g. comment.post = undefined
-                                        R(t, h, void 0));
+                                        I(t, h, void 0));
                                     }), m.forEach(function(t) {
                                         // Update (set) inverse relation
                                         // e.g. comment.post_id = post.id
                                         k(t, c, l), // e.g. CommentCollection.updateIndex(comment, { index: 'post_id' })
                                         n.getCollection(e).updateIndex(t, f), // e.g. comment.post = post
-                                        R(t, h, s);
+                                        I(t, h, s);
                                     }); else if (y) {
                                         // Update locals
                                         // e.g. group.users = someUsers
@@ -14872,14 +14875,14 @@
                                 if (o === s) return s;
                                 var l = t.getInverse(r).localField;
                                 if (// Update (unset) inverse relation
-                                s && (k(s, c, void 0), n.getCollection(e).updateIndex(s, f), R(s, l, void 0)), o) {
+                                s && (k(s, c, void 0), n.getCollection(e).updateIndex(s, f), I(s, l, void 0)), o) {
                                     var p = E.get(o, t.getRelation().idAttribute);
                                     // Prefer store record
                                     void 0 !== p && (o = n.get(e, p) || o), // Set locals
-                                    R(this, a, o), // Update (set) inverse relation
-                                    k(o, c, E.get(this, i)), n.getCollection(e).updateIndex(o, f), R(o, l, this);
+                                    I(this, a, o), // Update (set) inverse relation
+                                    k(o, c, E.get(this, i)), n.getCollection(e).updateIndex(o, f), I(o, l, this);
                                 } else // Unset locals
-                                R(this, a, void 0);
+                                I(this, a, void 0);
                                 return o;
                             }
                         });
@@ -14909,7 +14912,7 @@
                 },
                 destroy: function(t, e, n) {
                     var r = this;
-                    return n || (n = {}), Ft.prototype.destroy.call(this, t, e, n).then(function(e) {
+                    return n || (n = {}), St.prototype.destroy.call(this, t, e, n).then(function(e) {
                         var i = void 0;
                         if ((i = n.raw ? e.data : e) && r.unlinkOnDestroy) {
                             var o = E.plainCopy(n);
@@ -14922,7 +14925,7 @@
                 },
                 destroyAll: function(t, e, n) {
                     var r = this;
-                    return n || (n = {}), Ft.prototype.destroyAll.call(this, t, e, n).then(function(e) {
+                    return n || (n = {}), St.prototype.destroyAll.call(this, t, e, n).then(function(e) {
                         var i = void 0;
                         if ((i = n.raw ? e.data : e) && i.length && r.unlinkOnDestroy) {
                             var o = E.plainCopy(n);
@@ -14935,15 +14938,15 @@
                         return e;
                     });
                 }
-            }, Nt = Ft.extend(Tt);
+            }, Nt = St.extend(Tt);
             t.version = {
                 full: "3.0.1",
                 major: 3,
                 minor: 0,
                 patch: 1
-            }, t.Collection = Y, t.Component = C, t.Container = h, t.DataStore = Nt, t.Index = f, 
+            }, t.Collection = Y, t.Component = R, t.Container = h, t.DataStore = Nt, t.Index = f, 
             t.LinkedCollection = Mt, t.Mapper = At, t.Query = L, t.Record = Q, t.Schema = vt, 
-            t.Settable = e, t.SimpleStore = Ft, t.utils = E, t.belongsTo = K, t.hasMany = W, 
+            t.Settable = e, t.SimpleStore = St, t.utils = E, t.belongsTo = K, t.hasMany = W, 
             t.hasOne = B, t.belongsToType = T, t.hasManyType = N, t.hasOneType = D, Object.defineProperty(t, "__esModule", {
                 value: !0
             });
@@ -15493,8 +15496,8 @@
             if (!(n & l)) {
                 var E = O && v.call(t, "__wrapped__"), k = A && v.call(e, "__wrapped__");
                 if (E || k) {
-                    var R = E ? t.value() : t, C = k ? e.value() : e;
-                    return m || (m = new r()), g(R, C, n, y, m);
+                    var I = E ? t.value() : t, R = k ? e.value() : e;
+                    return m || (m = new r()), g(I, R, n, y, m);
                 }
             }
             return !!j && (m || (m = new r()), a(t, e, n, y, g, m));
@@ -15676,8 +15679,8 @@
             if (O) r(t, n, O); else {
                 var A = x ? x(_, w, n + "", t, e, b) : void 0, j = void 0 === A;
                 if (j) {
-                    var E = s(w), k = !E && l(w), R = !E && !k && v(w);
-                    A = w, E || k || R ? s(_) ? A = _ : f(_) ? A = a(_) : k ? (j = !1, A = i(w, !0)) : R ? (j = !1, 
+                    var E = s(w), k = !E && l(w), I = !E && !k && v(w);
+                    A = w, E || k || I ? s(_) ? A = _ : f(_) ? A = a(_) : k ? (j = !1, A = i(w, !0)) : I ? (j = !1, 
                     A = o(w, !0)) : A = [] : h(w) || c(w) ? (A = _, c(_) ? A = y(_) : (!d(_) || g && p(_)) && (A = u(w))) : j = !1;
                 }
                 j && (// Recursively merge objects and arrays (susceptible to call stack limits).
@@ -16384,12 +16387,12 @@
                 var k = r & s;
                 if (E || (E = c), t.size != e.size && !k) return !1;
                 // Assume cyclic values are equal.
-                var R = j.get(t);
-                if (R) return R == e;
+                var I = j.get(t);
+                if (I) return I == e;
                 r |= f, // Recursively compare objects (susceptible to call stack limits).
                 j.set(t, e);
-                var C = a(E(t), E(e), r, w, A, j);
-                return j.delete(t), C;
+                var R = a(E(t), E(e), r, w, A, j);
+                return j.delete(t), R;
 
               case x:
                 if (O) return O.call(t) == O.call(e);
@@ -16669,7 +16672,7 @@
     }, /* 298 */
     /***/
     function(t, e, n) {
-        var r = n(87), i = n(264), o = n(265), a = n(266), u = n(267), c = n(268), s = n(132), f = "[object Boolean]", l = "[object Date]", p = "[object Map]", d = "[object Number]", h = "[object RegExp]", v = "[object Set]", y = "[object String]", g = "[object Symbol]", m = "[object ArrayBuffer]", x = "[object DataView]", b = "[object Float32Array]", _ = "[object Float64Array]", w = "[object Int8Array]", O = "[object Int16Array]", A = "[object Int32Array]", j = "[object Uint8Array]", E = "[object Uint8ClampedArray]", k = "[object Uint16Array]", R = "[object Uint32Array]";
+        var r = n(87), i = n(264), o = n(265), a = n(266), u = n(267), c = n(268), s = n(132), f = "[object Boolean]", l = "[object Date]", p = "[object Map]", d = "[object Number]", h = "[object RegExp]", v = "[object Set]", y = "[object String]", g = "[object Symbol]", m = "[object ArrayBuffer]", x = "[object DataView]", b = "[object Float32Array]", _ = "[object Float64Array]", w = "[object Int8Array]", O = "[object Int16Array]", A = "[object Int32Array]", j = "[object Uint8Array]", E = "[object Uint8ClampedArray]", k = "[object Uint16Array]", I = "[object Uint32Array]";
         t.exports = /**
  * Initializes an object clone based on its `toStringTag`.
  *
@@ -16683,18 +16686,18 @@
  * @param {boolean} [isDeep] Specify a deep clone.
  * @returns {Object} Returns the initialized clone.
  */
-        function(t, e, n, C) {
-            var I = t.constructor;
+        function(t, e, n, R) {
+            var C = t.constructor;
             switch (e) {
               case m:
                 return r(t);
 
               case f:
               case l:
-                return new I(+t);
+                return new C(+t);
 
               case x:
-                return i(t, C);
+                return i(t, R);
 
               case b:
               case _:
@@ -16704,21 +16707,21 @@
               case j:
               case E:
               case k:
-              case R:
-                return s(t, C);
+              case I:
+                return s(t, R);
 
               case p:
-                return o(t, C, n);
+                return o(t, R, n);
 
               case d:
               case y:
-                return new I(t);
+                return new C(t);
 
               case h:
                 return a(t);
 
               case v:
-                return u(t, C, n);
+                return u(t, R, n);
 
               case g:
                 return c(t);
@@ -17780,7 +17783,7 @@
  * @param {number} start The start position of the spread.
  * @returns {Function} Returns the new function.
  */
-                    return void 0 === i ? R(e, n) : function(t, e) {
+                    return void 0 === i ? I(e, n) : function(t, e) {
                         return function() {
                             for (var n = arguments.length, r = n - 1, i = Array(n); n--; ) i[n] = arguments[n];
                             var o = i[e], a = i.slice(0, e);
@@ -17811,9 +17814,9 @@
    * @returns {Object} Returns the cloned object.
    */
             function h(t, e) {
-                for (var n = -1, r = (e = D(e)).length, i = r - 1, o = I(Object(t)), a = o; null != a && ++n < r; ) {
+                for (var n = -1, r = (e = D(e)).length, i = r - 1, o = C(Object(t)), a = o; null != a && ++n < r; ) {
                     var u = e[n], c = a[u];
-                    null != c && (a[e[n]] = I(n == i ? c : Object(c))), a = a[u];
+                    null != c && (a[e[n]] = C(n == i ? c : Object(c))), a = a[u];
                 }
                 return o;
             }
@@ -17827,7 +17830,7 @@
             function v(t, e) {
                 var n = u.aliasToReal[t] || t, r = u.remap[n] || n, i = f;
                 return function(t) {
-                    var o = x ? E : k, u = x ? E[r] : e, c = C(C({}, i), t);
+                    var o = x ? E : k, u = x ? E[r] : e, c = R(R({}, i), t);
                     return a(o, n, u, c);
                 };
             }
@@ -17870,8 +17873,8 @@
                     return function(e) {
                         return t({}, e);
                     };
-                }(e)) : u.mutate.set[r] && (a = o(e, h))), F(K, function(t) {
-                    return F(u.aryMethod[t], function(e) {
+                }(e)) : u.mutate.set[r] && (a = o(e, h))), S(K, function(t) {
+                    return S(u.aryMethod[t], function(e) {
                         if (r == e) {
                             var i = u.methodSpread[r], o = i && i.afterRearg;
                             /**
@@ -17884,11 +17887,11 @@
    * @returns {Function} Returns the cast function.
    */
                             return n = o ? p(r, d(r, a, t), t) : d(r, p(r, a, t), t), n = l(r, n), n = function(t, e, n) {
-                                return w || _.curry && n > 1 ? S(e, n) : e;
+                                return w || _.curry && n > 1 ? F(e, n) : e;
                             }(0, n, t), !1;
                         }
                     }), !n;
-                }), n || (n = a), n == e && (n = w ? S(n, 1) : function() {
+                }), n || (n = a), n == e && (n = w ? F(n, 1) : function() {
                     return e.apply(this, arguments);
                 }), n.convert = v(r, e), u.placeholder[r] && (m = !0, n.placeholder = e.placeholder = j), 
                 n;
@@ -17915,7 +17918,7 @@
                 rearg: t.rearg,
                 toInteger: t.toInteger,
                 toPath: t.toPath
-            }, R = k.ary, C = k.assign, I = k.clone, S = k.curry, F = k.forEach, P = k.isArray, M = k.isFunction, L = k.keys, T = k.rearg, N = k.toInteger, D = k.toPath, K = L(u.aryMethod), W = {
+            }, I = k.ary, R = k.assign, C = k.clone, F = k.curry, S = k.forEach, P = k.isArray, M = k.isFunction, L = k.keys, T = k.rearg, N = k.toInteger, D = k.toPath, K = L(u.aryMethod), W = {
                 castArray: function(t) {
                     return function() {
                         var e = arguments[0];
@@ -17933,9 +17936,9 @@
                         var n = this;
                         if (!M(n)) return t(n, Object(e));
                         var r = [];
-                        return F(L(e), function(t) {
+                        return S(L(e), function(t) {
                             M(e[t]) && r.push([ t, n.prototype[t] ]);
-                        }), t(n, Object(e)), F(r, function(t) {
+                        }), t(n, Object(e)), S(r, function(t) {
                             var e = t[1];
                             M(e) ? n.prototype[t[0]] = e : delete n.prototype[t[0]];
                         }), n;
@@ -17944,13 +17947,13 @@
                 nthArg: function(t) {
                     return function(e) {
                         var n = e < 0 ? 1 : N(e) + 1;
-                        return S(t(e), n);
+                        return F(t(e), n);
                     };
                 },
                 rearg: function(t) {
                     return function(e, n) {
                         var r = n ? n.length : 0;
-                        return S(t(e, n), r);
+                        return F(t(e, n), r);
                     };
                 },
                 runInContext: function(e) {
@@ -17972,23 +17975,23 @@
    * @returns {Function} Returns the converted `lodash`.
    */
             // Assign aliases.
-            return F(K, function(t) {
-                F(u.aryMethod[t], function(t) {
+            return S(K, function(t) {
+                S(u.aryMethod[t], function(t) {
                     var e = B[u.remap[t] || t];
                     e && $.push([ t, g(t, e) ]);
                 });
-            }), F(L(B), function(t) {
+            }), S(L(B), function(t) {
                 var e = B[t];
                 if ("function" == typeof e) {
                     for (var n = $.length; n--; ) if ($[n][0] == t) return;
                     e.convert = v(t, e), $.push([ t, e ]);
                 }
-            }), F($, function(t) {
+            }), S($, function(t) {
                 B[t[0]] = t[1];
             }), B.convert = function(t) {
                 return B.runInContext.convert(t)(void 0);
-            }, m && (B.placeholder = j), F(L(B), function(t) {
-                F(u.realToAlias[t] || [], function(e) {
+            }, m && (B.placeholder = j), S(L(B), function(t) {
+                S(u.realToAlias[t] || [], function(e) {
                     B[e] = B[t];
                 });
             }), B;
@@ -19239,7 +19242,7 @@
                             if (u) {
                                 var c = s(u, n);
                                 if (c) {
-                                    if (c === R) continue;
+                                    if (c === I) continue;
                                     return c;
                                 }
                             }
@@ -19254,7 +19257,7 @@
                             if ("normal" === f.type) {
                                 if (// If an exception is thrown from innerFn, we leave state ===
                                 // GenStateExecuting and loop back for another invocation.
-                                i = n.done ? k : j, f.arg === R) continue;
+                                i = n.done ? k : j, f.arg === I) continue;
                                 return {
                                     value: f.arg,
                                     done: n.done
@@ -19376,14 +19379,14 @@
                         // chance to clean up.
                         e.method = "return", e.arg = v, s(t, e), "throw" === e.method)) // If maybeInvokeDelegate(context) changed context.method from
                         // "return" to "throw", let that override the TypeError below.
-                        return R;
+                        return I;
                         e.method = "throw", e.arg = new TypeError("The iterator does not provide a 'throw' method");
                     }
-                    return R;
+                    return I;
                 }
                 var i = r(n, t.iterator, e.arg);
                 if ("throw" === i.type) return e.method = "throw", e.arg = i.arg, e.delegate = null, 
-                R;
+                I;
                 var o = i.arg;
                 // Assign the result of the finished delegate to the temporary
                 // variable specified by delegate.resultName (see delegateYield).
@@ -19397,8 +19400,8 @@
                 // The delegate iterator is finished, so forget it and continue with
                 // the outer generator.
                 return o ? o.done ? (e[t.resultName] = o.value, e.next = t.nextLoc, "return" !== e.method && (e.method = "next", 
-                e.arg = v), e.delegate = null, R) : o : (e.method = "throw", e.arg = new TypeError("iterator result is not an object"), 
-                e.delegate = null, R);
+                e.arg = v), e.delegate = null, I) : o : (e.method = "throw", e.arg = new TypeError("iterator result is not an object"), 
+                e.delegate = null, I);
             }
             function f(t) {
                 var e = {
@@ -19450,16 +19453,16 @@
                 (// Define the runtime globally (as expected by generated code) as either
                 // module.exports (if we're in a module) or a new, empty object.
                 O = e.regeneratorRuntime = w ? t.exports : {}).wrap = n;
-                var A = "suspendedStart", j = "suspendedYield", E = "executing", k = "completed", R = {}, C = {};
-                C[x] = function() {
+                var A = "suspendedStart", j = "suspendedYield", E = "executing", k = "completed", I = {}, R = {};
+                R[x] = function() {
                     return this;
                 };
-                var I = Object.getPrototypeOf, S = I && I(I(d([])));
-                S && S !== y && g.call(S, x) && (// This environment has a native %IteratorPrototype%; use it instead
+                var C = Object.getPrototypeOf, F = C && C(C(d([])));
+                F && F !== y && g.call(F, x) && (// This environment has a native %IteratorPrototype%; use it instead
                 // of the polyfill.
-                C = S);
-                var F = a.prototype = i.prototype = Object.create(C);
-                o.prototype = F.constructor = a, a.constructor = o, a[_] = o.displayName = "GeneratorFunction", 
+                R = F);
+                var S = a.prototype = i.prototype = Object.create(R);
+                o.prototype = S.constructor = a, a.constructor = o, a[_] = o.displayName = "GeneratorFunction", 
                 O.isGeneratorFunction = function(t) {
                     var e = "function" == typeof t && t.constructor;
                     // For the native GeneratorFunction constructor, the best we can
@@ -19467,7 +19470,7 @@
                     return !!e && (e === o || "GeneratorFunction" === (e.displayName || e.name));
                 }, O.mark = function(t) {
                     return Object.setPrototypeOf ? Object.setPrototypeOf(t, a) : (t.__proto__ = a, _ in t || (t[_] = "GeneratorFunction")), 
-                    t.prototype = Object.create(F), t;
+                    t.prototype = Object.create(S), t;
                 }, // Within the body of any async function, `await x` is transformed to
                 // `yield regeneratorRuntime.awrap(x)`, so that the runtime can test
                 // `hasOwn.call(value, "__await")` to determine if the yielded value is
@@ -19488,14 +19491,14 @@
                     });
                 }, // Define Generator.prototype.{next,throw,return} in terms of the
                 // unified ._invoke helper method.
-                u(F), F[_] = "Generator", // A Generator should always return itself as the iterator object when the
+                u(S), S[_] = "Generator", // A Generator should always return itself as the iterator object when the
                 // @@iterator function is called on it. Some browsers' implementations of the
                 // iterator prototype chain incorrectly implement this, causing the Generator
                 // object to not be returned from this call. This ensures that doesn't happen.
                 // See https://github.com/facebook/regenerator/issues/274 for more details.
-                F[x] = function() {
+                S[x] = function() {
                     return this;
-                }, F.toString = function() {
+                }, S.toString = function() {
                     return "[object Generator]";
                 }, O.keys = function(t) {
                     var e = [];
@@ -19568,18 +19571,18 @@
                         i = null);
                         var o = i ? i.completion : {};
                         return o.type = t, o.arg = e, i ? (this.method = "next", this.next = i.finallyLoc, 
-                        R) : this.complete(o);
+                        I) : this.complete(o);
                     },
                     complete: function(t, e) {
                         if ("throw" === t.type) throw t.arg;
                         return "break" === t.type || "continue" === t.type ? this.next = t.arg : "return" === t.type ? (this.rval = this.arg = t.arg, 
                         this.method = "return", this.next = "end") : "normal" === t.type && e && (this.next = e), 
-                        R;
+                        I;
                     },
                     finish: function(t) {
                         for (var e = this.tryEntries.length - 1; e >= 0; --e) {
                             var n = this.tryEntries[e];
-                            if (n.finallyLoc === t) return this.complete(n.completion, n.afterLoc), l(n), R;
+                            if (n.finallyLoc === t) return this.complete(n.completion, n.afterLoc), l(n), I;
                         }
                     },
                     catch: function(t) {
@@ -19605,7 +19608,7 @@
                             iterator: d(t),
                             resultName: e,
                             nextLoc: n
-                        }, "next" === this.method && (this.arg = v), R;
+                        }, "next" === this.method && (this.arg = v), I;
                     }
                 };
             }
