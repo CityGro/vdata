@@ -370,11 +370,10 @@ var to = function to(promise) {
  * }
  * ```
  *
- * @alias module:createMixinForItemById
  * @param {object} options
  * @param {string} options.collectionName
  * @param {string} options.localPropertyName - the vm data where the result of the query will be stored
- * @param {string} [options.idPropertyName="id"] - the name of the prop you will use to specify the id of the requested record
+ * @param {string} [options.idPropertyName=id] - the name of the prop you will use to specify the id of the requested record
  * @param {object} [options.requestOptions] - control some of the behavior of the query
  * @param {boolean} [options.requestOptions.force=false] - always fetch the latest record
  * @param {boolean} [options.requestOptions.capture=false] - capture the initial state of the record, implies `force = true`

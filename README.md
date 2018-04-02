@@ -50,7 +50,7 @@ name and <code>update:${valueProp}</code> is emitted.</p>
 ## Functions
 
 <dl>
-<dt><a href="#exp_module_createMixinForItemById--createMixinForItemById">createMixinForItemById(options)</a> ⇒ <code>object</code> ⏏</dt>
+<dt><a href="#createMixinForItemById">createMixinForItemById(options)</a> ⇒ <code>object</code></dt>
 <dd><p>create a mixin that configures a vm to manipulate a single record. you can
 use a prop to ask for a record by id or specify a template to create a new
 record that is pre-populated with some initial state.</p>
@@ -126,98 +126,6 @@ export default {
 <a name="module_createMixinForItemById"></a>
 
 ## createMixinForItemById
-<a name="exp_module_createMixinForItemById--createMixinForItemById"></a>
-
-### createMixinForItemById(options) ⇒ <code>object</code> ⏏
-create a mixin that configures a vm to manipulate a single record. you can
-use a prop to ask for a record by id or specify a template to create a new
-record that is pre-populated with some initial state.
-
-```javascript
-// @/queries/UserById.js
-import {createMixinForItemById} from '@citygro/vdata'
-
-export default {
-  mixins: [
-    createMixinForItemById({
-      idPropertyName: 'userId',
-      collectionName: 'users',
-      localPropertyName: 'user',
-      requestOptions: {
-        capture: false
-      }
-   })
-  ]
-}
-```
-
-a vm which consumes this mixin will have the following props, methods, data,
-&c. it will also be configured to react to changes to data in the store and
-update itself accordingly.
-
-```javascript
-{
-  props: {
-    userid: String,
-    userRequestOptionsOverride: Object
-  },
-  data: {
-    user: Object,
-  },
-  methods: {
-    userSave: Function,
-  },
-  computed: {
-    asyncLoading: Boolean,
-    userLoading: Boolean,
-    userHasChanges: Boolean
-  }
-}
-```
-
-`@/queries/UserById` defines a query that fetches and captures the initial state
-for a user record. lets say we have a particular editor that provides read-only
-access to a particular resource for some users and read/write access for
-others.
-
-for the case where the editor should be read/write we can default some props
-in the vm to change its behavior depending on the permissions of the current
-user.
-
-```javascript
-// UserEditor.js
-import UserById from '@/queries/UserById'
-
-export default {
-  mixins: [
-    UserById
-  ],
-  props: {
-    userRequestOptionsOverride: {
-      default () {
-        return {
-          capture: this.$session.hasPermissionToEditUsers()
-        }
-      }
-    }
-  } // ...
-}
-```
-
-**Kind**: global method of [<code>createMixinForItemById</code>](#module_createMixinForItemById)  
-**Returns**: <code>object</code> - item-by-id query mixin  
-
-| Param | Type | Default | Description |
-| --- | --- | --- | --- |
-| options | <code>object</code> |  |  |
-| options.collectionName | <code>string</code> |  |  |
-| options.localPropertyName | <code>string</code> |  | the vm data where the result of the query will be stored |
-| [options.idPropertyName] | <code>string</code> | <code>&quot;\&quot;id\&quot;&quot;</code> | the name of the prop you will use to specify the id of the requested record |
-| [options.requestOptions] | <code>object</code> |  | control some of the behavior of the query |
-| [options.requestOptions.force] | <code>boolean</code> | <code>false</code> | always fetch the latest record |
-| [options.requestOptions.capture] | <code>boolean</code> | <code>false</code> | capture the initial state of the record, implies `force = true` |
-| [options.template] | <code>object</code> | <code>{}</code> | the default template for this query |
-
 <a name="module_to"></a>
 
 ## to
@@ -331,6 +239,98 @@ name and `update:${valueProp}` is emitted.
 | Param | Type | Description |
 | --- | --- | --- |
 | valueProp | <code>string</code> | bind dataflow to this prop |
+
+<a name="createMixinForItemById"></a>
+
+## createMixinForItemById(options) ⇒ <code>object</code>
+create a mixin that configures a vm to manipulate a single record. you can
+use a prop to ask for a record by id or specify a template to create a new
+record that is pre-populated with some initial state.
+
+```javascript
+// @/queries/UserById.js
+import {createMixinForItemById} from '@citygro/vdata'
+
+export default {
+  mixins: [
+    createMixinForItemById({
+      idPropertyName: 'userId',
+      collectionName: 'users',
+      localPropertyName: 'user',
+      requestOptions: {
+        capture: false
+      }
+   })
+  ]
+}
+```
+
+a vm which consumes this mixin will have the following props, methods, data,
+&c. it will also be configured to react to changes to data in the store and
+update itself accordingly.
+
+```javascript
+{
+  props: {
+    userid: String,
+    userRequestOptionsOverride: Object
+  },
+  data: {
+    user: Object,
+  },
+  methods: {
+    userSave: Function,
+  },
+  computed: {
+    asyncLoading: Boolean,
+    userLoading: Boolean,
+    userHasChanges: Boolean
+  }
+}
+```
+
+`@/queries/UserById` defines a query that fetches and captures the initial state
+for a user record. lets say we have a particular editor that provides read-only
+access to a particular resource for some users and read/write access for
+others.
+
+for the case where the editor should be read/write we can default some props
+in the vm to change its behavior depending on the permissions of the current
+user.
+
+```javascript
+// UserEditor.js
+import UserById from '@/queries/UserById'
+
+export default {
+  mixins: [
+    UserById
+  ],
+  props: {
+    userRequestOptionsOverride: {
+      default () {
+        return {
+          capture: this.$session.hasPermissionToEditUsers()
+        }
+      }
+    }
+  } // ...
+}
+```
+
+**Kind**: global function  
+**Returns**: <code>object</code> - item-by-id query mixin  
+
+| Param | Type | Default | Description |
+| --- | --- | --- | --- |
+| options | <code>object</code> |  |  |
+| options.collectionName | <code>string</code> |  |  |
+| options.localPropertyName | <code>string</code> |  | the vm data where the result of the query will be stored |
+| [options.idPropertyName] | <code>string</code> | <code>&quot;id&quot;</code> | the name of the prop you will use to specify the id of the requested record |
+| [options.requestOptions] | <code>object</code> |  | control some of the behavior of the query |
+| [options.requestOptions.force] | <code>boolean</code> | <code>false</code> | always fetch the latest record |
+| [options.requestOptions.capture] | <code>boolean</code> | <code>false</code> | capture the initial state of the record, implies `force = true` |
+| [options.template] | <code>object</code> | <code>{}</code> | the default template for this query |
 
 <a name="flattenMixinTree"></a>
 
