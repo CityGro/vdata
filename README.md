@@ -54,7 +54,7 @@ name and <code>update:${valueProp}</code> is emitted.</p>
 <dd><p>create a mixin that configures a vm to manipulate a single record. you can
 use a prop to ask for a record by id or specify a template to create a new
 record that is pre-populated with some initial state.</p>
-<pre><code>// @/queries/UserById.js
+<pre><code class="lang-javascript">// @/queries/UserById.js
 import {createMixinForItemById} from &#39;@citygro/vdata&#39;
 
 export default {
@@ -69,10 +69,11 @@ export default {
    })
   ]
 }
-</code></pre><p>a vm which consumes this mixin will have the following props, methods, data,
+</code></pre>
+<p>a vm which consumes this mixin will have the following props, methods, data,
 &amp;c. it will also be configured to react to changes to data in the store and
 update itself accordingly.</p>
-<pre><code>{
+<pre><code class="lang-javascript">{
   props: {
     userid: String,
     userRequestOptionsOverride: Object
@@ -89,14 +90,15 @@ update itself accordingly.</p>
     userHasChanges: Boolean
   }
 }
-</code></pre><p><code>@/queries/UserById</code> defines a query that fetches and captures the initial state
+</code></pre>
+<p><code>@/queries/UserById</code> defines a query that fetches and captures the initial state
 for a user record. lets say we have a particular editor that provides read-only
 access to a particular resource for some users and read/write access for
 others.</p>
 <p>for the case where the editor should be read/write we can default some props
 in the vm to change its behavior depending on the permissions of the current
 user.</p>
-<pre><code>// UserEditor.js
+<pre><code class="lang-javascript">// UserEditor.js
 import UserById from &#39;@/queries/UserById&#39;
 
 export default {
@@ -113,7 +115,8 @@ export default {
     }
   } // ...
 }
-</code></pre></dd>
+</code></pre>
+</dd>
 <dt><a href="#flattenMixinTree">flattenMixinTree(mixins)</a></dt>
 <dd></dd>
 <dt><a href="#exp_module_to--to">to(promise)</a> ⇒ <code>Promise</code> ⏏</dt>
@@ -130,7 +133,7 @@ create a mixin that configures a vm to manipulate a single record. you can
 use a prop to ask for a record by id or specify a template to create a new
 record that is pre-populated with some initial state.
 
-```
+```javascript
 // @/queries/UserById.js
 import {createMixinForItemById} from '@citygro/vdata'
 
@@ -152,7 +155,7 @@ a vm which consumes this mixin will have the following props, methods, data,
 &c. it will also be configured to react to changes to data in the store and
 update itself accordingly.
 
-```
+```javascript
 {
   props: {
     userid: String,
@@ -181,7 +184,7 @@ for the case where the editor should be read/write we can default some props
 in the vm to change its behavior depending on the permissions of the current
 user.
 
-```
+```javascript
 // UserEditor.js
 import UserById from '@/queries/UserById'
 

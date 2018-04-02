@@ -299,7 +299,7 @@ var to = function to(promise) {
  * use a prop to ask for a record by id or specify a template to create a new
  * record that is pre-populated with some initial state.
  *
- * ```
+ * ```javascript
  * // @/queries/UserById.js
  * import {createMixinForItemById} from '@citygro/vdata'
  *
@@ -321,7 +321,7 @@ var to = function to(promise) {
  * &c. it will also be configured to react to changes to data in the store and
  * update itself accordingly.
  *
- * ```
+ * ```javascript
  * {
  *   props: {
  *     userid: String,
@@ -350,7 +350,7 @@ var to = function to(promise) {
  * in the vm to change its behavior depending on the permissions of the current
  * user.
  *
- * ```
+ * ```javascript
  * // UserEditor.js
  * import UserById from '@/queries/UserById'
  *
