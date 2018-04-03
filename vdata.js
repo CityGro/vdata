@@ -2920,7 +2920,7 @@
                             for (;;) switch (e.prev = e.next) {
                               case 0:
                                 return n = t[f](), u = w ? U(t[_], n ? t.$store.get(r, n) : {}, t[i]) : t[i], e.next = 4, 
-                                J(t.$store.save(r, u));
+                                J(t.$store.save(r, u, t[b]));
 
                               case 4:
                                 if (c = e.sent, l = B(c, 2), p = l[0], d = l[1], !p) {

@@ -541,7 +541,7 @@ var createMixinForItemById = function createMixinForItemById(options) {
                 recordId = _this2[getIdMethodName]();
                 value = capture ? rebase(_this2[captureName], recordId ? _this2.$store.get(collectionName, recordId) : {}, _this2[localPropertyName]) : _this2[localPropertyName];
                 _context2.next = 4;
-                return to(_this2.$store.save(collectionName, value));
+                return to(_this2.$store.save(collectionName, value, _this2[requestOptionsName]));
 
               case 4:
                 _ref3 = _context2.sent;

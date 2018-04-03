@@ -250,7 +250,8 @@ const createMixinForItemById = function (options) {
         const [err, response] = await to(
           this.$store.save(
             collectionName,
-            value
+            value,
+            this[requestOptionsName]
           )
         )
         if (err) {
