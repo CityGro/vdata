@@ -6,7 +6,7 @@ function _interopDefault (ex) { return (ex && (typeof ex === 'object') && 'defau
 
 var flow = _interopDefault(require('lodash/fp/flow'));
 var camelCase = _interopDefault(require('lodash/camelCase'));
-var clone = _interopDefault(require('lodash/cloneDeep'));
+var cloneDeep = _interopDefault(require('lodash/cloneDeep'));
 var stringify = _interopDefault(require('json-stable-stringify'));
 var get = _interopDefault(require('lodash/get'));
 var merge = _interopDefault(require('lodash/merge'));
@@ -275,9 +275,10 @@ function difference(base, object) {
 
 var rebase = function () {
   var base = arguments[0];
-  return merge.apply(undefined, [jsonClone(base)].concat(toConsumableArray(tail(arguments).map(function (commit) {
-    return difference(base, commit);
-  }))));
+  var diffs = tail(arguments).map(function (checkpoint) {
+    return difference(base, checkpoint);
+  });
+  return merge.apply(undefined, [jsonClone(base)].concat(toConsumableArray(diffs)));
 };
 
 /**
@@ -416,7 +417,7 @@ var createMixinForItemById = function createMixinForItemById(options) {
     }), defineProperty(_props, templateName, {
       type: Object,
       default: function _default() {
-        return clone(template);
+        return cloneDeep(template);
       }
     }), defineProperty(_props, requestOptionsOverrideName, {
       type: Object,
@@ -427,7 +428,7 @@ var createMixinForItemById = function createMixinForItemById(options) {
     data: function data() {
       var _data;
 
-      var data = (_data = {}, defineProperty(_data, localPropertyName, null), defineProperty(_data, requestOptionsName, merge({}, clone(requestOptions), this[requestOptionsOverrideName])), _data);
+      var data = (_data = {}, defineProperty(_data, localPropertyName, null), defineProperty(_data, requestOptionsName, merge({}, cloneDeep(requestOptions), this[requestOptionsOverrideName])), _data);
       if (capture || this[requestOptionsOverrideName].capture) {
         data[captureName] = null;
       }
@@ -500,7 +501,7 @@ var createMixinForItemById = function createMixinForItemById(options) {
                   result = null;
                 }
                 if (captureOption && !_this[captureName]) {
-                  _this[captureName] = clone(result);
+                  _this[captureName] = cloneDeep(result);
                 }
                 return _context.abrupt('return', result);
 
@@ -539,7 +540,7 @@ var createMixinForItemById = function createMixinForItemById(options) {
             switch (_context2.prev = _context2.next) {
               case 0:
                 recordId = _this2[getIdMethodName]();
-                value = capture ? rebase(_this2[captureName], recordId ? _this2.$store.get(collectionName, recordId) : {}, _this2[localPropertyName]) : _this2[localPropertyName];
+                value = capture || _this2[requestOptionsOverrideName].capture ? rebase(_this2[captureName], recordId ? _this2.$store.get(collectionName, recordId) : {}, _this2[localPropertyName]) : _this2[localPropertyName];
                 _context2.next = 4;
                 return to(_this2.$store.save(collectionName, value, _this2[requestOptionsName]));
 
@@ -660,7 +661,7 @@ var flattenMixinTree = function flattenMixinTree() {
  * @param {string} prop - option name
  */
 var getMergedOptions = (function (vm, prop) {
-  var options = clone(get(vm, '$options.' + prop, {}));
+  var options = cloneDeep(get(vm, '$options.' + prop, {}));
   var mixins = get(vm, '$options.mixins', []);
   flattenMixinTree(mixins).filter(function (mixin) {
     return mixin[prop];
@@ -1090,7 +1091,7 @@ var Store = {
      */
     Store.prototype.commit = function (collection, data, options) {
       var record = store.createRecord(collection, data);
-      return record.commit(options);
+      return record.commit(cloneDeep(options));
     };
     /**
      * @param {string} collection
@@ -1100,7 +1101,7 @@ var Store = {
      */
     Store.prototype.destroy = function (collection, data, options) {
       var record = store.createRecord(collection, data);
-      return record.destroy(options);
+      return record.destroy(cloneDeep(options));
     };
     /**
      * @param {string} collection
@@ -1109,7 +1110,7 @@ var Store = {
      */
     Store.prototype.revert = function (collection, data, options) {
       var record = store.createRecord(collection, data);
-      return record.revert(options);
+      return record.revert(cloneDeep(options));
     };
     /**
      * @param {string} collection
@@ -1119,13 +1120,13 @@ var Store = {
      */
     Store.prototype.save = function (collection, data, options) {
       var idAttribute = this.models[collection].idAttribute;
-      if (this.isValidId(data[idAttribute])) {
-        var record = store.createRecord(collection, data);
-        return record.save(options).then(Record.create).catch(function (err) {
+      var id = data[idAttribute];
+      if (this.isValidId(id)) {
+        return store.update(collection, id, data, cloneDeep(options)).then(Record.create).catch(function (err) {
           throw err;
         });
       } else {
-        return store.create(collection, data, options).then(Record.create).catch(function (err) {
+        return store.create(collection, data, cloneDeep(options)).then(Record.create).catch(function (err) {
           throw err;
         });
       }
@@ -1136,7 +1137,7 @@ var Store = {
      * @param {object} options
      */
     Store.prototype.add = function (collection, data, options) {
-      store.add(collection, data, options);
+      store.add(collection, data, cloneDeep(options));
     };
     /**
      * @param {string} collection
@@ -1144,7 +1145,7 @@ var Store = {
      * @param {object} options
      */
     Store.prototype.remove = function (collection, id, options) {
-      store.remove(collection, id, options);
+      store.remove(collection, id, cloneDeep(options));
     };
     /**
      * @param {string} collection
@@ -1152,7 +1153,7 @@ var Store = {
      * @param {object} options
      */
     Store.prototype.removeAll = function (collection, query, options) {
-      store.removeAll(collection, query, options);
+      store.removeAll(collection, query, cloneDeep(options));
     };
     /**
      * @param {string} collection
@@ -1161,7 +1162,7 @@ var Store = {
      * @async
      */
     Store.prototype.create = function (collection, data, options) {
-      return store.create(collection, data, options).then(Record.create);
+      return store.create(collection, data, cloneDeep(options)).then(Record.create);
     };
     /**
      * @param {string} collection
@@ -1173,7 +1174,7 @@ var Store = {
       var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
 
       if (this.isValidId(id)) {
-        return store.find(collection, id, options).then(function (result) {
+        return store.find(collection, id, cloneDeep(options)).then(function (result) {
           return result === undefined || options.raw === true ? result : Record.create(result);
         });
       } else {
@@ -1189,7 +1190,7 @@ var Store = {
     Store.prototype.findAll = function (collection, query) {
       var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
 
-      var result = store.findAll(collection, query, options);
+      var result = store.findAll(collection, query, cloneDeep(options));
       return options.raw === true ? result : result.then(function (records) {
         return records.map(Record.create);
       });

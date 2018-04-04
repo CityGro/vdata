@@ -50,4 +50,58 @@ describe('rebase', () => {
       }
     })
   })
+
+  test('sane handling of empty checkpoints', () => {
+    const base = {
+      key: 'value'
+    }
+    const a = {}
+    const b = {
+      key: 'balue'
+    }
+    const result = rebase(base, a, b)
+    expect(result).toEqual({
+      key: 'balue'
+    })
+  })
+
+  test('arrays of objects diff correctly', () => {
+    const base = {
+      refs: [
+        {
+          id: 1
+        },
+        {
+          id: 2
+        }
+      ]
+    }
+    const a = {
+      refs: [
+        {
+          id: 1
+        },
+        {
+          id: 2
+        },
+        {
+          id: 3
+        }
+      ]
+    }
+    const result = rebase(base, a)
+    expect(result).toEqual({
+      refs: [
+        {
+          id: 1
+        },
+        {
+          id: 2
+        },
+        {
+          id: 3
+        }
+      ]
+    })
+  })
 })

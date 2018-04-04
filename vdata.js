@@ -2810,8 +2810,7 @@
         }, z = function(t, e) {
             return g(t) !== g(e);
         }, U = function() {
-            var t = arguments[0];
-            return x.apply(void 0, [ N(t) ].concat($(O(arguments).map(function(e) {
+            var t = arguments[0], e = O(arguments).map(function(e) {
                 /**
  * @param {object} base
  * @param {object} object
@@ -2825,7 +2824,8 @@
                     }
                     return n(e, t);
                 }(t, e);
-            }))));
+            });
+            return x.apply(void 0, [ N(t) ].concat($(e)));
         }, J = function(t) {
             return t.then(function(t) {
                 return [ null, t ];
@@ -2919,8 +2919,8 @@
                         return o.default.wrap(function(e) {
                             for (;;) switch (e.prev = e.next) {
                               case 0:
-                                return n = t[f](), u = w ? U(t[_], n ? t.$store.get(r, n) : {}, t[i]) : t[i], e.next = 4, 
-                                J(t.$store.save(r, u, t[b]));
+                                return n = t[f](), u = w || t[O].capture ? U(t[_], n ? t.$store.get(r, n) : {}, t[i]) : t[i], 
+                                e.next = 4, J(t.$store.save(r, u, t[b]));
 
                               case 4:
                                 if (c = e.sent, l = B(c, 2), p = l[0], d = l[1], !p) {
@@ -3148,36 +3148,33 @@
                 }
                 return !0;
             }, n.prototype.commit = function(t, n, r) {
-                return e.createRecord(t, n).commit(r);
+                return e.createRecord(t, n).commit(y(r));
             }, n.prototype.destroy = function(t, n, r) {
-                return e.createRecord(t, n).destroy(r);
+                return e.createRecord(t, n).destroy(y(r));
             }, n.prototype.revert = function(t, n, r) {
-                return e.createRecord(t, n).revert(r);
+                return e.createRecord(t, n).revert(y(r));
             }, n.prototype.save = function(t, n, r) {
-                var i = this.models[t].idAttribute;
-                if (this.isValidId(n[i])) {
-                    return e.createRecord(t, n).save(r).then(q.create).catch(function(t) {
-                        throw t;
-                    });
-                }
-                return e.create(t, n, r).then(q.create).catch(function(t) {
+                var i = n[this.models[t].idAttribute];
+                return this.isValidId(i) ? e.update(t, i, n, y(r)).then(q.create).catch(function(t) {
+                    throw t;
+                }) : e.create(t, n, y(r)).then(q.create).catch(function(t) {
                     throw t;
                 });
             }, n.prototype.add = function(t, n, r) {
-                e.add(t, n, r);
+                e.add(t, n, y(r));
             }, n.prototype.remove = function(t, n, r) {
-                e.remove(t, n, r);
+                e.remove(t, n, y(r));
             }, n.prototype.removeAll = function(t, n, r) {
-                e.removeAll(t, n, r);
+                e.removeAll(t, n, y(r));
             }, n.prototype.create = function(t, n, r) {
-                return e.create(t, n, r).then(q.create);
+                return e.create(t, n, y(r)).then(q.create);
             }, n.prototype.find = function(t, n) {
                 var r = arguments.length > 2 && void 0 !== arguments[2] ? arguments[2] : {};
-                return this.isValidId(n) ? e.find(t, n, r).then(function(t) {
+                return this.isValidId(n) ? e.find(t, n, y(r)).then(function(t) {
                     return void 0 === t || !0 === r.raw ? t : q.create(t);
                 }) : l.default.resolve();
             }, n.prototype.findAll = function(t, n) {
-                var r = arguments.length > 2 && void 0 !== arguments[2] ? arguments[2] : {}, i = e.findAll(t, n, r);
+                var r = arguments.length > 2 && void 0 !== arguments[2] ? arguments[2] : {}, i = e.findAll(t, n, y(r));
                 return !0 === r.raw ? i : i.then(function(t) {
                     return t.map(q.create);
                 });

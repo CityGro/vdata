@@ -5,8 +5,6 @@ import tail from 'lodash/tail'
 
 export default function () {
   const base = arguments[0]
-  return merge(
-    jsonClone(base),
-    ...tail(arguments).map((commit) => diff(base, commit))
-  )
+  const diffs = tail(arguments).map((checkpoint) => diff(base, checkpoint))
+  return merge(jsonClone(base), ...diffs)
 }

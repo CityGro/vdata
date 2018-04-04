@@ -1,4 +1,5 @@
 import Record from './Record'
+import cloneDeep from 'lodash/cloneDeep'
 import fastDiff from './fastDiff'
 import isArray from 'lodash/isArray'
 import registerAdapters from './registerAdapters'
@@ -48,7 +49,7 @@ export default {
      */
     Store.prototype.commit = function (collection, data, options) {
       const record = store.createRecord(collection, data)
-      return record.commit(options)
+      return record.commit(cloneDeep(options))
     }
     /**
      * @param {string} collection
@@ -58,7 +59,7 @@ export default {
      */
     Store.prototype.destroy = function (collection, data, options) {
       const record = store.createRecord(collection, data)
-      return record.destroy(options)
+      return record.destroy(cloneDeep(options))
     }
     /**
      * @param {string} collection
@@ -67,7 +68,7 @@ export default {
      */
     Store.prototype.revert = function (collection, data, options) {
       const record = store.createRecord(collection, data)
-      return record.revert(options)
+      return record.revert(cloneDeep(options))
     }
     /**
      * @param {string} collection
@@ -77,16 +78,15 @@ export default {
      */
     Store.prototype.save = function (collection, data, options) {
       const idAttribute = this.models[collection].idAttribute
-      if (this.isValidId(data[idAttribute])) {
-        const record = store.createRecord(collection, data)
-        return record
-          .save(options)
+      const id = data[idAttribute]
+      if (this.isValidId(id)) {
+        return store.update(collection, id, data, cloneDeep(options))
           .then(Record.create)
           .catch((err) => {
             throw err
           })
       } else {
-        return store.create(collection, data, options)
+        return store.create(collection, data, cloneDeep(options))
           .then(Record.create)
           .catch((err) => {
             throw err
@@ -99,7 +99,7 @@ export default {
      * @param {object} options
      */
     Store.prototype.add = function (collection, data, options) {
-      store.add(collection, data, options)
+      store.add(collection, data, cloneDeep(options))
     }
     /**
      * @param {string} collection
@@ -107,7 +107,7 @@ export default {
      * @param {object} options
      */
     Store.prototype.remove = function (collection, id, options) {
-      store.remove(collection, id, options)
+      store.remove(collection, id, cloneDeep(options))
     }
     /**
      * @param {string} collection
@@ -115,7 +115,7 @@ export default {
      * @param {object} options
      */
     Store.prototype.removeAll = function (collection, query, options) {
-      store.removeAll(collection, query, options)
+      store.removeAll(collection, query, cloneDeep(options))
     }
     /**
      * @param {string} collection
@@ -124,7 +124,8 @@ export default {
      * @async
      */
     Store.prototype.create = function (collection, data, options) {
-      return store.create(collection, data, options).then(Record.create)
+      return store.create(collection, data, cloneDeep(options))
+        .then(Record.create)
     }
     /**
      * @param {string} collection
@@ -134,7 +135,7 @@ export default {
      */
     Store.prototype.find = function (collection, id, options = {}) {
       if (this.isValidId(id)) {
-        return store.find(collection, id, options)
+        return store.find(collection, id, cloneDeep(options))
           .then((result) => (result === undefined || options.raw === true)
             ? result
             : Record.create(result))
@@ -149,7 +150,7 @@ export default {
      * @async
      */
     Store.prototype.findAll = function (collection, query, options = {}) {
-      const result = store.findAll(collection, query, options)
+      const result = store.findAll(collection, query, cloneDeep(options))
       return (options.raw === true)
         ? result
         : result.then((records) => records.map(Record.create))

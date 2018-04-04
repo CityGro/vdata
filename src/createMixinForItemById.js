@@ -240,7 +240,7 @@ const createMixinForItemById = function (options) {
       // what if this is a NEW record?
       async [saveMethodName] () {
         const recordId = this[getIdMethodName]()
-        const value = (capture)
+        const value = (capture || this[requestOptionsOverrideName].capture)
           ? rebase(
             this[captureName],
             (recordId) ? this.$store.get(collectionName, recordId) : {},
