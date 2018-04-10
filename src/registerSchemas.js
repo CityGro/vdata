@@ -1,9 +1,12 @@
-import entries from 'lodash/entries'
 import isEmpty from 'lodash/isEmpty'
+import {Map} from 'immutable'
 
-export default function ($store, modelMap = {}) {
+export default function (store, modelMap = {}) {
   if (isEmpty(modelMap)) {
     console.error('[@citygro/vdata] you have not defined any models!')
   }
-  entries(modelMap).forEach(([modelName, schema]) => $store.defineMapper(modelName, schema))
+  Object.keys(modelMap).forEach((modelName) => {
+    store = store.set(modelName, Map())
+  })
+  return store
 }

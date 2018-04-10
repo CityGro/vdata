@@ -4,18 +4,15 @@ import * as DataFlow from '../DataFlow'
 import formatMethod from '../formatMethod'
 
 describe('vdata/dataflow', () => {
-  let Adapter
   let Vue
   let vdata
 
   beforeEach(() => {
     jest.resetModules()
     document.body.innerHTML = '<div id="root"></div>'
-    require('localstorage-polyfill')
     vdata = require('../vdata').default
     Vue = require('vue/dist/vue.js')
     Vue.config.productionTip = false
-    Adapter = require('js-data-localstorage').LocalStorageAdapter
     Vue.use(vdata, {
       models: {
         users: {
@@ -24,15 +21,10 @@ describe('vdata/dataflow', () => {
         comments: {
           idAttribute: 'id'
         }
-      },
-      adapters: {
-        ls: {
-          adapter: new Adapter()
-        }
       }
     })
-    Vue.$store.create('users', {name: 'omanizer'})
-    Vue.$store.create('comments', {userId: 1})
+    Vue.$store.add('users', {name: 'omanizer'})
+    Vue.$store.add('comments', {userId: 1})
   })
 
   describe('utils/formatMethod', () => {

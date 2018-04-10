@@ -4,7 +4,6 @@ Object.defineProperty(exports, '__esModule', { value: true });
 
 function _interopDefault (ex) { return (ex && (typeof ex === 'object') && 'default' in ex) ? ex['default'] : ex; }
 
-var flow = _interopDefault(require('lodash/fp/flow'));
 var camelCase = _interopDefault(require('lodash/camelCase'));
 var cloneDeep = _interopDefault(require('lodash/cloneDeep'));
 var stringify = _interopDefault(require('json-stable-stringify'));
@@ -14,7 +13,9 @@ var isEqual = _interopDefault(require('lodash/isEqual'));
 var isNil = _interopDefault(require('lodash/isNil'));
 var isObject = _interopDefault(require('lodash/isObject'));
 var transform = _interopDefault(require('lodash/transform'));
+var flow = _interopDefault(require('lodash/fp/flow'));
 var tail = _interopDefault(require('lodash/tail'));
+var whatwgFetch = require('whatwg-fetch');
 var Any = _interopDefault(require('p-any'));
 var fromPairs = _interopDefault(require('lodash/fp/fromPairs'));
 var assign = _interopDefault(require('lodash/assign'));
@@ -23,13 +24,80 @@ var isFunction = _interopDefault(require('lodash/isFunction'));
 var keys = _interopDefault(require('lodash/keys'));
 var zip = _interopDefault(require('lodash/fp/zip'));
 var defaults = _interopDefault(require('lodash/defaults'));
-var isArray = _interopDefault(require('lodash/isArray'));
+var forEach = _interopDefault(require('@r14c/async-utils/forEach'));
+var EventEmitter = _interopDefault(require('events'));
+var immutable = require('immutable');
+var map = _interopDefault(require('lodash/map'));
+var pick = _interopDefault(require('lodash/pick'));
+var sum = _interopDefault(require('lodash/sum'));
 var entries = _interopDefault(require('lodash/entries'));
-var jsData = require('js-data');
+var sort = _interopDefault(require('lodash/sortBy'));
+var isArray = _interopDefault(require('lodash/isArray'));
+var microTask = _interopDefault(require('@r14c/async-utils/microTask'));
+var toNumber = _interopDefault(require('lodash/toNumber'));
 var concat = _interopDefault(require('lodash/concat'));
 var join = _interopDefault(require('lodash/join'));
 
+/**
+ * @param {object[]} collection
+ * @param {string} key
+ */
+var createIndex = (function (collection, key) {
+  var index = {};
+  collection.forEach(function (item) {
+    index[item[key]] = item;
+  });
+  return index;
+});
+
+/**
+ * quickly determine if two objects differ
+ *
+ * @param {Object} a
+ * @param {Object} b
+ * @returns {Boolean}
+ */
+var fastDiff = (function (a, b) {
+  return stringify(a) !== stringify(b);
+});
+
+var pop = (function (o, key, fallback) {
+  var value = o[key];
+  delete o[key];
+  return value === undefined ? fallback : value;
+});
+
+/**
+ * @param {object} base
+ * @param {object} object
+ * @return {object} diff
+ */
+function difference(base, object) {
+  function changes(object, base) {
+    return transform(object, function (result, value, key) {
+      if (!isEqual(value, base[key])) {
+        result[key] = isObject(value) && isObject(base[key]) ? changes(value, base[key]) : value;
+      }
+    });
+  }
+  return isNil(base) ? object : changes(object, base);
+}
+
 var jsonClone = flow(JSON.stringify, JSON.parse);
+
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) {
+  return typeof obj;
+} : function (obj) {
+  return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
+};
+
+
+
+
+
+
+
+
 
 var asyncToGenerator = function (fn) {
   return function () {
@@ -220,60 +288,11 @@ var toConsumableArray = function (arr) {
   }
 };
 
-var Record = {
-  create: function create(jsDataRecord) {
-    var Record = function Record(record) {
-      Object.assign(this, jsonClone(_extends({}, record.toJSON(), _extends({}, record))));
-    };
-    return new Record(jsDataRecord);
-  }
-};
-
 /**
- * @param {object[]} collection
- * @param {string} key
+ * @param {Object} base
+ * @param {...Object} checkpoints
+ * @returns {Object}
  */
-var createIndex = (function (collection, key) {
-  var index = {};
-  collection.forEach(function (item) {
-    index[item[key]] = item;
-  });
-  return index;
-});
-
-/**
- * quickly determine if two objects differ
- *
- * @param {Object} a
- * @param {Object} b
- * @returns {Boolean}
- */
-var fastDiff = (function (a, b) {
-  return stringify(a) !== stringify(b);
-});
-
-var pop = (function (o, key, fallback) {
-  var value = o[key];
-  delete o[key];
-  return value === undefined ? fallback : value;
-});
-
-/**
- * @param {object} base
- * @param {object} object
- * @return {object} diff
- */
-function difference(base, object) {
-  function changes(object, base) {
-    return transform(object, function (result, value, key) {
-      if (!isEqual(value, base[key])) {
-        result[key] = isObject(value) && isObject(base[key]) ? changes(value, base[key]) : value;
-      }
-    });
-  }
-  return isNil(base) ? object : changes(object, base);
-}
-
 var rebase = function () {
   var base = arguments[0];
   var diffs = tail(arguments).map(function (checkpoint) {
@@ -645,6 +664,21 @@ var createMixinForListByResource = function (options) {
   };
 };
 
+/* global fetch */
+var interceptors = [];
+
+var fetchWrapper = function fetchWrapper(url, options) {
+  var request = cloneDeep(options);
+  interceptors.forEach(function (fn) {
+    request = fn(request);
+  });
+  return fetch(url, request);
+};
+
+fetchWrapper.addInterceptor = function (fn) {
+  interceptors.push(fn);
+};
+
 /**
  * @param {Object[]} mixins
  */
@@ -795,8 +829,10 @@ var createAsyncReload = function createAsyncReload(thisArg) {
 };
 
 var AsyncDataMixin = {
-  created: function created() {
+  beforeCreate: function beforeCreate() {
     this._asyncReload = createAsyncReload(this);
+  },
+  created: function created() {
     this.$asyncReload(undefined, true);
   },
 
@@ -848,157 +884,17 @@ var AsyncDataMixin = {
   }
 };
 
-/**
- * takes variable arguments depending on the event type that is emmitted by js-data.
- *
- * @see {@link http://api.js-data.io/js-data/3.0.1/SimpleStore.html#toc85__anchor}
- */
-var createObjectFromEventData = function () {
-  var data = {
-    event: arguments[0],
-    collectionName: arguments[1]
-  };
-  switch (data.event) {
-    case 'add':
-      // name, data, opts
-      data.data = arguments[2];
-      data.opts = arguments[3];
-      break;
-    case 'change':
-      data.record = arguments[2];
-      data.changes = arguments[3];
-      break;
-    case 'remove':
-      data.record = arguments[2];
-      break;
-    case 'afterCreate':
-      // props, opts, result
-      data.props = arguments[2];
-      data.opts = arguments[3];
-      data.result = arguments[4];
-      break;
-    case 'beforeDestroy':
-      // id, opts
-      data.id = arguments[2];
-      data.opts = arguments[3];
-      break;
-    case 'beforeFind':
-      // id, opts
-      data.id = arguments[2];
-      data.opts = arguments[3];
-      break;
-    case 'afterDestroy':
-      // id, opts, result
-      data.id = arguments[2];
-      data.opts = arguments[3];
-      data.result = arguments[4];
-      break;
-    case 'afterFind':
-      // id, opts, result
-      data.id = arguments[2];
-      data.opts = arguments[3];
-      data.result = arguments[4];
-      break;
-    case 'afterDestroyAll':
-      // data, query, opts, result
-      data.data = arguments[2];
-      data.query = arguments[3];
-      data.opts = arguments[4];
-      data.result = arguments[5];
-      break;
-    case 'afterFindAll':
-      // query, opts, result
-      data.query = arguments[2];
-      data.opts = arguments[3];
-      data.result = arguments[4];
-      break;
-    case 'afterUpdate':
-      // id, props, opts, result
-      data.id = arguments[2];
-      data.props = arguments[3];
-      data.opts = arguments[4];
-      data.result = arguments[5];
-      break;
-    case 'beforeUpdate':
-      // id, props, opts
-      data.id = arguments[2];
-      data.props = arguments[3];
-      data.opts = arguments[4];
-      break;
-    case 'beforeUpdateAll':
-      // props, query, opts
-      data.props = arguments[2];
-      data.query = arguments[3];
-      data.opts = arguments[4];
-      break;
-    case 'afterUpdateAll':
-      // props, query, opts, result
-      data.props = arguments[2];
-      data.query = arguments[3];
-      data.opts = arguments[4];
-      data.result = arguments[5];
-      break;
-    case 'afterUpdateMany':
-      // records, opts, result
-      data.records = arguments[2];
-      data.opts = arguments[3];
-      data.result = arguments[4];
-      break;
-    case 'afterCreateMany':
-      // records, opts, result
-      data.records = arguments[2];
-      data.opts = arguments[3];
-      data.result = arguments[4];
-      break;
-    case 'beforeCreateMany':
-      // records, opts
-      data.records = arguments[2];
-      data.opts = arguments[3];
-      break;
-    case 'beforeUpdateMany':
-      // records, opts
-      data.records = arguments[2];
-      data.opts = arguments[3];
-      break;
-    case 'beforeCreate':
-      // query, opts
-      data.query = arguments[2];
-      data.opts = arguments[3];
-      break;
-    case 'beforeDestroyAll':
-      // query, opts
-      data.query = arguments[2];
-      data.opts = arguments[3];
-      break;
-    case 'beforeFindAll':
-      // query, opts
-      data.query = arguments[2];
-      data.opts = arguments[3];
-      break;
-  }
-  return data;
-};
-
-var includes = function includes() {
-  var collection = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
-  var item = arguments[1];
-
-  return collection.indexOf(item) >= 0;
-};
-
 var handlers = {};
 
 /**
  * inject handler that will run on datastore events
- *
- * DANGER: mutates vm
  *
  * @param {Vue} vm
  * @param {string} label
  * @param {string[]} events
  * @param {function} fn
  */
-var createHandler = (function (vm, events) {
+var createHandler = (function (vm) {
   handlers[vm._uid] = flattenMixinTree(vm.$options.mixins).filter(function (mixin) {
     return !!mixin.vdata;
   }).map(function (mixin) {
@@ -1009,13 +905,9 @@ var createHandler = (function (vm, events) {
   }
   return {
     run: function run(message) {
-      if (includes(events, message.event) || message.event === '$vdata-call') {
-        handlers[vm._uid].forEach(function (fn) {
-          setTimeout(function () {
-            return fn.apply(vm, [message]);
-          }, 0);
-        });
-      }
+      forEach(handlers[vm._uid], function (fn) {
+        fn.apply(vm, [message]);
+      });
     },
     destroy: function destroy() {
       delete handlers[vm._uid];
@@ -1023,237 +915,501 @@ var createHandler = (function (vm, events) {
   };
 });
 
-var registerAdapters = function ($store, adapters) {
-  var adaptersMap = entries(adapters);
-  adaptersMap.forEach(function (_ref) {
-    var _ref2 = slicedToArray(_ref, 2),
-        key = _ref2[0],
-        adapterDef = _ref2[1];
+var mget = (function (value, path) {
+  if (immutable.isImmutable(value)) {
+    return value.getIn(path.split('.'));
+  } else {
+    return get(value, path);
+  }
+});
 
-    if (adaptersMap.length === 1) {
-      $store.registerAdapter(key, adapterDef.adapter, adapterDef.options || { default: true });
-    } else {
-      $store.registerAdapter(key, adapterDef.adapter, adapterDef.options || {});
-    }
-  });
+/**
+ * @param {object} o
+ * @param {string} prefix
+ */
+var toQueryString = function toQueryString(o, prefix) {
+  return sort(entries(o), function (e) {
+    return e[0];
+  }).map(function (_ref) {
+    var _ref2 = slicedToArray(_ref, 2),
+        prop = _ref2[0],
+        value = _ref2[1];
+
+    var key = prefix ? prefix + '[' + prop + ']' : prop;
+    return (typeof value === 'undefined' ? 'undefined' : _typeof(value)) === 'object' ? toQueryString(value, key) : encodeURIComponent(key) + '=' + encodeURIComponent(value);
+  }).join('&');
 };
 
-var registerSchemas = function ($store) {
+var withDefaults = function withDefaults(options) {
+  return pick(defaults({}, options, {
+    credentials: 'same-origin'
+  }), ['headers', 'body', 'method', 'credentials']);
+};
+
+var makeKey = function makeKey(url, request) {
+  var headers = Object.entries(request.headers || {}).map(function (_ref) {
+    var _ref2 = slicedToArray(_ref, 2),
+        key = _ref2[0],
+        val = _ref2[1];
+
+    return key + ':' + val;
+  });
+  var values = map('' + headers + request.url, function (c) {
+    return c.codePointAt(0);
+  });
+  return '' + sum(values);
+};
+
+var createHttpAdapter = function createHttpAdapter() {
+  var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+
+  var promiseCache = {};
+  var adapter = options.adapter || fetchWrapper;
+  var deserialize = options.deserialize || function (data) {
+    return data;
+  };
+  var createRequest = function createRequest(url, options) {
+    var request = withDefaults(options);
+    return adapter(url, _extends({}, request, { body: request.body ? stringify(request.body) : undefined })).then(function (res) {
+      if (res.status === 200) {
+        return res.json();
+      } else {
+        throw new Error(res);
+      }
+    }).then(deserialize).catch(function (err) {
+      throw err;
+    });
+  };
+  return function () {
+    var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+
+    var url = options.url;
+    var force = options.force || false;
+    if (options.params) {
+      var qs = toQueryString(options.params);
+      url += '?' + qs;
+    }
+    if (options.method === 'GET') {
+      var key = makeKey(url, options);
+      var promise = promiseCache[key];
+      if (!promise || force === true) {
+        promise = promiseCache[key] = createRequest(url, options);
+      }
+      return promise;
+    } else {
+      return createRequest(url, options);
+    }
+  };
+};
+
+var registerSchemas = function (store) {
   var modelMap = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
   if (isEmpty(modelMap)) {
     console.error('[@citygro/vdata] you have not defined any models!');
   }
-  entries(modelMap).forEach(function (_ref) {
-    var _ref2 = slicedToArray(_ref, 2),
-        modelName = _ref2[0],
-        schema = _ref2[1];
-
-    return $store.defineMapper(modelName, schema);
+  Object.keys(modelMap).forEach(function (modelName) {
+    store = store.set(modelName, immutable.Map());
   });
+  return store;
+};
+
+/**
+ * uniqueId
+ *
+ * @param {string} [prefix] - optional prefix
+ * @return {string}
+ */
+var uniqueId = (function (prefix) {
+  var ex = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 9e15;
+
+  var id = parseInt((Math.random() * ex).toFixed(0), 10).toString(36);
+  return prefix ? prefix + "-" + id : id;
+});
+
+/**
+ * @param {object} data
+ */
+var convert = function convert(data) {
+  return immutable.fromJS(data, function (key, value) {
+    return immutable.isKeyed(value) ? value.toMap() : value.toList();
+  });
+};
+
+/**
+ * @param {*} id
+ */
+var isValidId = function isValidId(id) {
+  return id !== null && id !== undefined && id !== '';
 };
 
 var Store = {
   /**
    * @param {object} options
    * @param {object} options.models
-   * @param {object} options.adapters
+   * @param {function} [options.adapter] - a custom fetch
+   * @param {function} [options.deserialize] - request post-processing
    */
   create: function create(options) {
-    var store = new jsData.DataStore();
+    var evt = new EventEmitter();
+    var http = createHttpAdapter(options);
+    var models = cloneDeep(options.models);
+    var storeId = uniqueId(null, 1e5);
+    var keyMap = {};
+    var store = registerSchemas(immutable.Map(), options.models);
     /**
-     * @param {DataStore} store
+     * @param {string} id
+     */
+    var resolveId = function resolveId(id) {
+      var isTmp = /^[0-9a-z]+-[0-9a-z]+$/i.test(id);
+      return isTmp ? id : keyMap[id];
+    };
+    /**
+     * @param {string} id
+     */
+    var resolvePk = function resolvePk(id) {
+      var isTmp = /^[0-9a-z]+-[0-9a-z]+$/i.test(id);
+      return isTmp ? keyMap[id] : id;
+    };
+    /**
+     * @param {string} collectionName
+     * @param {object} data
+     */
+    var getMeta = function getMeta(collectionName, data) {
+      var model = models[collectionName];
+      var idAttribute = model.idAttribute;
+      var pk = mget(data, idAttribute);
+      var id = mget(data, '__tmp_id');
+      var symId = mget(data, '__sym_id');
+      keyMap[pk] = id;
+      keyMap[id] = pk;
+      return {
+        id: id,
+        pk: pk,
+        symId: symId,
+        basePath: model.basePath || '',
+        idAttribute: idAttribute
+      };
+    };
+    /**
+     * @param {string} message
+     * @param {object} options
+     * @param {boolean} options.quiet
+     */
+    var emit = function emit(message) {
+      var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+
+      var quiet = options.quiet || false;
+      if (quiet === false) {
+        microTask(function () {
+          return evt.emit(message.event, message);
+        });
+      }
+    };
+    /**
      * @constructor
      */
-    var Store = function Store(store, options) {
-      registerSchemas(store, options.models);
-      registerAdapters(store, options.adapters);
-      this.models = options.models;
-    };
-    /**
-     * @param {string} id
-     */
-    Store.prototype.isValidId = function (id) {
-      return id !== null && id !== undefined && id !== '';
+    var Store = function Store() {
+      this.models = cloneDeep(options.models);
+      this.storeId = storeId;
     };
     /**
      * @param {string} collection
-     * @param {string} id
-     * @param {object} data
+     * @param {object} [data={}]
      */
-    Store.prototype.hasChanges = function (collection, id, data) {
-      if (this.isValidId(id)) {
-        var record = this.get(collection, id);
-        return fastDiff(record, data);
-      } else {
-        return true;
-      }
-    };
-    /**
-     * @param {string} collection
-     * @param {object} data
-     * @param {object} options
-     */
-    Store.prototype.commit = function (collection, data, options) {
-      var record = store.createRecord(collection, data);
-      return record.commit(cloneDeep(options));
-    };
-    /**
-     * @param {string} collection
-     * @param {object} data
-     * @param {object} options
-     * @async
-     */
-    Store.prototype.destroy = function (collection, data, options) {
-      var record = store.createRecord(collection, data);
-      return record.destroy(cloneDeep(options));
-    };
-    /**
-     * @param {string} collection
-     * @param {object} data
-     * @param {object} options
-     */
-    Store.prototype.revert = function (collection, data, options) {
-      var record = store.createRecord(collection, data);
-      return record.revert(cloneDeep(options));
-    };
-    /**
-     * @param {string} collection
-     * @param {object} data
-     * @param {object} options
-     * @async
-     */
-    Store.prototype.save = function (collection, data, options) {
-      var idAttribute = this.models[collection].idAttribute;
-      var id = data[idAttribute];
-      if (this.isValidId(id)) {
-        return store.update(collection, id, data, cloneDeep(options)).then(Record.create).catch(function (err) {
-          throw err;
-        });
-      } else {
-        return store.create(collection, data, cloneDeep(options)).then(Record.create).catch(function (err) {
-          throw err;
-        });
-      }
-    };
-    /**
-     * @param {string} collection
-     * @param {object} data
-     * @param {object} options
-     */
-    Store.prototype.add = function (collection, data, options) {
-      store.add(collection, data, cloneDeep(options));
-    };
-    /**
-     * @param {string} collection
-     * @param {string} id
-     * @param {object} options
-     */
-    Store.prototype.remove = function (collection, id, options) {
-      store.remove(collection, id, cloneDeep(options));
-    };
-    /**
-     * @param {string} collection
-     * @param {object} query
-     * @param {object} options
-     */
-    Store.prototype.removeAll = function (collection, query, options) {
-      store.removeAll(collection, query, cloneDeep(options));
-    };
-    /**
-     * @param {string} collection
-     * @param {object} data
-     * @deprecated
-     * @async
-     */
-    Store.prototype.create = function (collection, data, options) {
-      return store.create(collection, data, cloneDeep(options)).then(Record.create);
-    };
-    /**
-     * @param {string} collection
-     * @param {object} [query]
-     * @param {object} [options]
-     * @async
-     */
-    Store.prototype.find = function (collection, id) {
-      var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+    Store.prototype.createRecord = function (collectionName) {
+      var data = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
-      if (this.isValidId(id)) {
-        return store.find(collection, id, cloneDeep(options)).then(function (result) {
-          return result === undefined || options.raw === true ? result : Record.create(result);
-        });
-      } else {
-        return Promise.resolve();
-      }
-    };
-    /**
-     * @param {string} collection
-     * @param {object} [query]
-     * @param {object} [options]
-     * @async
-     */
-    Store.prototype.findAll = function (collection, query) {
-      var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+      var _getMeta = getMeta(collectionName, data),
+          id = _getMeta.id;
 
-      var result = store.findAll(collection, query, cloneDeep(options));
-      return options.raw === true ? result : result.then(function (records) {
-        return records.map(Record.create);
-      });
-    };
-    /**
-     * @param {string} collection
-     * @param {object} data
-     */
-    Store.prototype.createRecord = function (collection, data) {
-      var record = store.createRecord(collection, data);
-      return Record.create(record);
+      return isValidId(id) ? data : _extends({ __tmp_id: uniqueId(storeId) }, data);
     };
     /**
      * @param {string} collection
      * @param {string} id
      */
-    Store.prototype.get = function (collection, id) {
-      var record = store.get(collection, id);
+    Store.prototype.get = function (collectionName, id) {
+      var versions = store.getIn([collectionName, resolveId(id)], immutable.Stack());
+      var record = versions.first();
       if (record) {
-        return Record.create(record);
+        var size = versions.size;
+        var index = 0;
+        return this.createRecord(collectionName, _extends({}, record.toJS(), {
+          __sym_id: index + '-' + size
+        }));
+      } else {
+        return null;
       }
     };
     /**
      * @param {string} collection
      * @param {string[]} [keys]
      */
-    Store.prototype.getAll = function (collection, keys$$1) {
+    Store.prototype.getAll = function (collectionName, keys$$1) {
       var _this = this;
 
       if (isArray(keys$$1)) {
         return keys$$1.length ? keys$$1.map(function (key) {
-          return _this.get(collection, key);
+          return _this.get(collectionName, key);
         }) : [];
       } else {
-        return store.getAll(collection).map(Record.create);
+        return store.get(collectionName).keySeq().map(function (key) {
+          return _this.get(collectionName, key);
+        }).toJS();
       }
+    };
+    /**
+     * @param {string} collectionName
+     * @param {string} id
+     * @param {object} options
+     * @param {boolean} options.quiet
+     */
+    Store.prototype.remove = function (collectionName, id) {
+      var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+
+      var object = this.get(collectionName, id);
+      var meta = getMeta(collectionName, object);
+      store = store.removeIn([collectionName, resolveId(id)]);
+      delete keyMap[meta.pk];
+      delete keyMap[meta.id];
+      delete object.__tmp_id;
+      delete object.__sym_id;
+      emit({
+        collectionName: collectionName,
+        event: 'remove',
+        record: object
+      }, {
+        quiet: options.quiet
+      });
+      return object;
+    };
+    /**
+     * @param {string} collection
+     * @param {string[]} keys
+     */
+    Store.prototype.removeAll = function (collectionName, keys$$1) {
+      var _this2 = this;
+
+      this.getAll(collectionName, keys$$1).forEach(function (record) {
+        var id = getMeta(collectionName, record);
+        _this2.remove(collectionName, id);
+      });
     };
     /**
      *
      */
     Store.prototype.clear = function () {
-      store.clear();
+      var _this3 = this;
+
+      store.keySeq().forEach(function (collectionName) {
+        _this3.removeAll(collectionName);
+      });
+    };
+    Store.prototype.rebase = function (collectionName, data) {
+      var record = immutable.isImmutable(data) ? data.toJS() : data;
+
+      var _getMeta2 = getMeta(collectionName, record),
+          id = _getMeta2.id;
+
+      var base = null;
+      if (record.__sym_id) {
+        var _record$__sym_id$spli = record.__sym_id.split('-').map(toNumber),
+            _record$__sym_id$spli2 = slicedToArray(_record$__sym_id$spli, 2),
+            index = _record$__sym_id$spli2[0],
+            size = _record$__sym_id$spli2[1];
+
+        var offset = index - size;
+        var versions = store.getIn([collectionName, id]);
+        if (versions) {
+          base = versions.get(offset).toJS();
+        }
+      }
+      var current = this.get(collectionName, id);
+      return base || current ? rebase(base, current, record) : record;
+    };
+    /**
+     * @param {string} collection
+     * @param {object} data
+     * @param {object} options
+     */
+    Store.prototype.add = function (collectionName, data) {
+      var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+
+      var record = this.createRecord(collectionName, data);
+      var based = convert(this.rebase(collectionName, record));
+
+      var _getMeta3 = getMeta(collectionName, based),
+          id = _getMeta3.id;
+
+      var versions = store.getIn([collectionName, id], immutable.Stack());
+      store = store.setIn([collectionName, id], versions.unshift(based));
+      var object = this.get(collectionName, id);
+      emit({
+        collectionName: collectionName,
+        event: 'add',
+        record: object
+      }, {
+        quiet: options.quiet
+      });
+      return object;
+    };
+    /**
+     * @param {string} collectionName
+     * @param {object} data
+     */
+    Store.prototype.hasChanges = function (collectionName, data) {
+      var _getMeta4 = getMeta(collectionName, data),
+          id = _getMeta4.id;
+
+      if (this.isValidId(id)) {
+        var record = this.get(collectionName, id);
+        return record.__sym_id === data.__sym_id ? fastDiff(record, data) : false;
+      } else {
+        return true;
+      }
+    };
+    /**
+     * @async
+     * @param {string} collectionName
+     * @param {object} data
+     * @param {object} options
+     */
+    Store.prototype.destroy = function (collectionName, data) {
+      var _this4 = this;
+
+      var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+
+      var _getMeta5 = getMeta(collectionName, data),
+          id = _getMeta5.id,
+          pk = _getMeta5.pk,
+          basePath = _getMeta5.basePath;
+
+      return http(_extends({
+        url: basePath + '/' + collectionName + '/' + pk,
+        method: 'DELETE'
+      }, options)).then(function () {
+        return _this4.remove(collectionName, id);
+      }).catch(function (err) {
+        throw err;
+      });
+    };
+    /**
+     * @param {string} collection
+     * @param {object} data
+     * @param {object} options
+     * @async
+     */
+    Store.prototype.save = function (collectionName, data) {
+      var _this5 = this;
+
+      var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+
+      var _getMeta6 = getMeta(collectionName, data),
+          pk = _getMeta6.pk,
+          basePath = _getMeta6.basePath;
+
+      var promise = void 0;
+      if (isValidId(pk)) {
+        promise = http(_extends({
+          url: basePath + '/' + collectionName + '/' + pk,
+          method: 'PUT',
+          body: this.rebase(collectionName, data)
+        }, options));
+      } else {
+        promise = http(_extends({
+          url: basePath + '/' + collectionName,
+          method: 'POST',
+          body: data
+        }, options));
+      }
+      return promise.then(function (data) {
+        return _this5.add(collectionName, data);
+      }).catch(function (err) {
+        throw err;
+      });
+    };
+    /**
+     * @param {string} collection
+     * @param {object} [query]
+     * @param {object} [options]
+     * @param {boolean} [options.force=false]
+     * @async
+     */
+    Store.prototype.find = function (collectionName, id) {
+      var _this6 = this;
+
+      var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+
+      var force = options.force || false;
+      var basePath = models[collectionName].basePath || '';
+      var pk = resolvePk(id);
+      var promise = void 0;
+      if (isValidId(pk)) {
+        var data = this.get(collectionName, id);
+        if (!data || force === true) {
+          var request = _extends({
+            url: basePath + '/' + collectionName + '/' + pk,
+            method: 'GET'
+          }, options);
+          promise = http(request).then(function (data) {
+            _this6.add(collectionName, data);
+            return data;
+          }).catch(function (err) {
+            throw err;
+          });
+        } else {
+          promise = Promise.resolve(data);
+        }
+      } else {
+        promise = Promise.resolve();
+      }
+      return promise;
+    };
+    /**
+     * @param {string} collection
+     * @param {object} [query]
+     * @param {object} [options]
+     * @async
+     */
+    Store.prototype.findAll = function (collectionName, query) {
+      var _this7 = this;
+
+      var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+
+      var basePath = models[collectionName].basePath || '';
+      var request = _extends({
+        url: basePath + '/' + collectionName,
+        method: 'GET',
+        params: query
+      }, options);
+      return http(request).then(function (result) {
+        return result.map(function (data) {
+          return _this7.add(collectionName, data);
+        });
+      }).catch(function (err) {
+        throw err;
+      });
     };
     /**
      * @param {string} event
      * @param {function} handler
      */
     Store.prototype.on = function (event, handler) {
-      store.on(event, handler);
+      evt.addListener(event, handler);
     };
     /**
      * @param {string} event
      * @param {function} handler
      */
     Store.prototype.off = function (event, handler) {
-      store.off(event, handler);
+      evt.removeListener(event, handler);
     };
-    return new Store(store, options);
+    Store.prototype.emit = function (event, payload) {
+      evt.emit(event, payload);
+    };
+    Store.prototype.isValidId = isValidId;
+    return new Store();
   }
 };
 
@@ -1267,14 +1423,13 @@ var hasVdata = function hasVdata(o) {
 var vdata$1 = {
   createConfig: function createConfig(fn) {
     return function (V) {
-      var options = fn(V);
-      return defaults(options || {}, {
-        events: ['add', 'change', 'remove', 'afterDestroy', 'vm-created']
-      });
+      return fn(V);
     };
   },
   install: function install(Vue, options) {
-    options = isFunction(options) ? options(Vue) : options;
+    options = defaults({}, isFunction(options) ? options(Vue) : options, {
+      events: ['add', 'remove']
+    });
     var store = Store.create(options);
     Object.defineProperty(Vue, '$store', {
       get: function get() {
@@ -1286,34 +1441,41 @@ var vdata$1 = {
         return store;
       }
     });
-    if (process.env.NODE_ENV !== 'test') {
-      console.log('[@citygro/vdata] $store ready!', store);
-    }
     Vue.mixin({
       methods: {
-        $vdata: function $vdata() {
+        $vdata: function $vdata(message) {
           if (hasVdata(this)) {
-            this._vdataHandler.run(createObjectFromEventData.apply(undefined, arguments));
+            this._vdataHandler.run(message);
           }
         }
       },
       beforeCreate: function beforeCreate() {
         if (hasVdata(this)) {
-          this._vdataHandler = createHandler(this, options.events);
+          this._vdataHandler = createHandler(this, options);
         }
       },
       created: function created() {
-        this.$vdata('vm-created');
-        this.$store.on('all', this.$vdata);
+        var _this = this;
+
+        options.events.forEach(function (event) {
+          _this.$store.on(event, _this.$vdata);
+        });
       },
       beforeDestroy: function beforeDestroy() {
+        var _this2 = this;
+
         if (hasVdata(this)) {
-          store.off('all', this.$vdata);
+          options.events.forEach(function (event) {
+            _this2.$store.off(event, _this2.$vdata);
+          });
           this._vdataHandler.destroy();
         }
       }
     });
     Vue.mixin(AsyncDataMixin);
+    if (process.env.NODE_ENV !== 'test') {
+      console.log('[@citygro/vdata] $store ready!', store, options);
+    }
   }
 };
 
@@ -1501,11 +1663,11 @@ var createMixinForItemByResourceAndId = function createMixinForItemByResourceAnd
 };
 
 exports.DataFlowMixin = DataFlowMixin;
-exports.Record = Record;
 exports.createIndex = createIndex;
 exports.createMixinForItemById = createMixinForItemById;
 exports.createMixinForItemByResourceAndId = createMixinForItemByResourceAndId;
 exports.createMixinForListByResource = createMixinForListByResource;
+exports.fetchWrapper = fetchWrapper;
 exports.to = to;
 exports.vdata = vdata$1;
 exports.handleChange = handleChange;

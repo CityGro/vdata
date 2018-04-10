@@ -1,211 +1,365 @@
-import Record from './Record'
+import EventEmitter from 'events'
+import mget from './mget'
 import cloneDeep from 'lodash/cloneDeep'
 import fastDiff from './fastDiff'
+import createHttpAdapter from './createHttpAdapter'
 import isArray from 'lodash/isArray'
-import registerAdapters from './registerAdapters'
+import microTask from '@r14c/async-utils/microTask'
+import rebase from './rebase'
 import registerSchemas from './registerSchemas'
-import {DataStore} from 'js-data'
+import toNumber from 'lodash/toNumber'
+import uniqueId from './uniqueId'
+import {
+  Map,
+  Stack,
+  fromJS,
+  isImmutable,
+  isKeyed
+} from 'immutable'
+
+/**
+ * @param {object} data
+ */
+const convert = (data) => fromJS(data, (key, value) => {
+  return isKeyed(value)
+    ? value.toMap()
+    : value.toList()
+})
+
+/**
+ * @param {*} id
+ */
+const isValidId = (id) => {
+  return id !== null && id !== undefined && id !== ''
+}
 
 export default {
   /**
    * @param {object} options
    * @param {object} options.models
-   * @param {object} options.adapters
+   * @param {function} [options.adapter] - a custom fetch
+   * @param {function} [options.deserialize] - request post-processing
    */
   create (options) {
-    let store = new DataStore()
+    const evt = new EventEmitter()
+    const http = createHttpAdapter(options)
+    const models = cloneDeep(options.models)
+    const storeId = uniqueId(null, 1e5)
+    let keyMap = {}
+    let store = registerSchemas(Map(), options.models)
     /**
-     * @param {DataStore} store
+     * @param {string} id
+     */
+    const resolveId = (id) => {
+      const isTmp = /^[0-9a-z]+-[0-9a-z]+$/i.test(id)
+      return (isTmp) ? id : keyMap[id]
+    }
+    /**
+     * @param {string} id
+     */
+    const resolvePk = (id) => {
+      const isTmp = /^[0-9a-z]+-[0-9a-z]+$/i.test(id)
+      return (isTmp) ? keyMap[id] : id
+    }
+    /**
+     * @param {string} collectionName
+     * @param {object} data
+     */
+    const getMeta = (collectionName, data) => {
+      const model = models[collectionName]
+      const idAttribute = model.idAttribute
+      const pk = mget(data, idAttribute)
+      const id = mget(data, '__tmp_id')
+      const symId = mget(data, '__sym_id')
+      keyMap[pk] = id
+      keyMap[id] = pk
+      return {
+        id,
+        pk,
+        symId,
+        basePath: model.basePath || '',
+        idAttribute
+      }
+    }
+    /**
+     * @param {string} message
+     * @param {object} options
+     * @param {boolean} options.quiet
+     */
+    const emit = (message, options = {}) => {
+      const quiet = options.quiet || false
+      if (quiet === false) {
+        microTask(() => evt.emit(message.event, message))
+      }
+    }
+    /**
      * @constructor
      */
-    let Store = function (store, options) {
-      registerSchemas(store, options.models)
-      registerAdapters(store, options.adapters)
-      this.models = options.models
-    }
-    /**
-     * @param {string} id
-     */
-    Store.prototype.isValidId = function (id) {
-      return id !== null && id !== undefined && id !== ''
+    let Store = function () {
+      this.models = cloneDeep(options.models)
+      this.storeId = storeId
     }
     /**
      * @param {string} collection
-     * @param {string} id
-     * @param {object} data
+     * @param {object} [data={}]
      */
-    Store.prototype.hasChanges = function (collection, id, data) {
-      if (this.isValidId(id)) {
-        const record = this.get(collection, id)
-        return fastDiff(record, data)
-      } else {
-        return true
-      }
-    }
-    /**
-     * @param {string} collection
-     * @param {object} data
-     * @param {object} options
-     */
-    Store.prototype.commit = function (collection, data, options) {
-      const record = store.createRecord(collection, data)
-      return record.commit(cloneDeep(options))
-    }
-    /**
-     * @param {string} collection
-     * @param {object} data
-     * @param {object} options
-     * @async
-     */
-    Store.prototype.destroy = function (collection, data, options) {
-      const record = store.createRecord(collection, data)
-      return record.destroy(cloneDeep(options))
-    }
-    /**
-     * @param {string} collection
-     * @param {object} data
-     * @param {object} options
-     */
-    Store.prototype.revert = function (collection, data, options) {
-      const record = store.createRecord(collection, data)
-      return record.revert(cloneDeep(options))
-    }
-    /**
-     * @param {string} collection
-     * @param {object} data
-     * @param {object} options
-     * @async
-     */
-    Store.prototype.save = function (collection, data, options) {
-      const idAttribute = this.models[collection].idAttribute
-      const id = data[idAttribute]
-      if (this.isValidId(id)) {
-        return store.update(collection, id, data, cloneDeep(options))
-          .then(Record.create)
-          .catch((err) => {
-            throw err
-          })
-      } else {
-        return store.create(collection, data, cloneDeep(options))
-          .then(Record.create)
-          .catch((err) => {
-            throw err
-          })
-      }
-    }
-    /**
-     * @param {string} collection
-     * @param {object} data
-     * @param {object} options
-     */
-    Store.prototype.add = function (collection, data, options) {
-      store.add(collection, data, cloneDeep(options))
-    }
-    /**
-     * @param {string} collection
-     * @param {string} id
-     * @param {object} options
-     */
-    Store.prototype.remove = function (collection, id, options) {
-      store.remove(collection, id, cloneDeep(options))
-    }
-    /**
-     * @param {string} collection
-     * @param {object} query
-     * @param {object} options
-     */
-    Store.prototype.removeAll = function (collection, query, options) {
-      store.removeAll(collection, query, cloneDeep(options))
-    }
-    /**
-     * @param {string} collection
-     * @param {object} data
-     * @deprecated
-     * @async
-     */
-    Store.prototype.create = function (collection, data, options) {
-      return store.create(collection, data, cloneDeep(options))
-        .then(Record.create)
-    }
-    /**
-     * @param {string} collection
-     * @param {object} [query]
-     * @param {object} [options]
-     * @async
-     */
-    Store.prototype.find = function (collection, id, options = {}) {
-      if (this.isValidId(id)) {
-        return store.find(collection, id, cloneDeep(options))
-          .then((result) => (result === undefined || options.raw === true)
-            ? result
-            : Record.create(result))
-      } else {
-        return Promise.resolve()
-      }
-    }
-    /**
-     * @param {string} collection
-     * @param {object} [query]
-     * @param {object} [options]
-     * @async
-     */
-    Store.prototype.findAll = function (collection, query, options = {}) {
-      const result = store.findAll(collection, query, cloneDeep(options))
-      return (options.raw === true)
-        ? result
-        : result.then((records) => records.map(Record.create))
-    }
-    /**
-     * @param {string} collection
-     * @param {object} data
-     */
-    Store.prototype.createRecord = function (collection, data) {
-      const record = store.createRecord(collection, data)
-      return Record.create(record)
+    Store.prototype.createRecord = function (collectionName, data = {}) {
+      const {id} = getMeta(collectionName, data)
+      return (isValidId(id))
+        ? data
+        : {__tmp_id: uniqueId(storeId), ...data}
     }
     /**
      * @param {string} collection
      * @param {string} id
      */
-    Store.prototype.get = function (collection, id) {
-      const record = store.get(collection, id)
+    Store.prototype.get = function (collectionName, id) {
+      const versions = store.getIn([collectionName, resolveId(id)], Stack())
+      const record = versions.first()
       if (record) {
-        return Record.create(record)
+        const size = versions.size
+        const index = 0
+        return this.createRecord(collectionName, {
+          ...record.toJS(),
+          __sym_id: `${index}-${size}`
+        })
+      } else {
+        return null
       }
     }
     /**
      * @param {string} collection
      * @param {string[]} [keys]
      */
-    Store.prototype.getAll = function (collection, keys) {
+    Store.prototype.getAll = function (collectionName, keys) {
       if (isArray(keys)) {
         return (keys.length)
-          ? keys.map((key) => this.get(collection, key))
+          ? keys.map((key) => this.get(collectionName, key))
           : []
       } else {
-        return store.getAll(collection).map(Record.create)
+        return store
+          .get(collectionName)
+          .keySeq()
+          .map((key) => this.get(collectionName, key))
+          .toJS()
       }
+    }
+    /**
+     * @param {string} collectionName
+     * @param {string} id
+     * @param {object} options
+     * @param {boolean} options.quiet
+     */
+    Store.prototype.remove = function (collectionName, id, options = {}) {
+      const object = this.get(collectionName, id)
+      const meta = getMeta(collectionName, object)
+      store = store.removeIn([collectionName, resolveId(id)])
+      delete keyMap[meta.pk]
+      delete keyMap[meta.id]
+      delete object.__tmp_id
+      delete object.__sym_id
+      emit({
+        collectionName,
+        event: 'remove',
+        record: object
+      }, {
+        quiet: options.quiet
+      })
+      return object
+    }
+    /**
+     * @param {string} collection
+     * @param {string[]} keys
+     */
+    Store.prototype.removeAll = function (collectionName, keys) {
+      this.getAll(collectionName, keys).forEach((record) => {
+        const id = getMeta(collectionName, record)
+        this.remove(collectionName, id)
+      })
     }
     /**
      *
      */
     Store.prototype.clear = function () {
-      store.clear()
+      store.keySeq().forEach((collectionName) => {
+        this.removeAll(collectionName)
+      })
+    }
+    Store.prototype.rebase = function (collectionName, data) {
+      const record = (isImmutable(data)) ? data.toJS() : data
+      const {id} = getMeta(collectionName, record)
+      let base = null
+      if (record.__sym_id) {
+        const [index, size] = record.__sym_id.split('-').map(toNumber)
+        const offset = (index - size)
+        const versions = store.getIn([collectionName, id])
+        if (versions) {
+          base = versions.get(offset).toJS()
+        }
+      }
+      const current = this.get(collectionName, id)
+      return (base || current)
+        ? rebase(base, current, record)
+        : record
+    }
+    /**
+     * @param {string} collection
+     * @param {object} data
+     * @param {object} options
+     */
+    Store.prototype.add = function (collectionName, data, options = {}) {
+      const record = this.createRecord(collectionName, data)
+      const based = convert(this.rebase(collectionName, record))
+      const {id} = getMeta(collectionName, based)
+      const versions = store.getIn([collectionName, id], Stack())
+      store = store.setIn([collectionName, id], versions.unshift(based))
+      const object = this.get(collectionName, id)
+      emit({
+        collectionName,
+        event: 'add',
+        record: object
+      }, {
+        quiet: options.quiet
+      })
+      return object
+    }
+    /**
+     * @param {string} collectionName
+     * @param {object} data
+     */
+    Store.prototype.hasChanges = function (collectionName, data) {
+      const {id} = getMeta(collectionName, data)
+      if (this.isValidId(id)) {
+        const record = this.get(collectionName, id)
+        return (record.__sym_id === data.__sym_id)
+          ? fastDiff(record, data)
+          : false
+      } else {
+        return true
+      }
+    }
+    /**
+     * @async
+     * @param {string} collectionName
+     * @param {object} data
+     * @param {object} options
+     */
+    Store.prototype.destroy = function (collectionName, data, options = {}) {
+      const {id, pk, basePath} = getMeta(collectionName, data)
+      return http({
+        url: `${basePath}/${collectionName}/${pk}`,
+        method: 'DELETE',
+        ...options
+      })
+        .then(() => this.remove(collectionName, id))
+        .catch((err) => {
+          throw err
+        })
+    }
+    /**
+     * @param {string} collection
+     * @param {object} data
+     * @param {object} options
+     * @async
+     */
+    Store.prototype.save = function (collectionName, data, options = {}) {
+      const {pk, basePath} = getMeta(collectionName, data)
+      let promise
+      if (isValidId(pk)) {
+        promise = http({
+          url: `${basePath}/${collectionName}/${pk}`,
+          method: 'PUT',
+          body: this.rebase(collectionName, data),
+          ...options
+        })
+      } else {
+        promise = http({
+          url: `${basePath}/${collectionName}`,
+          method: 'POST',
+          body: data,
+          ...options
+        })
+      }
+      return promise
+        .then((data) => this.add(collectionName, data))
+        .catch((err) => {
+          throw err
+        })
+    }
+    /**
+     * @param {string} collection
+     * @param {object} [query]
+     * @param {object} [options]
+     * @param {boolean} [options.force=false]
+     * @async
+     */
+    Store.prototype.find = function (collectionName, id, options = {}) {
+      const force = options.force || false
+      const basePath = models[collectionName].basePath || ''
+      const pk = resolvePk(id)
+      let promise
+      if (isValidId(pk)) {
+        const data = this.get(collectionName, id)
+        if (!data || force === true) {
+          const request = {
+            url: `${basePath}/${collectionName}/${pk}`,
+            method: 'GET',
+            ...options
+          }
+          promise = http(request)
+            .then((data) => {
+              this.add(collectionName, data)
+              return data
+            })
+            .catch((err) => {
+              throw err
+            })
+        } else {
+          promise = Promise.resolve(data)
+        }
+      } else {
+        promise = Promise.resolve()
+      }
+      return promise
+    }
+    /**
+     * @param {string} collection
+     * @param {object} [query]
+     * @param {object} [options]
+     * @async
+     */
+    Store.prototype.findAll = function (collectionName, query, options = {}) {
+      const basePath = models[collectionName].basePath || ''
+      const request = {
+        url: `${basePath}/${collectionName}`,
+        method: 'GET',
+        params: query,
+        ...options
+      }
+      return http(request)
+        .then((result) => result.map((data) => this.add(collectionName, data)))
+        .catch((err) => {
+          throw err
+        })
     }
     /**
      * @param {string} event
      * @param {function} handler
      */
     Store.prototype.on = function (event, handler) {
-      store.on(event, handler)
+      evt.addListener(event, handler)
     }
     /**
      * @param {string} event
      * @param {function} handler
      */
     Store.prototype.off = function (event, handler) {
-      store.off(event, handler)
+      evt.removeListener(event, handler)
     }
-    return new Store(store, options)
+    Store.prototype.emit = function (event, payload) {
+      evt.emit(event, payload)
+    }
+    Store.prototype.isValidId = isValidId
+    return new Store()
   }
 }

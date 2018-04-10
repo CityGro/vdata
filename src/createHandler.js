@@ -1,22 +1,17 @@
 import flattenMixinTree from './flattenMixinTree'
-
-const includes = (collection = [], item) => {
-  return collection.indexOf(item) >= 0
-}
+import forEach from '@r14c/async-utils/forEach'
 
 let handlers = {}
 
 /**
  * inject handler that will run on datastore events
  *
- * DANGER: mutates vm
- *
  * @param {Vue} vm
  * @param {string} label
  * @param {string[]} events
  * @param {function} fn
  */
-export default (vm, events) => {
+export default (vm) => {
   handlers[vm._uid] = flattenMixinTree(vm.$options.mixins)
     .filter((mixin) => !!mixin.vdata)
     .map((mixin) => mixin.vdata)
@@ -25,11 +20,9 @@ export default (vm, events) => {
   }
   return {
     run (message) {
-      if (includes(events, message.event) || message.event === '$vdata-call') {
-        handlers[vm._uid].forEach((fn) => {
-          setTimeout(() => fn.apply(vm, [message]), 0)
-        })
-      }
+      forEach(handlers[vm._uid], (fn) => {
+        fn.apply(vm, [message])
+      })
     },
     destroy () {
       delete handlers[vm._uid]

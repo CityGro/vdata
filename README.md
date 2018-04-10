@@ -50,6 +50,10 @@ name and <code>update:${valueProp}</code> is emitted.</p>
 ## Functions
 
 <dl>
+<dt><a href="#convert">convert(data)</a></dt>
+<dd></dd>
+<dt><a href="#isValidId">isValidId(id)</a></dt>
+<dd></dd>
 <dt><a href="#createMixinForItemById">createMixinForItemById(options)</a> ⇒ <code>object</code></dt>
 <dd><p>create a mixin that configures a vm to manipulate a single record. you can
 use a prop to ask for a record by id or specify a template to create a new
@@ -120,6 +124,8 @@ export default {
 <dt><a href="#flattenMixinTree">flattenMixinTree(mixins)</a></dt>
 <dd></dd>
 <dt><a href="#exp_module_to--to">to(promise)</a> ⇒ <code>Promise</code> ⏏</dt>
+<dd></dd>
+<dt><a href="#toQueryString">toQueryString(o, prefix)</a></dt>
 <dd></dd>
 </dl>
 
@@ -240,6 +246,24 @@ name and `update:${valueProp}` is emitted.
 | --- | --- | --- |
 | valueProp | <code>string</code> | bind dataflow to this prop |
 
+<a name="convert"></a>
+
+## convert(data)
+**Kind**: global function  
+
+| Param | Type |
+| --- | --- |
+| data | <code>object</code> | 
+
+<a name="isValidId"></a>
+
+## isValidId(id)
+**Kind**: global function  
+
+| Param | Type |
+| --- | --- |
+| id | <code>\*</code> | 
+
 <a name="createMixinForItemById"></a>
 
 ## createMixinForItemById(options) ⇒ <code>object</code>
@@ -340,4 +364,14 @@ export default {
 | Param | Type |
 | --- | --- |
 | mixins | <code>Array.&lt;Object&gt;</code> | 
+
+<a name="toQueryString"></a>
+
+## toQueryString(o, prefix)
+**Kind**: global function  
+
+| Param | Type |
+| --- | --- |
+| o | <code>object</code> | 
+| prefix | <code>string</code> | 
 

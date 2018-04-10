@@ -54,8 +54,6 @@
         {
           "targets": {
             "browsers": [
-              ">5% in US",
-              "Firefox ESR",
               "last 2 versions"
             ]
           }
@@ -94,14 +92,13 @@
     "eslint-plugin-node": "^5.2.1",
     "eslint-plugin-promise": "^3.6.0",
     "eslint-plugin-standard": "^3.0.1",
+    "fetch-mock": "^6.3.0",
     "html-webpack-plugin": "^2.28.0",
     "jest": "^21.2.1",
-    "js-data-http": "3.0.0-beta.8",
-    "js-data-localstorage": "3.0.0-beta.2",
     "jsdoc-to-markdown": "^4.0.1",
     "jsdom": "^9.8.3",
     "json-server": "^0.9.5",
-    "localstorage-polyfill": "^1.0.1",
+    "node-fetch": "^2.1.2",
     "rollup": "^0.36.3",
     "rollup-plugin-babel": "^2.3.9",
     "rollup-plugin-commonjs": "^7.0.0",
@@ -117,10 +114,11 @@
     "vue": ">=2.1.0"
   },
   "dependencies": {
-    "@r14c/async-utils": "0.1.1",
-    "js-data": "^3.0.1",
+    "@r14c/async-utils": "0.2.0",
+    "immutable": "4.0.0-rc.9",
     "json-stable-stringify": "^1.0.1",
     "lodash": "^4.17.2",
-    "p-any": "^1.1.0"
+    "p-any": "^1.1.0",
+    "whatwg-fetch": "^2.0.4"
   }
 }

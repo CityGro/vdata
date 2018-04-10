@@ -113,8 +113,10 @@ const createAsyncReload = (thisArg) => function (propertyName, skipLazy = false)
 }.bind(thisArg)
 
 export default {
-  created () {
+  beforeCreate () {
     this._asyncReload = createAsyncReload(this)
+  },
+  created () {
     this.$asyncReload(undefined, true)
   },
   methods: {

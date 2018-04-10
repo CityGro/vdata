@@ -1,7 +1,7 @@
-import Record from './Record'
 import createIndex from './createIndex'
 import createMixinForItemById from './createMixinForItemById.js'
 import createMixinForListByResource from './createMixinForListByResource'
+import fetchWrapper from './fetchWrapper'
 import to from './to'
 import vdata from './vdata'
 import {createDataFlowMixin} from './DataFlow'
@@ -20,11 +20,11 @@ export * from './DataFlow'
 
 export {
   DataFlowMixin,
-  Record,
   createIndex,
   createMixinForItemById,
   createMixinForItemByResourceAndId,
   createMixinForListByResource,
+  fetchWrapper,
   to,
   vdata
 }
