@@ -104,7 +104,7 @@
             return e.d(n, "a", n), n;
         }, e.o = function(t, e) {
             return Object.prototype.hasOwnProperty.call(t, e);
-        }, e.p = "", e(e.s = 388);
+        }, e.p = "", e(e.s = 389);
     }([ /* 0 */
     /***/
     function(t, e) {
@@ -513,7 +513,7 @@
     function(t, e, n) {
         /* WEBPACK VAR INJECTION */
         (function(t) {
-            var r = n(3), i = n(369), o = "object" == typeof e && e && !e.nodeType && e, a = o && "object" == typeof t && t && !t.nodeType && t, u = a && a.exports === o ? r.Buffer : void 0, c = (u ? u.isBuffer : void 0) || i;
+            var r = n(3), i = n(370), o = "object" == typeof e && e && !e.nodeType && e, a = o && "object" == typeof t && t && !t.nodeType && t, u = a && a.exports === o ? r.Buffer : void 0, c = (u ? u.isBuffer : void 0) || i;
             t.exports = c;
         }).call(e, n(98)(t));
     }, /* 25 */
@@ -1509,7 +1509,7 @@
     }, /* 90 */
     /***/
     function(t, e, n) {
-        var r = n(150), i = n(366), o = r ? function(t) {
+        var r = n(150), i = n(367), o = r ? function(t) {
             return r.get(t);
         } : i;
         t.exports = o;
@@ -2016,7 +2016,7 @@
     }, /* 125 */
     /***/
     function(t, e, n) {
-        var r = n(252), i = n(253), o = n(60), a = n(0), u = n(367);
+        var r = n(252), i = n(253), o = n(60), a = n(0), u = n(368);
         t.exports = /**
  * The base implementation of `_.iteratee`.
  *
@@ -2329,7 +2329,7 @@
             /** Detect free variable `global` from Node.js. */
             var n = "object" == typeof e && e && e.Object === Object && e;
             t.exports = n;
-        }).call(e, n(387));
+        }).call(e, n(388));
     }, /* 141 */
     /***/
     function(t, e, n) {
@@ -2415,7 +2415,7 @@
     }, /* 147 */
     /***/
     function(t, e, n) {
-        var r = n(75), i = n(90), o = n(142), a = n(380);
+        var r = n(75), i = n(90), o = n(142), a = n(381);
         t.exports = /**
  * Checks if `func` has a lazy counterpart.
  *
@@ -2693,7 +2693,7 @@
     }, /* 162 */
     /***/
     function(t, e, n) {
-        var r = n(371);
+        var r = n(372);
         t.exports = /**
  * Converts `value` to an integer.
  *
@@ -2741,7 +2741,7 @@
         Object.defineProperty(e, "__esModule", {
             value: !0
         });
-        var h = i(n(354)), v = i(n(339)), y = i(n(342)), g = i(n(225)), m = i(n(159)), x = i(n(365)), b = i(n(360)), _ = i(n(4)), w = i(n(376)), O = i(n(370)), A = i(n(383)), j = i(n(355)), E = i(n(337)), k = i(n(359)), I = i(n(25)), R = i(n(11)), C = i(n(356)), F = i(n(347)), S = i(n(0)), P = i(n(348)), M = n(224), L = i(n(343)), T = i(n(363)), N = h(p.default, JSON.parse), D = function(t) {
+        var h = i(n(354)), v = i(n(339)), y = i(n(342)), g = i(n(225)), m = i(n(159)), x = i(n(366)), b = i(n(360)), _ = i(n(361)), w = i(n(4)), O = i(n(377)), A = i(n(371)), j = i(n(384)), E = i(n(355)), k = i(n(337)), I = i(n(359)), R = i(n(25)), C = i(n(11)), F = i(n(356)), S = i(n(347)), P = i(n(0)), M = i(n(348)), L = n(224), T = i(n(343)), N = i(n(364)), D = h(p.default, JSON.parse), K = function(t) {
             return function() {
                 var e = t.apply(this, arguments);
                 return new l.default(function(t, n) {
@@ -2761,20 +2761,20 @@
                     return r("next");
                 });
             };
-        }, K = function(t, e, n) {
+        }, W = function(t, e, n) {
             return e in t ? (0, f.default)(t, e, {
                 value: n,
                 enumerable: !0,
                 configurable: !0,
                 writable: !0
             }) : t[e] = n, t;
-        }, W = s.default || function(t) {
+        }, B = s.default || function(t) {
             for (var e = 1; e < arguments.length; e++) {
                 var n = arguments[e];
                 for (var r in n) Object.prototype.hasOwnProperty.call(n, r) && (t[r] = n[r]);
             }
             return t;
-        }, B = function() {
+        }, $ = function() {
             return function(t, e) {
                 if (Array.isArray(t)) return t;
                 if ((0, u.default)(Object(t))) return function(t, e) {
@@ -2795,22 +2795,22 @@
                 }(t, e);
                 throw new TypeError("Invalid attempt to destructure non-iterable instance");
             };
-        }(), $ = function(t) {
+        }(), q = function(t) {
             if (Array.isArray(t)) {
                 for (var e = 0, n = Array(t.length); e < t.length; e++) n[e] = t[e];
                 return n;
             }
             return (0, a.default)(t);
-        }, q = {
+        }, z = {
             create: function(t) {
                 return new function(t) {
-                    (0, s.default)(this, N(W({}, t.toJSON(), W({}, t))));
+                    (0, s.default)(this, D(B({}, t.toJSON(), B({}, t))));
                 }(t);
             }
-        }, z = function(t, e) {
+        }, U = function(t, e) {
             return g(t) !== g(e);
-        }, U = function() {
-            var t = arguments[0], e = O(arguments).map(function(e) {
+        }, J = function() {
+            var t = arguments[0], e = A(arguments).map(function(e) {
                 /**
  * @param {object} base
  * @param {object} object
@@ -2818,21 +2818,21 @@
  */
                 return function(t, e) {
                     function n(t, e) {
-                        return w(t, function(t, r, i) {
-                            b(r, e[i]) || (t[i] = _(r) && _(e[i]) ? n(r, e[i]) : r);
+                        return O(t, function(t, r, i) {
+                            b(r, e[i]) || (t[i] = w(r) && w(e[i]) ? n(r, e[i]) : r);
                         });
                     }
-                    return n(e, t);
+                    return _(t) ? e : n(e, t);
                 }(t, e);
             });
-            return x.apply(void 0, [ N(t) ].concat($(e)));
-        }, J = function(t) {
+            return x.apply(void 0, [ D(t) ].concat(q(e)));
+        }, Q = function(t) {
             return t.then(function(t) {
                 return [ null, t ];
             }).catch(function(t) {
                 return [ t, void 0 ];
             });
-        }, Q = function(t) {
+        }, V = function(t) {
             var e, n, r = t.collectionName, i = t.localPropertyName || v(r).slice(0, -1), a = t.idPropertyName || "id", u = t.templateName || i + "Template", c = t.template || {}, s = t.recordPrimaryKey || "_id", f = i + "RecordId", l = i + "HasChanges", p = i + "Save", d = i + "Loading", h = t.idType || String, g = t.requestOptions || {}, b = i + "RequestOptions", _ = i + "Capture", w = function(t, e, n) {
                 var r = t[e];
                 return delete t[e], void 0 === r ? n : r;
@@ -2840,32 +2840,32 @@
             if (!r) throw new Error("[@citygro/vdata#createMixinForItemById] options.collectionName is required");
             return t.idPropertyName || console.warn("[@citygro/vdata#createMixinForItemById]", "options.idPropertyName will default to `${localPropertyName}Id` in future versions of vdata"), 
             {
-                props: (e = {}, K(e, a, {
+                props: (e = {}, W(e, a, {
                     type: h,
                     default: null
-                }), K(e, u, {
+                }), W(e, u, {
                     type: Object,
                     default: function() {
                         return y(c);
                     }
-                }), K(e, O, {
+                }), W(e, O, {
                     type: Object,
                     default: function() {
                         return {};
                     }
                 }), e),
                 data: function() {
-                    var t, e = (t = {}, K(t, i, null), K(t, b, x({}, y(g), this[O])), t);
+                    var t, e = (t = {}, W(t, i, null), W(t, b, x({}, y(g), this[O])), t);
                     return (w || this[O].capture) && (e[_] = null), e;
                 },
                 vdata: function(t) {
                     var e = this[f]();
-                    this[d] || null === e || t.collectionName !== r || (w || this[O].capture ? this[i] = U(this[_], this.$store.get(r, e) || {}, this[i]) : this[i] = this.$store.get(r, e) || null);
+                    this[d] || null === e || t.collectionName !== r || (w || this[O].capture ? this[i] = J(this[_], this.$store.get(r, e) || {}, this[i]) : this[i] = this.$store.get(r, e) || null);
                 },
-                asyncData: K({}, i, function() {
+                asyncData: W({}, i, function() {
                     var t = this;
                     /*#__PURE__*/
-                    return D(o.default.mark(function e() {
+                    return K(o.default.mark(function e() {
                         var n, i, a, c, s, l, p, d;
                         return o.default.wrap(function(e) {
                             for (;;) switch (e.prev = e.next) {
@@ -2879,10 +2879,10 @@
                                     e.next = 15;
                                     break;
                                 }
-                                return e.next = 11, J(t.$store.find(r, c, t[b]));
+                                return e.next = 11, Q(t.$store.find(r, c, t[b]));
 
                               case 11:
-                                p = e.sent, d = B(p, 2), s = d[0], l = d[1];
+                                p = e.sent, d = $(p, 2), s = d[0], l = d[1];
 
                               case 15:
                                 e.next = 18;
@@ -2901,29 +2901,29 @@
                         }, e, t);
                     }))();
                 }),
-                watch: K({}, a, function() {
+                watch: W({}, a, function() {
                     w || this.$asyncReload(i);
                 }),
-                computed: K({}, l, function() {
+                computed: W({}, l, function() {
                     var t = this[i];
-                    return this[w] ? z(this[_], t) : this.$store.hasChanges(r, this[f](), t);
+                    return this[w] ? U(this[_], t) : this.$store.hasChanges(r, this[f](), t);
                 }),
-                methods: (n = {}, K(n, f, function() {
+                methods: (n = {}, W(n, f, function() {
                     var t = this[a] || m(this, i + "." + s, null);
                     return this.$store.isValidId(t) ? t : null;
-                }), K(n, p, function() {
+                }), W(n, p, function() {
                     var t = this;
                     /*#__PURE__*/
-                    return D(o.default.mark(function e() {
+                    return K(o.default.mark(function e() {
                         var n, u, c, l, p, d;
                         return o.default.wrap(function(e) {
                             for (;;) switch (e.prev = e.next) {
                               case 0:
-                                return n = t[f](), u = w || t[O].capture ? U(t[_], n ? t.$store.get(r, n) : {}, t[i]) : t[i], 
-                                e.next = 4, J(t.$store.save(r, u, t[b]));
+                                return n = t[f](), u = w || t[O].capture ? J(t[_], n ? t.$store.get(r, n) : {}, t[i]) : t[i], 
+                                e.next = 4, Q(t.$store.save(r, u, t[b]));
 
                               case 4:
-                                if (c = e.sent, l = B(c, 2), p = l[0], d = l[1], !p) {
+                                if (c = e.sent, l = $(c, 2), p = l[0], d = l[1], !p) {
                                     e.next = 10;
                                     break;
                                 }
@@ -2940,30 +2940,30 @@
                     }))();
                 }), n)
             };
-        }, V = function t() {
+        }, H = function t() {
             var e = [];
             return (arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : []).forEach(function(n) {
-                n.mixins && n.mixins.length && (e = [].concat($(e), $(t(n.mixins)))), e.push(n);
+                n.mixins && n.mixins.length && (e = [].concat(q(e), q(t(n.mixins)))), e.push(n);
             }), e;
-        }, H = function(t, e) {
+        }, G = function(t, e) {
             var n = y(m(t, "$options." + e, {})), r = m(t, "$options.mixins", []);
-            return V(r).filter(function(t) {
+            return H(r).filter(function(t) {
                 return t[e];
             }).forEach(function(t) {
-                n = E(n, t[e]);
-            }), k(n) ? null : n;
-        }, G = [ "Default", "Lazy" ], Y = function(t) {
-            return (arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : G).find(function(e) {
+                n = k(n, t[e]);
+            }), I(n) ? null : n;
+        }, Y = [ "Default", "Lazy" ], Z = function(t) {
+            return (arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : Y).find(function(e) {
                 return t.endsWith(e);
             });
-        }, Z = {
+        }, X = {
             created: function() {
                 this._asyncReload = function(t) {
                     return function(t) {
-                        var e = this, n = arguments.length > 1 && void 0 !== arguments[1] && arguments[1], r = H(this, "asyncData");
+                        var e = this, n = arguments.length > 1 && void 0 !== arguments[1] && arguments[1], r = G(this, "asyncData");
                         if (r) {
-                            var i = [], o = R(r).filter(function(t) {
-                                return !Y(t);
+                            var i = [], o = C(r).filter(function(t) {
+                                return !Z(t);
                             }).filter(function(e) {
                                 return void 0 === t || e === t;
                             }).filter(function(t) {
@@ -2995,7 +2995,7 @@
                                     });
                                     i.push(s);
                                 }
-                            }), l.default.all(i).then(h(C(o), j));
+                            }), l.default.all(i).then(h(F(o), E));
                         }
                         return l.default.resolve({});
                     }.bind(t);
@@ -3003,17 +3003,17 @@
             },
             methods: {
                 $asyncReload: function(t) {
-                    return I(this._asyncReload) ? this._asyncReload.apply(this, arguments).then(function(e) {
+                    return R(this._asyncReload) ? this._asyncReload.apply(this, arguments).then(function(e) {
                         return t ? e[t] : e;
                     }) : (console.info("[@citygro/vdata<" + this._uid + ">] vm.asyncReload is not available until the component is created!"), 
                     l.default.resolve(null));
                 }
             },
             data: function() {
-                var t = this, e = H(this, "asyncData");
+                var t = this, e = G(this, "asyncData");
                 if (e) {
-                    var n = R(e).filter(function(t) {
-                        return !Y(t);
+                    var n = C(e).filter(function(t) {
+                        return !Z(t);
                     }), r = n.map(function(t) {
                         return t + "Error";
                     }), i = {
@@ -3022,31 +3022,31 @@
                         asyncAll: l.default.all(n.map(function(t) {
                             return e[t];
                         })),
-                        asyncAny: A(n.map(function(t) {
+                        asyncAny: j(n.map(function(t) {
                             return e[t];
                         }))
                     };
                     return n.forEach(function(n) {
                         var r = e[n + "Default"];
-                        i[n] = I(r) ? r.apply(t) : r, i[n + "Promise"] = null, i[n + "Loading"] = !e[n + "Lazy"];
+                        i[n] = R(r) ? r.apply(t) : r, i[n + "Promise"] = null, i[n + "Loading"] = !e[n + "Lazy"];
                     }), r.forEach(function(t) {
                         i[t] = void 0;
                     }), i;
                 }
                 return {};
             }
-        }, X = {}, tt = function(t) {
-            var e = new M.DataStore(), n = function(t, e) {
+        }, tt = {}, et = function(t) {
+            var e = new L.DataStore(), n = function(t, e) {
                 !function(t) {
                     var e = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : {};
-                    k(e) && console.error("[@citygro/vdata] you have not defined any models!"), P(e).forEach(function(e) {
-                        var n = B(e, 2), r = n[0], i = n[1];
+                    I(e) && console.error("[@citygro/vdata] you have not defined any models!"), M(e).forEach(function(e) {
+                        var n = $(e, 2), r = n[0], i = n[1];
                         return t.defineMapper(r, i);
                     });
                 }(t, e.models), function(t, e) {
-                    var n = P(e);
+                    var n = M(e);
                     n.forEach(function(e) {
-                        var r = B(e, 2), i = r[0], o = r[1];
+                        var r = $(e, 2), i = r[0], o = r[1];
                         1 === n.length ? t.registerAdapter(i, o.adapter, o.options || {
                             default: !0
                         }) : t.registerAdapter(i, o.adapter, o.options || {});
@@ -3144,7 +3144,7 @@
             }, n.prototype.hasChanges = function(t, e, n) {
                 if (this.isValidId(e)) {
                     var r = this.get(t, e);
-                    return z(r, n);
+                    return U(r, n);
                 }
                 return !0;
             }, n.prototype.commit = function(t, n, r) {
@@ -3155,9 +3155,9 @@
                 return e.createRecord(t, n).revert(y(r));
             }, n.prototype.save = function(t, n, r) {
                 var i = n[this.models[t].idAttribute];
-                return this.isValidId(i) ? e.update(t, i, n, y(r)).then(q.create).catch(function(t) {
+                return this.isValidId(i) ? e.update(t, i, n, y(r)).then(z.create).catch(function(t) {
                     throw t;
-                }) : e.create(t, n, y(r)).then(q.create).catch(function(t) {
+                }) : e.create(t, n, y(r)).then(z.create).catch(function(t) {
                     throw t;
                 });
             }, n.prototype.add = function(t, n, r) {
@@ -3167,28 +3167,28 @@
             }, n.prototype.removeAll = function(t, n, r) {
                 e.removeAll(t, n, y(r));
             }, n.prototype.create = function(t, n, r) {
-                return e.create(t, n, y(r)).then(q.create);
+                return e.create(t, n, y(r)).then(z.create);
             }, n.prototype.find = function(t, n) {
                 var r = arguments.length > 2 && void 0 !== arguments[2] ? arguments[2] : {};
                 return this.isValidId(n) ? e.find(t, n, y(r)).then(function(t) {
-                    return void 0 === t || !0 === r.raw ? t : q.create(t);
+                    return void 0 === t || !0 === r.raw ? t : z.create(t);
                 }) : l.default.resolve();
             }, n.prototype.findAll = function(t, n) {
                 var r = arguments.length > 2 && void 0 !== arguments[2] ? arguments[2] : {}, i = e.findAll(t, n, y(r));
                 return !0 === r.raw ? i : i.then(function(t) {
-                    return t.map(q.create);
+                    return t.map(z.create);
                 });
             }, n.prototype.createRecord = function(t, n) {
                 var r = e.createRecord(t, n);
-                return q.create(r);
+                return z.create(r);
             }, n.prototype.get = function(t, n) {
                 var r = e.get(t, n);
-                if (r) return q.create(r);
+                if (r) return z.create(r);
             }, n.prototype.getAll = function(t, n) {
                 var r = this;
-                return S(n) ? n.length ? n.map(function(e) {
+                return P(n) ? n.length ? n.map(function(e) {
                     return r.get(t, e);
-                }) : [] : e.getAll(t).map(q.create);
+                }) : [] : e.getAll(t).map(z.create);
             }, n.prototype.clear = function() {
                 e.clear();
             }, n.prototype.on = function(t, n) {
@@ -3196,20 +3196,20 @@
             }, n.prototype.off = function(t, n) {
                 e.off(t, n);
             }, new n(e, t);
-        }, et = function(t) {
+        }, nt = function(t) {
             return !!m(t, "$options.vdata");
-        }, nt = {
+        }, rt = {
             createConfig: function(t) {
                 return function(e) {
                     var n = t(e);
-                    return F(n || {}, {
+                    return S(n || {}, {
                         events: [ "add", "change", "remove", "afterDestroy", "vm-created" ]
                     });
                 };
             },
             install: function(t, e) {
-                e = I(e) ? e(t) : e;
-                var n = tt(e);
+                e = R(e) ? e(t) : e;
+                var n = et(e);
                 Object.defineProperty(t, "$store", {
                     get: function() {
                         return n;
@@ -3221,7 +3221,7 @@
                 }), console.log("[@citygro/vdata] $store ready!", n), t.mixin({
                     methods: {
                         $vdata: function() {
-                            et(this) && this._vdataHandler.run(function() {
+                            nt(this) && this._vdataHandler.run(function() {
                                 var t = {
                                     event: arguments[0],
                                     collectionName: arguments[1]
@@ -3310,24 +3310,24 @@
                         }
                     },
                     beforeCreate: function() {
-                        et(this) && (this._vdataHandler = function(t, e) {
-                            return X[t._uid] = V(t.$options.mixins).filter(function(t) {
+                        nt(this) && (this._vdataHandler = function(t, e) {
+                            return tt[t._uid] = H(t.$options.mixins).filter(function(t) {
                                 return !!t.vdata;
                             }).map(function(t) {
                                 return t.vdata;
-                            }), t.$options.vdata && X[t._uid].push(t.$options.vdata), {
+                            }), t.$options.vdata && tt[t._uid].push(t.$options.vdata), {
                                 run: function(n) {
                                     ((function() {
                                         var t = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : [], e = arguments[1];
                                         return t.indexOf(e) >= 0;
-                                    })(e, n.event) || "$vdata-call" === n.event) && X[t._uid].forEach(function(e) {
+                                    })(e, n.event) || "$vdata-call" === n.event) && tt[t._uid].forEach(function(e) {
                                         setTimeout(function() {
                                             return e.apply(t, [ n ]);
                                         }, 0);
                                     });
                                 },
                                 destroy: function() {
-                                    delete X[t._uid];
+                                    delete tt[t._uid];
                                 }
                             };
                         }(this, e.events));
@@ -3336,148 +3336,148 @@
                         this.$vdata("vm-created"), this.$store.on("all", this.$vdata);
                     },
                     beforeDestroy: function() {
-                        et(this) && (n.off("all", this.$vdata), this._vdataHandler.destroy());
+                        nt(this) && (n.off("all", this.$vdata), this._vdataHandler.destroy());
                     }
-                }), t.mixin(Z);
+                }), t.mixin(X);
             }
-        }, rt = function(t) {
+        }, it = function(t) {
             var e = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : "";
             return "" === e ? v(t) : "" + v(e) + function(t) {
-                var e = v(t), n = L([], e.charAt(0).toUpperCase(), O(e));
-                return T(n, "");
+                var e = v(t), n = T([], e.charAt(0).toUpperCase(), A(e));
+                return N(n, "");
             }(t);
-        }, it = function(t) {
-            var e = t.value, n = t.diff;
-            return W({}, e, n);
         }, ot = function(t) {
-            var e = t.value, n = t.key, r = t.diff, i = it({
+            var e = t.value, n = t.diff;
+            return B({}, e, n);
+        }, at = function(t) {
+            var e = t.value, n = t.key, r = t.diff, i = ot({
                 value: e[n],
                 diff: r
             });
-            return it({
+            return ot({
                 value: e,
-                diff: K({}, n, i)
+                diff: W({}, n, i)
             });
-        }, at = function(t) {
-            var e = t.value, n = void 0 === e ? [] : e, r = t.index, i = t.diff, o = [].concat($(n));
-            return o[r] = W({}, o[r] || {}, i), o;
         }, ut = function(t) {
-            var e = t.value, n = void 0 === e ? {} : e, r = t.index, i = t.key, o = t.diff, a = at({
+            var e = t.value, n = void 0 === e ? [] : e, r = t.index, i = t.diff, o = [].concat(q(n));
+            return o[r] = B({}, o[r] || {}, i), o;
+        }, ct = function(t) {
+            var e = t.value, n = void 0 === e ? {} : e, r = t.index, i = t.key, o = t.diff, a = ut({
                 value: n[i] || [],
                 index: r,
                 diff: o
             });
-            return it({
+            return ot({
                 value: n,
-                diff: K({}, i, a)
+                diff: W({}, i, a)
             });
-        }, ct = function(t) {
-            var e = t.value, n = void 0 === e ? [] : e, r = t.diff, i = [].concat($(n));
-            return i.push(r), i;
         }, st = function(t) {
-            var e = t.value, n = void 0 === e ? {} : e, r = t.key, i = t.diff, o = [].concat($(n[r] || []));
-            return o.push(i), it({
-                value: n,
-                diff: K({}, r, o)
-            });
+            var e = t.value, n = void 0 === e ? [] : e, r = t.diff, i = [].concat(q(n));
+            return i.push(r), i;
         }, ft = function(t) {
-            var e = t.value, n = void 0 === e ? [] : e, r = t.index, i = [].concat($(n));
-            return i.splice(r, 1), i;
+            var e = t.value, n = void 0 === e ? {} : e, r = t.key, i = t.diff, o = [].concat(q(n[r] || []));
+            return o.push(i), ot({
+                value: n,
+                diff: W({}, r, o)
+            });
         }, lt = function(t) {
-            var e = t.value, n = void 0 === e ? {} : e, r = t.index, i = t.key, o = ft({
+            var e = t.value, n = void 0 === e ? [] : e, r = t.index, i = [].concat(q(n));
+            return i.splice(r, 1), i;
+        }, pt = function(t) {
+            var e = t.value, n = void 0 === e ? {} : e, r = t.index, i = t.key, o = lt({
                 value: n[i],
                 index: r
             });
-            return it({
+            return ot({
                 value: n,
-                diff: K({}, i, o)
+                diff: W({}, i, o)
             });
-        }, pt = function(t) {
+        }, dt = function(t) {
             var e, n = "value" === t ? "input" : "update:" + t, r = "value" === t ? "" : t;
             return {
-                methods: (e = {}, K(e, rt("forwardInput", r), function(t) {
+                methods: (e = {}, W(e, it("forwardInput", r), function(t) {
                     this.$emit(n, t);
-                }), K(e, rt("handleChange", r), function(e) {
-                    this.$emit(n, it({
+                }), W(e, it("handleChange", r), function(e) {
+                    this.$emit(n, ot({
                         value: this[t],
                         diff: e
                     }));
-                }), K(e, rt("handleKeyChange", r), function(e, r) {
-                    this.$emit(n, ot({
+                }), W(e, it("handleKeyChange", r), function(e, r) {
+                    this.$emit(n, at({
                         value: this[t],
                         key: e,
                         diff: r
                     }));
-                }), K(e, rt("handleArrayKeyChange", r), function(e, r, i) {
-                    this.$emit(n, ut({
+                }), W(e, it("handleArrayKeyChange", r), function(e, r, i) {
+                    this.$emit(n, ct({
                         value: this[t],
                         index: e,
                         key: r,
                         diff: i
                     }));
-                }), K(e, rt("handleArrayChange", r), function(e, r) {
-                    this.$emit(n, at({
+                }), W(e, it("handleArrayChange", r), function(e, r) {
+                    this.$emit(n, ut({
                         value: this[t],
                         index: e,
                         diff: r
                     }));
-                }), K(e, rt("pushToArray", r), function(e) {
-                    this.$emit(n, ct({
+                }), W(e, it("pushToArray", r), function(e) {
+                    this.$emit(n, st({
                         value: this[t],
                         diff: e
                     }));
-                }), K(e, rt("pushToArrayKey", r), function(e, r) {
-                    this.$emit(n, st({
+                }), W(e, it("pushToArrayKey", r), function(e, r) {
+                    this.$emit(n, ft({
                         value: this[t],
                         key: e,
                         diff: r
                     }));
-                }), K(e, rt("removeFromArray", r), function(e) {
-                    this.$emit(n, ft({
+                }), W(e, it("removeFromArray", r), function(e) {
+                    this.$emit(n, lt({
                         value: this[t],
                         index: e
                     }));
-                }), K(e, rt("removeFromArrayKey", r), function(e, r) {
-                    this.$emit(n, lt({
+                }), W(e, it("removeFromArrayKey", r), function(e, r) {
+                    this.$emit(n, pt({
                         value: this[t],
                         index: e,
                         key: r
                     }));
                 }), e)
             };
-        }, dt = pt("value");
-        e.DataFlowMixin = dt, e.Record = q, e.createIndex = function(t, e) {
+        }, ht = dt("value");
+        e.DataFlowMixin = ht, e.Record = z, e.createIndex = function(t, e) {
             var n = {};
             return t.forEach(function(t) {
                 n[t[e]] = t;
             }), n;
-        }, e.createMixinForItemById = Q, e.createMixinForItemByResourceAndId = function(t) {
+        }, e.createMixinForItemById = V, e.createMixinForItemByResourceAndId = function(t) {
             return console.warn("[@citygro/vdata] rename createMixinForItemByResourceAndId -> createMixinForItemById", '"createMixinForItemByResourceAndId" is DEPRECATED and will be removed in a future release'), 
-            Q(t);
+            V(t);
         }, e.createMixinForListByResource = function(t) {
             var e = t.collectionName, n = t.localPropertyName || v(e), r = n + "Force", i = t.queryOptions || {}, a = t.requestOptions;
             return {
                 data: function() {
                     var t;
-                    return t = {}, K(t, n, []), K(t, r, !1), t;
+                    return t = {}, W(t, n, []), W(t, r, !1), t;
                 },
                 vdata: function(t) {
                     this.asyncLoading || t.collectionName !== e || (this[n] = this.$store.getAll(e) || []);
                 },
-                asyncData: K({}, n, function() {
+                asyncData: W({}, n, function() {
                     var t = this;
                     /*#__PURE__*/
-                    return D(o.default.mark(function n() {
+                    return K(o.default.mark(function n() {
                         var u, c, s, f;
                         return o.default.wrap(function(n) {
                             for (;;) switch (n.prev = n.next) {
                               case 0:
-                                return n.next = 2, J(t.$store.findAll(e, i, W({}, a, {
+                                return n.next = 2, Q(t.$store.findAll(e, i, B({}, a, {
                                     force: t[r]
                                 })));
 
                               case 2:
-                                return u = n.sent, c = B(u, 2), s = c[0], f = c[1], s && (console.error(s), f = []), 
+                                return u = n.sent, c = $(u, 2), s = c[0], f = c[1], s && (console.error(s), f = []), 
                                 n.abrupt("return", f);
 
                               case 8:
@@ -3488,9 +3488,9 @@
                     }))();
                 })
             };
-        }, e.to = J, e.vdata = nt, e.handleChange = it, e.handleKeyChange = ot, e.handleArrayChange = at, 
-        e.handleArrayKeyChange = ut, e.pushToArray = ct, e.pushToArrayKey = st, e.removeFromArray = ft, 
-        e.removeFromArrayKey = lt, e.createDataFlowMixin = pt;
+        }, e.to = Q, e.vdata = rt, e.handleChange = ot, e.handleKeyChange = at, e.handleArrayChange = ut, 
+        e.handleArrayKeyChange = ct, e.pushToArray = st, e.pushToArrayKey = ft, e.removeFromArray = lt, 
+        e.removeFromArrayKey = pt, e.createDataFlowMixin = dt;
     }, /* 164 */
     /***/
     function(t, e, n) {
@@ -3610,12 +3610,12 @@
     }, /* 177 */
     /***/
     function(t, e, n) {
-        t.exports = n(385);
+        t.exports = n(386);
     }, /* 178 */
     /***/
     function(t, e, n) {
         "use strict";
-        const r = /\s+at.*(?:\(|\s)(.*)\)?/, i = /^(?:(?:(?:node|(?:internal\/[\w/]*|.*node_modules\/babel-polyfill\/.*)?\w+)\.js:\d+:\d+)|native)/, o = n(382).homedir();
+        const r = /\s+at.*(?:\(|\s)(.*)\)?/, i = /^(?:(?:(?:node|(?:internal\/[\w/]*|.*node_modules\/babel-polyfill\/.*)?\w+)\.js:\d+:\d+)|native)/, o = n(383).homedir();
         t.exports = ((t, e) => (e = Object.assign({
             pretty: !1
         }, e), t.replace(/\\/g, "/").split("\n").filter(t => {
@@ -15655,7 +15655,7 @@
     }, /* 255 */
     /***/
     function(t, e, n) {
-        var r = n(119), i = n(131), o = n(132), a = n(21), u = n(146), c = n(36), s = n(0), f = n(160), l = n(24), p = n(25), d = n(4), h = n(361), v = n(38), y = n(375);
+        var r = n(119), i = n(131), o = n(132), a = n(21), u = n(146), c = n(36), s = n(0), f = n(160), l = n(24), p = n(25), d = n(4), h = n(362), v = n(38), y = n(376);
         t.exports = /**
  * A specialized version of `baseMerge` for arrays and objects which performs
  * deep merges and tracks traversed objects enabling objects with circular
@@ -16004,7 +16004,7 @@
     }, /* 276 */
     /***/
     function(t, e, n) {
-        var r = n(79), i = n(346), o = n(379), a = RegExp("['’]", "g");
+        var r = n(79), i = n(346), o = n(380), a = RegExp("['’]", "g");
         t.exports = /**
  * Creates a function like `_.camelCase`.
  *
@@ -16976,7 +16976,7 @@
     }, /* 314 */
     /***/
     function(t, e, n) {
-        var r = n(364), i = 500;
+        var r = n(365), i = 500;
         t.exports = /**
  * A specialized version of `_.memoize` which clears the memoized function's
  * cache when it exceeds `MAX_MEMOIZE_SIZE`.
@@ -17383,7 +17383,7 @@
     }, /* 340 */
     /***/
     function(t, e, n) {
-        var r = n(26), i = n(378);
+        var r = n(26), i = n(379);
         t.exports = /**
  * Converts the first character of `string` to upper case and the remaining
  * to lower case.
@@ -17605,7 +17605,7 @@
     }, /* 348 */
     /***/
     function(t, e, n) {
-        t.exports = n(373);
+        t.exports = n(374);
     }, /* 349 */
     /***/
     function(t, e, n) {
@@ -18329,11 +18329,11 @@
             forEach: n(49),
             isArray: n(0),
             isFunction: n(25),
-            iteratee: n(362),
+            iteratee: n(363),
             keys: n(84),
-            rearg: n(368),
+            rearg: n(369),
             toInteger: n(162),
-            toPath: n(374)
+            toPath: n(375)
         };
     }, /* 354 */
     /***/
@@ -18348,7 +18348,7 @@
     }, /* 356 */
     /***/
     function(t, e, n) {
-        var r = n(96)("zip", n(381));
+        var r = n(96)("zip", n(382));
         r.placeholder = n(59), t.exports = r;
     }, /* 357 */
     /***/
@@ -18491,6 +18491,32 @@
         };
     }, /* 361 */
     /***/
+    function(t, e) {
+        t.exports = /**
+ * Checks if `value` is `null` or `undefined`.
+ *
+ * @static
+ * @memberOf _
+ * @since 4.0.0
+ * @category Lang
+ * @param {*} value The value to check.
+ * @returns {boolean} Returns `true` if `value` is nullish, else `false`.
+ * @example
+ *
+ * _.isNil(null);
+ * // => true
+ *
+ * _.isNil(void 0);
+ * // => true
+ *
+ * _.isNil(NaN);
+ * // => false
+ */
+        function(t) {
+            return null == t;
+        };
+    }, /* 362 */
+    /***/
     function(t, e, n) {
         var r = n(20), i = n(55), o = n(10), a = "[object Object]", u = Function.prototype, c = Object.prototype, s = u.toString, f = c.hasOwnProperty, l = s.call(Object);
         t.exports = /**
@@ -18528,7 +18554,7 @@
             var n = f.call(e, "constructor") && e.constructor;
             return "function" == typeof n && n instanceof n && s.call(n) == l;
         };
-    }, /* 362 */
+    }, /* 363 */
     /***/
     function(t, e, n) {
         var r = n(82), i = n(125), o = 1;
@@ -18577,7 +18603,7 @@
         function(t) {
             return i("function" == typeof t ? t : r(t, o));
         };
-    }, /* 363 */
+    }, /* 364 */
     /***/
     function(t, e) {
         /** Used for built-in method references. */
@@ -18600,7 +18626,7 @@
         function(t, e) {
             return null == t ? "" : n.call(t, e);
         };
-    }, /* 364 */
+    }, /* 365 */
     /***/
     function(t, e, n) {
         /**
@@ -18660,14 +18686,14 @@
         var i = n(78), o = "Expected a function";
         // Expose `MapCache`.
         r.Cache = i, t.exports = r;
-    }, /* 365 */
+    }, /* 366 */
     /***/
     function(t, e, n) {
         var r = n(254), i = n(88)(function(t, e, n) {
             r(t, e, n);
         });
         t.exports = i;
-    }, /* 366 */
+    }, /* 367 */
     /***/
     function(t, e) {
         t.exports = /**
@@ -18683,7 +18709,7 @@
  * // => [undefined, undefined]
  */
         function() {};
-    }, /* 367 */
+    }, /* 368 */
     /***/
     function(t, e, n) {
         var r = n(126), i = n(256), o = n(92), a = n(35);
@@ -18712,14 +18738,14 @@
         function(t) {
             return o(t) ? r(a(t)) : i(t);
         };
-    }, /* 368 */
+    }, /* 369 */
     /***/
     function(t, e, n) {
         var r = n(89), i = n(139)(function(t, e) {
             return r(t, 256, void 0, void 0, void 0, e);
         });
         t.exports = i;
-    }, /* 369 */
+    }, /* 370 */
     /***/
     function(t, e) {
         t.exports = /**
@@ -18738,7 +18764,7 @@
         function() {
             return !1;
         };
-    }, /* 370 */
+    }, /* 371 */
     /***/
     function(t, e, n) {
         var r = n(128);
@@ -18760,10 +18786,10 @@
             var e = null == t ? 0 : t.length;
             return e ? r(t, 1, e) : [];
         };
-    }, /* 371 */
+    }, /* 372 */
     /***/
     function(t, e, n) {
-        var r = n(372), i = 1 / 0, o = 1.7976931348623157e308;
+        var r = n(373), i = 1 / 0, o = 1.7976931348623157e308;
         t.exports = /**
  * Converts `value` to a finite number.
  *
@@ -18792,7 +18818,7 @@
             if ((t = r(t)) === i || t === -i) return (t < 0 ? -1 : 1) * o;
             return t == t ? t : 0;
         };
-    }, /* 372 */
+    }, /* 373 */
     /***/
     function(t, e, n) {
         var r = n(4), i = n(37), o = NaN, a = /^\s+|\s+$/g, u = /^[-+]0x[0-9a-f]+$/i, c = /^0b[01]+$/i, s = /^0o[0-7]+$/i, f = parseInt;
@@ -18831,12 +18857,12 @@
             var n = c.test(t);
             return n || s.test(t) ? f(t.slice(2), n ? 2 : 8) : u.test(t) ? o : +t;
         };
-    }, /* 373 */
+    }, /* 374 */
     /***/
     function(t, e, n) {
         var r = n(280)(n(11));
         t.exports = r;
-    }, /* 374 */
+    }, /* 375 */
     /***/
     function(t, e, n) {
         var r = n(50), i = n(21), o = n(0), a = n(37), u = n(157), c = n(35), s = n(26);
@@ -18860,7 +18886,7 @@
         function(t) {
             return o(t) ? r(t, c) : a(t) ? [ t ] : i(u(s(t)));
         };
-    }, /* 375 */
+    }, /* 376 */
     /***/
     function(t, e, n) {
         var r = n(15), i = n(39);
@@ -18891,7 +18917,7 @@
         function(t) {
             return r(t, i(t));
         };
-    }, /* 376 */
+    }, /* 377 */
     /***/
     function(t, e, n) {
         var r = n(49), i = n(33), o = n(242), a = n(125), u = n(55), c = n(0), s = n(24), f = n(25), l = n(4), p = n(38);
@@ -18935,7 +18961,7 @@
                 return e(n, t, r, i);
             }), n;
         };
-    }, /* 377 */
+    }, /* 378 */
     /***/
     function(t, e, n) {
         var r = n(117), i = n(50), o = n(126), a = n(129), u = n(160), c = Math.max;
@@ -18967,12 +18993,12 @@
                 return i(t, o(e));
             });
         };
-    }, /* 378 */
+    }, /* 379 */
     /***/
     function(t, e, n) {
         var r = n(275)("toUpperCase");
         t.exports = r;
-    }, /* 379 */
+    }, /* 380 */
     /***/
     function(t, e, n) {
         var r = n(239), i = n(291), o = n(26), a = n(333);
@@ -18998,7 +19024,7 @@
         function(t, e, n) {
             return t = o(t), void 0 === (e = n ? void 0 : e) ? i(t) ? a(t) : r(t) : t.match(e) || [];
         };
-    }, /* 380 */
+    }, /* 381 */
     /***/
     function(t, e, n) {
         /**
@@ -19128,12 +19154,12 @@
         var i = n(75), o = n(76), a = n(85), u = n(0), c = n(10), s = n(335), f = Object.prototype.hasOwnProperty;
         (// Ensure wrappers are instances of `baseLodash`.
         r.prototype = a.prototype).constructor = r, t.exports = r;
-    }, /* 381 */
+    }, /* 382 */
     /***/
     function(t, e, n) {
-        var r = n(86)(n(377));
+        var r = n(86)(n(378));
         t.exports = r;
-    }, /* 382 */
+    }, /* 383 */
     /***/
     function(t, e) {
         e.endianness = function() {
@@ -19163,15 +19189,15 @@
         }, e.tmpdir = e.tmpDir = function() {
             return "/tmp";
         }, e.EOL = "\n";
-    }, /* 383 */
+    }, /* 384 */
     /***/
     function(t, e, n) {
         "use strict";
-        const r = n(384);
+        const r = n(385);
         t.exports = ((t, e) => r(t, Object.assign({}, e, {
             count: 1
         })).then(t => t[0])), t.exports.AggregateError = r.AggregateError;
-    }, /* 384 */
+    }, /* 385 */
     /***/
     function(t, e, n) {
         "use strict";
@@ -19189,7 +19215,7 @@
             for (const e of t) c++, s++, u++, Promise.resolve(e).then(l, p);
             if (e.count > u) throw new RangeError(`Expected input to contain at least ${e.count} items, but contains ${u} items`);
         })), t.exports.AggregateError = r;
-    }, /* 385 */
+    }, /* 386 */
     /***/
     function(t, e, n) {
         // This method of obtaining a reference to the global object needs to be
@@ -19198,14 +19224,14 @@
             return this;
         }() || Function("return this")(), i = r.regeneratorRuntime && Object.getOwnPropertyNames(r).indexOf("regeneratorRuntime") >= 0, o = i && r.regeneratorRuntime;
         if (// Force reevalutation of runtime.js.
-        r.regeneratorRuntime = void 0, t.exports = n(386), i) // Restore the original runtime.
+        r.regeneratorRuntime = void 0, t.exports = n(387), i) // Restore the original runtime.
         r.regeneratorRuntime = o; else // Remove the global property added by runtime.js.
         try {
             delete r.regeneratorRuntime;
         } catch (t) {
             r.regeneratorRuntime = void 0;
         }
-    }, /* 386 */
+    }, /* 387 */
     /***/
     function(t, e) {
         /**
@@ -19615,7 +19641,7 @@
         function() {
             return this;
         }() || Function("return this")());
-    }, /* 387 */
+    }, /* 388 */
     /***/
     function(t, e) {
         var n;
@@ -19634,7 +19660,7 @@
         // We return undefined, instead of nothing here, so it's
         // easier to handle this case. if(!global) { ...}
         t.exports = n;
-    }, /* 388 */
+    }, /* 389 */
     /***/
     function(t, e, n) {
         t.exports = n(163);

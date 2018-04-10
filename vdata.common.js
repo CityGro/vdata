@@ -11,6 +11,7 @@ var stringify = _interopDefault(require('json-stable-stringify'));
 var get = _interopDefault(require('lodash/get'));
 var merge = _interopDefault(require('lodash/merge'));
 var isEqual = _interopDefault(require('lodash/isEqual'));
+var isNil = _interopDefault(require('lodash/isNil'));
 var isObject = _interopDefault(require('lodash/isObject'));
 var transform = _interopDefault(require('lodash/transform'));
 var tail = _interopDefault(require('lodash/tail'));
@@ -270,7 +271,7 @@ function difference(base, object) {
       }
     });
   }
-  return changes(object, base);
+  return isNil(base) ? object : changes(object, base);
 }
 
 var rebase = function () {

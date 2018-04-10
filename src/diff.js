@@ -1,4 +1,5 @@
 import isEqual from 'lodash/isEqual'
+import isNil from 'lodash/isNil'
 import isObject from 'lodash/isObject'
 import transform from 'lodash/transform'
 
@@ -17,5 +18,7 @@ export default function difference (base, object) {
       }
     })
   }
-  return changes(object, base)
+  return (isNil(base))
+    ? object
+    : changes(object, base)
 }

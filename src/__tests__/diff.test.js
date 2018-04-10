@@ -22,6 +22,15 @@ describe('diff', () => {
     expect(result).toEqual({foo: true})
   })
 
+  test('diff when base = null without exploding', () => {
+    const a = null
+    const b = {
+      key: 'value'
+    }
+    const result = diff(a, b)
+    expect(result).toEqual({key: 'value'})
+  })
+
   test('diff nested objects', () => {
     const a = {
       name: 'jeff',
