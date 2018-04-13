@@ -94,7 +94,7 @@ import to from './to'
  * @return {object} item-by-id query mixin
  */
 const createMixinForItemById = function (options) {
-  const collectionName = options.collectionName
+  let collectionName = options.collectionName
   const localPropertyName = options.localPropertyName || camelCase(collectionName).slice(0, -1)
   const idPropertyName = options.idPropertyName || 'id' // FIXME `${localPropertyName}Id`
   const templateName = options.templateName || `${localPropertyName}Template`
@@ -110,6 +110,7 @@ const createMixinForItemById = function (options) {
   const captureName = `${localPropertyName}Capture`
   const capture = pop(requestOptions, 'capture', false)
   const requestOptionsOverrideName = `${localPropertyName}RequestOptionsOverride`
+  const changeCollectionMethodName = `${localPropertyName}ChangeCollection`
 
   if (!collectionName) {
     throw new Error('[@citygro/vdata#createMixinForItemById] options.collectionName is required')
@@ -230,6 +231,10 @@ const createMixinForItemById = function (options) {
       }
     },
     methods: {
+      [changeCollectionMethodName] (name) {
+        collectionName = name
+        this.$asyncReload(localPropertyName)
+      },
       [getIdMethodName] () {
         const id = (
           this[idPropertyName] ||

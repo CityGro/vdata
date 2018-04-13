@@ -401,6 +401,7 @@ var createMixinForItemById = function createMixinForItemById(options) {
   var captureName = localPropertyName + 'Capture';
   var capture = pop(requestOptions, 'capture', false);
   var requestOptionsOverrideName = localPropertyName + 'RequestOptionsOverride';
+  var changeCollectionMethodName = localPropertyName + 'ChangeCollection';
 
   if (!collectionName) {
     throw new Error('[@citygro/vdata#createMixinForItemById] options.collectionName is required');
@@ -527,7 +528,10 @@ var createMixinForItemById = function createMixinForItemById(options) {
         return this.$store.hasChanges(collectionName, this[getIdMethodName](), localState);
       }
     }),
-    methods: (_methods = {}, defineProperty(_methods, getIdMethodName, function () {
+    methods: (_methods = {}, defineProperty(_methods, changeCollectionMethodName, function (name) {
+      collectionName = name;
+      this.$asyncReload(localPropertyName);
+    }), defineProperty(_methods, getIdMethodName, function () {
       var id = this[idPropertyName] || get(this, localPropertyName + '.' + recordPrimaryKey, null);
       return this.$store.isValidId(id) ? id : null;
     }), defineProperty(_methods, saveMethodName, function () {
