@@ -37,6 +37,7 @@ export default {
   /**
    * @param {object} options
    * @param {object} options.models
+   * @param {string} [options.basePath=''] - default prefix for http requests
    * @param {function} [options.adapter] - a custom fetch
    * @param {function} [options.deserialize] - request post-processing
    */
@@ -61,6 +62,10 @@ export default {
       const isTmp = /^[0-9a-z]+-[0-9a-z]+$/i.test(id)
       return (isTmp) ? keyMap[id] : id
     }
+    const getBasePath = (collectionName) => {
+      const model = models[collectionName]
+      return model.basePath || options.basePath || ''
+    }
     /**
      * @param {string} collectionName
      * @param {object} data
@@ -77,7 +82,7 @@ export default {
         id,
         pk,
         symId,
-        basePath: model.basePath || '',
+        basePath: getBasePath(collectionName),
         idAttribute
       }
     }
@@ -96,6 +101,7 @@ export default {
      * @constructor
      */
     let Store = function () {
+      evt.setMaxListeners(20)
       this.models = cloneDeep(options.models)
       this.storeId = storeId
     }
@@ -173,7 +179,7 @@ export default {
      */
     Store.prototype.removeAll = function (collectionName, keys) {
       this.getAll(collectionName, keys).forEach((record) => {
-        const id = getMeta(collectionName, record)
+        const {id} = getMeta(collectionName, record)
         this.remove(collectionName, id)
       })
     }
@@ -251,7 +257,7 @@ export default {
         method: 'DELETE',
         ...options
       })
-        .then(() => this.remove(collectionName, id))
+        .then(() => microTask(() => this.remove(collectionName, id)))
         .catch((err) => {
           throw err
         })
@@ -281,7 +287,7 @@ export default {
         })
       }
       return promise
-        .then((data) => this.add(collectionName, data))
+        .then((data) => microTask(() => this.add(collectionName, data)))
         .catch((err) => {
           throw err
         })
@@ -295,7 +301,7 @@ export default {
      */
     Store.prototype.find = function (collectionName, id, options = {}) {
       const force = options.force || false
-      const basePath = models[collectionName].basePath || ''
+      const basePath = getBasePath(collectionName)
       const pk = resolvePk(id)
       let promise
       if (isValidId(pk)) {
@@ -307,10 +313,7 @@ export default {
             ...options
           }
           promise = http(request)
-            .then((data) => {
-              this.add(collectionName, data)
-              return data
-            })
+            .then((data) => microTask(() => this.add(collectionName, data)))
             .catch((err) => {
               throw err
             })
@@ -329,7 +332,7 @@ export default {
      * @async
      */
     Store.prototype.findAll = function (collectionName, query, options = {}) {
-      const basePath = models[collectionName].basePath || ''
+      const basePath = getBasePath(collectionName)
       const request = {
         url: `${basePath}/${collectionName}`,
         method: 'GET',
@@ -337,7 +340,10 @@ export default {
         ...options
       }
       return http(request)
-        .then((result) => result.map((data) => this.add(collectionName, data)))
+        .then((result) => {
+          const tasks = result.map((data) => microTask(() => this.add(collectionName, data)))
+          return Promise.all(tasks)
+        })
         .catch((err) => {
           throw err
         })

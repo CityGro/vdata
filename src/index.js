@@ -1,10 +1,12 @@
+import cleanRecord from './cleanRecord'
+import createDataFlowMixin from './createDataFlowMixin'
+import createHttpAdapter from './createHttpAdapter'
 import createIndex from './createIndex'
 import createMixinForItemById from './createMixinForItemById.js'
 import createMixinForListByResource from './createMixinForListByResource'
 import fetchWrapper from './fetchWrapper'
 import to from './to'
 import vdata from './vdata'
-import {createDataFlowMixin} from './DataFlow'
 
 const DataFlowMixin = createDataFlowMixin('value')
 
@@ -20,6 +22,8 @@ export * from './DataFlow'
 
 export {
   DataFlowMixin,
+  cleanRecord,
+  createHttpAdapter,
   createIndex,
   createMixinForItemById,
   createMixinForItemByResourceAndId,

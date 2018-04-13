@@ -4,9 +4,26 @@ Object.defineProperty(exports, '__esModule', { value: true });
 
 function _interopDefault (ex) { return (ex && (typeof ex === 'object') && 'default' in ex) ? ex['default'] : ex; }
 
+var includes = _interopDefault(require('lodash/includes'));
+var isArray = _interopDefault(require('lodash/isArray'));
+var isBoolean = _interopDefault(require('lodash/isBoolean'));
+var isNumber = _interopDefault(require('lodash/isNumber'));
+var isString = _interopDefault(require('lodash/isString'));
+var uniq = _interopDefault(require('lodash/uniq'));
 var camelCase = _interopDefault(require('lodash/camelCase'));
+var concat = _interopDefault(require('lodash/concat'));
+var join = _interopDefault(require('lodash/join'));
+var tail = _interopDefault(require('lodash/tail'));
+var defaults = _interopDefault(require('lodash/defaults'));
+var whatwgFetch = require('whatwg-fetch');
 var cloneDeep = _interopDefault(require('lodash/cloneDeep'));
+var isFunction = _interopDefault(require('lodash/isFunction'));
+var map = _interopDefault(require('lodash/map'));
+var microTask = _interopDefault(require('@r14c/async-utils/microTask'));
+var pick = _interopDefault(require('lodash/pick'));
 var stringify = _interopDefault(require('json-stable-stringify'));
+var sum = _interopDefault(require('lodash/sum'));
+var sort = _interopDefault(require('lodash/sortBy'));
 var get = _interopDefault(require('lodash/get'));
 var merge = _interopDefault(require('lodash/merge'));
 var isEqual = _interopDefault(require('lodash/isEqual'));
@@ -14,76 +31,16 @@ var isNil = _interopDefault(require('lodash/isNil'));
 var isObject = _interopDefault(require('lodash/isObject'));
 var transform = _interopDefault(require('lodash/transform'));
 var flow = _interopDefault(require('lodash/fp/flow'));
-var tail = _interopDefault(require('lodash/tail'));
-var whatwgFetch = require('whatwg-fetch');
 var Any = _interopDefault(require('p-any'));
 var fromPairs = _interopDefault(require('lodash/fp/fromPairs'));
 var assign = _interopDefault(require('lodash/assign'));
 var isEmpty = _interopDefault(require('lodash/isEmpty'));
-var isFunction = _interopDefault(require('lodash/isFunction'));
 var keys = _interopDefault(require('lodash/keys'));
 var zip = _interopDefault(require('lodash/fp/zip'));
-var defaults = _interopDefault(require('lodash/defaults'));
 var forEach = _interopDefault(require('@r14c/async-utils/forEach'));
 var EventEmitter = _interopDefault(require('events'));
 var immutable = require('immutable');
-var map = _interopDefault(require('lodash/map'));
-var pick = _interopDefault(require('lodash/pick'));
-var sum = _interopDefault(require('lodash/sum'));
-var entries = _interopDefault(require('lodash/entries'));
-var sort = _interopDefault(require('lodash/sortBy'));
-var isArray = _interopDefault(require('lodash/isArray'));
-var microTask = _interopDefault(require('@r14c/async-utils/microTask'));
 var toNumber = _interopDefault(require('lodash/toNumber'));
-var concat = _interopDefault(require('lodash/concat'));
-var join = _interopDefault(require('lodash/join'));
-
-/**
- * @param {object[]} collection
- * @param {string} key
- */
-var createIndex = (function (collection, key) {
-  var index = {};
-  collection.forEach(function (item) {
-    index[item[key]] = item;
-  });
-  return index;
-});
-
-/**
- * quickly determine if two objects differ
- *
- * @param {Object} a
- * @param {Object} b
- * @returns {Boolean}
- */
-var fastDiff = (function (a, b) {
-  return stringify(a) !== stringify(b);
-});
-
-var pop = (function (o, key, fallback) {
-  var value = o[key];
-  delete o[key];
-  return value === undefined ? fallback : value;
-});
-
-/**
- * @param {object} base
- * @param {object} object
- * @return {object} diff
- */
-function difference(base, object) {
-  function changes(object, base) {
-    return transform(object, function (result, value, key) {
-      if (!isEqual(value, base[key])) {
-        result[key] = isObject(value) && isObject(base[key]) ? changes(value, base[key]) : value;
-      }
-    });
-  }
-  return isNil(base) ? object : changes(object, base);
-}
-
-var jsonClone = flow(JSON.stringify, JSON.parse);
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) {
   return typeof obj;
@@ -287,6 +244,390 @@ var toConsumableArray = function (arr) {
     return Array.from(arr);
   }
 };
+
+var isPrimitive = function isPrimitive(val) {
+  return isNumber(val) || isString(val) || isBoolean(val);
+};
+
+var cleanRecord = function cleanRecord(_ref) {
+  var store = _ref.store,
+      _ref$record = _ref.record,
+      record = _ref$record === undefined ? {} : _ref$record,
+      _ref$omitKeys = _ref.omitKeys,
+      omitKeys = _ref$omitKeys === undefined ? [] : _ref$omitKeys;
+
+  if (isPrimitive(record)) {
+    return record;
+  } else if (isArray(record)) {
+    return record.map(function (item) {
+      return cleanRecord({ store: store, record: item, omitKeys: omitKeys });
+    });
+  } else {
+    var o = {};
+    Object.entries(record).filter(function (_ref2) {
+      var _ref3 = slicedToArray(_ref2, 2),
+          key = _ref3[0],
+          value = _ref3[1];
+
+      return !includes(omitKeys, key) && value;
+    }).forEach(function (_ref4) {
+      var _ref5 = slicedToArray(_ref4, 2),
+          key = _ref5[0],
+          value = _ref5[1];
+
+      if (isArray(value)) {
+        o[key] = value.map(function (item) {
+          return cleanRecord({ store: store, record: item, omitKeys: omitKeys });
+        });
+      } else if ((typeof value === 'undefined' ? 'undefined' : _typeof(value)) === 'object') {
+        o[key] = cleanRecord({ store: store, record: value, omitKeys: omitKeys });
+      } else {
+        o[key] = value;
+      }
+    });
+    return o;
+  }
+};
+
+/**
+ * @param {object} options
+ * @param {vdata.Store} options.store
+ * @param {object} options.record
+ * @param {string[]} options.omitKeys
+ * @param {string} options.collectionName
+ */
+var cleanRecord$1 = (function (options) {
+  var record = options.record;
+  var store = options.store;
+  var omitKeys = uniq([].concat(toConsumableArray(options.omitKeys || []), ['_id']));
+  var cleanedRecord = cleanRecord({ store: store, record: record, omitKeys: omitKeys });
+  return store.createRecord(record._collection || options.collectionName, cleanedRecord);
+});
+
+/**
+ * @param {object} value
+ * @param {object} diff
+ */
+var handleChange = function handleChange(_ref) {
+  var value = _ref.value,
+      diff = _ref.diff;
+
+  return _extends({}, value, diff);
+};
+
+/**
+ * @param {object} value
+ * @param {string} key
+ * @param {object} diff
+ */
+var handleKeyChange = function handleKeyChange(_ref2) {
+  var value = _ref2.value,
+      key = _ref2.key,
+      diff = _ref2.diff;
+
+  var updated = handleChange({ value: value[key], diff: diff });
+  return handleChange({ value: value, diff: defineProperty({}, key, updated) });
+};
+
+/**
+ * @param {object} value
+ * @param {number} i
+ * @param {object} diff
+ */
+var handleArrayChange = function handleArrayChange(_ref3) {
+  var _ref3$value = _ref3.value,
+      value = _ref3$value === undefined ? [] : _ref3$value,
+      index = _ref3.index,
+      diff = _ref3.diff;
+
+  var arr = [].concat(toConsumableArray(value));
+  arr[index] = _extends({}, arr[index] || {}, diff);
+  return arr;
+};
+
+/**
+ * @param {object} value
+ * @param {number} i
+ * @param {string} key
+ * @param {object} diff
+ */
+var handleArrayKeyChange = function handleArrayKeyChange(_ref4) {
+  var _ref4$value = _ref4.value,
+      value = _ref4$value === undefined ? {} : _ref4$value,
+      index = _ref4.index,
+      key = _ref4.key,
+      diff = _ref4.diff;
+
+  var updated = handleArrayChange({ value: value[key] || [], index: index, diff: diff });
+  return handleChange({ value: value, diff: defineProperty({}, key, updated) });
+};
+
+/**
+ * @param {array} value
+ * @param {object} diff
+ */
+var pushToArray = function pushToArray(_ref5) {
+  var _ref5$value = _ref5.value,
+      value = _ref5$value === undefined ? [] : _ref5$value,
+      diff = _ref5.diff;
+
+  var arr = [].concat(toConsumableArray(value));
+  arr.push(diff);
+  return arr;
+};
+
+/**
+ * @param {object} value
+ * @param {string} key
+ * @param {object} diff
+ */
+var pushToArrayKey = function pushToArrayKey(_ref6) {
+  var _ref6$value = _ref6.value,
+      value = _ref6$value === undefined ? {} : _ref6$value,
+      key = _ref6.key,
+      diff = _ref6.diff;
+
+  var arr = [].concat(toConsumableArray(value[key] || []));
+  arr.push(diff);
+  return handleChange({ value: value, diff: defineProperty({}, key, arr) });
+};
+
+/**
+ * @param {array} value
+ * @param {number} i
+ */
+var removeFromArray = function removeFromArray(_ref7) {
+  var _ref7$value = _ref7.value,
+      value = _ref7$value === undefined ? [] : _ref7$value,
+      index = _ref7.index;
+
+  var arr = [].concat(toConsumableArray(value));
+  arr.splice(index, 1);
+  return arr;
+};
+
+/**
+ * @param {object} value
+ * @param {number} i
+ * @param {string} key
+ */
+var removeFromArrayKey = function removeFromArrayKey(_ref8) {
+  var _ref8$value = _ref8.value,
+      value = _ref8$value === undefined ? {} : _ref8$value,
+      index = _ref8.index,
+      key = _ref8.key;
+
+  var updated = removeFromArray({ value: value[key], index: index });
+  return handleChange({ value: value, diff: defineProperty({}, key, updated) });
+};
+
+/**
+ * convert snake_case or camelCase strings to CapCase
+ *
+ * @param {String} s
+ */
+var capWords = (function (s) {
+  var camel = camelCase(s);
+  var arr = concat([], camel.charAt(0).toUpperCase(), tail(camel));
+  return join(arr, '');
+});
+
+var format = (function (name) {
+  var prefix = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '';
+
+  if (prefix === '') {
+    return camelCase(name);
+  } else {
+    return '' + camelCase(prefix) + capWords(name);
+  }
+});
+
+/**
+ * create a dataflow mixin for a given value prop.
+ *
+ * a 'value' dataflow implements the `v-model` interface.
+ *
+ * custom dataflows follow a pattern: methods are prefixed with the `valueProp`
+ * name and `update:${valueProp}` is emitted.
+ *
+ * @param {string} valueProp - bind dataflow to this prop
+ */
+var createDataFlowMixin = function createDataFlowMixin(valueProp) {
+  var _methods;
+
+  var event = valueProp === 'value' ? 'input' : 'update:' + valueProp;
+  var prefix = valueProp === 'value' ? '' : valueProp;
+  return {
+    methods: (_methods = {}, defineProperty(_methods, format('forwardInput', prefix), function (e) {
+      this.$emit(event, e);
+    }), defineProperty(_methods, format('handleChange', prefix), function (diff) {
+      this.$emit(event, handleChange({ value: this[valueProp], diff: diff }));
+    }), defineProperty(_methods, format('handleKeyChange', prefix), function (key, diff) {
+      this.$emit(event, handleKeyChange({ value: this[valueProp], key: key, diff: diff }));
+    }), defineProperty(_methods, format('handleArrayKeyChange', prefix), function (index, key, diff) {
+      this.$emit(event, handleArrayKeyChange({ value: this[valueProp], index: index, key: key, diff: diff }));
+    }), defineProperty(_methods, format('handleArrayChange', prefix), function (index, diff) {
+      this.$emit(event, handleArrayChange({ value: this[valueProp], index: index, diff: diff }));
+    }), defineProperty(_methods, format('pushToArray', prefix), function (diff) {
+      this.$emit(event, pushToArray({ value: this[valueProp], diff: diff }));
+    }), defineProperty(_methods, format('pushToArrayKey', prefix), function (key, diff) {
+      this.$emit(event, pushToArrayKey({ value: this[valueProp], key: key, diff: diff }));
+    }), defineProperty(_methods, format('removeFromArray', prefix), function (index) {
+      this.$emit(event, removeFromArray({ value: this[valueProp], index: index }));
+    }), defineProperty(_methods, format('removeFromArrayKey', prefix), function (index, key) {
+      this.$emit(event, removeFromArrayKey({ value: this[valueProp], index: index, key: key }));
+    }), _methods)
+  };
+};
+
+/* global fetch */
+var interceptors = [];
+
+var fetchWrapper = function fetchWrapper(url, options) {
+  var request = cloneDeep(options);
+  interceptors.forEach(function (fn) {
+    request = fn(request);
+  });
+  return fetch(url, request).catch(function (err) {
+    if (isFunction(fetchWrapper.onError)) {
+      fetchWrapper.onError(err);
+    } else {
+      throw err;
+    }
+  });
+};
+
+fetchWrapper.addInterceptor = function (fn) {
+  interceptors.push(fn);
+};
+
+/**
+ * @param {object} o
+ * @param {string} prefix
+ */
+var toQueryString = function toQueryString(o, prefix) {
+  return sort(Object.entries(o), function (e) {
+    return e[0];
+  }).map(function (_ref) {
+    var _ref2 = slicedToArray(_ref, 2),
+        prop = _ref2[0],
+        value = _ref2[1];
+
+    var key = prefix ? prefix + '[' + prop + ']' : prop;
+    return (typeof value === 'undefined' ? 'undefined' : _typeof(value)) === 'object' ? toQueryString(value, key) : encodeURIComponent(key) + '=' + encodeURIComponent(value);
+  }).join('&');
+};
+
+var withDefaults = function withDefaults(options) {
+  return pick(defaults({}, options, {
+    credentials: 'same-origin'
+  }), ['headers', 'body', 'method', 'credentials']);
+};
+
+var makeKey = function makeKey(url, request) {
+  var headers = Object.entries(request.headers || {}).map(function (_ref) {
+    var _ref2 = slicedToArray(_ref, 2),
+        key = _ref2[0],
+        val = _ref2[1];
+
+    return key + ':' + val;
+  });
+  var values = map('' + headers + request.url, function (c) {
+    return c.codePointAt(0);
+  });
+  return '' + sum(values);
+};
+
+var createHttpAdapter = function createHttpAdapter() {
+  var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+
+  var promiseCache = {};
+  var adapter = options.adapter || fetchWrapper;
+  var deserialize = options.deserialize || function (response, data) {
+    return data;
+  };
+  var createRequest = function createRequest(url, options) {
+    var request = withDefaults(options);
+    return adapter(url, _extends({}, request, { body: request.body ? stringify(request.body) : undefined })).then(function (res) {
+      if (res.status === 200) {
+        return res.json().then(function (data) {
+          return microTask(function () {
+            return deserialize(res, data);
+          });
+        });
+      } else {
+        throw new Error(res.statusText, res);
+      }
+    });
+  };
+  return function () {
+    var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+
+    var url = options.url;
+    var force = options.force || false;
+    var qs = toQueryString(options.params || {});
+    if (qs) {
+      url += '?' + qs;
+    }
+    if (options.method === 'GET') {
+      var key = makeKey(url, options);
+      var promise = promiseCache[key];
+      if (!promise || force === true) {
+        promise = promiseCache[key] = createRequest(url, options);
+      }
+      return promise;
+    } else {
+      return createRequest(url, options);
+    }
+  };
+};
+
+/**
+ * @param {object[]} collection
+ * @param {string} key
+ */
+var createIndex = (function (collection, key) {
+  var index = {};
+  collection.forEach(function (item) {
+    index[item[key]] = item;
+  });
+  return index;
+});
+
+/**
+ * quickly determine if two objects differ
+ *
+ * @param {Object} a
+ * @param {Object} b
+ * @returns {Boolean}
+ */
+var fastDiff = (function (a, b) {
+  return stringify(a) !== stringify(b);
+});
+
+var pop = (function (o, key, fallback) {
+  var value = o[key];
+  delete o[key];
+  return value === undefined ? fallback : value;
+});
+
+/**
+ * @param {object} base
+ * @param {object} object
+ * @return {object} diff
+ */
+function difference(base, object) {
+  function changes(object, base) {
+    return transform(object, function (result, value, key) {
+      if (!isEqual(value, base[key])) {
+        result[key] = isObject(value) && isObject(base[key]) ? changes(value, base[key]) : value;
+      }
+    });
+  }
+  return isNil(base) ? object : changes(object, base);
+}
+
+var jsonClone = flow(JSON.stringify, JSON.parse);
 
 /**
  * @param {Object} base
@@ -664,21 +1005,6 @@ var createMixinForListByResource = function (options) {
   };
 };
 
-/* global fetch */
-var interceptors = [];
-
-var fetchWrapper = function fetchWrapper(url, options) {
-  var request = cloneDeep(options);
-  interceptors.forEach(function (fn) {
-    request = fn(request);
-  });
-  return fetch(url, request);
-};
-
-fetchWrapper.addInterceptor = function (fn) {
-  interceptors.push(fn);
-};
-
 /**
  * @param {Object[]} mixins
  */
@@ -923,85 +1249,6 @@ var mget = (function (value, path) {
   }
 });
 
-/**
- * @param {object} o
- * @param {string} prefix
- */
-var toQueryString = function toQueryString(o, prefix) {
-  return sort(entries(o), function (e) {
-    return e[0];
-  }).map(function (_ref) {
-    var _ref2 = slicedToArray(_ref, 2),
-        prop = _ref2[0],
-        value = _ref2[1];
-
-    var key = prefix ? prefix + '[' + prop + ']' : prop;
-    return (typeof value === 'undefined' ? 'undefined' : _typeof(value)) === 'object' ? toQueryString(value, key) : encodeURIComponent(key) + '=' + encodeURIComponent(value);
-  }).join('&');
-};
-
-var withDefaults = function withDefaults(options) {
-  return pick(defaults({}, options, {
-    credentials: 'same-origin'
-  }), ['headers', 'body', 'method', 'credentials']);
-};
-
-var makeKey = function makeKey(url, request) {
-  var headers = Object.entries(request.headers || {}).map(function (_ref) {
-    var _ref2 = slicedToArray(_ref, 2),
-        key = _ref2[0],
-        val = _ref2[1];
-
-    return key + ':' + val;
-  });
-  var values = map('' + headers + request.url, function (c) {
-    return c.codePointAt(0);
-  });
-  return '' + sum(values);
-};
-
-var createHttpAdapter = function createHttpAdapter() {
-  var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-
-  var promiseCache = {};
-  var adapter = options.adapter || fetchWrapper;
-  var deserialize = options.deserialize || function (data) {
-    return data;
-  };
-  var createRequest = function createRequest(url, options) {
-    var request = withDefaults(options);
-    return adapter(url, _extends({}, request, { body: request.body ? stringify(request.body) : undefined })).then(function (res) {
-      if (res.status === 200) {
-        return res.json();
-      } else {
-        throw new Error(res);
-      }
-    }).then(deserialize).catch(function (err) {
-      throw err;
-    });
-  };
-  return function () {
-    var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-
-    var url = options.url;
-    var force = options.force || false;
-    if (options.params) {
-      var qs = toQueryString(options.params);
-      url += '?' + qs;
-    }
-    if (options.method === 'GET') {
-      var key = makeKey(url, options);
-      var promise = promiseCache[key];
-      if (!promise || force === true) {
-        promise = promiseCache[key] = createRequest(url, options);
-      }
-      return promise;
-    } else {
-      return createRequest(url, options);
-    }
-  };
-};
-
 var registerSchemas = function (store) {
   var modelMap = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
@@ -1047,6 +1294,7 @@ var Store = {
   /**
    * @param {object} options
    * @param {object} options.models
+   * @param {string} [options.basePath=''] - default prefix for http requests
    * @param {function} [options.adapter] - a custom fetch
    * @param {function} [options.deserialize] - request post-processing
    */
@@ -1071,6 +1319,10 @@ var Store = {
       var isTmp = /^[0-9a-z]+-[0-9a-z]+$/i.test(id);
       return isTmp ? keyMap[id] : id;
     };
+    var getBasePath = function getBasePath(collectionName) {
+      var model = models[collectionName];
+      return model.basePath || options.basePath || '';
+    };
     /**
      * @param {string} collectionName
      * @param {object} data
@@ -1087,7 +1339,7 @@ var Store = {
         id: id,
         pk: pk,
         symId: symId,
-        basePath: model.basePath || '',
+        basePath: getBasePath(collectionName),
         idAttribute: idAttribute
       };
     };
@@ -1110,6 +1362,7 @@ var Store = {
      * @constructor
      */
     var Store = function Store() {
+      evt.setMaxListeners(20);
       this.models = cloneDeep(options.models);
       this.storeId = storeId;
     };
@@ -1192,7 +1445,9 @@ var Store = {
       var _this2 = this;
 
       this.getAll(collectionName, keys$$1).forEach(function (record) {
-        var id = getMeta(collectionName, record);
+        var _getMeta2 = getMeta(collectionName, record),
+            id = _getMeta2.id;
+
         _this2.remove(collectionName, id);
       });
     };
@@ -1209,8 +1464,8 @@ var Store = {
     Store.prototype.rebase = function (collectionName, data) {
       var record = immutable.isImmutable(data) ? data.toJS() : data;
 
-      var _getMeta2 = getMeta(collectionName, record),
-          id = _getMeta2.id;
+      var _getMeta3 = getMeta(collectionName, record),
+          id = _getMeta3.id;
 
       var base = null;
       if (record.__sym_id) {
@@ -1239,8 +1494,8 @@ var Store = {
       var record = this.createRecord(collectionName, data);
       var based = convert(this.rebase(collectionName, record));
 
-      var _getMeta3 = getMeta(collectionName, based),
-          id = _getMeta3.id;
+      var _getMeta4 = getMeta(collectionName, based),
+          id = _getMeta4.id;
 
       var versions = store.getIn([collectionName, id], immutable.Stack());
       store = store.setIn([collectionName, id], versions.unshift(based));
@@ -1259,8 +1514,8 @@ var Store = {
      * @param {object} data
      */
     Store.prototype.hasChanges = function (collectionName, data) {
-      var _getMeta4 = getMeta(collectionName, data),
-          id = _getMeta4.id;
+      var _getMeta5 = getMeta(collectionName, data),
+          id = _getMeta5.id;
 
       if (this.isValidId(id)) {
         var record = this.get(collectionName, id);
@@ -1280,16 +1535,18 @@ var Store = {
 
       var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
 
-      var _getMeta5 = getMeta(collectionName, data),
-          id = _getMeta5.id,
-          pk = _getMeta5.pk,
-          basePath = _getMeta5.basePath;
+      var _getMeta6 = getMeta(collectionName, data),
+          id = _getMeta6.id,
+          pk = _getMeta6.pk,
+          basePath = _getMeta6.basePath;
 
       return http(_extends({
         url: basePath + '/' + collectionName + '/' + pk,
         method: 'DELETE'
       }, options)).then(function () {
-        return _this4.remove(collectionName, id);
+        return microTask(function () {
+          return _this4.remove(collectionName, id);
+        });
       }).catch(function (err) {
         throw err;
       });
@@ -1305,9 +1562,9 @@ var Store = {
 
       var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
 
-      var _getMeta6 = getMeta(collectionName, data),
-          pk = _getMeta6.pk,
-          basePath = _getMeta6.basePath;
+      var _getMeta7 = getMeta(collectionName, data),
+          pk = _getMeta7.pk,
+          basePath = _getMeta7.basePath;
 
       var promise = void 0;
       if (isValidId(pk)) {
@@ -1324,7 +1581,9 @@ var Store = {
         }, options));
       }
       return promise.then(function (data) {
-        return _this5.add(collectionName, data);
+        return microTask(function () {
+          return _this5.add(collectionName, data);
+        });
       }).catch(function (err) {
         throw err;
       });
@@ -1342,7 +1601,7 @@ var Store = {
       var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
 
       var force = options.force || false;
-      var basePath = models[collectionName].basePath || '';
+      var basePath = getBasePath(collectionName);
       var pk = resolvePk(id);
       var promise = void 0;
       if (isValidId(pk)) {
@@ -1353,8 +1612,9 @@ var Store = {
             method: 'GET'
           }, options);
           promise = http(request).then(function (data) {
-            _this6.add(collectionName, data);
-            return data;
+            return microTask(function () {
+              return _this6.add(collectionName, data);
+            });
           }).catch(function (err) {
             throw err;
           });
@@ -1377,16 +1637,19 @@ var Store = {
 
       var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
 
-      var basePath = models[collectionName].basePath || '';
+      var basePath = getBasePath(collectionName);
       var request = _extends({
         url: basePath + '/' + collectionName,
         method: 'GET',
         params: query
       }, options);
       return http(request).then(function (result) {
-        return result.map(function (data) {
-          return _this7.add(collectionName, data);
+        var tasks = result.map(function (data) {
+          return microTask(function () {
+            return _this7.add(collectionName, data);
+          });
         });
+        return Promise.all(tasks);
       }).catch(function (err) {
         throw err;
       });
@@ -1479,182 +1742,6 @@ var vdata$1 = {
   }
 };
 
-/**
- * convert snake_case or camelCase strings to CapCase
- *
- * @param {String} s
- */
-var capWords = (function (s) {
-  var camel = camelCase(s);
-  var arr = concat([], camel.charAt(0).toUpperCase(), tail(camel));
-  return join(arr, '');
-});
-
-var format = (function (name) {
-  var prefix = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '';
-
-  if (prefix === '') {
-    return camelCase(name);
-  } else {
-    return '' + camelCase(prefix) + capWords(name);
-  }
-});
-
-/**
- * @param {object} value
- * @param {object} diff
- */
-var handleChange = function handleChange(_ref) {
-  var value = _ref.value,
-      diff = _ref.diff;
-
-  return _extends({}, value, diff);
-};
-
-/**
- * @param {object} value
- * @param {string} key
- * @param {object} diff
- */
-var handleKeyChange = function handleKeyChange(_ref2) {
-  var value = _ref2.value,
-      key = _ref2.key,
-      diff = _ref2.diff;
-
-  var updated = handleChange({ value: value[key], diff: diff });
-  return handleChange({ value: value, diff: defineProperty({}, key, updated) });
-};
-
-/**
- * @param {object} value
- * @param {number} i
- * @param {object} diff
- */
-var handleArrayChange = function handleArrayChange(_ref3) {
-  var _ref3$value = _ref3.value,
-      value = _ref3$value === undefined ? [] : _ref3$value,
-      index = _ref3.index,
-      diff = _ref3.diff;
-
-  var arr = [].concat(toConsumableArray(value));
-  arr[index] = _extends({}, arr[index] || {}, diff);
-  return arr;
-};
-
-/**
- * @param {object} value
- * @param {number} i
- * @param {string} key
- * @param {object} diff
- */
-var handleArrayKeyChange = function handleArrayKeyChange(_ref4) {
-  var _ref4$value = _ref4.value,
-      value = _ref4$value === undefined ? {} : _ref4$value,
-      index = _ref4.index,
-      key = _ref4.key,
-      diff = _ref4.diff;
-
-  var updated = handleArrayChange({ value: value[key] || [], index: index, diff: diff });
-  return handleChange({ value: value, diff: defineProperty({}, key, updated) });
-};
-
-/**
- * @param {array} value
- * @param {object} diff
- */
-var pushToArray = function pushToArray(_ref5) {
-  var _ref5$value = _ref5.value,
-      value = _ref5$value === undefined ? [] : _ref5$value,
-      diff = _ref5.diff;
-
-  var arr = [].concat(toConsumableArray(value));
-  arr.push(diff);
-  return arr;
-};
-
-/**
- * @param {object} value
- * @param {string} key
- * @param {object} diff
- */
-var pushToArrayKey = function pushToArrayKey(_ref6) {
-  var _ref6$value = _ref6.value,
-      value = _ref6$value === undefined ? {} : _ref6$value,
-      key = _ref6.key,
-      diff = _ref6.diff;
-
-  var arr = [].concat(toConsumableArray(value[key] || []));
-  arr.push(diff);
-  return handleChange({ value: value, diff: defineProperty({}, key, arr) });
-};
-
-/**
- * @param {array} value
- * @param {number} i
- */
-var removeFromArray = function removeFromArray(_ref7) {
-  var _ref7$value = _ref7.value,
-      value = _ref7$value === undefined ? [] : _ref7$value,
-      index = _ref7.index;
-
-  var arr = [].concat(toConsumableArray(value));
-  arr.splice(index, 1);
-  return arr;
-};
-
-/**
- * @param {object} value
- * @param {number} i
- * @param {string} key
- */
-var removeFromArrayKey = function removeFromArrayKey(_ref8) {
-  var _ref8$value = _ref8.value,
-      value = _ref8$value === undefined ? {} : _ref8$value,
-      index = _ref8.index,
-      key = _ref8.key;
-
-  var updated = removeFromArray({ value: value[key], index: index });
-  return handleChange({ value: value, diff: defineProperty({}, key, updated) });
-};
-
-/**
- * create a dataflow mixin for a given value prop.
- *
- * a 'value' dataflow implements the `v-model` interface.
- *
- * custom dataflows follow a pattern: methods are prefixed with the `valueProp`
- * name and `update:${valueProp}` is emitted.
- *
- * @param {string} valueProp - bind dataflow to this prop
- */
-var createDataFlowMixin = function createDataFlowMixin(valueProp) {
-  var _methods;
-
-  var event = valueProp === 'value' ? 'input' : 'update:' + valueProp;
-  var prefix = valueProp === 'value' ? '' : valueProp;
-  return {
-    methods: (_methods = {}, defineProperty(_methods, format('forwardInput', prefix), function (e) {
-      this.$emit(event, e);
-    }), defineProperty(_methods, format('handleChange', prefix), function (diff) {
-      this.$emit(event, handleChange({ value: this[valueProp], diff: diff }));
-    }), defineProperty(_methods, format('handleKeyChange', prefix), function (key, diff) {
-      this.$emit(event, handleKeyChange({ value: this[valueProp], key: key, diff: diff }));
-    }), defineProperty(_methods, format('handleArrayKeyChange', prefix), function (index, key, diff) {
-      this.$emit(event, handleArrayKeyChange({ value: this[valueProp], index: index, key: key, diff: diff }));
-    }), defineProperty(_methods, format('handleArrayChange', prefix), function (index, diff) {
-      this.$emit(event, handleArrayChange({ value: this[valueProp], index: index, diff: diff }));
-    }), defineProperty(_methods, format('pushToArray', prefix), function (diff) {
-      this.$emit(event, pushToArray({ value: this[valueProp], diff: diff }));
-    }), defineProperty(_methods, format('pushToArrayKey', prefix), function (key, diff) {
-      this.$emit(event, pushToArrayKey({ value: this[valueProp], key: key, diff: diff }));
-    }), defineProperty(_methods, format('removeFromArray', prefix), function (index) {
-      this.$emit(event, removeFromArray({ value: this[valueProp], index: index }));
-    }), defineProperty(_methods, format('removeFromArrayKey', prefix), function (index, key) {
-      this.$emit(event, removeFromArrayKey({ value: this[valueProp], index: index, key: key }));
-    }), _methods)
-  };
-};
-
 var DataFlowMixin = createDataFlowMixin('value');
 
 var createMixinForItemByResourceAndId = function createMixinForItemByResourceAndId(options) {
@@ -1663,6 +1750,8 @@ var createMixinForItemByResourceAndId = function createMixinForItemByResourceAnd
 };
 
 exports.DataFlowMixin = DataFlowMixin;
+exports.cleanRecord = cleanRecord$1;
+exports.createHttpAdapter = createHttpAdapter;
 exports.createIndex = createIndex;
 exports.createMixinForItemById = createMixinForItemById;
 exports.createMixinForItemByResourceAndId = createMixinForItemByResourceAndId;
@@ -1678,4 +1767,3 @@ exports.pushToArray = pushToArray;
 exports.pushToArrayKey = pushToArrayKey;
 exports.removeFromArray = removeFromArray;
 exports.removeFromArrayKey = removeFromArrayKey;
-exports.createDataFlowMixin = createDataFlowMixin;

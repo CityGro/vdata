@@ -1,4 +1,3 @@
-import entries from 'lodash/entries'
 import sort from 'lodash/sortBy'
 
 /**
@@ -6,7 +5,7 @@ import sort from 'lodash/sortBy'
  * @param {string} prefix
  */
 const toQueryString = (o, prefix) => {
-  return sort(entries(o), (e) => e[0]).map(([prop, value]) => {
+  return sort(Object.entries(o), (e) => e[0]).map(([prop, value]) => {
     const key = (prefix) ? `${prefix}[${prop}]` : prop
     return (typeof value === 'object')
       ? toQueryString(value, key)

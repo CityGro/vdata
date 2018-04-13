@@ -1,6 +1,7 @@
 /* global describe, test, beforeEach, jest, expect */
 
 import * as DataFlow from '../DataFlow'
+import createDataFlowMixin from '../createDataFlowMixin'
 import formatMethod from '../formatMethod'
 
 describe('vdata/dataflow', () => {
@@ -27,7 +28,7 @@ describe('vdata/dataflow', () => {
     Vue.$store.add('comments', {userId: 1})
   })
 
-  describe('utils/formatMethod', () => {
+  describe('formatMethod', () => {
     test('formats value methods', () => {
       return expect(formatMethod('handleChange')).toEqual('handleChange')
     })
@@ -38,7 +39,7 @@ describe('vdata/dataflow', () => {
 
   describe('createDataFlowMixin', () => {
     test('creates methods for v-model', () => {
-      const mixin = DataFlow.createDataFlowMixin('value')
+      const mixin = createDataFlowMixin('value')
       return Promise.all([
         expect(mixin.methods.forwardInput).toBeDefined(),
         expect(mixin.methods.handleArrayChange).toBeDefined(),
@@ -50,8 +51,8 @@ describe('vdata/dataflow', () => {
         expect(mixin.methods.removeFromArrayKey).toBeDefined()
       ])
     })
-    test('creates methods for sync', () => {
-      const mixin = DataFlow.createDataFlowMixin('myProp')
+    test('creates methods for .sync', () => {
+      const mixin = createDataFlowMixin('myProp')
       return Promise.all([
         expect(mixin.methods.myPropForwardInput).toBeDefined(),
         expect(mixin.methods.myPropHandleArrayChange).toBeDefined(),

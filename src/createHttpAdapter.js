@@ -1,6 +1,7 @@
 import defaults from 'lodash/defaults'
 import fetchWrapper from './fetchWrapper'
 import map from 'lodash/map'
+import microTask from '@r14c/async-utils/microTask'
 import pick from 'lodash/pick'
 import stringify from 'json-stable-stringify'
 import sum from 'lodash/sum'
@@ -19,27 +20,23 @@ const makeKey = (url, request) => {
 const createHttpAdapter = (options = {}) => {
   let promiseCache = {}
   const adapter = options.adapter || fetchWrapper
-  const deserialize = options.deserialize || ((data) => data)
+  const deserialize = options.deserialize || ((response, data) => data)
   const createRequest = (url, options) => {
     const request = withDefaults(options)
     return adapter(url, {...request, body: (request.body) ? stringify(request.body) : undefined})
       .then((res) => {
         if (res.status === 200) {
-          return res.json()
+          return res.json().then((data) => microTask(() => deserialize(res, data)))
         } else {
-          throw new Error(res)
+          throw new Error(res.statusText, res)
         }
-      })
-      .then(deserialize)
-      .catch((err) => {
-        throw err
       })
   }
   return (options = {}) => {
     let url = options.url
     const force = options.force || false
-    if (options.params) {
-      const qs = toQueryString(options.params)
+    const qs = toQueryString(options.params || {})
+    if (qs) {
       url += `?${qs}`
     }
     if (options.method === 'GET') {

@@ -1,5 +1,3 @@
-import format from './formatMethod'
-
 /**
  * @param {object} value
  * @param {object} diff
@@ -79,50 +77,4 @@ export const removeFromArray = ({value = [], index}) => {
 export const removeFromArrayKey = ({value = {}, index, key}) => {
   const updated = removeFromArray({value: value[key], index})
   return handleChange({value, diff: {[key]: updated}})
-}
-
-/**
- * create a dataflow mixin for a given value prop.
- *
- * a 'value' dataflow implements the `v-model` interface.
- *
- * custom dataflows follow a pattern: methods are prefixed with the `valueProp`
- * name and `update:${valueProp}` is emitted.
- *
- * @param {string} valueProp - bind dataflow to this prop
- */
-export const createDataFlowMixin = (valueProp) => {
-  const event = (valueProp === 'value') ? 'input' : `update:${valueProp}`
-  const prefix = (valueProp === 'value') ? '' : valueProp
-  return {
-    methods: {
-      [format('forwardInput', prefix)] (e) {
-        this.$emit(event, e)
-      },
-      [format('handleChange', prefix)] (diff) {
-        this.$emit(event, handleChange({value: this[valueProp], diff}))
-      },
-      [format('handleKeyChange', prefix)] (key, diff) {
-        this.$emit(event, handleKeyChange({value: this[valueProp], key, diff}))
-      },
-      [format('handleArrayKeyChange', prefix)] (index, key, diff) {
-        this.$emit(event, handleArrayKeyChange({value: this[valueProp], index, key, diff}))
-      },
-      [format('handleArrayChange', prefix)] (index, diff) {
-        this.$emit(event, handleArrayChange({value: this[valueProp], index, diff}))
-      },
-      [format('pushToArray', prefix)] (diff) {
-        this.$emit(event, pushToArray({value: this[valueProp], diff}))
-      },
-      [format('pushToArrayKey', prefix)] (key, diff) {
-        this.$emit(event, pushToArrayKey({value: this[valueProp], key, diff}))
-      },
-      [format('removeFromArray', prefix)] (index) {
-        this.$emit(event, removeFromArray({value: this[valueProp], index}))
-      },
-      [format('removeFromArrayKey', prefix)] (index, key) {
-        this.$emit(event, removeFromArrayKey({value: this[valueProp], index, key}))
-      }
-    }
-  }
 }

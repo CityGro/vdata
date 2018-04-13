@@ -1,32 +1,63 @@
-/* global test, describe, expect, beforeEach */
+/* global jest, test, describe, expect, beforeEach, beforeAll, afterAll */
 
-import Vue from 'vue'
-import cleanRecord from './cleanRecord'
-import createApp from '@/createApp'
+import fetchMock from 'fetch-mock'
+import cleanRecord from '../cleanRecord'
 
-describe('utils/cleanRecord', () => {
-  let App
+describe('cleanRecord', () => {
+  let Vue
+  let vdata
+  beforeAll(() => {
+    fetchMock.post('/users', (url, options) => {
+      const record = JSON.parse(options.body)
+      record.id = 3
+      return record
+    })
+    fetchMock.put('/users/3', (url, options) => {
+      return JSON.parse(options.body)
+    })
+  })
+  afterAll(() => {
+    fetchMock.restore()
+  })
+
   beforeEach(() => {
-    App = createApp(Vue, true)
+    jest.resetModules()
+    document.body.innerHTML = '<div id="root"></div>'
+    vdata = require('../vdata').default
+    Vue = require('vue/dist/vue.js')
+    Vue.config.productionTip = false
+    Vue.use(vdata, {
+      models: {
+        users: {
+          idAttribute: '_id'
+        },
+        comments: {
+          idAttribute: '_id'
+        },
+        categories: {
+          idAttribute: '_id'
+        }
+      }
+    })
   })
 
   test('removes ids', () => {
     expect(cleanRecord({
-      store: App.$store,
-      collectionName: 'contacts',
+      store: Vue.$store,
+      collectionName: 'users',
       record: {
         _id: 123,
         name: 'foo'
       }
-    })).toEqual({
+    })).toMatchObject({
       name: 'foo'
     })
   })
 
   test('works with nested objects', () => {
     expect(cleanRecord({
-      store: App.$store,
-      collectionName: 'campaigns',
+      store: Vue.$store,
+      collectionName: 'comments',
       record: {
         _id: 123,
         name: 'foo',
@@ -37,7 +68,7 @@ describe('utils/cleanRecord', () => {
           }
         }
       }
-    })).toEqual({
+    })).toMatchObject({
       name: 'foo',
       message: {
         content: {
@@ -49,13 +80,13 @@ describe('utils/cleanRecord', () => {
 
   test('handles arrays correctly', () => {
     expect(cleanRecord({
-      store: App.$store,
-      collectionName: 'smartlinks',
+      store: Vue.$store,
+      collectionName: 'categories',
       record: {
         _id: 123,
         tags: ['foo', 'bar']
       }
-    })).toEqual({
+    })).toMatchObject({
       tags: ['foo', 'bar']
     })
   })

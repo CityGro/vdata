@@ -39,12 +39,6 @@ yarn add js-data-$adapter @citygro/vdata
 <dd></dd>
 <dt><a href="#removeFromArrayKey">removeFromArrayKey</a></dt>
 <dd></dd>
-<dt><a href="#createDataFlowMixin">createDataFlowMixin</a></dt>
-<dd><p>create a dataflow mixin for a given value prop.</p>
-<p>a &#39;value&#39; dataflow implements the <code>v-model</code> interface.</p>
-<p>custom dataflows follow a pattern: methods are prefixed with the <code>valueProp</code>
-name and <code>update:${valueProp}</code> is emitted.</p>
-</dd>
 </dl>
 
 ## Functions
@@ -54,6 +48,12 @@ name and <code>update:${valueProp}</code> is emitted.</p>
 <dd></dd>
 <dt><a href="#isValidId">isValidId(id)</a></dt>
 <dd></dd>
+<dt><a href="#createDataFlowMixin">createDataFlowMixin(valueProp)</a></dt>
+<dd><p>create a dataflow mixin for a given value prop.</p>
+<p>a &#39;value&#39; dataflow implements the <code>v-model</code> interface.</p>
+<p>custom dataflows follow a pattern: methods are prefixed with the <code>valueProp</code>
+name and <code>update:${valueProp}</code> is emitted.</p>
+</dd>
 <dt><a href="#createMixinForItemById">createMixinForItemById(options)</a> ⇒ <code>object</code></dt>
 <dd><p>create a mixin that configures a vm to manipulate a single record. you can
 use a prop to ask for a record by id or specify a template to create a new
@@ -230,22 +230,6 @@ export default {
 | i | <code>number</code> | 
 | key | <code>string</code> | 
 
-<a name="createDataFlowMixin"></a>
-
-## createDataFlowMixin
-create a dataflow mixin for a given value prop.
-
-a 'value' dataflow implements the `v-model` interface.
-
-custom dataflows follow a pattern: methods are prefixed with the `valueProp`
-name and `update:${valueProp}` is emitted.
-
-**Kind**: global constant  
-
-| Param | Type | Description |
-| --- | --- | --- |
-| valueProp | <code>string</code> | bind dataflow to this prop |
-
 <a name="convert"></a>
 
 ## convert(data)
@@ -263,6 +247,22 @@ name and `update:${valueProp}` is emitted.
 | Param | Type |
 | --- | --- |
 | id | <code>\*</code> | 
+
+<a name="createDataFlowMixin"></a>
+
+## createDataFlowMixin(valueProp)
+create a dataflow mixin for a given value prop.
+
+a 'value' dataflow implements the `v-model` interface.
+
+custom dataflows follow a pattern: methods are prefixed with the `valueProp`
+name and `update:${valueProp}` is emitted.
+
+**Kind**: global function  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| valueProp | <code>string</code> | bind dataflow to this prop |
 
 <a name="createMixinForItemById"></a>
 

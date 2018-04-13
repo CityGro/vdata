@@ -29,10 +29,10 @@ describe('Store', () => {
   })
   beforeEach(() => {
     store = Store.create({
+      basePath: '/api',
       models: {
         myCollection: {
-          idAttribute: 'id',
-          basePath: '/api'
+          idAttribute: 'id'
         }
       }
     })
