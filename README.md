@@ -8,15 +8,18 @@
 [![license](https://img.shields.io/npm/l/@citygro/vdata.svg)](https://gitlab.com/citygro/vdata/blob/latest/LICENSE)
 
 ```sh
-yarn add js-data-$adapter @citygro/vdata
+yarn add @citygro/vdata
 ```
+
+> if you are building a `webpack` or `babel` project you can make
+> `@citygro/vdata` smaller (via tree shaking and chunking) by aliasing this
+> package to `node_modules/@citygro/vdata/src/index.js` rather than using our
+> commonjs bundle.
 
 ## Modules
 
 <dl>
 <dt><a href="#module_createMixinForItemById">createMixinForItemById</a></dt>
-<dd></dd>
-<dt><a href="#module_to">to</a></dt>
 <dd></dd>
 </dl>
 
@@ -53,6 +56,9 @@ yarn add js-data-$adapter @citygro/vdata
 <p>a &#39;value&#39; dataflow implements the <code>v-model</code> interface.</p>
 <p>custom dataflows follow a pattern: methods are prefixed with the <code>valueProp</code>
 name and <code>update:${valueProp}</code> is emitted.</p>
+</dd>
+<dt><a href="#add">add(vm)</a></dt>
+<dd><p>register handlers that will run on datastore events</p>
 </dd>
 <dt><a href="#createMixinForItemById">createMixinForItemById(options)</a> ⇒ <code>object</code></dt>
 <dd><p>create a mixin that configures a vm to manipulate a single record. you can
@@ -123,8 +129,6 @@ export default {
 </dd>
 <dt><a href="#flattenMixinTree">flattenMixinTree(mixins)</a></dt>
 <dd></dd>
-<dt><a href="#exp_module_to--to">to(promise)</a> ⇒ <code>Promise</code> ⏏</dt>
-<dd></dd>
 <dt><a href="#toQueryString">toQueryString(o, prefix)</a></dt>
 <dd></dd>
 </dl>
@@ -132,18 +136,6 @@ export default {
 <a name="module_createMixinForItemById"></a>
 
 ## createMixinForItemById
-<a name="module_to"></a>
-
-## to
-<a name="exp_module_to--to"></a>
-
-### to(promise) ⇒ <code>Promise</code> ⏏
-**Kind**: global method of [<code>to</code>](#module_to)  
-
-| Param | Type |
-| --- | --- |
-| promise | <code>Promise</code> | 
-
 <a name="handleChange"></a>
 
 ## handleChange
@@ -263,6 +255,17 @@ name and `update:${valueProp}` is emitted.
 | Param | Type | Description |
 | --- | --- | --- |
 | valueProp | <code>string</code> | bind dataflow to this prop |
+
+<a name="add"></a>
+
+## add(vm)
+register handlers that will run on datastore events
+
+**Kind**: global function  
+
+| Param | Type |
+| --- | --- |
+| vm | <code>Vue.Component</code> | 
 
 <a name="createMixinForItemById"></a>
 

@@ -5,7 +5,8 @@ import createIndex from './createIndex'
 import createMixinForItemById from './createMixinForItemById.js'
 import createMixinForListByResource from './createMixinForListByResource'
 import fetchWrapper from './fetchWrapper'
-import to from './to'
+import asyncMap from '@r14c/async-utils/map'
+import to from '@r14c/async-utils/to'
 import vdata from './vdata'
 
 const DataFlowMixin = createDataFlowMixin('value')
@@ -22,7 +23,9 @@ export * from './DataFlow'
 
 export {
   DataFlowMixin,
+  asyncMap,
   cleanRecord,
+  createDataFlowMixin,
   createHttpAdapter,
   createIndex,
   createMixinForItemById,

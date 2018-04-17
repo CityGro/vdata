@@ -1,21 +1,14 @@
 import defaults from 'lodash/defaults'
 import fetchWrapper from './fetchWrapper'
-import map from 'lodash/map'
 import microTask from '@r14c/async-utils/microTask'
 import pick from 'lodash/pick'
 import stringify from 'json-stable-stringify'
-import sum from 'lodash/sum'
 import toQueryString from './toQueryString'
+import makeRequestKey from './makeRequestKey'
 
 const withDefaults = (options) => pick(defaults({}, options, {
   credentials: 'same-origin'
 }), ['headers', 'body', 'method', 'credentials'])
-
-const makeKey = (url, request) => {
-  const headers = Object.entries(request.headers || {}).map(([key, val]) => `${key}:${val}`)
-  const values = map(`${headers}${request.url}`, (c) => c.codePointAt(0))
-  return `${sum(values)}`
-}
 
 const createHttpAdapter = (options = {}) => {
   let promiseCache = {}
@@ -33,6 +26,7 @@ const createHttpAdapter = (options = {}) => {
       })
   }
   return (options = {}) => {
+    let promise
     let url = options.url
     const force = options.force || false
     const qs = toQueryString(options.params || {})
@@ -40,15 +34,15 @@ const createHttpAdapter = (options = {}) => {
       url += `?${qs}`
     }
     if (options.method === 'GET') {
-      const key = makeKey(url, options)
-      let promise = promiseCache[key]
+      const key = makeRequestKey(url, options)
+      promise = promiseCache[key]
       if (!promise || force === true) {
         promise = promiseCache[key] = createRequest(url, options)
       }
-      return promise
     } else {
-      return createRequest(url, options)
+      promise = createRequest(url, options)
     }
+    return promise
   }
 }
 

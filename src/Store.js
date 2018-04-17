@@ -1,9 +1,9 @@
 import EventEmitter from 'events'
-import mget from './mget'
 import cloneDeep from 'lodash/cloneDeep'
-import fastDiff from './fastDiff'
 import createHttpAdapter from './createHttpAdapter'
+import fastDiff from './fastDiff'
 import isArray from 'lodash/isArray'
+import mget from './mget'
 import microTask from '@r14c/async-utils/microTask'
 import rebase from './rebase'
 import registerSchemas from './registerSchemas'
@@ -94,14 +94,14 @@ export default {
     const emit = (message, options = {}) => {
       const quiet = options.quiet || false
       if (quiet === false) {
-        microTask(() => evt.emit(message.event, message))
+        evt.emit('all', message)
       }
     }
     /**
      * @constructor
      */
     let Store = function () {
-      evt.setMaxListeners(20)
+      evt.setMaxListeners(0) // no limit
       this.models = cloneDeep(options.models)
       this.storeId = storeId
     }
@@ -184,13 +184,26 @@ export default {
       })
     }
     /**
-     *
+     * remove all records from all collections
      */
     Store.prototype.clear = function () {
       store.keySeq().forEach((collectionName) => {
         this.removeAll(collectionName)
       })
     }
+    /**
+     * given `data` with a particular `__sym_id` and the current version of the
+     * same record at `data[idAttribute]`, return a merged record containing all
+     * changes, applied to the base record at `__sym_id` in the following order,
+     * diff'd against `base`:
+     *
+     * 1. current
+     * 2. data
+     *
+     * @param {string} collection
+     * @param {object} data
+     * @return {object}
+     */
     Store.prototype.rebase = function (collectionName, data) {
       const record = (isImmutable(data)) ? data.toJS() : data
       const {id} = getMeta(collectionName, record)
@@ -212,13 +225,14 @@ export default {
      * @param {string} collection
      * @param {object} data
      * @param {object} options
+     * @return {object}
      */
     Store.prototype.add = function (collectionName, data, options = {}) {
       const record = this.createRecord(collectionName, data)
-      const based = convert(this.rebase(collectionName, record))
-      const {id} = getMeta(collectionName, based)
+      const latest = convert(record)
+      const {id} = getMeta(collectionName, latest)
       const versions = store.getIn([collectionName, id], Stack())
-      store = store.setIn([collectionName, id], versions.unshift(based))
+      store = store.setIn([collectionName, id], versions.unshift(latest))
       const object = this.get(collectionName, id)
       emit({
         collectionName,
@@ -232,17 +246,14 @@ export default {
     /**
      * @param {string} collectionName
      * @param {object} data
+     * @return {boolean}
      */
     Store.prototype.hasChanges = function (collectionName, data) {
       const {id} = getMeta(collectionName, data)
-      if (this.isValidId(id)) {
-        const record = this.get(collectionName, id)
-        return (record.__sym_id === data.__sym_id)
-          ? fastDiff(record, data)
-          : false
-      } else {
-        return true
-      }
+      const record = this.get(collectionName, id) || {}
+      return (record.__sym_id === data.__sym_id)
+        ? fastDiff(record, data)
+        : false
     }
     /**
      * @async
@@ -258,95 +269,96 @@ export default {
         ...options
       })
         .then(() => microTask(() => this.remove(collectionName, id)))
-        .catch((err) => {
-          throw err
-        })
     }
     /**
+     * @async
      * @param {string} collection
      * @param {object} data
      * @param {object} options
-     * @async
      */
     Store.prototype.save = function (collectionName, data, options = {}) {
-      const {pk, basePath} = getMeta(collectionName, data)
+      const {id, pk, basePath} = getMeta(collectionName, data)
       let promise
       if (isValidId(pk)) {
         promise = http({
           url: `${basePath}/${collectionName}/${pk}`,
           method: 'PUT',
-          body: this.rebase(collectionName, data),
+          body: {
+            ...this.rebase(collectionName, data),
+            __tmp_id: undefined,
+            __sym_id: undefined
+          },
           ...options
         })
       } else {
         promise = http({
           url: `${basePath}/${collectionName}`,
           method: 'POST',
-          body: data,
+          body: {
+            ...data,
+            __tmp_id: undefined,
+            __sym_id: undefined
+          },
           ...options
         })
       }
-      return promise
-        .then((data) => microTask(() => this.add(collectionName, data)))
-        .catch((err) => {
-          throw err
-        })
+      return promise.then((data) => {
+        const object = (id) ? {...data, __tmp_id: id} : data
+        return microTask(() => this.add(collectionName, object))
+      })
     }
     /**
+     * @async
      * @param {string} collection
      * @param {object} [query]
      * @param {object} [options]
      * @param {boolean} [options.force=false]
-     * @async
      */
     Store.prototype.find = function (collectionName, id, options = {}) {
-      const force = options.force || false
-      const basePath = getBasePath(collectionName)
-      const pk = resolvePk(id)
       let promise
-      if (isValidId(pk)) {
-        const data = this.get(collectionName, id)
-        if (!data || force === true) {
-          const request = {
-            url: `${basePath}/${collectionName}/${pk}`,
-            method: 'GET',
-            ...options
-          }
-          promise = http(request)
-            .then((data) => microTask(() => this.add(collectionName, data)))
-            .catch((err) => {
-              throw err
-            })
-        } else {
-          promise = Promise.resolve(data)
+      const force = options.force || false
+      const data = this.get(collectionName, id)
+      if (!isValidId(id)) {
+        promise = Promise.resolve(null)
+      } else if (!data || force === true) {
+        const pk = resolvePk(id)
+        const basePath = getBasePath(collectionName)
+        const request = {
+          url: `${basePath}/${collectionName}/${pk}`,
+          method: 'GET',
+          ...options
         }
+        promise = http(request)
+          .then((data) => microTask(() => this.add(collectionName, data)))
       } else {
-        promise = Promise.resolve()
+        promise = Promise.resolve(data)
       }
       return promise
     }
     /**
+     * @async
      * @param {string} collection
      * @param {object} [query]
      * @param {object} [options]
-     * @async
      */
     Store.prototype.findAll = function (collectionName, query, options = {}) {
+      let promise
+      const force = options.force || false
       const basePath = getBasePath(collectionName)
-      const request = {
-        url: `${basePath}/${collectionName}`,
-        method: 'GET',
-        params: query,
-        ...options
+      const data = this.getAll(collectionName)
+      if (!data.length || force === true) {
+        const request = {
+          url: `${basePath}/${collectionName}`,
+          method: 'GET',
+          params: query,
+          ...options
+        }
+        promise = http(request)
+          .then((result) => microTask(() => result.map((data) => this.add(collectionName, data))))
+      } else {
+        promise = Promise.resolve(data)
       }
-      return http(request)
-        .then((result) => {
-          const tasks = result.map((data) => microTask(() => this.add(collectionName, data)))
-          return Promise.all(tasks)
-        })
-        .catch((err) => {
-          throw err
-        })
+      return promise
     }
     /**
      * @param {string} event
@@ -363,9 +375,10 @@ export default {
       evt.removeListener(event, handler)
     }
     Store.prototype.emit = function (event, payload) {
-      evt.emit(event, payload)
+      microTask(() => evt.emit(event, payload))
     }
     Store.prototype.isValidId = isValidId
+    Store.prototype.getBasePath = getBasePath
     return new Store()
   }
 }

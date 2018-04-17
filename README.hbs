@@ -8,7 +8,12 @@
 [![license](https://img.shields.io/npm/l/@citygro/vdata.svg)](https://gitlab.com/citygro/vdata/blob/latest/LICENSE)
 
 ```sh
-yarn add js-data-$adapter @citygro/vdata
+yarn add @citygro/vdata
 ```
+
+> if you are building a `webpack` or `babel` project you can make
+> `@citygro/vdata` smaller (via tree shaking and chunking) by aliasing this
+> package to `node_modules/@citygro/vdata/src/index.js` rather than using our
+> commonjs bundle.
 
 {{>main}}

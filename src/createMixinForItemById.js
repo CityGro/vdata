@@ -1,11 +1,9 @@
 import camelCase from 'lodash/camelCase'
 import clone from 'lodash/cloneDeep'
-import fastDiff from './fastDiff'
 import get from 'lodash/get'
 import merge from 'lodash/merge'
 import pop from './pop'
-import rebase from './rebase'
-import to from './to'
+import to from '@r14c/async-utils/to'
 
 /**
  * create a mixin that configures a vm to manipulate a single record. you can
@@ -107,7 +105,6 @@ const createMixinForItemById = function (options) {
   const idType = options.idType || String
   const requestOptions = options.requestOptions || {}
   const requestOptionsName = `${localPropertyName}RequestOptions`
-  const captureName = `${localPropertyName}Capture`
   const capture = pop(requestOptions, 'capture', false)
   const requestOptionsOverrideName = `${localPropertyName}RequestOptionsOverride`
   const changeCollectionMethodName = `${localPropertyName}ChangeCollection`
@@ -143,9 +140,6 @@ const createMixinForItemById = function (options) {
         [localPropertyName]: null,
         [requestOptionsName]: merge({}, clone(requestOptions), this[requestOptionsOverrideName])
       }
-      if (capture || this[requestOptionsOverrideName].capture) {
-        data[captureName] = null
-      }
       return data
     },
     vdata (event) {
@@ -156,9 +150,8 @@ const createMixinForItemById = function (options) {
         event.collectionName === collectionName
       ) {
         if (capture || this[requestOptionsOverrideName].capture) {
-          this[localPropertyName] = rebase(
-            this[captureName],
-            this.$store.get(collectionName, recordId) || {},
+          this[localPropertyName] = this.$store.rebase(
+            collectionName,
             this[localPropertyName]
           )
         } else {
@@ -203,31 +196,22 @@ const createMixinForItemById = function (options) {
           console.error(err)
           result = null
         }
-        if (captureOption && !this[captureName]) {
-          this[captureName] = clone(result)
-        }
         return result
       }
     },
     watch: {
       [idPropertyName] () {
-        if (!capture) {
+        if (capture || this[requestOptionsOverrideName].capture) {
           this.$asyncReload(localPropertyName)
         }
       }
     },
     computed: {
       [hasChangesComputedName] () {
-        const localState = this[localPropertyName]
-        if (this[capture]) {
-          return fastDiff(this[captureName], localState)
-        } else {
-          return this.$store.hasChanges(
-            collectionName,
-            this[getIdMethodName](),
-            localState
-          )
-        }
+        return this.$store.hasChanges(
+          collectionName,
+          this[localPropertyName]
+        )
       }
     },
     methods: {
@@ -244,18 +228,10 @@ const createMixinForItemById = function (options) {
       },
       // what if this is a NEW record?
       async [saveMethodName] () {
-        const recordId = this[getIdMethodName]()
-        const value = (capture || this[requestOptionsOverrideName].capture)
-          ? rebase(
-            this[captureName],
-            (recordId) ? this.$store.get(collectionName, recordId) : {},
-            this[localPropertyName]
-          )
-          : this[localPropertyName]
         const [err, response] = await to(
           this.$store.save(
             collectionName,
-            value,
+            this[localPropertyName],
             this[requestOptionsName]
           )
         )

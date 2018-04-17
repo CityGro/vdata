@@ -54,9 +54,9 @@
     lodash "^4.2.0"
     to-fast-properties "^2.0.0"
 
-"@r14c/async-utils@0.2.0":
-  version "0.2.0"
-  resolved "https://registry.yarnpkg.com/@r14c/async-utils/-/async-utils-0.2.0.tgz#5ecdb3bb930bcbb848015dbf809ce99b0d02d6c9"
+"@r14c/async-utils@0.3.0":
+  version "0.3.0"
+  resolved "https://registry.yarnpkg.com/@r14c/async-utils/-/async-utils-0.3.0.tgz#b7bc5dd3fcefc3551965d5fce92db68ef7e8a33c"
 
 abab@^1.0.3:
   version "1.0.4"

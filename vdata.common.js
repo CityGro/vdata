@@ -18,28 +18,29 @@ var defaults = _interopDefault(require('lodash/defaults'));
 var whatwgFetch = require('whatwg-fetch');
 var cloneDeep = _interopDefault(require('lodash/cloneDeep'));
 var isFunction = _interopDefault(require('lodash/isFunction'));
-var map = _interopDefault(require('lodash/map'));
 var microTask = _interopDefault(require('@r14c/async-utils/microTask'));
 var pick = _interopDefault(require('lodash/pick'));
 var stringify = _interopDefault(require('json-stable-stringify'));
-var sum = _interopDefault(require('lodash/sum'));
 var sort = _interopDefault(require('lodash/sortBy'));
+var map = _interopDefault(require('lodash/map'));
+var sum = _interopDefault(require('lodash/sum'));
 var get = _interopDefault(require('lodash/get'));
 var merge = _interopDefault(require('lodash/merge'));
+var to = _interopDefault(require('@r14c/async-utils/to'));
+var _r14c_asyncUtils_map = _interopDefault(require('@r14c/async-utils/map'));
+var Any = _interopDefault(require('p-any'));
+var flow = _interopDefault(require('lodash/fp/flow'));
+var fromPairs = _interopDefault(require('lodash/fp/fromPairs'));
+var isEmpty = _interopDefault(require('lodash/isEmpty'));
+var keys = _interopDefault(require('lodash/keys'));
+var zip = _interopDefault(require('lodash/fp/zip'));
+var Queue = _interopDefault(require('@r14c/async-utils/Queue'));
+var EventEmitter = _interopDefault(require('events'));
+var immutable = require('immutable');
 var isEqual = _interopDefault(require('lodash/isEqual'));
 var isNil = _interopDefault(require('lodash/isNil'));
 var isObject = _interopDefault(require('lodash/isObject'));
 var transform = _interopDefault(require('lodash/transform'));
-var flow = _interopDefault(require('lodash/fp/flow'));
-var Any = _interopDefault(require('p-any'));
-var fromPairs = _interopDefault(require('lodash/fp/fromPairs'));
-var assign = _interopDefault(require('lodash/assign'));
-var isEmpty = _interopDefault(require('lodash/isEmpty'));
-var keys = _interopDefault(require('lodash/keys'));
-var zip = _interopDefault(require('lodash/fp/zip'));
-var forEach = _interopDefault(require('@r14c/async-utils/forEach'));
-var EventEmitter = _interopDefault(require('events'));
-var immutable = require('immutable');
 var toNumber = _interopDefault(require('lodash/toNumber'));
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) {
@@ -518,24 +519,24 @@ var toQueryString = function toQueryString(o, prefix) {
   }).join('&');
 };
 
-var withDefaults = function withDefaults(options) {
-  return pick(defaults({}, options, {
-    credentials: 'same-origin'
-  }), ['headers', 'body', 'method', 'credentials']);
-};
-
-var makeKey = function makeKey(url, request) {
-  var headers = Object.entries(request.headers || {}).map(function (_ref) {
+var makeRequestKey = function makeRequestKey(url, options) {
+  var headers = Object.entries(options.headers || {}).map(function (_ref) {
     var _ref2 = slicedToArray(_ref, 2),
         key = _ref2[0],
         val = _ref2[1];
 
     return key + ':' + val;
   });
-  var values = map('' + headers + request.url, function (c) {
+  var values = map('' + headers + url, function (c) {
     return c.codePointAt(0);
   });
-  return '' + sum(values);
+  return options.method + '-' + sum(values);
+};
+
+var withDefaults = function withDefaults(options) {
+  return pick(defaults({}, options, {
+    credentials: 'same-origin'
+  }), ['headers', 'body', 'method', 'credentials']);
 };
 
 var createHttpAdapter = function createHttpAdapter() {
@@ -563,6 +564,7 @@ var createHttpAdapter = function createHttpAdapter() {
   return function () {
     var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
 
+    var promise = void 0;
     var url = options.url;
     var force = options.force || false;
     var qs = toQueryString(options.params || {});
@@ -570,15 +572,15 @@ var createHttpAdapter = function createHttpAdapter() {
       url += '?' + qs;
     }
     if (options.method === 'GET') {
-      var key = makeKey(url, options);
-      var promise = promiseCache[key];
+      var key = makeRequestKey(url, options);
+      promise = promiseCache[key];
       if (!promise || force === true) {
         promise = promiseCache[key] = createRequest(url, options);
       }
-      return promise;
     } else {
-      return createRequest(url, options);
+      promise = createRequest(url, options);
     }
+    return promise;
   };
 };
 
@@ -594,67 +596,11 @@ var createIndex = (function (collection, key) {
   return index;
 });
 
-/**
- * quickly determine if two objects differ
- *
- * @param {Object} a
- * @param {Object} b
- * @returns {Boolean}
- */
-var fastDiff = (function (a, b) {
-  return stringify(a) !== stringify(b);
-});
-
 var pop = (function (o, key, fallback) {
   var value = o[key];
   delete o[key];
   return value === undefined ? fallback : value;
 });
-
-/**
- * @param {object} base
- * @param {object} object
- * @return {object} diff
- */
-function difference(base, object) {
-  function changes(object, base) {
-    return transform(object, function (result, value, key) {
-      if (!isEqual(value, base[key])) {
-        result[key] = isObject(value) && isObject(base[key]) ? changes(value, base[key]) : value;
-      }
-    });
-  }
-  return isNil(base) ? object : changes(object, base);
-}
-
-var jsonClone = flow(JSON.stringify, JSON.parse);
-
-/**
- * @param {Object} base
- * @param {...Object} checkpoints
- * @returns {Object}
- */
-var rebase = function () {
-  var base = arguments[0];
-  var diffs = tail(arguments).map(function (checkpoint) {
-    return difference(base, checkpoint);
-  });
-  return merge.apply(undefined, [jsonClone(base)].concat(toConsumableArray(diffs)));
-};
-
-/**
- * @param {Promise} promise
- * @return {Promise}
- * @alias module:to
- * @async
- */
-var to = function to(promise) {
-  return promise.then(function (data) {
-    return [null, data];
-  }).catch(function (err) {
-    return [err, undefined];
-  });
-};
 
 /**
  * create a mixin that configures a vm to manipulate a single record. you can
@@ -758,7 +704,6 @@ var createMixinForItemById = function createMixinForItemById(options) {
   var idType = options.idType || String;
   var requestOptions = options.requestOptions || {};
   var requestOptionsName = localPropertyName + 'RequestOptions';
-  var captureName = localPropertyName + 'Capture';
   var capture = pop(requestOptions, 'capture', false);
   var requestOptionsOverrideName = localPropertyName + 'RequestOptionsOverride';
   var changeCollectionMethodName = localPropertyName + 'ChangeCollection';
@@ -791,16 +736,13 @@ var createMixinForItemById = function createMixinForItemById(options) {
       var _data;
 
       var data = (_data = {}, defineProperty(_data, localPropertyName, null), defineProperty(_data, requestOptionsName, merge({}, cloneDeep(requestOptions), this[requestOptionsOverrideName])), _data);
-      if (capture || this[requestOptionsOverrideName].capture) {
-        data[captureName] = null;
-      }
       return data;
     },
     vdata: function vdata(event) {
       var recordId = this[getIdMethodName]();
       if (!this[asyncLoadingName] && recordId !== null && event.collectionName === collectionName) {
         if (capture || this[requestOptionsOverrideName].capture) {
-          this[localPropertyName] = rebase(this[captureName], this.$store.get(collectionName, recordId) || {}, this[localPropertyName]);
+          this[localPropertyName] = this.$store.rebase(collectionName, this[localPropertyName]);
         } else {
           this[localPropertyName] = this.$store.get(collectionName, recordId) || null;
         }
@@ -862,12 +804,9 @@ var createMixinForItemById = function createMixinForItemById(options) {
                   console.error(err);
                   result = null;
                 }
-                if (captureOption && !_this[captureName]) {
-                  _this[captureName] = cloneDeep(result);
-                }
                 return _context.abrupt('return', result);
 
-              case 21:
+              case 20:
               case 'end':
                 return _context.stop();
             }
@@ -876,17 +815,12 @@ var createMixinForItemById = function createMixinForItemById(options) {
       }))();
     }),
     watch: defineProperty({}, idPropertyName, function () {
-      if (!capture) {
+      if (capture || this[requestOptionsOverrideName].capture) {
         this.$asyncReload(localPropertyName);
       }
     }),
     computed: defineProperty({}, hasChangesComputedName, function () {
-      var localState = this[localPropertyName];
-      if (this[capture]) {
-        return fastDiff(this[captureName], localState);
-      } else {
-        return this.$store.hasChanges(collectionName, this[getIdMethodName](), localState);
-      }
+      return this.$store.hasChanges(collectionName, this[localPropertyName]);
     }),
     methods: (_methods = {}, defineProperty(_methods, changeCollectionMethodName, function (name) {
       collectionName = name;
@@ -898,38 +832,36 @@ var createMixinForItemById = function createMixinForItemById(options) {
       var _this2 = this;
 
       return asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee2() {
-        var recordId, value, _ref3, _ref4, err, response;
+        var _ref3, _ref4, err, response;
 
         return regeneratorRuntime.wrap(function _callee2$(_context2) {
           while (1) {
             switch (_context2.prev = _context2.next) {
               case 0:
-                recordId = _this2[getIdMethodName]();
-                value = capture || _this2[requestOptionsOverrideName].capture ? rebase(_this2[captureName], recordId ? _this2.$store.get(collectionName, recordId) : {}, _this2[localPropertyName]) : _this2[localPropertyName];
-                _context2.next = 4;
-                return to(_this2.$store.save(collectionName, value, _this2[requestOptionsName]));
+                _context2.next = 2;
+                return to(_this2.$store.save(collectionName, _this2[localPropertyName], _this2[requestOptionsName]));
 
-              case 4:
+              case 2:
                 _ref3 = _context2.sent;
                 _ref4 = slicedToArray(_ref3, 2);
                 err = _ref4[0];
                 response = _ref4[1];
 
                 if (!err) {
-                  _context2.next = 10;
+                  _context2.next = 8;
                   break;
                 }
 
                 throw err;
 
-              case 10:
+              case 8:
                 if (response) {
                   _this2[localPropertyName] = response;
                   _this2.$emit('update:' + idPropertyName, response[recordPrimaryKey]);
                 }
                 return _context2.abrupt('return', _this2[localPropertyName]);
 
-              case 12:
+              case 10:
               case 'end':
                 return _context2.stop();
             }
@@ -1031,7 +963,7 @@ var getMergedOptions = (function (vm, prop) {
   flattenMixinTree(mixins).filter(function (mixin) {
     return mixin[prop];
   }).forEach(function (mixin) {
-    options = assign(options, mixin[prop]);
+    options = Object.assign(options, mixin[prop]);
   });
   return isEmpty(options) ? null : options;
 });
@@ -1210,35 +1142,65 @@ var AsyncDataMixin = {
   }
 };
 
-var handlers = {};
-
-/**
- * inject handler that will run on datastore events
- *
- * @param {Vue} vm
- * @param {string} label
- * @param {string[]} events
- * @param {function} fn
- */
-var createHandler = (function (vm) {
-  handlers[vm._uid] = flattenMixinTree(vm.$options.mixins).filter(function (mixin) {
-    return !!mixin.vdata;
-  }).map(function (mixin) {
-    return mixin.vdata;
-  });
-  if (vm.$options.vdata) {
-    handlers[vm._uid].push(vm.$options.vdata);
-  }
-  return {
-    run: function run(message) {
-      forEach(handlers[vm._uid], function (fn) {
-        fn.apply(vm, [message]);
+var createHandler = (function (Vue, store) {
+  var queue = Queue.create({
+    next: function next() {
+      return new Promise(function (resolve) {
+        return Vue.nextTick(function () {
+          return resolve();
+        });
       });
-    },
-    destroy: function destroy() {
-      delete handlers[vm._uid];
+    }
+  });
+  var handlers = {};
+  store.on('all', function (message) {
+    Object.values(handlers).forEach(function (vmHandler) {
+      // enqueue a task to handle the vdata listeners for a particular vm
+      queue.push(function () {
+        return vmHandler.run(message);
+      });
+    });
+  });
+  return {
+    /**
+     * register handlers that will run on datastore events
+     *
+     * @param {Vue.Component} vm
+     */
+    add: function add(vm) {
+      var listeners = flattenMixinTree(vm.$options.mixins).filter(function (mixin) {
+        return !!mixin.vdata;
+      }).map(function (mixin) {
+        return mixin.vdata;
+      });
+      if (vm.$options.vdata) {
+        listeners.push(vm.$options.vdata);
+      }
+      var handler = {
+        run: function run(message) {
+          listeners.forEach(function (fn) {
+            fn.call(vm, message);
+          });
+        },
+        destroy: function destroy() {
+          delete handlers[vm._uid];
+        }
+      };
+      handlers[vm._uid] = handler;
+      return handler;
     }
   };
+});
+
+/**
+ * quickly determine if two objects differ
+ *
+ * @param {Object} a
+ * @param {Object} b
+ * @returns {Boolean}
+ */
+var fastDiff = (function (a, b) {
+  return stringify(a) !== stringify(b);
 });
 
 var mget = (function (value, path) {
@@ -1248,6 +1210,37 @@ var mget = (function (value, path) {
     return get(value, path);
   }
 });
+
+/**
+ * @param {object} base
+ * @param {object} object
+ * @return {object} diff
+ */
+function difference(base, object) {
+  function changes(object, base) {
+    return transform(object, function (result, value, key) {
+      if (!isEqual(value, base[key])) {
+        result[key] = isObject(value) && isObject(base[key]) ? changes(value, base[key]) : value;
+      }
+    });
+  }
+  return isNil(base) ? object : changes(object, base);
+}
+
+var jsonClone = flow(JSON.stringify, JSON.parse);
+
+/**
+ * @param {Object} base
+ * @param {...Object} checkpoints
+ * @returns {Object}
+ */
+var rebase = function () {
+  var base = arguments[0];
+  var diffs = tail(arguments).map(function (checkpoint) {
+    return difference(base, checkpoint);
+  });
+  return merge.apply(undefined, [jsonClone(base)].concat(toConsumableArray(diffs)));
+};
 
 var registerSchemas = function (store) {
   var modelMap = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
@@ -1353,16 +1346,14 @@ var Store = {
 
       var quiet = options.quiet || false;
       if (quiet === false) {
-        microTask(function () {
-          return evt.emit(message.event, message);
-        });
+        evt.emit('all', message);
       }
     };
     /**
      * @constructor
      */
     var Store = function Store() {
-      evt.setMaxListeners(20);
+      evt.setMaxListeners(0); // no limit
       this.models = cloneDeep(options.models);
       this.storeId = storeId;
     };
@@ -1452,7 +1443,7 @@ var Store = {
       });
     };
     /**
-     *
+     * remove all records from all collections
      */
     Store.prototype.clear = function () {
       var _this3 = this;
@@ -1461,6 +1452,19 @@ var Store = {
         _this3.removeAll(collectionName);
       });
     };
+    /**
+     * given `data` with a particular `__sym_id` and the current version of the
+     * same record at `data[idAttribute]`, return a merged record containing all
+     * changes, applied to the base record at `__sym_id` in the following order,
+     * diff'd against `base`:
+     *
+     * 1. current
+     * 2. data
+     *
+     * @param {string} collection
+     * @param {object} data
+     * @return {object}
+     */
     Store.prototype.rebase = function (collectionName, data) {
       var record = immutable.isImmutable(data) ? data.toJS() : data;
 
@@ -1487,18 +1491,19 @@ var Store = {
      * @param {string} collection
      * @param {object} data
      * @param {object} options
+     * @return {object}
      */
     Store.prototype.add = function (collectionName, data) {
       var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
 
       var record = this.createRecord(collectionName, data);
-      var based = convert(this.rebase(collectionName, record));
+      var latest = convert(record);
 
-      var _getMeta4 = getMeta(collectionName, based),
+      var _getMeta4 = getMeta(collectionName, latest),
           id = _getMeta4.id;
 
       var versions = store.getIn([collectionName, id], immutable.Stack());
-      store = store.setIn([collectionName, id], versions.unshift(based));
+      store = store.setIn([collectionName, id], versions.unshift(latest));
       var object = this.get(collectionName, id);
       emit({
         collectionName: collectionName,
@@ -1512,17 +1517,14 @@ var Store = {
     /**
      * @param {string} collectionName
      * @param {object} data
+     * @return {boolean}
      */
     Store.prototype.hasChanges = function (collectionName, data) {
       var _getMeta5 = getMeta(collectionName, data),
           id = _getMeta5.id;
 
-      if (this.isValidId(id)) {
-        var record = this.get(collectionName, id);
-        return record.__sym_id === data.__sym_id ? fastDiff(record, data) : false;
-      } else {
-        return true;
-      }
+      var record = this.get(collectionName, id) || {};
+      return record.__sym_id === data.__sym_id ? fastDiff(record, data) : false;
     };
     /**
      * @async
@@ -1547,15 +1549,13 @@ var Store = {
         return microTask(function () {
           return _this4.remove(collectionName, id);
         });
-      }).catch(function (err) {
-        throw err;
       });
     };
     /**
+     * @async
      * @param {string} collection
      * @param {object} data
      * @param {object} options
-     * @async
      */
     Store.prototype.save = function (collectionName, data) {
       var _this5 = this;
@@ -1563,6 +1563,7 @@ var Store = {
       var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
 
       var _getMeta7 = getMeta(collectionName, data),
+          id = _getMeta7.id,
           pk = _getMeta7.pk,
           basePath = _getMeta7.basePath;
 
@@ -1571,88 +1572,94 @@ var Store = {
         promise = http(_extends({
           url: basePath + '/' + collectionName + '/' + pk,
           method: 'PUT',
-          body: this.rebase(collectionName, data)
+          body: _extends({}, this.rebase(collectionName, data), {
+            __tmp_id: undefined,
+            __sym_id: undefined
+          })
         }, options));
       } else {
         promise = http(_extends({
           url: basePath + '/' + collectionName,
           method: 'POST',
-          body: data
+          body: _extends({}, data, {
+            __tmp_id: undefined,
+            __sym_id: undefined
+          })
         }, options));
       }
       return promise.then(function (data) {
+        var object = id ? _extends({}, data, { __tmp_id: id }) : data;
         return microTask(function () {
-          return _this5.add(collectionName, data);
+          return _this5.add(collectionName, object);
         });
-      }).catch(function (err) {
-        throw err;
       });
     };
     /**
+     * @async
      * @param {string} collection
      * @param {object} [query]
      * @param {object} [options]
      * @param {boolean} [options.force=false]
-     * @async
      */
     Store.prototype.find = function (collectionName, id) {
       var _this6 = this;
 
       var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
 
-      var force = options.force || false;
-      var basePath = getBasePath(collectionName);
-      var pk = resolvePk(id);
       var promise = void 0;
-      if (isValidId(pk)) {
-        var data = this.get(collectionName, id);
-        if (!data || force === true) {
-          var request = _extends({
-            url: basePath + '/' + collectionName + '/' + pk,
-            method: 'GET'
-          }, options);
-          promise = http(request).then(function (data) {
-            return microTask(function () {
-              return _this6.add(collectionName, data);
-            });
-          }).catch(function (err) {
-            throw err;
+      var force = options.force || false;
+      var data = this.get(collectionName, id);
+      if (!isValidId(id)) {
+        promise = Promise.resolve(null);
+      } else if (!data || force === true) {
+        var pk = resolvePk(id);
+        var basePath = getBasePath(collectionName);
+        var request = _extends({
+          url: basePath + '/' + collectionName + '/' + pk,
+          method: 'GET'
+        }, options);
+        promise = http(request).then(function (data) {
+          return microTask(function () {
+            return _this6.add(collectionName, data);
           });
-        } else {
-          promise = Promise.resolve(data);
-        }
+        });
       } else {
-        promise = Promise.resolve();
+        promise = Promise.resolve(data);
       }
       return promise;
     };
     /**
+     * @async
      * @param {string} collection
      * @param {object} [query]
      * @param {object} [options]
-     * @async
      */
     Store.prototype.findAll = function (collectionName, query) {
       var _this7 = this;
 
       var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
 
+      var promise = void 0;
+      var force = options.force || false;
       var basePath = getBasePath(collectionName);
-      var request = _extends({
-        url: basePath + '/' + collectionName,
-        method: 'GET',
-        params: query
-      }, options);
-      return http(request).then(function (result) {
-        var tasks = result.map(function (data) {
+      var data = this.getAll(collectionName);
+      if (!data.length || force === true) {
+        var request = _extends({
+          url: basePath + '/' + collectionName,
+          method: 'GET',
+          params: query
+        }, options);
+        promise = http(request).then(function (result) {
           return microTask(function () {
-            return _this7.add(collectionName, data);
+            return result.map(function (data) {
+              return _this7.add(collectionName, data);
+            });
           });
         });
-        return Promise.all(tasks);
-      }).catch(function (err) {
-        throw err;
-      });
+      } else {
+        promise = Promise.resolve(data);
+      }
+      return promise;
     };
     /**
      * @param {string} event
@@ -1669,9 +1676,12 @@ var Store = {
       evt.removeListener(event, handler);
     };
     Store.prototype.emit = function (event, payload) {
-      evt.emit(event, payload);
+      microTask(function () {
+        return evt.emit(event, payload);
+      });
     };
     Store.prototype.isValidId = isValidId;
+    Store.prototype.getBasePath = getBasePath;
     return new Store();
   }
 };
@@ -1690,9 +1700,7 @@ var vdata$1 = {
     };
   },
   install: function install(Vue, options) {
-    options = defaults({}, isFunction(options) ? options(Vue) : options, {
-      events: ['add', 'remove']
-    });
+    options = isFunction(options) ? options(Vue) : options;
     var store = Store.create(options);
     Object.defineProperty(Vue, '$store', {
       get: function get() {
@@ -1704,6 +1712,7 @@ var vdata$1 = {
         return store;
       }
     });
+    var vmHandler = createHandler(Vue, store);
     Vue.mixin({
       methods: {
         $vdata: function $vdata(message) {
@@ -1714,23 +1723,11 @@ var vdata$1 = {
       },
       beforeCreate: function beforeCreate() {
         if (hasVdata(this)) {
-          this._vdataHandler = createHandler(this, options);
+          this._vdataHandler = vmHandler.add(this);
         }
       },
-      created: function created() {
-        var _this = this;
-
-        options.events.forEach(function (event) {
-          _this.$store.on(event, _this.$vdata);
-        });
-      },
       beforeDestroy: function beforeDestroy() {
-        var _this2 = this;
-
         if (hasVdata(this)) {
-          options.events.forEach(function (event) {
-            _this2.$store.off(event, _this2.$vdata);
-          });
           this._vdataHandler.destroy();
         }
       }
@@ -1750,7 +1747,9 @@ var createMixinForItemByResourceAndId = function createMixinForItemByResourceAnd
 };
 
 exports.DataFlowMixin = DataFlowMixin;
+exports.asyncMap = _r14c_asyncUtils_map;
 exports.cleanRecord = cleanRecord$1;
+exports.createDataFlowMixin = createDataFlowMixin;
 exports.createHttpAdapter = createHttpAdapter;
 exports.createIndex = createIndex;
 exports.createMixinForItemById = createMixinForItemById;

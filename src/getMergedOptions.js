@@ -1,4 +1,3 @@
-import assign from 'lodash/assign'
 import cloneDeep from 'lodash/cloneDeep'
 import flattenMixinTree from './flattenMixinTree'
 import get from 'lodash/get'
@@ -14,7 +13,7 @@ export default (vm, prop) => {
   flattenMixinTree(mixins)
     .filter((mixin) => mixin[prop])
     .forEach((mixin) => {
-      options = assign(options, mixin[prop])
+      options = Object.assign(options, mixin[prop])
     })
   return (isEmpty(options))
     ? null

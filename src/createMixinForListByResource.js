@@ -1,5 +1,5 @@
 import camelCase from 'lodash/camelCase'
-import to from './to'
+import to from '@r14c/async-utils/to'
 
 /**
  * @param {object} options

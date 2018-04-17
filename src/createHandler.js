@@ -1,31 +1,42 @@
+import Queue from '@r14c/async-utils/Queue'
 import flattenMixinTree from './flattenMixinTree'
-import forEach from '@r14c/async-utils/forEach'
 
-let handlers = {}
-
-/**
- * inject handler that will run on datastore events
- *
- * @param {Vue} vm
- * @param {string} label
- * @param {string[]} events
- * @param {function} fn
- */
-export default (vm) => {
-  handlers[vm._uid] = flattenMixinTree(vm.$options.mixins)
-    .filter((mixin) => !!mixin.vdata)
-    .map((mixin) => mixin.vdata)
-  if (vm.$options.vdata) {
-    handlers[vm._uid].push(vm.$options.vdata)
-  }
+export default (Vue, store) => {
+  const queue = Queue.create({
+    next: () => new Promise((resolve) => Vue.nextTick(() => resolve()))
+  })
+  let handlers = {}
+  store.on('all', (message) => {
+    Object.values(handlers).forEach((vmHandler) => {
+      // enqueue a task to handle the vdata listeners for a particular vm
+      queue.push(() => vmHandler.run(message))
+    })
+  })
   return {
-    run (message) {
-      forEach(handlers[vm._uid], (fn) => {
-        fn.apply(vm, [message])
-      })
-    },
-    destroy () {
-      delete handlers[vm._uid]
+    /**
+     * register handlers that will run on datastore events
+     *
+     * @param {Vue.Component} vm
+     */
+    add (vm) {
+      const listeners = flattenMixinTree(vm.$options.mixins)
+        .filter((mixin) => !!mixin.vdata)
+        .map((mixin) => mixin.vdata)
+      if (vm.$options.vdata) {
+        listeners.push(vm.$options.vdata)
+      }
+      const handler = {
+        run (message) {
+          listeners.forEach((fn) => {
+            fn.call(vm, message)
+          })
+        },
+        destroy () {
+          delete handlers[vm._uid]
+        }
+      }
+      handlers[vm._uid] = handler
+      return handler
     }
   }
 }

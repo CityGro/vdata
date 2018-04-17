@@ -1,7 +1,8 @@
 /* global jest, describe, expect, test, beforeEach, beforeAll, afterAll */
 
-import fetchMock from 'fetch-mock'
 import Store from '../Store'
+import fetchMock from 'fetch-mock'
+import range from 'lodash/range'
 
 describe('Store', () => {
   let store
@@ -12,6 +13,26 @@ describe('Store', () => {
         name: 'jeff'
       }
     ])
+    fetchMock.get('/api/myCollection?results=yes', [
+      {
+        id: 30,
+        name: 'remiu'
+      },
+      {
+        id: 40,
+        name: 'satori'
+      },
+      {
+        id: 50,
+        name: 'tenshi'
+      }
+    ])
+    fetchMock.get('/api/myCollection?has=lots', (url, options) => {
+      return range(0, 1000).map((i) => ({
+        id: i + 1,
+        score: (i + 5) * 10
+      }))
+    })
     fetchMock.get('/api/myCollection/9', {id: 9, name: 'cirno'})
     fetchMock.post('/api/myCollection', (url, options) => {
       return {
@@ -68,6 +89,31 @@ describe('Store', () => {
       expect(recordA.__sym_id).toEqual('0-1')
       expect(recordB.__sym_id).toEqual('0-2')
     })
+
+    test('adding and object with the same pk multiple times results in multiple versions', () => {
+      const recordAt0 = {
+        id: 1,
+        key: 'foo'
+      }
+      const recordAt1 = {
+        id: 1,
+        key: 'bar'
+      }
+      store.add('myCollection', recordAt0)
+      expect(store.get('myCollection', 1)).toMatchObject(recordAt0)
+      store.add('myCollection', recordAt1)
+      expect(store.get('myCollection', 1)).toMatchObject(recordAt1)
+    })
+
+    test('add many records quickly', () => {
+      range(0, 100).forEach((i) => {
+        store.add('myCollection', {
+          id: i + 1,
+          score: (i + 5) * 10
+        })
+      })
+      expect(store.getAll('myCollection')).toHaveLength(100)
+    })
   })
 
   describe('get', () => {
@@ -96,13 +142,18 @@ describe('Store', () => {
   describe('getAll', () => {
     const names = ['jeff', 'cirno', 'fampai']
     test('get every record in a collection', () => {
-      names.forEach((name) => {
-        store.add('myCollection', {name})
+      names.forEach((name, i) => {
+        store.add('myCollection', {id: i + 1, name})
       })
       const records = store.getAll('myCollection')
       expect(records).toBeDefined()
       expect(records).toHaveLength(3)
-      expect(records[0].name).toBe('jeff')
+      names.forEach((name, i) => {
+        expect(records[i]).toMatchObject({
+          id: i + 1,
+          name
+        })
+      })
     })
 
     test('get every record in a collection limited to a keylist', () => {
@@ -159,7 +210,14 @@ describe('Store', () => {
   })
 
   describe('find', async () => {
+    test('return null if pk/id is invalid', async () => {
+      expect.assertions(1)
+      const result = await store.find('myCollection', undefined)
+      expect(result).toBe(null)
+    })
+
     test('return cached records immediately', async () => {
+      expect.assertions(3)
       const recordA = store.add('myCollection', {
         id: 1,
         name: 'jeff'
@@ -171,11 +229,13 @@ describe('Store', () => {
     })
 
     test('maps to GET /api/:collectionName/:id', async () => {
+      expect.assertions(1)
       const record = await store.find('myCollection', 9)
       expect(record.name).toBe('cirno')
     })
 
     test('force = true bypasses the store', async () => {
+      expect.assertions(1)
       store.add('myCollection', {
         id: 9,
         name: 'jeff'
@@ -191,6 +251,25 @@ describe('Store', () => {
         name: 'jeff'
       })
       expect(result).toHaveLength(1)
+    })
+
+    test('handles multiple results', async () => {
+      const result = await store.findAll('myCollection', {
+        results: 'yes'
+      })
+      expect(result).toHaveLength(3)
+      result.forEach((record) => {
+        expect(record.id).toBeDefined()
+        expect(record.name).toBeDefined()
+      })
+    })
+
+    test('handles large result lists', async () => {
+      expect.assertions(1)
+      const result = await store.findAll('myCollection', {
+        has: 'lots'
+      })
+      expect(result).toHaveLength(1000)
     })
   })
 
@@ -226,13 +305,40 @@ describe('Store', () => {
     })
   })
 
+  describe('hasChanges', () => {
+    test('support change detection', () => {
+      const object = {
+        id: 1,
+        name: 'jeff',
+        key: 'value'
+      }
+      const record = store.add('myCollection', object)
+      expect(store.hasChanges('myCollection', record)).toBe(false)
+      record.name = 'nani'
+      expect(store.hasChanges('myCollection', record)).toBe(true)
+      store.add('myCollection', record)
+      expect(store.hasChanges('myCollection', record)).toBe(false)
+      expect(store.hasChanges('myCollection', object)).toBe(true)
+    })
+  })
+
   describe('event binding on/off/emit', () => {
     test('listen, emit', () => {
       const handler = jest.fn()
-      store.on('myCustomEvent', handler)
+      store.on('all', handler)
+      const record = store.add('myCollection', {
+        id: 1
+      })
       store.emit('myCustomEvent')
-      store.off('myCustomEvent', handler)
-      expect(handler).toHaveBeenCalled()
+      process.nextTick(() => {
+        expect(handler).toHaveBeenCalled()
+        expect(handler).toHaveBeenCalledWith({
+          event: 'add',
+          collectionName: 'myCollection',
+          record
+        })
+        store.off('myCustomEvent', handler)
+      })
     })
   })
 })
