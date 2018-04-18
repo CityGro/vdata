@@ -3704,10 +3704,13 @@
                     quiet: e.quiet
                 }), u;
             }, h.prototype.hasChanges = function(t, r) {
-                var e = f(t, r).id, n = this.get(t, e) || {};
-                return n.__sym_id === r.__sym_id && function(t, r) {
-                    return L(t) !== L(r);
-                }(n, r);
+                if (r) {
+                    var e = f(t, r).id, n = this.get(t, e) || {};
+                    return n.__sym_id === r.__sym_id && function(t, r) {
+                        return L(t) !== L(r);
+                    }(n, r);
+                }
+                return !1;
             }, h.prototype.destroy = function(t, r) {
                 var n = this, o = arguments.length > 2 && void 0 !== arguments[2] ? arguments[2] : {}, i = f(t, r), u = i.id, a = i.pk, s = i.basePath;
                 return e(ut({

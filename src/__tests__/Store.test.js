@@ -361,4 +361,9 @@ describe('Store', () => {
       })
     })
   })
+
+  test('returns false if data is nil', () => {
+    const result = store.hasChanges('myCollection', null)
+    expect(result).toBe(false)
+  })
 })

@@ -1546,11 +1546,15 @@ var Store = {
      * @return {boolean}
      */
     Store.prototype.hasChanges = function (collectionName, data) {
-      var _getMeta4 = getMeta(collectionName, data),
-          id = _getMeta4.id;
+      if (!data) {
+        return false;
+      } else {
+        var _getMeta4 = getMeta(collectionName, data),
+            id = _getMeta4.id;
 
-      var record = this.get(collectionName, id) || {};
-      return record.__sym_id === data.__sym_id ? fastDiff(record, data) : false;
+        var record = this.get(collectionName, id) || {};
+        return record.__sym_id === data.__sym_id ? fastDiff(record, data) : false;
+      }
     };
     /**
      * @async

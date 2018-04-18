@@ -275,11 +275,15 @@ export default {
      * @return {boolean}
      */
     Store.prototype.hasChanges = function (collectionName, data) {
-      const {id} = getMeta(collectionName, data)
-      const record = this.get(collectionName, id) || {}
-      return (record.__sym_id === data.__sym_id)
-        ? fastDiff(record, data)
-        : false
+      if (!data) {
+        return false
+      } else {
+        const {id} = getMeta(collectionName, data)
+        const record = this.get(collectionName, id) || {}
+        return (record.__sym_id === data.__sym_id)
+          ? fastDiff(record, data)
+          : false
+      }
     }
     /**
      * @async
