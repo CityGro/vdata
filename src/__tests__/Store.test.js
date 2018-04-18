@@ -67,6 +67,16 @@ describe('Store', () => {
       expect(record.__tmp_id).toBeDefined()
       expect(record.__sym_id).not.toBeDefined()
     })
+
+    test('use the same __tmp_id for records with the same pk', () => {
+      const object = {
+        id: 9
+      }
+      const recordA = store.createRecord('myCollection', object)
+      const recordB = store.createRecord('myCollection', object)
+      expect(recordA.id).toBe(recordB.id)
+      expect(recordA.__tmp_id).toBe(recordB.__tmp_id)
+    })
   })
 
   describe('add', () => {
@@ -90,19 +100,22 @@ describe('Store', () => {
       expect(recordB.__sym_id).toEqual('0-2')
     })
 
-    test('adding and object with the same pk multiple times results in multiple versions', () => {
-      const recordAt0 = {
+    test('adding and object with the same pk multiple times results in multiple versions on the same local id', () => {
+      const dataAt0 = {
         id: 1,
         key: 'foo'
       }
-      const recordAt1 = {
+      const dataAt1 = {
         id: 1,
         key: 'bar'
       }
-      store.add('myCollection', recordAt0)
+      const recordAt0 = store.add('myCollection', dataAt0)
       expect(store.get('myCollection', 1)).toMatchObject(recordAt0)
-      store.add('myCollection', recordAt1)
+      expect(recordAt0.__sym_id).toBe('0-1')
+      const recordAt1 = store.add('myCollection', dataAt1)
       expect(store.get('myCollection', 1)).toMatchObject(recordAt1)
+      expect(recordAt1.__sym_id).toBe('0-2')
+      expect(recordAt0.__tmp_id).toBe(recordAt1.__tmp_id)
     })
 
     test('add many records quickly', () => {
@@ -196,16 +209,23 @@ describe('Store', () => {
     })
 
     test('maps to PUT /api/:collectionName/:id for existing records', async () => {
-      const data = {
+      const localRecord = store.add('myCollection', {
         id: 11,
         name: 'nani?'
-      }
-      store.add('myCollection', data)
-      const record = await store.save('myCollection', data)
-      expect(record.__sym_id).toBeDefined()
-      expect(record.__tmp_id).toBeDefined()
-      expect(record.id).toBeDefined()
-      expect(record.name).toBe('nani?')
+      })
+      expect(localRecord.name).toBe('nani?')
+      localRecord.name = 'jeff'
+      localRecord.tags = {foo: true}
+      expect(store.hasChanges('myCollection', localRecord)).toBe(true)
+      const savedRecord = await store.save('myCollection', localRecord)
+      expect(localRecord.__sym_id).toBe('0-1')
+      expect(savedRecord).not.toBe(localRecord)
+      expect(savedRecord.__sym_id).not.toBe(localRecord.__sym_id)
+      expect(savedRecord.__sym_id).toBe('0-2')
+      expect(savedRecord.__tmp_id).toBe(localRecord.__tmp_id)
+      expect(savedRecord.id).toBe(localRecord.id)
+      expect(savedRecord.name).toBe('jeff')
+      expect(savedRecord.tags).toEqual({foo: true})
     })
   })
 

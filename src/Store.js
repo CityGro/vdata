@@ -8,6 +8,7 @@ import microTask from '@r14c/async-utils/microTask'
 import rebase from './rebase'
 import registerSchemas from './registerSchemas'
 import toNumber from 'lodash/toNumber'
+import toString from 'lodash/toString'
 import uniqueId from './uniqueId'
 import {
   Map,
@@ -46,21 +47,39 @@ export default {
     const http = createHttpAdapter(options)
     const models = cloneDeep(options.models)
     const storeId = uniqueId(null, 1e5)
-    let keyMap = {}
+    let keyMap = {
+      map: {},
+      get (key) {
+        key = toString(key)
+        return this.map[key]
+      },
+      link (a, b) {
+        a = toString(a)
+        b = toString(b)
+        this.map[a] = b
+        this.map[b] = a
+      },
+      unlink (a, b) {
+        a = toString(a)
+        b = toString(b)
+        delete this.map[a]
+        delete this.map[b]
+      }
+    }
     let store = registerSchemas(Map(), options.models)
     /**
      * @param {string} id
      */
     const resolveId = (id) => {
-      const isTmp = /^[0-9a-z]+-[0-9a-z]+$/i.test(id)
-      return (isTmp) ? id : keyMap[id]
+      const isTmp = /^[0-9a-z]+?-[0-9a-z]+$/i.test(id)
+      return (isTmp) ? id : keyMap.get(id)
     }
     /**
      * @param {string} id
      */
     const resolvePk = (id) => {
       const isTmp = /^[0-9a-z]+-[0-9a-z]+$/i.test(id)
-      return (isTmp) ? keyMap[id] : id
+      return (isTmp) ? keyMap.get(id) : id
     }
     const getBasePath = (collectionName) => {
       const model = models[collectionName]
@@ -73,17 +92,12 @@ export default {
     const getMeta = (collectionName, data) => {
       const model = models[collectionName]
       const idAttribute = model.idAttribute
-      const pk = mget(data, idAttribute)
-      const id = mget(data, '__tmp_id')
-      const symId = mget(data, '__sym_id')
-      keyMap[pk] = id
-      keyMap[id] = pk
       return {
-        id,
-        pk,
-        symId,
         basePath: getBasePath(collectionName),
-        idAttribute
+        id: mget(data, '__tmp_id'),
+        idAttribute,
+        pk: mget(data, idAttribute),
+        symId: mget(data, '__sym_id')
       }
     }
     /**
@@ -110,17 +124,29 @@ export default {
      * @param {object} [data={}]
      */
     Store.prototype.createRecord = function (collectionName, data = {}) {
-      const {id} = getMeta(collectionName, data)
-      return (isValidId(id))
-        ? data
-        : {__tmp_id: uniqueId(storeId), ...data}
+      const model = models[collectionName]
+      const idAttribute = model.idAttribute
+      let pk = mget(data, idAttribute)
+      let id = mget(data, '__tmp_id')
+      if (pk && !id) {
+        id = keyMap.get(pk) || uniqueId(storeId) // get or gen id
+        keyMap.link(pk, id) // 2x link
+      } else if (!pk && id) {
+        // noop
+      } else if (pk && id) {
+        keyMap.link(pk, id) // 2x link
+      } else if (!pk && !id) {
+        id = uniqueId(storeId) // gen id
+      }
+      return {...data, __tmp_id: id}
     }
     /**
      * @param {string} collection
      * @param {string} id
      */
-    Store.prototype.get = function (collectionName, id) {
-      const versions = store.getIn([collectionName, resolveId(id)], Stack())
+    Store.prototype.get = function (collectionName, pkOrId) {
+      const id = resolveId(pkOrId)
+      const versions = store.getIn([collectionName, id], Stack())
       const record = versions.first()
       if (record) {
         const size = versions.size
@@ -156,12 +182,12 @@ export default {
      * @param {object} options
      * @param {boolean} options.quiet
      */
-    Store.prototype.remove = function (collectionName, id, options = {}) {
+    Store.prototype.remove = function (collectionName, pkOrId, options = {}) {
+      const id = resolveId(pkOrId)
       const object = this.get(collectionName, id)
       const meta = getMeta(collectionName, object)
-      store = store.removeIn([collectionName, resolveId(id)])
-      delete keyMap[meta.pk]
-      delete keyMap[meta.id]
+      store = store.removeIn([collectionName, id])
+      keyMap.unlink(meta.pk, meta.id)
       delete object.__tmp_id
       delete object.__sym_id
       emit({

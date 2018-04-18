@@ -24,7 +24,7 @@ var stringify = _interopDefault(require('json-stable-stringify'));
 var sort = _interopDefault(require('lodash/sortBy'));
 var map = _interopDefault(require('lodash/map'));
 var sum = _interopDefault(require('lodash/sum'));
-var get = _interopDefault(require('lodash/get'));
+var get$1 = _interopDefault(require('lodash/get'));
 var merge = _interopDefault(require('lodash/merge'));
 var to = _interopDefault(require('@r14c/async-utils/to'));
 var _r14c_asyncUtils_map = _interopDefault(require('@r14c/async-utils/map'));
@@ -42,6 +42,7 @@ var isNil = _interopDefault(require('lodash/isNil'));
 var isObject = _interopDefault(require('lodash/isObject'));
 var transform = _interopDefault(require('lodash/transform'));
 var toNumber = _interopDefault(require('lodash/toNumber'));
+var toString = _interopDefault(require('lodash/toString'));
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) {
   return typeof obj;
@@ -123,7 +124,7 @@ var _extends = Object.assign || function (target) {
   return target;
 };
 
-var get$1 = function get$1(object, property, receiver) {
+var get$2 = function get$2(object, property, receiver) {
   if (object === null) object = Function.prototype;
   var desc = Object.getOwnPropertyDescriptor(object, property);
 
@@ -133,7 +134,7 @@ var get$1 = function get$1(object, property, receiver) {
     if (parent === null) {
       return undefined;
     } else {
-      return get$1(parent, property, receiver);
+      return get$2(parent, property, receiver);
     }
   } else if ("value" in desc) {
     return desc.value;
@@ -826,7 +827,7 @@ var createMixinForItemById = function createMixinForItemById(options) {
       collectionName = name;
       this.$asyncReload(localPropertyName);
     }), defineProperty(_methods, getIdMethodName, function () {
-      var id = this[idPropertyName] || get(this, localPropertyName + '.' + recordPrimaryKey, null);
+      var id = this[idPropertyName] || get$1(this, localPropertyName + '.' + recordPrimaryKey, null);
       return this.$store.isValidId(id) ? id : null;
     }), defineProperty(_methods, saveMethodName, function () {
       var _this2 = this;
@@ -958,8 +959,8 @@ var flattenMixinTree = function flattenMixinTree() {
  * @param {string} prop - option name
  */
 var getMergedOptions = (function (vm, prop) {
-  var options = cloneDeep(get(vm, '$options.' + prop, {}));
-  var mixins = get(vm, '$options.mixins', []);
+  var options = cloneDeep(get$1(vm, '$options.' + prop, {}));
+  var mixins = get$1(vm, '$options.mixins', []);
   flattenMixinTree(mixins).filter(function (mixin) {
     return mixin[prop];
   }).forEach(function (mixin) {
@@ -1207,7 +1208,7 @@ var mget = (function (value, path) {
   if (immutable.isImmutable(value)) {
     return value.getIn(path.split('.'));
   } else {
-    return get(value, path);
+    return get$1(value, path);
   }
 });
 
@@ -1296,21 +1297,39 @@ var Store = {
     var http = createHttpAdapter(options);
     var models = cloneDeep(options.models);
     var storeId = uniqueId(null, 1e5);
-    var keyMap = {};
+    var keyMap = {
+      map: {},
+      get: function get(key) {
+        key = toString(key);
+        return this.map[key];
+      },
+      link: function link(a, b) {
+        a = toString(a);
+        b = toString(b);
+        this.map[a] = b;
+        this.map[b] = a;
+      },
+      unlink: function unlink(a, b) {
+        a = toString(a);
+        b = toString(b);
+        delete this.map[a];
+        delete this.map[b];
+      }
+    };
     var store = registerSchemas(immutable.Map(), options.models);
     /**
      * @param {string} id
      */
     var resolveId = function resolveId(id) {
-      var isTmp = /^[0-9a-z]+-[0-9a-z]+$/i.test(id);
-      return isTmp ? id : keyMap[id];
+      var isTmp = /^[0-9a-z]+?-[0-9a-z]+$/i.test(id);
+      return isTmp ? id : keyMap.get(id);
     };
     /**
      * @param {string} id
      */
     var resolvePk = function resolvePk(id) {
       var isTmp = /^[0-9a-z]+-[0-9a-z]+$/i.test(id);
-      return isTmp ? keyMap[id] : id;
+      return isTmp ? keyMap.get(id) : id;
     };
     var getBasePath = function getBasePath(collectionName) {
       var model = models[collectionName];
@@ -1323,17 +1342,12 @@ var Store = {
     var getMeta = function getMeta(collectionName, data) {
       var model = models[collectionName];
       var idAttribute = model.idAttribute;
-      var pk = mget(data, idAttribute);
-      var id = mget(data, '__tmp_id');
-      var symId = mget(data, '__sym_id');
-      keyMap[pk] = id;
-      keyMap[id] = pk;
       return {
-        id: id,
-        pk: pk,
-        symId: symId,
         basePath: getBasePath(collectionName),
-        idAttribute: idAttribute
+        id: mget(data, '__tmp_id'),
+        idAttribute: idAttribute,
+        pk: mget(data, idAttribute),
+        symId: mget(data, '__sym_id')
       };
     };
     /**
@@ -1364,17 +1378,29 @@ var Store = {
     Store.prototype.createRecord = function (collectionName) {
       var data = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
-      var _getMeta = getMeta(collectionName, data),
-          id = _getMeta.id;
-
-      return isValidId(id) ? data : _extends({ __tmp_id: uniqueId(storeId) }, data);
+      var model = models[collectionName];
+      var idAttribute = model.idAttribute;
+      var pk = mget(data, idAttribute);
+      var id = mget(data, '__tmp_id');
+      if (pk && !id) {
+        id = keyMap.get(pk) || uniqueId(storeId); // get or gen id
+        keyMap.link(pk, id); // 2x link
+      } else if (!pk && id) {
+        // noop
+      } else if (pk && id) {
+        keyMap.link(pk, id); // 2x link
+      } else if (!pk && !id) {
+        id = uniqueId(storeId); // gen id
+      }
+      return _extends({}, data, { __tmp_id: id });
     };
     /**
      * @param {string} collection
      * @param {string} id
      */
-    Store.prototype.get = function (collectionName, id) {
-      var versions = store.getIn([collectionName, resolveId(id)], immutable.Stack());
+    Store.prototype.get = function (collectionName, pkOrId) {
+      var id = resolveId(pkOrId);
+      var versions = store.getIn([collectionName, id], immutable.Stack());
       var record = versions.first();
       if (record) {
         var size = versions.size;
@@ -1409,14 +1435,14 @@ var Store = {
      * @param {object} options
      * @param {boolean} options.quiet
      */
-    Store.prototype.remove = function (collectionName, id) {
+    Store.prototype.remove = function (collectionName, pkOrId) {
       var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
 
+      var id = resolveId(pkOrId);
       var object = this.get(collectionName, id);
       var meta = getMeta(collectionName, object);
-      store = store.removeIn([collectionName, resolveId(id)]);
-      delete keyMap[meta.pk];
-      delete keyMap[meta.id];
+      store = store.removeIn([collectionName, id]);
+      keyMap.unlink(meta.pk, meta.id);
       delete object.__tmp_id;
       delete object.__sym_id;
       emit({
@@ -1436,8 +1462,8 @@ var Store = {
       var _this2 = this;
 
       this.getAll(collectionName, keys$$1).forEach(function (record) {
-        var _getMeta2 = getMeta(collectionName, record),
-            id = _getMeta2.id;
+        var _getMeta = getMeta(collectionName, record),
+            id = _getMeta.id;
 
         _this2.remove(collectionName, id);
       });
@@ -1468,8 +1494,8 @@ var Store = {
     Store.prototype.rebase = function (collectionName, data) {
       var record = immutable.isImmutable(data) ? data.toJS() : data;
 
-      var _getMeta3 = getMeta(collectionName, record),
-          id = _getMeta3.id;
+      var _getMeta2 = getMeta(collectionName, record),
+          id = _getMeta2.id;
 
       var base = null;
       if (record.__sym_id) {
@@ -1499,8 +1525,8 @@ var Store = {
       var record = this.createRecord(collectionName, data);
       var latest = convert(record);
 
-      var _getMeta4 = getMeta(collectionName, latest),
-          id = _getMeta4.id;
+      var _getMeta3 = getMeta(collectionName, latest),
+          id = _getMeta3.id;
 
       var versions = store.getIn([collectionName, id], immutable.Stack());
       store = store.setIn([collectionName, id], versions.unshift(latest));
@@ -1520,8 +1546,8 @@ var Store = {
      * @return {boolean}
      */
     Store.prototype.hasChanges = function (collectionName, data) {
-      var _getMeta5 = getMeta(collectionName, data),
-          id = _getMeta5.id;
+      var _getMeta4 = getMeta(collectionName, data),
+          id = _getMeta4.id;
 
       var record = this.get(collectionName, id) || {};
       return record.__sym_id === data.__sym_id ? fastDiff(record, data) : false;
@@ -1537,10 +1563,10 @@ var Store = {
 
       var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
 
-      var _getMeta6 = getMeta(collectionName, data),
-          id = _getMeta6.id,
-          pk = _getMeta6.pk,
-          basePath = _getMeta6.basePath;
+      var _getMeta5 = getMeta(collectionName, data),
+          id = _getMeta5.id,
+          pk = _getMeta5.pk,
+          basePath = _getMeta5.basePath;
 
       return http(_extends({
         url: basePath + '/' + collectionName + '/' + pk,
@@ -1562,10 +1588,10 @@ var Store = {
 
       var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
 
-      var _getMeta7 = getMeta(collectionName, data),
-          id = _getMeta7.id,
-          pk = _getMeta7.pk,
-          basePath = _getMeta7.basePath;
+      var _getMeta6 = getMeta(collectionName, data),
+          id = _getMeta6.id,
+          pk = _getMeta6.pk,
+          basePath = _getMeta6.basePath;
 
       var promise = void 0;
       if (isValidId(pk)) {
@@ -1687,7 +1713,7 @@ var Store = {
 };
 
 var hasVdata = function hasVdata(o) {
-  return !!get(o, '$options.vdata');
+  return !!get$1(o, '$options.vdata');
 };
 
 /**
@@ -1703,12 +1729,12 @@ var vdata$1 = {
     options = isFunction(options) ? options(Vue) : options;
     var store = Store.create(options);
     Object.defineProperty(Vue, '$store', {
-      get: function get() {
+      get: function get$1() {
         return store;
       }
     });
     Object.defineProperty(Vue.prototype, '$store', {
-      get: function get() {
+      get: function get$1() {
         return store;
       }
     });
