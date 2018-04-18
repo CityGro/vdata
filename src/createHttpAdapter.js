@@ -1,14 +1,17 @@
-import defaults from 'lodash/defaults'
+import defaults from 'lodash/defaultsDeep'
 import fetchWrapper from './fetchWrapper'
+import makeRequestKey from './makeRequestKey'
 import microTask from '@r14c/async-utils/microTask'
 import pick from 'lodash/pick'
 import stringify from 'json-stable-stringify'
 import toQueryString from './toQueryString'
-import makeRequestKey from './makeRequestKey'
 
 const withDefaults = (options) => pick(defaults({}, options, {
-  credentials: 'same-origin'
-}), ['headers', 'body', 'method', 'credentials'])
+  credentials: 'same-origin',
+  headers: {
+    'X-Clacks-Overhead': 'GNU Terry Pratchett'
+  }
+}), ['headers', 'body', 'method', 'credentials', 'signal'])
 
 const createHttpAdapter = (options = {}) => {
   let promiseCache = {}
@@ -16,9 +19,12 @@ const createHttpAdapter = (options = {}) => {
   const deserialize = options.deserialize || ((response, data) => data)
   const createRequest = (url, options) => {
     const request = withDefaults(options)
-    return adapter(url, {...request, body: (request.body) ? stringify(request.body) : undefined})
+    return adapter(url, {
+      ...request,
+      body: (request.body) ? stringify(request.body) : undefined
+    })
       .then((res) => {
-        if (res.status === 200) {
+        if (res.status >= 200 && res.status < 400) {
           return res.json().then((data) => microTask(() => deserialize(res, data)))
         } else {
           throw new Error(res.statusText, res)
@@ -39,6 +45,9 @@ const createHttpAdapter = (options = {}) => {
       if (!promise || force === true) {
         promise = promiseCache[key] = createRequest(url, options)
       }
+      setTimeout(() => {
+        delete promiseCache[key] // evict promise cache after 10s
+      }, 1000 * 10)
     } else {
       promise = createRequest(url, options)
     }

@@ -291,6 +291,20 @@ describe('Store', () => {
       })
       expect(result).toHaveLength(1000)
     })
+
+    test('query cache returns correct results', async () => {
+      const resultA = await store.findAll('myCollection', {
+        name: 'jeff'
+      })
+      store.add('myCollection', {
+        id: 999,
+        name: 'chef'
+      })
+      const resultB = await store.findAll('myCollection', {
+        name: 'jeff'
+      })
+      expect(resultA).toEqual(resultB)
+    })
   })
 
   describe('destroy', async () => {

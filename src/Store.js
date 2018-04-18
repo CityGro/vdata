@@ -1,14 +1,15 @@
 import EventEmitter from 'events'
+import KeyMap from './KeyMap'
 import cloneDeep from 'lodash/cloneDeep'
 import createHttpAdapter from './createHttpAdapter'
 import fastDiff from './fastDiff'
 import isArray from 'lodash/isArray'
+import makeQueryKey from './makeQueryKey'
 import mget from './mget'
 import microTask from '@r14c/async-utils/microTask'
 import rebase from './rebase'
 import registerSchemas from './registerSchemas'
 import toNumber from 'lodash/toNumber'
-import toString from 'lodash/toString'
 import uniqueId from './uniqueId'
 import {
   Map,
@@ -47,40 +48,27 @@ export default {
     const http = createHttpAdapter(options)
     const models = cloneDeep(options.models)
     const storeId = uniqueId(null, 1e5)
-    let keyMap = {
-      map: {},
-      get (key) {
-        key = toString(key)
-        return this.map[key]
-      },
-      link (a, b) {
-        a = toString(a)
-        b = toString(b)
-        this.map[a] = b
-        this.map[b] = a
-      },
-      unlink (a, b) {
-        a = toString(a)
-        b = toString(b)
-        delete this.map[a]
-        delete this.map[b]
-      }
-    }
+    const idRegex = /^[0-9a-z]+?-[0-9a-z]+$/i
+    const keyMap = KeyMap.create()
+    let queryCache = {}
     let store = registerSchemas(Map(), options.models)
     /**
      * @param {string} id
      */
-    const resolveId = (id) => {
-      const isTmp = /^[0-9a-z]+?-[0-9a-z]+$/i.test(id)
-      return (isTmp) ? id : keyMap.get(id)
+    const resolveId = (collectionName, id) => {
+      const isTmp = idRegex.test(id)
+      return (isTmp) ? id : keyMap.get(collectionName, id)
     }
     /**
      * @param {string} id
      */
-    const resolvePk = (id) => {
-      const isTmp = /^[0-9a-z]+-[0-9a-z]+$/i.test(id)
-      return (isTmp) ? keyMap.get(id) : id
+    const resolvePk = (collectionName, id) => {
+      const isTmp = idRegex.test(id)
+      return (isTmp) ? keyMap.get(collectionName, id) : id
     }
+    /**
+     * @param {string} collectionName
+     */
     const getBasePath = (collectionName) => {
       const model = models[collectionName]
       return model.basePath || options.basePath || ''
@@ -116,8 +104,9 @@ export default {
      */
     let Store = function () {
       evt.setMaxListeners(0) // no limit
-      this.models = cloneDeep(options.models)
+      this.models = options.models
       this.storeId = storeId
+      this.queryCacheTimeout = options.queryCacheTimeout || 1000 * 60 * 5 // evict query cache after 5min
     }
     /**
      * @param {string} collection
@@ -129,12 +118,12 @@ export default {
       let pk = mget(data, idAttribute)
       let id = mget(data, '__tmp_id')
       if (pk && !id) {
-        id = keyMap.get(pk) || uniqueId(storeId) // get or gen id
-        keyMap.link(pk, id) // 2x link
+        id = keyMap.get(collectionName, pk) || uniqueId(storeId) // get or gen id
+        keyMap.link(collectionName, pk, id) // 2x link
       } else if (!pk && id) {
         // noop
       } else if (pk && id) {
-        keyMap.link(pk, id) // 2x link
+        keyMap.link(collectionName, pk, id) // 2x link
       } else if (!pk && !id) {
         id = uniqueId(storeId) // gen id
       }
@@ -145,7 +134,7 @@ export default {
      * @param {string} id
      */
     Store.prototype.get = function (collectionName, pkOrId) {
-      const id = resolveId(pkOrId)
+      const id = resolveId(collectionName, pkOrId)
       const versions = store.getIn([collectionName, id], Stack())
       const record = versions.first()
       if (record) {
@@ -183,11 +172,11 @@ export default {
      * @param {boolean} options.quiet
      */
     Store.prototype.remove = function (collectionName, pkOrId, options = {}) {
-      const id = resolveId(pkOrId)
+      const id = resolveId(collectionName, pkOrId)
       const object = this.get(collectionName, id)
       const meta = getMeta(collectionName, object)
       store = store.removeIn([collectionName, id])
-      keyMap.unlink(meta.pk, meta.id)
+      keyMap.unlink(collectionName, meta.pk, meta.id)
       delete object.__tmp_id
       delete object.__sym_id
       emit({
@@ -351,7 +340,7 @@ export default {
       if (!isValidId(id)) {
         promise = Promise.resolve(null)
       } else if (!data || force === true) {
-        const pk = resolvePk(id)
+        const pk = resolvePk(collectionName, id)
         const basePath = getBasePath(collectionName)
         const request = {
           url: `${basePath}/${collectionName}/${pk}`,
@@ -375,7 +364,9 @@ export default {
       let promise
       const force = options.force || false
       const basePath = getBasePath(collectionName)
-      const data = this.getAll(collectionName)
+      const key = makeQueryKey(collectionName, query)
+      const cachedKeys = queryCache[key]
+      const data = this.getAll(collectionName, cachedKeys)
       if (!data.length || force === true) {
         const request = {
           url: `${basePath}/${collectionName}`,
@@ -384,7 +375,20 @@ export default {
           ...options
         }
         promise = http(request)
-          .then((result) => microTask(() => result.map((data) => this.add(collectionName, data))))
+          .then((result) => microTask(() => {
+            let resultKeys = []
+            const records = result.map((data) => {
+              const record = this.add(collectionName, data)
+              const {id} = getMeta(collectionName, record)
+              resultKeys.push(id)
+              return record
+            })
+            queryCache[key] = resultKeys
+            setTimeout(() => {
+              delete queryCache[key]
+            }, this.queryCacheTimeout)
+            return records
+          }))
       } else {
         promise = Promise.resolve(data)
       }

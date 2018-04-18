@@ -14,16 +14,16 @@ var camelCase = _interopDefault(require('lodash/camelCase'));
 var concat = _interopDefault(require('lodash/concat'));
 var join = _interopDefault(require('lodash/join'));
 var tail = _interopDefault(require('lodash/tail'));
-var defaults = _interopDefault(require('lodash/defaults'));
+var defaults = _interopDefault(require('lodash/defaultsDeep'));
 var whatwgFetch = require('whatwg-fetch');
 var cloneDeep = _interopDefault(require('lodash/cloneDeep'));
 var isFunction = _interopDefault(require('lodash/isFunction'));
+var map = _interopDefault(require('lodash/map'));
+var sum = _interopDefault(require('lodash/sum'));
 var microTask = _interopDefault(require('@r14c/async-utils/microTask'));
 var pick = _interopDefault(require('lodash/pick'));
 var stringify = _interopDefault(require('json-stable-stringify'));
 var sort = _interopDefault(require('lodash/sortBy'));
-var map = _interopDefault(require('lodash/map'));
-var sum = _interopDefault(require('lodash/sum'));
 var get$1 = _interopDefault(require('lodash/get'));
 var merge = _interopDefault(require('lodash/merge'));
 var to = _interopDefault(require('@r14c/async-utils/to'));
@@ -36,13 +36,13 @@ var keys = _interopDefault(require('lodash/keys'));
 var zip = _interopDefault(require('lodash/fp/zip'));
 var Queue = _interopDefault(require('@r14c/async-utils/Queue'));
 var EventEmitter = _interopDefault(require('events'));
+var toString = _interopDefault(require('lodash/toString'));
 var immutable = require('immutable');
 var isEqual = _interopDefault(require('lodash/isEqual'));
 var isNil = _interopDefault(require('lodash/isNil'));
 var isObject = _interopDefault(require('lodash/isObject'));
 var transform = _interopDefault(require('lodash/transform'));
 var toNumber = _interopDefault(require('lodash/toNumber'));
-var toString = _interopDefault(require('lodash/toString'));
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) {
   return typeof obj;
@@ -503,6 +503,20 @@ fetchWrapper.addInterceptor = function (fn) {
   interceptors.push(fn);
 };
 
+var makeRequestKey = function makeRequestKey(url, options) {
+  var headers = Object.entries(options.headers || {}).map(function (_ref) {
+    var _ref2 = slicedToArray(_ref, 2),
+        key = _ref2[0],
+        val = _ref2[1];
+
+    return key + ':' + val;
+  });
+  var values = map('' + headers + url, function (c) {
+    return c.codePointAt(0);
+  });
+  return options.method + '-' + sum(values);
+};
+
 /**
  * @param {object} o
  * @param {string} prefix
@@ -520,24 +534,13 @@ var toQueryString = function toQueryString(o, prefix) {
   }).join('&');
 };
 
-var makeRequestKey = function makeRequestKey(url, options) {
-  var headers = Object.entries(options.headers || {}).map(function (_ref) {
-    var _ref2 = slicedToArray(_ref, 2),
-        key = _ref2[0],
-        val = _ref2[1];
-
-    return key + ':' + val;
-  });
-  var values = map('' + headers + url, function (c) {
-    return c.codePointAt(0);
-  });
-  return options.method + '-' + sum(values);
-};
-
 var withDefaults = function withDefaults(options) {
   return pick(defaults({}, options, {
-    credentials: 'same-origin'
-  }), ['headers', 'body', 'method', 'credentials']);
+    credentials: 'same-origin',
+    headers: {
+      'X-Clacks-Overhead': 'GNU Terry Pratchett'
+    }
+  }), ['headers', 'body', 'method', 'credentials', 'signal']);
 };
 
 var createHttpAdapter = function createHttpAdapter() {
@@ -550,8 +553,10 @@ var createHttpAdapter = function createHttpAdapter() {
   };
   var createRequest = function createRequest(url, options) {
     var request = withDefaults(options);
-    return adapter(url, _extends({}, request, { body: request.body ? stringify(request.body) : undefined })).then(function (res) {
-      if (res.status === 200) {
+    return adapter(url, _extends({}, request, {
+      body: request.body ? stringify(request.body) : undefined
+    })).then(function (res) {
+      if (res.status >= 200 && res.status < 400) {
         return res.json().then(function (data) {
           return microTask(function () {
             return deserialize(res, data);
@@ -578,6 +583,9 @@ var createHttpAdapter = function createHttpAdapter() {
       if (!promise || force === true) {
         promise = promiseCache[key] = createRequest(url, options);
       }
+      setTimeout(function () {
+        delete promiseCache[key]; // evict promise cache after 10s
+      }, 1000 * 10);
     } else {
       promise = createRequest(url, options);
     }
@@ -1193,6 +1201,30 @@ var createHandler = (function (Vue, store) {
   };
 });
 
+var KeyMap = {
+  create: function create() {
+    var map$$1 = {};
+    return {
+      get: function get(collectionName, key) {
+        key = collectionName + '-' + toString(key);
+        return map$$1[key];
+      },
+      link: function link(collectionName, a, b) {
+        a = toString(a);
+        b = toString(b);
+        map$$1[collectionName + '-' + a] = b;
+        map$$1[collectionName + '-' + b] = a;
+      },
+      unlink: function unlink(collectionName, a, b) {
+        a = collectionName + '-' + toString(a);
+        b = collectionName + '-' + toString(b);
+        delete map$$1[a];
+        delete map$$1[b];
+      }
+    };
+  }
+};
+
 /**
  * quickly determine if two objects differ
  *
@@ -1203,6 +1235,13 @@ var createHandler = (function (Vue, store) {
 var fastDiff = (function (a, b) {
   return stringify(a) !== stringify(b);
 });
+
+var makeQueryKey = function makeQueryKey(collectionName, query) {
+  var values = map(stringify(query), function (c) {
+    return c.codePointAt(0);
+  });
+  return collectionName + '-' + sum(values);
+};
 
 var mget = (function (value, path) {
   if (immutable.isImmutable(value)) {
@@ -1297,40 +1336,27 @@ var Store = {
     var http = createHttpAdapter(options);
     var models = cloneDeep(options.models);
     var storeId = uniqueId(null, 1e5);
-    var keyMap = {
-      map: {},
-      get: function get(key) {
-        key = toString(key);
-        return this.map[key];
-      },
-      link: function link(a, b) {
-        a = toString(a);
-        b = toString(b);
-        this.map[a] = b;
-        this.map[b] = a;
-      },
-      unlink: function unlink(a, b) {
-        a = toString(a);
-        b = toString(b);
-        delete this.map[a];
-        delete this.map[b];
-      }
-    };
+    var idRegex = /^[0-9a-z]+?-[0-9a-z]+$/i;
+    var keyMap = KeyMap.create();
+    var queryCache = {};
     var store = registerSchemas(immutable.Map(), options.models);
     /**
      * @param {string} id
      */
-    var resolveId = function resolveId(id) {
-      var isTmp = /^[0-9a-z]+?-[0-9a-z]+$/i.test(id);
-      return isTmp ? id : keyMap.get(id);
+    var resolveId = function resolveId(collectionName, id) {
+      var isTmp = idRegex.test(id);
+      return isTmp ? id : keyMap.get(collectionName, id);
     };
     /**
      * @param {string} id
      */
-    var resolvePk = function resolvePk(id) {
-      var isTmp = /^[0-9a-z]+-[0-9a-z]+$/i.test(id);
-      return isTmp ? keyMap.get(id) : id;
+    var resolvePk = function resolvePk(collectionName, id) {
+      var isTmp = idRegex.test(id);
+      return isTmp ? keyMap.get(collectionName, id) : id;
     };
+    /**
+     * @param {string} collectionName
+     */
     var getBasePath = function getBasePath(collectionName) {
       var model = models[collectionName];
       return model.basePath || options.basePath || '';
@@ -1368,8 +1394,9 @@ var Store = {
      */
     var Store = function Store() {
       evt.setMaxListeners(0); // no limit
-      this.models = cloneDeep(options.models);
+      this.models = options.models;
       this.storeId = storeId;
+      this.queryCacheTimeout = options.queryCacheTimeout || 1000 * 60 * 5; // evict query cache after 5min
     };
     /**
      * @param {string} collection
@@ -1383,12 +1410,12 @@ var Store = {
       var pk = mget(data, idAttribute);
       var id = mget(data, '__tmp_id');
       if (pk && !id) {
-        id = keyMap.get(pk) || uniqueId(storeId); // get or gen id
-        keyMap.link(pk, id); // 2x link
+        id = keyMap.get(collectionName, pk) || uniqueId(storeId); // get or gen id
+        keyMap.link(collectionName, pk, id); // 2x link
       } else if (!pk && id) {
         // noop
       } else if (pk && id) {
-        keyMap.link(pk, id); // 2x link
+        keyMap.link(collectionName, pk, id); // 2x link
       } else if (!pk && !id) {
         id = uniqueId(storeId); // gen id
       }
@@ -1399,7 +1426,7 @@ var Store = {
      * @param {string} id
      */
     Store.prototype.get = function (collectionName, pkOrId) {
-      var id = resolveId(pkOrId);
+      var id = resolveId(collectionName, pkOrId);
       var versions = store.getIn([collectionName, id], immutable.Stack());
       var record = versions.first();
       if (record) {
@@ -1438,11 +1465,11 @@ var Store = {
     Store.prototype.remove = function (collectionName, pkOrId) {
       var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
 
-      var id = resolveId(pkOrId);
+      var id = resolveId(collectionName, pkOrId);
       var object = this.get(collectionName, id);
       var meta = getMeta(collectionName, object);
       store = store.removeIn([collectionName, id]);
-      keyMap.unlink(meta.pk, meta.id);
+      keyMap.unlink(collectionName, meta.pk, meta.id);
       delete object.__tmp_id;
       delete object.__sym_id;
       emit({
@@ -1642,7 +1669,7 @@ var Store = {
       if (!isValidId(id)) {
         promise = Promise.resolve(null);
       } else if (!data || force === true) {
-        var pk = resolvePk(id);
+        var pk = resolvePk(collectionName, id);
         var basePath = getBasePath(collectionName);
         var request = _extends({
           url: basePath + '/' + collectionName + '/' + pk,
@@ -1672,7 +1699,9 @@ var Store = {
       var promise = void 0;
       var force = options.force || false;
       var basePath = getBasePath(collectionName);
-      var data = this.getAll(collectionName);
+      var key = makeQueryKey(collectionName, query);
+      var cachedKeys = queryCache[key];
+      var data = this.getAll(collectionName, cachedKeys);
       if (!data.length || force === true) {
         var request = _extends({
           url: basePath + '/' + collectionName,
@@ -1681,9 +1710,21 @@ var Store = {
         }, options);
         promise = http(request).then(function (result) {
           return microTask(function () {
-            return result.map(function (data) {
-              return _this7.add(collectionName, data);
+            var resultKeys = [];
+            var records = result.map(function (data) {
+              var record = _this7.add(collectionName, data);
+
+              var _getMeta7 = getMeta(collectionName, record),
+                  id = _getMeta7.id;
+
+              resultKeys.push(id);
+              return record;
             });
+            queryCache[key] = resultKeys;
+            setTimeout(function () {
+              delete queryCache[key];
+            }, _this7.queryCacheTimeout);
+            return records;
           });
         });
       } else {
