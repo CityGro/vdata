@@ -1,28 +1,48 @@
 import defaults from 'lodash/defaultsDeep'
 import fetchWrapper from './fetchWrapper'
+import includes from 'lodash/includes'
 import makeRequestKey from './makeRequestKey'
 import microTask from '@r14c/async-utils/microTask'
+import omitNil from './omitNil'
 import pick from 'lodash/pick'
 import stringify from 'json-stable-stringify'
 import toQueryString from './toQueryString'
 
-const withDefaults = (options) => pick(defaults({}, options, {
-  credentials: 'same-origin',
-  headers: {
-    'X-Clacks-Overhead': 'GNU Terry Pratchett'
+const capitalize = (s) => `${s[0].toUpperCase()}${s.slice(1)}`
+
+const normalizeHeaders = (options) => {
+  let headers = {}
+  if (includes(['PUT', 'POST'], options.method)) {
+    headers['Content-Type'] = 'application/json'
   }
+  Object.entries(options.headers || {}).forEach(([header, value]) => {
+    header = header.split('-').map(capitalize).join('-')
+    headers[header] = value
+  })
+  return headers
+}
+
+const getUrl = (options) => {
+  let url = options.url
+  const params = omitNil(options.params || {})
+  const qs = toQueryString(params)
+  if (qs) {
+    url += `?${qs}`
+  }
+  return url
+}
+
+const withDefaults = (options) => pick(defaults({}, options, {
+  credentials: 'same-origin'
 }), ['headers', 'body', 'method', 'credentials', 'signal'])
 
 const createHttpAdapter = (options = {}) => {
   let promiseCache = {}
   const adapter = options.adapter || fetchWrapper
   const deserialize = options.deserialize || ((response, data) => data)
-  const createRequest = (url, options) => {
-    const request = withDefaults(options)
-    return adapter(url, {
-      ...request,
-      body: (request.body) ? stringify(request.body) : undefined
-    })
+  const cacheTimeout = 1000 * 10 // evict promise cache keys after 10s
+  const createRequest = (url, request) => {
+    return adapter(url, request)
       .then((res) => {
         if (res.status >= 200 && res.status < 400) {
           return res.json().then((data) => microTask(() => deserialize(res, data)))
@@ -33,23 +53,22 @@ const createHttpAdapter = (options = {}) => {
   }
   return (options = {}) => {
     let promise
-    let url = options.url
     const force = options.force || false
-    const qs = toQueryString(options.params || {})
-    if (qs) {
-      url += `?${qs}`
-    }
+    const url = getUrl(options)
+    options.headers = normalizeHeaders(options)
+    options.body = (options.body) ? stringify(options.body) : undefined
+    const request = withDefaults(options)
     if (options.method === 'GET') {
-      const key = makeRequestKey(url, options)
+      const key = makeRequestKey(url, request)
       promise = promiseCache[key]
       if (!promise || force === true) {
-        promise = promiseCache[key] = createRequest(url, options)
+        promise = promiseCache[key] = createRequest(url, request)
       }
       setTimeout(() => {
-        delete promiseCache[key] // evict promise cache after 10s
-      }, 1000 * 10)
+        delete promiseCache[key]
+      }, cacheTimeout)
     } else {
-      promise = createRequest(url, options)
+      promise = createRequest(url, request)
     }
     return promise
   }

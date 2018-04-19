@@ -117,15 +117,19 @@ describe('Store', () => {
       expect(recordAt1.__sym_id).toBe('0-2')
       expect(recordAt0.__tmp_id).toBe(recordAt1.__tmp_id)
     })
+  })
 
+  describe('addList', () => {
     test('add many records quickly', () => {
-      range(0, 100).forEach((i) => {
-        store.add('myCollection', {
-          id: i + 1,
-          score: (i + 5) * 10
-        })
-      })
-      expect(store.getAll('myCollection')).toHaveLength(100)
+      const data = range(0, 1000).map((i) => ({
+        id: i + 1,
+        score: (i + 5) * 10
+      }))
+      const records = store.addList('myCollection', data)
+      const result = store.getList('myCollection')
+      expect(result.length).toBe(records.length)
+      expect(result).toHaveLength(1000)
+      expect(records).toHaveLength(1000)
     })
   })
 
@@ -152,13 +156,13 @@ describe('Store', () => {
     })
   })
 
-  describe('getAll', () => {
+  describe('getList', () => {
     const names = ['jeff', 'cirno', 'fampai']
     test('get every record in a collection', () => {
       names.forEach((name, i) => {
         store.add('myCollection', {id: i + 1, name})
       })
-      const records = store.getAll('myCollection')
+      const records = store.getList('myCollection')
       expect(records).toBeDefined()
       expect(records).toHaveLength(3)
       names.forEach((name, i) => {
@@ -174,7 +178,7 @@ describe('Store', () => {
         id += 1
         store.add('myCollection', {id, name})
       })
-      const records = store.getAll('myCollection', [1, 3])
+      const records = store.getList('myCollection', [1, 3])
       expect(records).toBeDefined()
       expect(records).toHaveLength(2)
       expect(records[0].name).toBe('jeff')

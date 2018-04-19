@@ -3,13 +3,16 @@ import flattenMixinTree from './flattenMixinTree'
 
 export default (Vue, store) => {
   const queue = Queue.create({
+    concurrency: 2,
     next: () => new Promise((resolve) => Vue.nextTick(() => resolve()))
   })
   let handlers = {}
   store.on('all', (message) => {
-    Object.values(handlers).forEach((vmHandler) => {
-      // enqueue a task to handle the vdata listeners for a particular vm
-      queue.push(() => vmHandler.run(message))
+    // enqueue a task to handle the vdata listeners for a particular vm
+    queue.push(() => {
+      Object.values(handlers).forEach((vmHandler) => {
+        vmHandler.run(message)
+      })
     })
   })
   return {

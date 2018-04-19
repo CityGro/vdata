@@ -152,18 +152,23 @@ export default {
      * @param {string} collection
      * @param {string[]} [keys]
      */
-    Store.prototype.getAll = function (collectionName, keys) {
+    Store.prototype.getList = function (collectionName, keys) {
+      let result
       if (isArray(keys)) {
-        return (keys.length)
+        result = (keys.length)
           ? keys.map((key) => this.get(collectionName, key))
           : []
       } else {
-        return store
+        result = store
           .get(collectionName)
           .keySeq()
           .map((key) => this.get(collectionName, key))
           .toJS()
       }
+      return result
+    }
+    Store.prototype.getAll = function () {
+      return this.getList.apply(this, arguments)
     }
     /**
      * @param {string} collectionName
@@ -192,11 +197,22 @@ export default {
      * @param {string} collection
      * @param {string[]} keys
      */
-    Store.prototype.removeAll = function (collectionName, keys) {
-      this.getAll(collectionName, keys).forEach((record) => {
+    Store.prototype.removeList = function (collectionName, keys, options = {}) {
+      const records = this.getAll(collectionName, keys).map((record) => {
         const {id} = getMeta(collectionName, record)
-        this.remove(collectionName, id)
+        return this.remove(collectionName, id, {quiet: true})
       })
+      emit({
+        collectionName,
+        event: 'remove-list',
+        records
+      }, {
+        quiet: options.quiet
+      })
+      return records
+    }
+    Store.prototype.removeAll = function () {
+      return this.removeList.apply(this, arguments)
     }
     /**
      * remove all records from all collections
@@ -260,6 +276,22 @@ export default {
     }
     /**
      * @param {string} collectionName
+     * @param {object[]} data
+     * @return {object[]}
+     */
+    Store.prototype.addList = function (collectionName, data, options = {}) {
+      const records = data.map((item) => this.add(collectionName, item, {quiet: true}))
+      emit({
+        collectionName,
+        event: 'add-list',
+        records
+      }, {
+        quiet: options.quiet
+      })
+      return records
+    }
+    /**
+     * @param {string} collectionName
      * @param {object} data
      * @return {boolean}
      */
@@ -297,6 +329,9 @@ export default {
      */
     Store.prototype.save = function (collectionName, data, options = {}) {
       const {id, pk, basePath} = getMeta(collectionName, data)
+      const headers = {
+        'Content-Type': 'application/json'
+      }
       let promise
       if (isValidId(pk)) {
         promise = http({
@@ -307,6 +342,7 @@ export default {
             __tmp_id: undefined,
             __sym_id: undefined
           },
+          headers,
           ...options
         })
       } else {
@@ -318,6 +354,7 @@ export default {
             __tmp_id: undefined,
             __sym_id: undefined
           },
+          headers,
           ...options
         })
       }
@@ -378,7 +415,7 @@ export default {
           .then((result) => microTask(() => {
             let resultKeys = []
             const records = result.map((data) => {
-              const record = this.add(collectionName, data)
+              const record = this.createRecord(collectionName, data)
               const {id} = getMeta(collectionName, record)
               resultKeys.push(id)
               return record
@@ -387,7 +424,7 @@ export default {
             setTimeout(() => {
               delete queryCache[key]
             }, this.queryCacheTimeout)
-            return records
+            return this.addList(collectionName, records)
           }))
       } else {
         promise = Promise.resolve(data)

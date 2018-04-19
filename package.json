@@ -114,7 +114,7 @@
     "vue": ">=2.1.0"
   },
   "dependencies": {
-    "@r14c/async-utils": "0.3.0",
+    "@r14c/async-utils": "0.3.2",
     "immutable": "4.0.0-rc.9",
     "json-stable-stringify": "^1.0.1",
     "lodash": "^4.17.2",
