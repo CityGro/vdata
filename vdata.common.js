@@ -487,7 +487,7 @@ var createDataFlowMixin = function createDataFlowMixin(valueProp) {
 };
 
 /* global fetch */
-var capitalize$1 = function capitalize$1(s) {
+var capitalize = function capitalize(s) {
   return '' + s[0].toUpperCase() + s.slice(1);
 };
 
@@ -506,7 +506,7 @@ var fetchWrapper = function fetchWrapper(url, options) {
           header = _ref2[0],
           value = _ref2[1];
 
-      header = header.split('-').map(capitalize$1).join('-');
+      header = header.split('-').map(capitalize).join('-');
       headers[header] = value;
     });
     return Promise.resolve(_extends({}, options, { headers: headers }));
@@ -581,23 +581,11 @@ var toQueryString = function toQueryString() {
   }).join('&');
 };
 
-var capitalize = function capitalize(s) {
-  return '' + s[0].toUpperCase() + s.slice(1);
-};
-
 var normalizeHeaders = function normalizeHeaders(options) {
-  var headers = {};
+  var headers = _extends({}, options.headers);
   if (includes(['PUT', 'POST'], options.method)) {
     headers['Content-Type'] = 'application/json';
   }
-  Object.entries(options.headers || {}).forEach(function (_ref) {
-    var _ref2 = slicedToArray(_ref, 2),
-        header = _ref2[0],
-        value = _ref2[1];
-
-    header = header.split('-').map(capitalize).join('-');
-    headers[header] = value;
-  });
   return headers;
 };
 

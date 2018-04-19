@@ -8,17 +8,11 @@ import pick from 'lodash/pick'
 import stringify from 'json-stable-stringify'
 import toQueryString from './toQueryString'
 
-const capitalize = (s) => `${s[0].toUpperCase()}${s.slice(1)}`
-
 const normalizeHeaders = (options) => {
-  let headers = {}
+  let headers = {...options.headers}
   if (includes(['PUT', 'POST'], options.method)) {
     headers['Content-Type'] = 'application/json'
   }
-  Object.entries(options.headers || {}).forEach(([header, value]) => {
-    header = header.split('-').map(capitalize).join('-')
-    headers[header] = value
-  })
   return headers
 }
 

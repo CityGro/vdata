@@ -3348,8 +3348,6 @@
         var It = q(D(function(t) {
             return !B(t);
         })), Et = q(C(B)), zt = function(t) {
-            return "" + t[0].toUpperCase() + t.slice(1);
-        }, kt = function(t) {
             var r = t.url, e = function t() {
                 var r = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : {}, e = arguments[1];
                 return U((0, c.default)(r), function(t) {
@@ -3362,7 +3360,7 @@
                 return x(t) ? It(t) : Et(t);
             }(t.params || {}));
             return e && (r += "?" + e), r;
-        }, Mt = function() {
+        }, kt = function() {
             var t = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : {}, r = {}, e = t.adapter || St, n = t.deserialize || function(t, r) {
                 return r;
             }, o = function(t, r) {
@@ -3376,14 +3374,11 @@
                 });
             };
             return function() {
-                var t = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : {}, e = void 0, n = t.force || !1, i = kt(t);
+                var t = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : {}, e = void 0, n = t.force || !1, i = zt(t);
                 t.headers = function(t) {
-                    var r = {};
+                    var r = ct({}, t.headers);
                     return m([ "PUT", "POST" ], t.method) && (r["Content-Type"] = "application/json"), 
-                    (0, c.default)(t.headers || {}).forEach(function(t) {
-                        var e = ft(t, 2), n = e[0], o = e[1];
-                        n = n.split("-").map(zt).join("-"), r[n] = o;
-                    }), r;
+                    r;
                 }(t), t.body = t.body ? W(t.body) : void 0;
                 var u = function(t) {
                     return F(z({}, t, {
@@ -3406,7 +3401,7 @@
                 } else e = o(i, u);
                 return e;
             };
-        }, Rt = function(t) {
+        }, Mt = function(t) {
             var r, e, n = t.collectionName, o = t.localPropertyName || A(n).slice(0, -1), i = t.idPropertyName || "id", u = t.templateName || o + "Template", a = t.template || {}, c = t.recordPrimaryKey || "_id", f = o + "RecordId", p = o + "HasChanges", h = o + "Save", l = o + "Loading", v = t.idType || String, d = t.requestOptions || {}, y = o + "RequestOptions", _ = function(t, r, e) {
                 var n = t[r];
                 return delete t[r], void 0 === n ? e : n;
@@ -3514,30 +3509,30 @@
                     }))();
                 }), e)
             };
-        }, Pt = function t() {
+        }, Rt = function t() {
             var r = [];
             return (arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : []).forEach(function(e) {
                 e.mixins && e.mixins.length && (r = [].concat(pt(r), pt(t(e.mixins)))), r.push(e);
             }), r;
-        }, Tt = function(t, r) {
+        }, Pt = function(t, r) {
             var e = k(N(t, "$options." + r, {})), n = N(t, "$options.mixins", []);
-            return Pt(n).filter(function(t) {
+            return Rt(n).filter(function(t) {
                 return t[r];
             }).forEach(function(t) {
                 e = (0, l.default)(e, t[r]);
             }), V(e) ? null : e;
-        }, Lt = [ "Default", "Lazy" ], Dt = function(t) {
-            return (arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : Lt).find(function(r) {
+        }, Tt = [ "Default", "Lazy" ], Lt = function(t) {
+            return (arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : Tt).find(function(r) {
                 return t.endsWith(r);
             });
-        }, qt = {
+        }, Dt = {
             beforeCreate: function() {
                 this._asyncReload = function(t) {
                     return function(t) {
-                        var r = this, e = arguments.length > 1 && void 0 !== arguments[1] && arguments[1], n = Tt(this, "asyncData");
+                        var r = this, e = arguments.length > 1 && void 0 !== arguments[1] && arguments[1], n = Pt(this, "asyncData");
                         if (n) {
                             var o = [], i = Y(n).filter(function(t) {
-                                return !Dt(t);
+                                return !Lt(t);
                             }).filter(function(r) {
                                 return void 0 === t || r === t;
                             }).filter(function(t) {
@@ -3587,10 +3582,10 @@
                 }
             },
             data: function() {
-                var t = this, r = Tt(this, "asyncData");
+                var t = this, r = Pt(this, "asyncData");
                 if (r) {
                     var e = Y(r).filter(function(t) {
-                        return !Dt(t);
+                        return !Lt(t);
                     }), n = e.map(function(t) {
                         return t + "Error";
                     }), o = {
@@ -3612,9 +3607,9 @@
                 }
                 return {};
             }
-        }, Bt = function(t, r) {
+        }, qt = function(t, r) {
             return tt.isImmutable(t) ? t.getIn(r.split(".")) : N(t, r);
-        }, Ct = q(u.default, JSON.parse), Ft = function() {
+        }, Bt = q(u.default, JSON.parse), Ct = function() {
             var t = arguments[0], r = E(arguments).map(function(r) {
                 /**
  * @param {object} base
@@ -3630,14 +3625,14 @@
                     return et(t) ? r : e(r, t);
                 }(t, r);
             });
-            return K.apply(void 0, [ Ct(t) ].concat(pt(r)));
-        }, Wt = function(t) {
+            return K.apply(void 0, [ Bt(t) ].concat(pt(r)));
+        }, Ft = function(t) {
             var r = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : 9e15, e = parseInt((Math.random() * r).toFixed(0), 10).toString(36);
             return t ? t + "-" + e : e;
-        }, Ut = function(t) {
+        }, Wt = function(t) {
             return null !== t && void 0 !== t && "" !== t;
-        }, Nt = function(t) {
-            var r = new Q(), e = Mt(t), n = k(t.models), o = Wt(null, 1e5), u = /^[0-9a-z]+?-[0-9a-z]+$/i, a = a2811.create(), s = {}, c = function(t) {
+        }, Ut = function(t) {
+            var r = new Q(), e = kt(t), n = k(t.models), o = Ft(null, 1e5), u = /^[0-9a-z]+?-[0-9a-z]+$/i, a = a2802.create(), s = {}, c = function(t) {
                 var r = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : {};
                 return V(r) && console.error("[@citygro/vdata] you have not defined any models!"), 
                 (0, i.default)(r).forEach(function(r) {
@@ -3651,10 +3646,10 @@
                 var e = n[t].idAttribute;
                 return {
                     basePath: p(t),
-                    id: Bt(r, "__tmp_id"),
+                    id: qt(r, "__tmp_id"),
                     idAttribute: e,
-                    pk: Bt(r, e),
-                    symId: Bt(r, "__sym_id")
+                    pk: qt(r, e),
+                    symId: qt(r, "__sym_id")
                 };
             }, l = function(t) {
                 !1 === ((arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : {}).quiet || !1) && r.emit("all", t);
@@ -3750,9 +3745,9 @@
      * @param {function} handler
      */
             return v.prototype.createRecord = function(t) {
-                var r = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : {}, e = n[t].idAttribute, i = Bt(r, e), u = Bt(r, "__tmp_id");
+                var r = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : {}, e = n[t].idAttribute, i = qt(r, e), u = qt(r, "__tmp_id");
                 // get or gen id
-                return i && !u ? (u = a.get(t, i) || Wt(o), a.link(t, i, u)) : !i && u || (i && u ? a.link(t, i, u) : i || u || (u = Wt(o))), 
+                return i && !u ? (u = a.get(t, i) || Ft(o), a.link(t, i, u)) : !i && u || (i && u ? a.link(t, i, u) : i || u || (u = Ft(o))), 
                 ct({}, r, {
                     __tmp_id: u
                 });
@@ -3812,7 +3807,7 @@
                     s && (o = s.get(a).toJS());
                 }
                 var f = this.get(t, n);
-                return o || f ? Ft(o, f, e) : e;
+                return o || f ? Ct(o, f, e) : e;
             }, v.prototype.add = function(t, r) {
                 var e = arguments.length > 2 && void 0 !== arguments[2] ? arguments[2] : {}, n = function(t) {
                     return tt.fromJS(t, function(t, r) {
@@ -3863,7 +3858,7 @@
                 var n = this, o = arguments.length > 2 && void 0 !== arguments[2] ? arguments[2] : {}, i = h(t, r), u = i.id, a = i.pk, s = i.basePath, c = {
                     "Content-Type": "application/json"
                 };
-                return e(Ut(a) ? ct({
+                return e(Wt(a) ? ct({
                     url: s + "/" + t + "/" + a,
                     method: "PUT",
                     body: ct({}, this.rebase(t, r), {
@@ -3889,7 +3884,7 @@
                 });
             }, v.prototype.find = function(t, r) {
                 var n = this, o = arguments.length > 2 && void 0 !== arguments[2] ? arguments[2] : {}, i = void 0, s = o.force || !1, c = this.get(t, r);
-                if (Ut(r)) if (c && !0 !== s) i = d.default.resolve(c); else {
+                if (Wt(r)) if (c && !0 !== s) i = d.default.resolve(c); else {
                     var f = function(t, r) {
                         return u.test(r) ? a.get(t, r) : r;
                     }(t, r), h = p(t), l = ct({
@@ -3937,10 +3932,10 @@
                 L(function() {
                     return r.emit(t, e);
                 });
-            }, v.prototype.isValidId = Ut, v.prototype.getBasePath = p, new v();
-        }, Kt = function(t) {
+            }, v.prototype.isValidId = Wt, v.prototype.getBasePath = p, new v();
+        }, Nt = function(t) {
             return !!N(t, "$options.vdata");
-        }, $t = {
+        }, Kt = {
             createConfig: function(t) {
                 return function(r) {
                     return t(r);
@@ -3948,7 +3943,7 @@
             },
             install: function(t, r) {
                 r = R(r) ? r(t) : r;
-                var e = Nt(r);
+                var e = Ut(r);
                 Object.defineProperty(t, "$store", {
                     get: function() {
                         return e;
@@ -3983,7 +3978,7 @@
      * @param {Vue.Component} vm
      */
                         add: function(t) {
-                            var r = Pt(t.$options.mixins).filter(function(t) {
+                            var r = Rt(t.$options.mixins).filter(function(t) {
                                 return !!t.vdata;
                             }).map(function(t) {
                                 return t.vdata;
@@ -4006,33 +4001,33 @@
                 t.mixin({
                     methods: {
                         $vdata: function(t) {
-                            Kt(this) && this._vdataHandler.run(t);
+                            Nt(this) && this._vdataHandler.run(t);
                         }
                     },
                     beforeCreate: function() {
-                        Kt(this) && (this._vdataHandler = n.add(this));
+                        Nt(this) && (this._vdataHandler = n.add(this));
                     },
                     beforeDestroy: function() {
-                        Kt(this) && this._vdataHandler.destroy();
+                        Nt(this) && this._vdataHandler.destroy();
                     }
-                }), t.mixin(qt), console.log("[@citygro/vdata] $store ready!", e, r);
+                }), t.mixin(Dt), console.log("[@citygro/vdata] $store ready!", e, r);
             }
-        }, Jt = wt("value");
-        r.DataFlowMixin = Jt, r.asyncMap = J, r.cleanRecord = function(t) {
+        }, $t = wt("value");
+        r.DataFlowMixin = $t, r.asyncMap = J, r.cleanRecord = function(t) {
             var r = t.record, e = t.store, n = O([].concat(pt(t.omitKeys || []), [ "_id" ])), o = ht({
                 store: e,
                 record: r,
                 omitKeys: n
             });
             return e.createRecord(r._collection || t.collectionName, o);
-        }, r.createDataFlowMixin = wt, r.createHttpAdapter = Mt, r.createIndex = function(t, r) {
+        }, r.createDataFlowMixin = wt, r.createHttpAdapter = kt, r.createIndex = function(t, r) {
             var e = {};
             return t.forEach(function(t) {
                 e[t[r]] = t;
             }), e;
-        }, r.createMixinForItemById = Rt, r.createMixinForItemByResourceAndId = function(t) {
+        }, r.createMixinForItemById = Mt, r.createMixinForItemByResourceAndId = function(t) {
             return console.warn("[@citygro/vdata] rename createMixinForItemByResourceAndId -> createMixinForItemById", '"createMixinForItemByResourceAndId" is DEPRECATED and will be removed in a future release'), 
-            Rt(t);
+            Mt(t);
         }, r.createMixinForListByResource = function(t) {
             var r = t.collectionName, e = t.localPropertyName || A(r), n = e + "Force", o = t.queryOptions || {}, i = t.requestOptions;
             return {
@@ -4067,7 +4062,7 @@
                     }))();
                 })
             };
-        }, r.fetchWrapper = St, r.to = $, r.vdata = $t, r.handleChange = lt, r.handleKeyChange = vt, 
+        }, r.fetchWrapper = St, r.to = $, r.vdata = Kt, r.handleChange = lt, r.handleKeyChange = vt, 
         r.handleArrayChange = dt, r.handleArrayKeyChange = yt, r.pushToArray = _t, r.pushToArrayKey = gt, 
         r.removeFromArray = mt, r.removeFromArrayKey = xt;
     }, /* 186 */
