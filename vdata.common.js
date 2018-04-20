@@ -1348,6 +1348,7 @@ var uniqueId = (function (prefix) {
 
 /**
  * @param {object} data
+ * @private
  */
 var convert = function convert(data) {
   return immutable.fromJS(data, function (key, value) {
@@ -1362,6 +1363,9 @@ var isValidId = function isValidId(id) {
   return id !== null && id !== undefined && id !== '';
 };
 
+/**
+ * vdata store constructor
+ */
 var Store = {
   /**
    * @param {object} options
@@ -1369,6 +1373,7 @@ var Store = {
    * @param {string} [options.basePath=''] - default prefix for http requests
    * @param {function} [options.adapter] - a custom fetch
    * @param {function} [options.deserialize] - request post-processing
+   * @return {Store} a vdata store instance
    */
   create: function create(options) {
     var evt = new EventEmitter();
@@ -1381,6 +1386,7 @@ var Store = {
     var store = registerSchemas(immutable.Map(), options.models);
     /**
      * @param {string} id
+     * @private
      */
     var resolveId = function resolveId(collectionName, id) {
       var isTmp = idRegex.test(id);
@@ -1388,6 +1394,7 @@ var Store = {
     };
     /**
      * @param {string} id
+     * @private
      */
     var resolvePk = function resolvePk(collectionName, id) {
       var isTmp = idRegex.test(id);
@@ -1403,6 +1410,7 @@ var Store = {
     /**
      * @param {string} collectionName
      * @param {object} data
+     * @private
      */
     var getMeta = function getMeta(collectionName, data) {
       var model = models[collectionName];
@@ -1416,9 +1424,12 @@ var Store = {
       };
     };
     /**
+     * queue a micro-task to broadcast the given message object
+     *
      * @param {string} message
      * @param {object} options
-     * @param {boolean} options.quiet
+     * @param {boolean} [options.quiet=false]
+     * @private
      */
     var emit = function emit(message) {
       var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
@@ -1440,6 +1451,11 @@ var Store = {
       this.queryCacheTimeout = options.queryCacheTimeout || 1000 * 60 * 5; // evict query cache after 5min
     };
     /**
+     * tag a javascript object with metadata that allows it to be tracked by the vdata store.
+     * `__tmp_id` and the `idAttribute` configured for the given collection are both used to
+     * identify the object. editing either of these will cause vdata to see the resulting
+     * object as something new that needs to be tracked separately from the original object.
+     *
      * @param {string} collection
      * @param {object} [data={}]
      */
@@ -1463,8 +1479,12 @@ var Store = {
       return _extends({}, data, { __tmp_id: id });
     };
     /**
-     * @param {string} collection
-     * @param {string} id
+     * get a particular object from the store using the primary key provided by
+     * your api server, or the temporary local id that vdata uses internally to
+     * track records.
+     *
+     * @param {string} collectionName
+     * @param {string} pkOrId
      */
     Store.prototype.get = function (collectionName, pkOrId) {
       var id = resolveId(collectionName, pkOrId);
@@ -1481,8 +1501,13 @@ var Store = {
       }
     };
     /**
-     * @param {string} collection
+     * get all of the records in `collectionName`. if you include a `keys`
+     * parameter, this method returns all of the records that match the ids
+     * listed.
+     *
+     * @param {string} collectionName
      * @param {string[]} [keys]
+     * @return {object[]}
      */
     Store.prototype.getList = function (collectionName, keys$$1) {
       var _this = this;
@@ -1499,14 +1524,21 @@ var Store = {
       }
       return result;
     };
+    /**
+     * @ignore
+     */
     Store.prototype.getAll = function () {
       return this.getList.apply(this, arguments);
     };
     /**
+     * remove a record from the store, identified by public key or temporary id.
+     *
+     * @emits Store#remove
      * @param {string} collectionName
-     * @param {string} id
+     * @param {string} pkOrId
      * @param {object} options
      * @param {boolean} options.quiet
+     * @return {object}
      */
     Store.prototype.remove = function (collectionName, pkOrId) {
       var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
@@ -1528,8 +1560,12 @@ var Store = {
       return object;
     };
     /**
-     * @param {string} collection
+     * remove all of the records in `collectionName` or all of the records that match the ids passed into `keys`.
+     *
+     * @emits Store#remove-list
+     * @param {string} collectionName
      * @param {string[]} keys
+     * @return {object[]}
      */
     Store.prototype.removeList = function (collectionName, keys$$1) {
       var _this2 = this;
@@ -1551,11 +1587,15 @@ var Store = {
       });
       return records;
     };
+    /**
+     * @ignore
+     */
     Store.prototype.removeAll = function () {
       return this.removeList.apply(this, arguments);
     };
     /**
      * remove all records from all collections
+     * @emits Store#remove-list
      */
     Store.prototype.clear = function () {
       var _this3 = this;
@@ -1600,9 +1640,20 @@ var Store = {
       return base || current ? rebase(base, current, record) : record;
     };
     /**
+     * add a record to the store. you *do not* need to pass your data to
+     * `Store.createRecord` before adding it.
+     *
+     * vdata automatically tracks all of the versions that are created for every
+     * record that it tracks. this version tracking is how `store.rebase` is able
+     * to implement a simple `ORSet` that enables vdata to deterministically merge
+     * all of the changes to a particular record.
+     *
+     * @emits Store#add
+     * @see {Store.rebase}
      * @param {string} collection
      * @param {object} data
      * @param {object} options
+     * @param {boolean} [options.quiet=false] silence store events for this invocation
      * @return {object}
      */
     Store.prototype.add = function (collectionName, data) {
@@ -1627,6 +1678,9 @@ var Store = {
       return object;
     };
     /**
+     * add all of the records in `data` to `colectionName` in a single operation.
+     *
+     * @emits Store#add-list
      * @param {string} collectionName
      * @param {object[]} data
      * @return {object[]}
@@ -1649,6 +1703,9 @@ var Store = {
       return records;
     };
     /**
+     * check if `data` differs from the current version of the corresponding
+     * record in the store.
+     *
      * @param {string} collectionName
      * @param {object} data
      * @return {boolean}
@@ -1665,7 +1722,11 @@ var Store = {
       }
     };
     /**
+     * send a `DELETE` request to the endpoint configured for `collectionName`
+     * and remove the corresponding record from the store.
+     *
      * @async
+     * @emits Store#remove
      * @param {string} collectionName
      * @param {object} data
      * @param {object} options
@@ -1690,7 +1751,13 @@ var Store = {
       });
     };
     /**
+     * persist `data` using the endpoint configured for `collectonName`. if
+     * `data` is *only* identified by a local temporary id send a `POST` request to
+     * `/:basePath/:collectionName`. if `data` has a primary key send a `PUT`
+     * request to `/:basePath/:collectionName/:primaryKey`
+     *
      * @async
+     * @emits Store#add
      * @param {string} collection
      * @param {object} data
      * @param {object} options
@@ -1738,6 +1805,9 @@ var Store = {
       });
     };
     /**
+     * fetch a particular record from `/:basePath/:collectionName/:primaryKey`.
+     * if `force === false` immediately return the cached record if present.
+     *
      * @async
      * @param {string} collection
      * @param {object} [query]
@@ -1772,6 +1842,10 @@ var Store = {
       return promise;
     };
     /**
+     * fetch all of the records from the api that match the parameters specified
+     * in `query`. these are sent along with the request as query parameters.
+     * if `force === false` immediately return a cached response if one exists.
+     *
      * @async
      * @param {string} collection
      * @param {object} [query]
@@ -1819,6 +1893,8 @@ var Store = {
       return promise;
     };
     /**
+     * bind an event listener to the store
+     *
      * @param {string} event
      * @param {function} handler
      */
@@ -1826,12 +1902,20 @@ var Store = {
       evt.addListener(event, handler);
     };
     /**
+     * unbind an event listener to the store
+     *
      * @param {string} event
      * @param {function} handler
      */
     Store.prototype.off = function (event, handler) {
       evt.removeListener(event, handler);
     };
+    /**
+     * manually emit a message using the store's event bus
+     *
+     * @param {string} event
+     * @param {*} payload
+     */
     Store.prototype.emit = function (event, payload) {
       microTask(function () {
         return evt.emit(event, payload);

@@ -3647,29 +3647,58 @@
                 this.models = t.models, this.storeId = o, this.queryCacheTimeout = t.queryCacheTimeout || 3e5;
             };
             /**
+     * tag a javascript object with metadata that allows it to be tracked by the vdata store.
+     * `__tmp_id` and the `idAttribute` configured for the given collection are both used to
+     * identify the object. editing either of these will cause vdata to see the resulting
+     * object as something new that needs to be tracked separately from the original object.
+     *
      * @param {string} collection
      * @param {object} [data={}]
      */
             /**
-     * @param {string} collection
-     * @param {string} id
-     */
-            /**
-     * @param {string} collection
-     * @param {string[]} [keys]
-     */
-            /**
+     * get a particular object from the store using the primary key provided by
+     * your api server, or the temporary local id that vdata uses internally to
+     * track records.
+     *
      * @param {string} collectionName
-     * @param {string} id
+     * @param {string} pkOrId
+     */
+            /**
+     * get all of the records in `collectionName`. if you include a `keys`
+     * parameter, this method returns all of the records that match the ids
+     * listed.
+     *
+     * @param {string} collectionName
+     * @param {string[]} [keys]
+     * @return {object[]}
+     */
+            /**
+     * @ignore
+     */
+            /**
+     * remove a record from the store, identified by public key or temporary id.
+     *
+     * @emits Store#remove
+     * @param {string} collectionName
+     * @param {string} pkOrId
      * @param {object} options
      * @param {boolean} options.quiet
+     * @return {object}
      */
             /**
-     * @param {string} collection
+     * remove all of the records in `collectionName` or all of the records that match the ids passed into `keys`.
+     *
+     * @emits Store#remove-list
+     * @param {string} collectionName
      * @param {string[]} keys
+     * @return {object[]}
+     */
+            /**
+     * @ignore
      */
             /**
      * remove all records from all collections
+     * @emits Store#remove-list
      */
             /**
      * given `data` with a particular `__sym_id` and the current version of the
@@ -3685,34 +3714,64 @@
      * @return {object}
      */
             /**
+     * add a record to the store. you *do not* need to pass your data to
+     * `Store.createRecord` before adding it.
+     *
+     * vdata automatically tracks all of the versions that are created for every
+     * record that it tracks. this version tracking is how `store.rebase` is able
+     * to implement a simple `ORSet` that enables vdata to deterministically merge
+     * all of the changes to a particular record.
+     *
+     * @emits Store#add
+     * @see {Store.rebase}
      * @param {string} collection
      * @param {object} data
      * @param {object} options
+     * @param {boolean} [options.quiet=false] silence store events for this invocation
      * @return {object}
      */
             /**
+     * add all of the records in `data` to `colectionName` in a single operation.
+     *
+     * @emits Store#add-list
      * @param {string} collectionName
      * @param {object[]} data
      * @return {object[]}
      */
             /**
+     * check if `data` differs from the current version of the corresponding
+     * record in the store.
+     *
      * @param {string} collectionName
      * @param {object} data
      * @return {boolean}
      */
             /**
+     * send a `DELETE` request to the endpoint configured for `collectionName`
+     * and remove the corresponding record from the store.
+     *
      * @async
+     * @emits Store#remove
      * @param {string} collectionName
      * @param {object} data
      * @param {object} options
      */
             /**
+     * persist `data` using the endpoint configured for `collectonName`. if
+     * `data` is *only* identified by a local temporary id send a `POST` request to
+     * `/:basePath/:collectionName`. if `data` has a primary key send a `PUT`
+     * request to `/:basePath/:collectionName/:primaryKey`
+     *
      * @async
+     * @emits Store#add
      * @param {string} collection
      * @param {object} data
      * @param {object} options
      */
             /**
+     * fetch a particular record from `/:basePath/:collectionName/:primaryKey`.
+     * if `force === false` immediately return the cached record if present.
+     *
      * @async
      * @param {string} collection
      * @param {object} [query]
@@ -3720,18 +3779,32 @@
      * @param {boolean} [options.force=false]
      */
             /**
+     * fetch all of the records from the api that match the parameters specified
+     * in `query`. these are sent along with the request as query parameters.
+     * if `force === false` immediately return a cached response if one exists.
+     *
      * @async
      * @param {string} collection
      * @param {object} [query]
      * @param {object} [options]
      */
             /**
+     * bind an event listener to the store
+     *
      * @param {string} event
      * @param {function} handler
      */
             /**
+     * unbind an event listener to the store
+     *
      * @param {string} event
      * @param {function} handler
+     */
+            /**
+     * manually emit a message using the store's event bus
+     *
+     * @param {string} event
+     * @param {*} payload
      */
             return v.prototype.createRecord = function(t) {
                 var r = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : {}, e = n[t].idAttribute, i = Dt(r, e), u = Dt(r, "__tmp_id");

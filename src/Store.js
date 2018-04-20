@@ -21,6 +21,7 @@ import {
 
 /**
  * @param {object} data
+ * @private
  */
 const convert = (data) => fromJS(data, (key, value) => {
   return isKeyed(value)
@@ -35,13 +36,17 @@ const isValidId = (id) => {
   return id !== null && id !== undefined && id !== ''
 }
 
-export default {
+/**
+ * vdata store constructor
+ */
+const Store = {
   /**
    * @param {object} options
    * @param {object} options.models
    * @param {string} [options.basePath=''] - default prefix for http requests
    * @param {function} [options.adapter] - a custom fetch
    * @param {function} [options.deserialize] - request post-processing
+   * @return {Store} a vdata store instance
    */
   create (options) {
     const evt = new EventEmitter()
@@ -54,6 +59,7 @@ export default {
     let store = registerSchemas(Map(), options.models)
     /**
      * @param {string} id
+     * @private
      */
     const resolveId = (collectionName, id) => {
       const isTmp = idRegex.test(id)
@@ -61,6 +67,7 @@ export default {
     }
     /**
      * @param {string} id
+     * @private
      */
     const resolvePk = (collectionName, id) => {
       const isTmp = idRegex.test(id)
@@ -76,6 +83,7 @@ export default {
     /**
      * @param {string} collectionName
      * @param {object} data
+     * @private
      */
     const getMeta = (collectionName, data) => {
       const model = models[collectionName]
@@ -89,9 +97,12 @@ export default {
       }
     }
     /**
+     * queue a micro-task to broadcast the given message object
+     *
      * @param {string} message
      * @param {object} options
-     * @param {boolean} options.quiet
+     * @param {boolean} [options.quiet=false]
+     * @private
      */
     const emit = (message, options = {}) => {
       const quiet = options.quiet || false
@@ -109,6 +120,11 @@ export default {
       this.queryCacheTimeout = options.queryCacheTimeout || 1000 * 60 * 5 // evict query cache after 5min
     }
     /**
+     * tag a javascript object with metadata that allows it to be tracked by the vdata store.
+     * `__tmp_id` and the `idAttribute` configured for the given collection are both used to
+     * identify the object. editing either of these will cause vdata to see the resulting
+     * object as something new that needs to be tracked separately from the original object.
+     *
      * @param {string} collection
      * @param {object} [data={}]
      */
@@ -130,8 +146,12 @@ export default {
       return {...data, __tmp_id: id}
     }
     /**
-     * @param {string} collection
-     * @param {string} id
+     * get a particular object from the store using the primary key provided by
+     * your api server, or the temporary local id that vdata uses internally to
+     * track records.
+     *
+     * @param {string} collectionName
+     * @param {string} pkOrId
      */
     Store.prototype.get = function (collectionName, pkOrId) {
       const id = resolveId(collectionName, pkOrId)
@@ -149,8 +169,13 @@ export default {
       }
     }
     /**
-     * @param {string} collection
+     * get all of the records in `collectionName`. if you include a `keys`
+     * parameter, this method returns all of the records that match the ids
+     * listed.
+     *
+     * @param {string} collectionName
      * @param {string[]} [keys]
+     * @return {object[]}
      */
     Store.prototype.getList = function (collectionName, keys) {
       let result
@@ -167,14 +192,21 @@ export default {
       }
       return result
     }
+    /**
+     * @ignore
+     */
     Store.prototype.getAll = function () {
       return this.getList.apply(this, arguments)
     }
     /**
+     * remove a record from the store, identified by public key or temporary id.
+     *
+     * @emits Store#remove
      * @param {string} collectionName
-     * @param {string} id
+     * @param {string} pkOrId
      * @param {object} options
      * @param {boolean} options.quiet
+     * @return {object}
      */
     Store.prototype.remove = function (collectionName, pkOrId, options = {}) {
       const id = resolveId(collectionName, pkOrId)
@@ -194,8 +226,12 @@ export default {
       return object
     }
     /**
-     * @param {string} collection
+     * remove all of the records in `collectionName` or all of the records that match the ids passed into `keys`.
+     *
+     * @emits Store#remove-list
+     * @param {string} collectionName
      * @param {string[]} keys
+     * @return {object[]}
      */
     Store.prototype.removeList = function (collectionName, keys, options = {}) {
       const records = this.getAll(collectionName, keys).map((record) => {
@@ -211,11 +247,15 @@ export default {
       })
       return records
     }
+    /**
+     * @ignore
+     */
     Store.prototype.removeAll = function () {
       return this.removeList.apply(this, arguments)
     }
     /**
      * remove all records from all collections
+     * @emits Store#remove-list
      */
     Store.prototype.clear = function () {
       store.keySeq().forEach((collectionName) => {
@@ -253,9 +293,20 @@ export default {
         : record
     }
     /**
+     * add a record to the store. you *do not* need to pass your data to
+     * `Store.createRecord` before adding it.
+     *
+     * vdata automatically tracks all of the versions that are created for every
+     * record that it tracks. this version tracking is how `store.rebase` is able
+     * to implement a simple `ORSet` that enables vdata to deterministically merge
+     * all of the changes to a particular record.
+     *
+     * @emits Store#add
+     * @see {Store.rebase}
      * @param {string} collection
      * @param {object} data
      * @param {object} options
+     * @param {boolean} [options.quiet=false] silence store events for this invocation
      * @return {object}
      */
     Store.prototype.add = function (collectionName, data, options = {}) {
@@ -275,6 +326,9 @@ export default {
       return object
     }
     /**
+     * add all of the records in `data` to `colectionName` in a single operation.
+     *
+     * @emits Store#add-list
      * @param {string} collectionName
      * @param {object[]} data
      * @return {object[]}
@@ -291,6 +345,9 @@ export default {
       return records
     }
     /**
+     * check if `data` differs from the current version of the corresponding
+     * record in the store.
+     *
      * @param {string} collectionName
      * @param {object} data
      * @return {boolean}
@@ -307,7 +364,11 @@ export default {
       }
     }
     /**
+     * send a `DELETE` request to the endpoint configured for `collectionName`
+     * and remove the corresponding record from the store.
+     *
      * @async
+     * @emits Store#remove
      * @param {string} collectionName
      * @param {object} data
      * @param {object} options
@@ -322,7 +383,13 @@ export default {
         .then(() => microTask(() => this.remove(collectionName, id)))
     }
     /**
+     * persist `data` using the endpoint configured for `collectonName`. if
+     * `data` is *only* identified by a local temporary id send a `POST` request to
+     * `/:basePath/:collectionName`. if `data` has a primary key send a `PUT`
+     * request to `/:basePath/:collectionName/:primaryKey`
+     *
      * @async
+     * @emits Store#add
      * @param {string} collection
      * @param {object} data
      * @param {object} options
@@ -364,6 +431,9 @@ export default {
       })
     }
     /**
+     * fetch a particular record from `/:basePath/:collectionName/:primaryKey`.
+     * if `force === false` immediately return the cached record if present.
+     *
      * @async
      * @param {string} collection
      * @param {object} [query]
@@ -392,6 +462,10 @@ export default {
       return promise
     }
     /**
+     * fetch all of the records from the api that match the parameters specified
+     * in `query`. these are sent along with the request as query parameters.
+     * if `force === false` immediately return a cached response if one exists.
+     *
      * @async
      * @param {string} collection
      * @param {object} [query]
@@ -432,6 +506,8 @@ export default {
       return promise
     }
     /**
+     * bind an event listener to the store
+     *
      * @param {string} event
      * @param {function} handler
      */
@@ -439,12 +515,20 @@ export default {
       evt.addListener(event, handler)
     }
     /**
+     * unbind an event listener to the store
+     *
      * @param {string} event
      * @param {function} handler
      */
     Store.prototype.off = function (event, handler) {
       evt.removeListener(event, handler)
     }
+    /**
+     * manually emit a message using the store's event bus
+     *
+     * @param {string} event
+     * @param {*} payload
+     */
     Store.prototype.emit = function (event, payload) {
       microTask(() => evt.emit(event, payload))
     }
@@ -453,3 +537,8 @@ export default {
     return new Store()
   }
 }
+
+/**
+ * @module Store
+ */
+export default Store
