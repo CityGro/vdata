@@ -487,35 +487,18 @@ var createDataFlowMixin = function createDataFlowMixin(valueProp) {
 };
 
 /* global fetch */
-var capitalize = function capitalize(s) {
-  return '' + s[0].toUpperCase() + s.slice(1);
-};
-
 var interceptors = [];
 var onError = void 0;
 
 var fetchWrapper = function fetchWrapper(url, options) {
-  return fork(cloneDeep(options), [].concat(interceptors, [
-  /**
-   * normalize headers
-   */
-  function (options) {
-    var headers = {};
-    Object.entries(options.headers).forEach(function (_ref) {
-      var _ref2 = slicedToArray(_ref, 2),
-          header = _ref2[0],
-          value = _ref2[1];
-
-      header = header.split('-').map(capitalize).join('-');
-      headers[header] = value;
-    });
-    return Promise.resolve(_extends({}, options, { headers: headers }));
-  }])).then(function (request) {
-    return fetch(url, request).catch(function (err) {
-      if (isFunction(onError)) {
-        onError(err);
+  return fork(cloneDeep(options), interceptors).then(function (request) {
+    return fetch(url, request).then(function (response) {
+      if (response.status >= 200 && response.status < 400) {
+        return response;
+      } else if (isFunction(onError)) {
+        onError(response);
       } else {
-        throw err;
+        throw new Error(response.statusText, response);
       }
     });
   });
@@ -615,16 +598,12 @@ var createHttpAdapter = function createHttpAdapter() {
   };
   var cacheTimeout = 1000 * 10; // evict promise cache keys after 10s
   var createRequest = function createRequest(url, request) {
-    return adapter(url, request).then(function (res) {
-      if (res.status >= 200 && res.status < 400) {
-        return res.json().then(function (data) {
-          return microTask(function () {
-            return deserialize(res, data);
-          });
+    return adapter(url, request).then(function (response) {
+      return response.json().then(function (data) {
+        return microTask(function () {
+          return deserialize(response, data);
         });
-      } else {
-        throw new Error(res.statusText, res);
-      }
+      });
     });
   };
   return function () {
@@ -1446,7 +1425,9 @@ var Store = {
 
       var quiet = options.quiet || false;
       if (quiet === false) {
-        evt.emit('all', message);
+        microTask(function () {
+          return evt.emit('all', message);
+        });
       }
     };
     /**

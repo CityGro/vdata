@@ -3319,35 +3319,23 @@
                     }));
                 }), r)
             };
-        }, jt = function(t) {
-            return "" + t[0].toUpperCase() + t.slice(1);
-        }, Ot = [], At = void 0, St = function(t, r) {
-            return M(k(r), [].concat(Ot, [ /**
-   * normalize headers
-   */
-            function(t) {
-                var r = {};
-                return (0, c.default)(t.headers).forEach(function(t) {
-                    var e = ft(t, 2), n = e[0], o = e[1];
-                    n = n.split("-").map(jt).join("-"), r[n] = o;
-                }), d.default.resolve(ct({}, t, {
-                    headers: r
-                }));
-            } ])).then(function(r) {
-                return fetch(t, r).catch(function(t) {
-                    if (!R(At)) throw t;
-                    At(t);
+        }, jt = [], Ot = void 0, At = function(t, r) {
+            return M(k(r), jt).then(function(r) {
+                return fetch(t, r).then(function(t) {
+                    if (t.status >= 200 && t.status < 400) return t;
+                    if (!R(Ot)) throw new Error(t.statusText, t);
+                    Ot(t);
                 });
             });
         };
-        St.addInterceptor = function(t) {
-            Ot.push(t);
-        }, St.onError = function(t) {
-            At = t;
+        At.addInterceptor = function(t) {
+            jt.push(t);
+        }, At.onError = function(t) {
+            Ot = t;
         };
-        var It = q(D(function(t) {
+        var St = q(D(function(t) {
             return !B(t);
-        })), Et = q(C(B)), zt = function(t) {
+        })), It = q(C(B)), Et = function(t) {
             var r = t.url, e = function t() {
                 var r = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : {}, e = arguments[1];
                 return U((0, c.default)(r), function(t) {
@@ -3357,24 +3345,23 @@
                     return "object" === (void 0 === i ? "undefined" : ut(i)) ? t(i, u) : encodeURIComponent(u) + "=" + encodeURIComponent(i);
                 }).join("&");
             }(function(t) {
-                return x(t) ? It(t) : Et(t);
+                return x(t) ? St(t) : It(t);
             }(t.params || {}));
             return e && (r += "?" + e), r;
-        }, kt = function() {
-            var t = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : {}, r = {}, e = t.adapter || St, n = t.deserialize || function(t, r) {
+        }, zt = function() {
+            var t = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : {}, r = {}, e = t.adapter || At, n = t.deserialize || function(t, r) {
                 return r;
             }, o = function(t, r) {
                 return e(t, r).then(function(t) {
-                    if (t.status >= 200 && t.status < 400) return t.json().then(function(r) {
+                    return t.json().then(function(r) {
                         return L(function() {
                             return n(t, r);
                         });
                     });
-                    throw new Error(t.statusText, t);
                 });
             };
             return function() {
-                var t = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : {}, e = void 0, n = t.force || !1, i = zt(t);
+                var t = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : {}, e = void 0, n = t.force || !1, i = Et(t);
                 t.headers = function(t) {
                     var r = ct({}, t.headers);
                     return m([ "PUT", "POST" ], t.method) && (r["Content-Type"] = "application/json"), 
@@ -3401,7 +3388,7 @@
                 } else e = o(i, u);
                 return e;
             };
-        }, Mt = function(t) {
+        }, kt = function(t) {
             var r, e, n = t.collectionName, o = t.localPropertyName || A(n).slice(0, -1), i = t.idPropertyName || "id", u = t.templateName || o + "Template", a = t.template || {}, c = t.recordPrimaryKey || "_id", f = o + "RecordId", p = o + "HasChanges", h = o + "Save", l = o + "Loading", v = t.idType || String, d = t.requestOptions || {}, y = o + "RequestOptions", _ = function(t, r, e) {
                 var n = t[r];
                 return delete t[r], void 0 === n ? e : n;
@@ -3509,30 +3496,30 @@
                     }))();
                 }), e)
             };
-        }, Rt = function t() {
+        }, Mt = function t() {
             var r = [];
             return (arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : []).forEach(function(e) {
                 e.mixins && e.mixins.length && (r = [].concat(pt(r), pt(t(e.mixins)))), r.push(e);
             }), r;
-        }, Pt = function(t, r) {
+        }, Rt = function(t, r) {
             var e = k(N(t, "$options." + r, {})), n = N(t, "$options.mixins", []);
-            return Rt(n).filter(function(t) {
+            return Mt(n).filter(function(t) {
                 return t[r];
             }).forEach(function(t) {
                 e = (0, l.default)(e, t[r]);
             }), V(e) ? null : e;
-        }, Tt = [ "Default", "Lazy" ], Lt = function(t) {
-            return (arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : Tt).find(function(r) {
+        }, Pt = [ "Default", "Lazy" ], Tt = function(t) {
+            return (arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : Pt).find(function(r) {
                 return t.endsWith(r);
             });
-        }, Dt = {
+        }, Lt = {
             beforeCreate: function() {
                 this._asyncReload = function(t) {
                     return function(t) {
-                        var r = this, e = arguments.length > 1 && void 0 !== arguments[1] && arguments[1], n = Pt(this, "asyncData");
+                        var r = this, e = arguments.length > 1 && void 0 !== arguments[1] && arguments[1], n = Rt(this, "asyncData");
                         if (n) {
                             var o = [], i = Y(n).filter(function(t) {
-                                return !Lt(t);
+                                return !Tt(t);
                             }).filter(function(r) {
                                 return void 0 === t || r === t;
                             }).filter(function(t) {
@@ -3582,10 +3569,10 @@
                 }
             },
             data: function() {
-                var t = this, r = Pt(this, "asyncData");
+                var t = this, r = Rt(this, "asyncData");
                 if (r) {
                     var e = Y(r).filter(function(t) {
-                        return !Lt(t);
+                        return !Tt(t);
                     }), n = e.map(function(t) {
                         return t + "Error";
                     }), o = {
@@ -3607,9 +3594,9 @@
                 }
                 return {};
             }
-        }, qt = function(t, r) {
+        }, Dt = function(t, r) {
             return tt.isImmutable(t) ? t.getIn(r.split(".")) : N(t, r);
-        }, Bt = q(u.default, JSON.parse), Ct = function() {
+        }, qt = q(u.default, JSON.parse), Bt = function() {
             var t = arguments[0], r = E(arguments).map(function(r) {
                 /**
  * @param {object} base
@@ -3625,14 +3612,14 @@
                     return et(t) ? r : e(r, t);
                 }(t, r);
             });
-            return K.apply(void 0, [ Bt(t) ].concat(pt(r)));
-        }, Ft = function(t) {
+            return K.apply(void 0, [ qt(t) ].concat(pt(r)));
+        }, Ct = function(t) {
             var r = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : 9e15, e = parseInt((Math.random() * r).toFixed(0), 10).toString(36);
             return t ? t + "-" + e : e;
-        }, Wt = function(t) {
+        }, Ft = function(t) {
             return null !== t && void 0 !== t && "" !== t;
-        }, Ut = function(t) {
-            var r = new Q(), e = kt(t), n = k(t.models), o = Ft(null, 1e5), u = /^[0-9a-z]+?-[0-9a-z]+$/i, a = a2802.create(), s = {}, c = function(t) {
+        }, Wt = function(t) {
+            var r = new Q(), e = zt(t), n = k(t.models), o = Ct(null, 1e5), u = /^[0-9a-z]+?-[0-9a-z]+$/i, a = a2790.create(), s = {}, c = function(t) {
                 var r = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : {};
                 return V(r) && console.error("[@citygro/vdata] you have not defined any models!"), 
                 (0, i.default)(r).forEach(function(r) {
@@ -3646,13 +3633,15 @@
                 var e = n[t].idAttribute;
                 return {
                     basePath: p(t),
-                    id: qt(r, "__tmp_id"),
+                    id: Dt(r, "__tmp_id"),
                     idAttribute: e,
-                    pk: qt(r, e),
-                    symId: qt(r, "__sym_id")
+                    pk: Dt(r, e),
+                    symId: Dt(r, "__sym_id")
                 };
             }, l = function(t) {
-                !1 === ((arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : {}).quiet || !1) && r.emit("all", t);
+                !1 === ((arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : {}).quiet || !1) && L(function() {
+                    return r.emit("all", t);
+                });
             }, v = function() {
                 r.setMaxListeners(0), // no limit
                 this.models = t.models, this.storeId = o, this.queryCacheTimeout = t.queryCacheTimeout || 3e5;
@@ -3745,9 +3734,9 @@
      * @param {function} handler
      */
             return v.prototype.createRecord = function(t) {
-                var r = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : {}, e = n[t].idAttribute, i = qt(r, e), u = qt(r, "__tmp_id");
+                var r = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : {}, e = n[t].idAttribute, i = Dt(r, e), u = Dt(r, "__tmp_id");
                 // get or gen id
-                return i && !u ? (u = a.get(t, i) || Ft(o), a.link(t, i, u)) : !i && u || (i && u ? a.link(t, i, u) : i || u || (u = Ft(o))), 
+                return i && !u ? (u = a.get(t, i) || Ct(o), a.link(t, i, u)) : !i && u || (i && u ? a.link(t, i, u) : i || u || (u = Ct(o))), 
                 ct({}, r, {
                     __tmp_id: u
                 });
@@ -3807,7 +3796,7 @@
                     s && (o = s.get(a).toJS());
                 }
                 var f = this.get(t, n);
-                return o || f ? Ct(o, f, e) : e;
+                return o || f ? Bt(o, f, e) : e;
             }, v.prototype.add = function(t, r) {
                 var e = arguments.length > 2 && void 0 !== arguments[2] ? arguments[2] : {}, n = function(t) {
                     return tt.fromJS(t, function(t, r) {
@@ -3858,7 +3847,7 @@
                 var n = this, o = arguments.length > 2 && void 0 !== arguments[2] ? arguments[2] : {}, i = h(t, r), u = i.id, a = i.pk, s = i.basePath, c = {
                     "Content-Type": "application/json"
                 };
-                return e(Wt(a) ? ct({
+                return e(Ft(a) ? ct({
                     url: s + "/" + t + "/" + a,
                     method: "PUT",
                     body: ct({}, this.rebase(t, r), {
@@ -3884,7 +3873,7 @@
                 });
             }, v.prototype.find = function(t, r) {
                 var n = this, o = arguments.length > 2 && void 0 !== arguments[2] ? arguments[2] : {}, i = void 0, s = o.force || !1, c = this.get(t, r);
-                if (Wt(r)) if (c && !0 !== s) i = d.default.resolve(c); else {
+                if (Ft(r)) if (c && !0 !== s) i = d.default.resolve(c); else {
                     var f = function(t, r) {
                         return u.test(r) ? a.get(t, r) : r;
                     }(t, r), h = p(t), l = ct({
@@ -3932,10 +3921,10 @@
                 L(function() {
                     return r.emit(t, e);
                 });
-            }, v.prototype.isValidId = Wt, v.prototype.getBasePath = p, new v();
-        }, Nt = function(t) {
+            }, v.prototype.isValidId = Ft, v.prototype.getBasePath = p, new v();
+        }, Ut = function(t) {
             return !!N(t, "$options.vdata");
-        }, Kt = {
+        }, Nt = {
             createConfig: function(t) {
                 return function(r) {
                     return t(r);
@@ -3943,7 +3932,7 @@
             },
             install: function(t, r) {
                 r = R(r) ? r(t) : r;
-                var e = Ut(r);
+                var e = Wt(r);
                 Object.defineProperty(t, "$store", {
                     get: function() {
                         return e;
@@ -3978,7 +3967,7 @@
      * @param {Vue.Component} vm
      */
                         add: function(t) {
-                            var r = Rt(t.$options.mixins).filter(function(t) {
+                            var r = Mt(t.$options.mixins).filter(function(t) {
                                 return !!t.vdata;
                             }).map(function(t) {
                                 return t.vdata;
@@ -4001,33 +3990,33 @@
                 t.mixin({
                     methods: {
                         $vdata: function(t) {
-                            Nt(this) && this._vdataHandler.run(t);
+                            Ut(this) && this._vdataHandler.run(t);
                         }
                     },
                     beforeCreate: function() {
-                        Nt(this) && (this._vdataHandler = n.add(this));
+                        Ut(this) && (this._vdataHandler = n.add(this));
                     },
                     beforeDestroy: function() {
-                        Nt(this) && this._vdataHandler.destroy();
+                        Ut(this) && this._vdataHandler.destroy();
                     }
-                }), t.mixin(Dt), console.log("[@citygro/vdata] $store ready!", e, r);
+                }), t.mixin(Lt), console.log("[@citygro/vdata] $store ready!", e, r);
             }
-        }, $t = wt("value");
-        r.DataFlowMixin = $t, r.asyncMap = J, r.cleanRecord = function(t) {
+        }, Kt = wt("value");
+        r.DataFlowMixin = Kt, r.asyncMap = J, r.cleanRecord = function(t) {
             var r = t.record, e = t.store, n = O([].concat(pt(t.omitKeys || []), [ "_id" ])), o = ht({
                 store: e,
                 record: r,
                 omitKeys: n
             });
             return e.createRecord(r._collection || t.collectionName, o);
-        }, r.createDataFlowMixin = wt, r.createHttpAdapter = kt, r.createIndex = function(t, r) {
+        }, r.createDataFlowMixin = wt, r.createHttpAdapter = zt, r.createIndex = function(t, r) {
             var e = {};
             return t.forEach(function(t) {
                 e[t[r]] = t;
             }), e;
-        }, r.createMixinForItemById = Mt, r.createMixinForItemByResourceAndId = function(t) {
+        }, r.createMixinForItemById = kt, r.createMixinForItemByResourceAndId = function(t) {
             return console.warn("[@citygro/vdata] rename createMixinForItemByResourceAndId -> createMixinForItemById", '"createMixinForItemByResourceAndId" is DEPRECATED and will be removed in a future release'), 
-            Mt(t);
+            kt(t);
         }, r.createMixinForListByResource = function(t) {
             var r = t.collectionName, e = t.localPropertyName || A(r), n = e + "Force", o = t.queryOptions || {}, i = t.requestOptions;
             return {
@@ -4062,7 +4051,7 @@
                     }))();
                 })
             };
-        }, r.fetchWrapper = St, r.to = $, r.vdata = Kt, r.handleChange = lt, r.handleKeyChange = vt, 
+        }, r.fetchWrapper = At, r.to = $, r.vdata = Nt, r.handleChange = lt, r.handleKeyChange = vt, 
         r.handleArrayChange = dt, r.handleArrayKeyChange = yt, r.pushToArray = _t, r.pushToArrayKey = gt, 
         r.removeFromArray = mt, r.removeFromArrayKey = xt;
     }, /* 186 */

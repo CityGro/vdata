@@ -37,12 +37,9 @@ const createHttpAdapter = (options = {}) => {
   const cacheTimeout = 1000 * 10 // evict promise cache keys after 10s
   const createRequest = (url, request) => {
     return adapter(url, request)
-      .then((res) => {
-        if (res.status >= 200 && res.status < 400) {
-          return res.json().then((data) => microTask(() => deserialize(res, data)))
-        } else {
-          throw new Error(res.statusText, res)
-        }
+      .then((response) => {
+        return response.json()
+          .then((data) => microTask(() => deserialize(response, data)))
       })
   }
   return (options = {}) => {

@@ -96,7 +96,7 @@ export default {
     const emit = (message, options = {}) => {
       const quiet = options.quiet || false
       if (quiet === false) {
-        evt.emit('all', message)
+        microTask(() => evt.emit('all', message))
       }
     }
     /**
