@@ -3117,7 +3117,7 @@
             value: !0
         });
         var m = o(e(394)), x = o(e(0)), b = o(e(395)), w = o(e(398)), j = o(e(181)), O = o(e(420)), A = o(e(371)), S = o(e(375)), I = o(e(401)), E = o(e(415)), z = o(e(379)), k = (e(433), 
-        o(e(374))), M = o(e(187)), R = o(e(31)), P = o(e(402)), T = o(e(414)), L = o(e(46)), D = o(e(387)), q = o(e(388)), B = o(e(390)), C = o(e(391)), F = o(e(408)), W = o(e(259)), U = o(e(412)), N = o(e(177)), K = o(e(404)), $ = o(e(189)), J = o(e(188)), G = o(e(428)), H = o(e(389)), V = o(e(396)), Y = o(e(21)), Z = o(e(392)), X = o(e(186)), Q = o(e(256)), tt = (o(e(22)), 
+        o(e(374))), M = o(e(187)), R = o(e(31)), P = o(e(402)), T = o(e(414)), L = o(e(46)), D = o(e(387)), q = o(e(388)), B = o(e(390)), C = o(e(391)), F = o(e(408)), W = o(e(259)), U = o(e(412)), N = o(e(177)), K = o(e(404)), $ = o(e(189)), J = o(e(188)), V = o(e(428)), G = o(e(389)), H = o(e(396)), Y = o(e(21)), Z = o(e(392)), X = o(e(186)), Q = o(e(256)), tt = (o(e(22)), 
         e(257)), rt = o(e(397)), et = o(e(180)), nt = o(e(2)), ot = o(e(419)), it = o(e(184)), ut = "function" == typeof _.default && "symbol" === (0, 
         g.default)(y.default) ? function(t) {
             return void 0 === t ? "undefined" : (0, g.default)(t);
@@ -3507,7 +3507,7 @@
                 return t[r];
             }).forEach(function(t) {
                 e = (0, l.default)(e, t[r]);
-            }), V(e) ? null : e;
+            }), H(e) ? null : e;
         }, Pt = [ "Default", "Lazy" ], Tt = function(t) {
             return (arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : Pt).find(function(r) {
                 return t.endsWith(r);
@@ -3551,7 +3551,7 @@
                                     });
                                     o.push(c);
                                 }
-                            }), d.default.all(o).then(q(Z(i), H));
+                            }), d.default.all(o).then(q(Z(i), G));
                         }
                         return d.default.resolve({});
                     }.bind(t);
@@ -3581,7 +3581,7 @@
                         asyncAll: d.default.all(e.map(function(t) {
                             return r[t];
                         })),
-                        asyncAny: G(e.map(function(t) {
+                        asyncAny: V(e.map(function(t) {
                             return r[t];
                         }))
                     };
@@ -3617,22 +3617,20 @@
             var r = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : 9e15, e = parseInt((Math.random() * r).toFixed(0), 10).toString(36);
             return t ? t + "-" + e : e;
         }, Ft = function(t) {
-            return null !== t && void 0 !== t && "" !== t;
-        }, Wt = function(t) {
             var r = new Q(), e = zt(t), n = k(t.models), o = Ct(null, 1e5), u = /^[0-9a-z]+?-[0-9a-z]+$/i, a = a2790.create(), s = {}, c = function(t) {
                 var r = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : {};
-                return V(r) && console.error("[@citygro/vdata] you have not defined any models!"), 
+                return H(r) && console.error("[@citygro/vdata] you have not defined any models!"), 
                 (0, i.default)(r).forEach(function(r) {
                     t = t.set(r, tt.Map());
                 }), t;
-            }(tt.Map(), t.models), f = function(t, r) {
-                return u.test(r) ? r : a.get(t, r);
-            }, p = function(r) {
+            }(tt.Map(), t.models), f = function(r) {
                 return n[r].basePath || t.basePath || "";
+            }, p = function(t, r) {
+                return u.test(r) ? r : a.get(t, r);
             }, h = function(t, r) {
                 var e = n[t].idAttribute;
                 return {
-                    basePath: p(t),
+                    basePath: f(t),
                     id: Dt(r, "__tmp_id"),
                     idAttribute: e,
                     pk: Dt(r, e),
@@ -3652,23 +3650,25 @@
      * identify the object. editing either of these will cause vdata to see the resulting
      * object as something new that needs to be tracked separately from the original object.
      *
-     * @param {string} collection
-     * @param {object} [data={}]
+     * @param {String} collection
+     * @param {Object} [data={}]
+     * @return {Object}
      */
             /**
      * get a particular object from the store using the primary key provided by
      * your api server, or the temporary local id that vdata uses internally to
      * track records.
      *
-     * @param {string} collectionName
-     * @param {string} pkOrId
+     * @param {String} collectionName
+     * @param {String} pkOrId
+     * @return {Object}
      */
             /**
      * get all of the records in `collectionName`. if you include a `keys`
      * parameter, this method returns all of the records that match the ids
      * listed.
      *
-     * @param {string} collectionName
+     * @param {String} collectionName
      * @param {string[]} [keys]
      * @return {object[]}
      */
@@ -3679,17 +3679,17 @@
      * remove a record from the store, identified by public key or temporary id.
      *
      * @emits Store#remove
-     * @param {string} collectionName
-     * @param {string} pkOrId
-     * @param {object} options
-     * @param {boolean} options.quiet
-     * @return {object}
+     * @param {String} collectionName
+     * @param {String} pkOrId
+     * @param {Object} options
+     * @param {Boolean} options.quiet
+     * @return {Object}
      */
             /**
      * remove all of the records in `collectionName` or all of the records that match the ids passed into `keys`.
      *
      * @emits Store#remove-list
-     * @param {string} collectionName
+     * @param {String} collectionName
      * @param {string[]} keys
      * @return {object[]}
      */
@@ -3709,9 +3709,9 @@
      * 1. current
      * 2. data
      *
-     * @param {string} collection
-     * @param {object} data
-     * @return {object}
+     * @param {String} collection
+     * @param {Object} data
+     * @return {Object}
      */
             /**
      * add a record to the store. you *do not* need to pass your data to
@@ -3724,27 +3724,27 @@
      *
      * @emits Store#add
      * @see {Store.rebase}
-     * @param {string} collection
-     * @param {object} data
-     * @param {object} options
-     * @param {boolean} [options.quiet=false] silence store events for this invocation
-     * @return {object}
+     * @param {String} collection
+     * @param {Object} data
+     * @param {Object} options
+     * @param {Boolean} [options.quiet=false] silence store events for this invocation
+     * @return {Object}
      */
             /**
      * add all of the records in `data` to `colectionName` in a single operation.
      *
      * @emits Store#add-list
-     * @param {string} collectionName
-     * @param {object[]} data
-     * @return {object[]}
+     * @param {String} collectionName
+     * @param {Array<Object>} data
+     * @return {Array<Object>}
      */
             /**
      * check if `data` differs from the current version of the corresponding
      * record in the store.
      *
-     * @param {string} collectionName
-     * @param {object} data
-     * @return {boolean}
+     * @param {String} collectionName
+     * @param {Object} data
+     * @return {Boolean}
      */
             /**
      * send a `DELETE` request to the endpoint configured for `collectionName`
@@ -3752,9 +3752,10 @@
      *
      * @async
      * @emits Store#remove
-     * @param {string} collectionName
-     * @param {object} data
-     * @param {object} options
+     * @param {String} collectionName
+     * @param {Object} data
+     * @param {Object} options
+     * @return {Promise<Object>}
      */
             /**
      * persist `data` using the endpoint configured for `collectonName`. if
@@ -3764,19 +3765,21 @@
      *
      * @async
      * @emits Store#add
-     * @param {string} collection
-     * @param {object} data
-     * @param {object} options
+     * @param {String} collection
+     * @param {Object} data
+     * @param {Object} options
+     * @return {Promise<Object>}
      */
             /**
      * fetch a particular record from `/:basePath/:collectionName/:primaryKey`.
      * if `force === false` immediately return the cached record if present.
      *
      * @async
-     * @param {string} collection
-     * @param {object} [query]
-     * @param {object} [options]
-     * @param {boolean} [options.force=false]
+     * @param {String} collection
+     * @param {Object} [query]
+     * @param {Object} [options]
+     * @param {Boolean} [options.force=false]
+     * @return {Promise<Object>}
      */
             /**
      * fetch all of the records from the api that match the parameters specified
@@ -3784,27 +3787,40 @@
      * if `force === false` immediately return a cached response if one exists.
      *
      * @async
-     * @param {string} collection
-     * @param {object} [query]
-     * @param {object} [options]
+     * @param {String} collection
+     * @param {Object} [query]
+     * @param {Object} [options]
+     * @return {Promise<Array<Object>>}
      */
             /**
      * bind an event listener to the store
      *
-     * @param {string} event
+     * @param {String} event
      * @param {function} handler
      */
             /**
      * unbind an event listener to the store
      *
-     * @param {string} event
+     * @param {String} event
      * @param {function} handler
      */
             /**
      * manually emit a message using the store's event bus
      *
-     * @param {string} event
+     * @param {String} event
      * @param {*} payload
+     */
+            /**
+     * get the base path for `collectionName`
+     *
+     * @param {String} collectionName
+     * @return {String}
+     */
+            /**
+     * check if the given value is a valid id
+     *
+     * @param {*} id
+     * @return {Boolean}
      */
             return v.prototype.createRecord = function(t) {
                 var r = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : {}, e = n[t].idAttribute, i = Dt(r, e), u = Dt(r, "__tmp_id");
@@ -3814,7 +3830,7 @@
                     __tmp_id: u
                 });
             }, v.prototype.get = function(t, r) {
-                var e = f(t, r), n = c.getIn([ t, e ], tt.Stack()), o = n.first();
+                var e = p(t, r), n = c.getIn([ t, e ], tt.Stack()), o = n.first();
                 if (o) {
                     var i = n.size;
                     return this.createRecord(t, ct({}, o.toJS(), {
@@ -3832,7 +3848,7 @@
             }, v.prototype.getAll = function() {
                 return this.getList.apply(this, arguments);
             }, v.prototype.remove = function(t, r) {
-                var e = arguments.length > 2 && void 0 !== arguments[2] ? arguments[2] : {}, n = f(t, r), o = this.get(t, n), i = h(t, o);
+                var e = arguments.length > 2 && void 0 !== arguments[2] ? arguments[2] : {}, n = p(t, r), o = this.get(t, n), i = h(t, o);
                 return c = c.removeIn([ t, n ]), a.unlink(t, i.pk, i.id), delete o.__tmp_id, delete o.__sym_id, 
                 l({
                     collectionName: t,
@@ -3920,7 +3936,7 @@
                 var n = this, o = arguments.length > 2 && void 0 !== arguments[2] ? arguments[2] : {}, i = h(t, r), u = i.id, a = i.pk, s = i.basePath, c = {
                     "Content-Type": "application/json"
                 };
-                return e(Ft(a) ? ct({
+                return e(this.isValidId(a) ? ct({
                     url: s + "/" + t + "/" + a,
                     method: "PUT",
                     body: ct({}, this.rebase(t, r), {
@@ -3946,14 +3962,14 @@
                 });
             }, v.prototype.find = function(t, r) {
                 var n = this, o = arguments.length > 2 && void 0 !== arguments[2] ? arguments[2] : {}, i = void 0, s = o.force || !1, c = this.get(t, r);
-                if (Ft(r)) if (c && !0 !== s) i = d.default.resolve(c); else {
+                if (this.isValidId(r)) if (c && !0 !== s) i = d.default.resolve(c); else {
                     var f = function(t, r) {
                         return u.test(r) ? a.get(t, r) : r;
-                    }(t, r), h = p(t), l = ct({
-                        url: h + "/" + t + "/" + f,
+                    }(t, r), p = this.getBasePath(t), h = ct({
+                        url: p + "/" + t + "/" + f,
                         method: "GET"
                     }, o);
-                    i = e(l).then(function(r) {
+                    i = e(h).then(function(r) {
                         return L(function() {
                             return n.add(t, r);
                         });
@@ -3961,19 +3977,19 @@
                 } else i = d.default.resolve(null);
                 return i;
             }, v.prototype.findAll = function(t, r) {
-                var n = this, o = arguments.length > 2 && void 0 !== arguments[2] ? arguments[2] : {}, i = void 0, u = o.force || !1, a = p(t), c = function(t, r) {
+                var n = this, o = arguments.length > 2 && void 0 !== arguments[2] ? arguments[2] : {}, i = void 0, u = o.force || !1, a = this.getBasePath(t), c = function(t, r) {
                     var e = P(W(r), function(t) {
                         return t.codePointAt(0);
                     });
                     return t + "-" + T(e);
-                }(t, r), f = s[c], l = this.getAll(t, f);
-                if (l.length && !0 !== u) i = d.default.resolve(l); else {
-                    var v = ct({
+                }(t, r), f = s[c], p = this.getAll(t, f);
+                if (p.length && !0 !== u) i = d.default.resolve(p); else {
+                    var l = ct({
                         url: a + "/" + t,
                         method: "GET",
                         params: r
                     }, o);
-                    i = e(v).then(function(r) {
+                    i = e(l).then(function(r) {
                         return L(function() {
                             var e = [], o = r.map(function(r) {
                                 var o = n.createRecord(t, r), i = h(t, o).id;
@@ -3994,10 +4010,14 @@
                 L(function() {
                     return r.emit(t, e);
                 });
-            }, v.prototype.isValidId = Ft, v.prototype.getBasePath = p, new v();
-        }, Ut = function(t) {
+            }, v.prototype.getBasePath = function(t) {
+                return f(t);
+            }, v.prototype.isValidId = function(t) {
+                return null !== t && void 0 !== t && "" !== t;
+            }, new v();
+        }, Wt = function(t) {
             return !!N(t, "$options.vdata");
-        }, Nt = {
+        }, Ut = {
             createConfig: function(t) {
                 return function(r) {
                     return t(r);
@@ -4005,7 +4025,7 @@
             },
             install: function(t, r) {
                 r = R(r) ? r(t) : r;
-                var e = Wt(r);
+                var e = Ft(r);
                 Object.defineProperty(t, "$store", {
                     get: function() {
                         return e;
@@ -4063,19 +4083,19 @@
                 t.mixin({
                     methods: {
                         $vdata: function(t) {
-                            Ut(this) && this._vdataHandler.run(t);
+                            Wt(this) && this._vdataHandler.run(t);
                         }
                     },
                     beforeCreate: function() {
-                        Ut(this) && (this._vdataHandler = n.add(this));
+                        Wt(this) && (this._vdataHandler = n.add(this));
                     },
                     beforeDestroy: function() {
-                        Ut(this) && this._vdataHandler.destroy();
+                        Wt(this) && this._vdataHandler.destroy();
                     }
                 }), t.mixin(Lt), console.log("[@citygro/vdata] $store ready!", e, r);
             }
-        }, Kt = wt("value");
-        r.DataFlowMixin = Kt, r.asyncMap = J, r.cleanRecord = function(t) {
+        }, Nt = wt("value");
+        r.DataFlowMixin = Nt, r.asyncMap = J, r.cleanRecord = function(t) {
             var r = t.record, e = t.store, n = O([].concat(pt(t.omitKeys || []), [ "_id" ])), o = ht({
                 store: e,
                 record: r,
@@ -4124,7 +4144,7 @@
                     }))();
                 })
             };
-        }, r.fetchWrapper = At, r.to = $, r.vdata = Nt, r.handleChange = lt, r.handleKeyChange = vt, 
+        }, r.fetchWrapper = At, r.to = $, r.vdata = Ut, r.handleChange = lt, r.handleKeyChange = vt, 
         r.handleArrayChange = dt, r.handleArrayKeyChange = yt, r.pushToArray = _t, r.pushToArrayKey = gt, 
         r.removeFromArray = mt, r.removeFromArrayKey = xt;
     }, /* 186 */
@@ -5000,18 +5020,18 @@
         } : z, J = function(t) {
             var r = C[t] = j(M[T]);
             return r._k = t, r;
-        }, G = U && "symbol" == typeof M.iterator ? function(t) {
+        }, V = U && "symbol" == typeof M.iterator ? function(t) {
             return "symbol" == typeof t;
         } : function(t) {
             return t instanceof M;
-        }, H = function(t, r, e) {
-            return t === W && H(F, r, e), m(t), r = b(r, !0), m(e), o(C, r) ? (e.enumerable ? (o(t, L) && t[L][r] && (t[L][r] = !1), 
+        }, G = function(t, r, e) {
+            return t === W && G(F, r, e), m(t), r = b(r, !0), m(e), o(C, r) ? (e.enumerable ? (o(t, L) && t[L][r] && (t[L][r] = !1), 
             e = j(e, {
                 enumerable: w(0, !1)
             })) : (o(t, L) || z(t, L, w(1, {})), t[L][r] = !0), $(t, r, e)) : z(t, r, e);
-        }, V = function(t, r) {
+        }, H = function(t, r) {
             m(t);
-            for (var e, n = _(r = x(r)), o = 0, i = n.length; i > o; ) H(t, e = n[o++], r[e]);
+            for (var e, n = _(r = x(r)), o = 0, i = n.length; i > o; ) G(t, e = n[o++], r[e]);
             return t;
         }, Y = function(t) {
             var r = q.call(this, t = b(t, !0));
@@ -5040,7 +5060,7 @@
             }), J(t);
         })[T], "toString", function() {
             return this._k;
-        }), A.f = Z, S.f = H, e(119).f = O.f = X, e(36).f = Y, e(71).f = Q, i && !e(47) && a(W, "propertyIsEnumerable", Y, !0), 
+        }), A.f = Z, S.f = G, e(119).f = O.f = X, e(36).f = Y, e(71).f = Q, i && !e(47) && a(W, "propertyIsEnumerable", Y, !0), 
         v.f = function(t) {
             return J(l(t));
         }), u(u.G + u.W + u.F * !U, {
@@ -5055,7 +5075,7 @@
             },
             // 19.4.2.5 Symbol.keyFor(sym)
             keyFor: function(t) {
-                if (G(t)) return y(B, t);
+                if (V(t)) return y(B, t);
                 throw TypeError(t + " is not a symbol!");
             },
             useSetter: function() {
@@ -5067,12 +5087,12 @@
         }), u(u.S + u.F * !U, "Object", {
             // 19.1.2.2 Object.create(O [, Properties])
             create: function(t, r) {
-                return void 0 === r ? j(t) : V(j(t), r);
+                return void 0 === r ? j(t) : H(j(t), r);
             },
             // 19.1.2.4 Object.defineProperty(O, P, Attributes)
-            defineProperty: H,
+            defineProperty: G,
             // 19.1.2.3 Object.defineProperties(O, Properties)
-            defineProperties: V,
+            defineProperties: H,
             // 19.1.2.6 Object.getOwnPropertyDescriptor(O, P)
             getOwnPropertyDescriptor: Z,
             // 19.1.2.7 Object.getOwnPropertyNames(O)
@@ -5090,11 +5110,11 @@
             }) || "{}" != P(Object(t));
         })), "JSON", {
             stringify: function(t) {
-                if (void 0 !== t && !G(t)) {
+                if (void 0 !== t && !V(t)) {
                     for (// IE8 returns string on undefined
                     var r, e, n = [ t ], o = 1; arguments.length > o; ) n.push(arguments[o++]);
                     return "function" == typeof (r = n[1]) && (e = r), !e && g(r) || (r = function(t, r) {
-                        if (e && (r = e.call(this, t, r)), !G(r)) return r;
+                        if (e && (r = e.call(this, t, r)), !V(r)) return r;
                     }), n[1] = r, P.apply(R, n);
                 }
             }
@@ -5331,16 +5351,16 @@
             return !(!t || !t[Jr]);
         }
         function y(t) {
-            return !(!t || !t[Gr]);
+            return !(!t || !t[Vr]);
         }
         function _(t) {
-            return !(!t || !t[Hr]);
+            return !(!t || !t[Gr]);
         }
         function g(t) {
             return y(t) || _(t);
         }
         function m(t) {
-            return !(!t || !t[Vr]);
+            return !(!t || !t[Hr]);
         }
         function x(t) {
             return !(!t || !t[Yr]);
@@ -5769,21 +5789,21 @@
                 var n = t.toSeq().map(function(r, n) {
                     return [ r, e(r, n, t) ];
                 }).reduce(function(t, e) {
-                    return G(r, t[1], e[1]) ? e : t;
+                    return V(r, t[1], e[1]) ? e : t;
                 });
                 return n && n[0];
             }
             return t.reduce(function(t, e) {
-                return G(r, t, e) ? e : t;
+                return V(r, t, e) ? e : t;
             });
         }
-        function G(t, r, e) {
+        function V(t, r, e) {
             var n = t(e, r);
             // b is considered the new max if the comparator declares them equal, but
             // they are not equal and b is in fact a nullish value.
             return 0 === n && e !== r && (void 0 === e || null === e || e != e) || n > 0;
         }
-        function H(t, r, e, n) {
+        function G(t, r, e, n) {
             var o = X(t), i = new ve(e).map(function(t) {
                 return t.size;
             });
@@ -5814,7 +5834,7 @@
             }, o;
         }
         // #pragma Helper Functions
-        function V(t, r) {
+        function H(t, r) {
             return t === r ? t : z(t) ? r : t.constructor(r);
         }
         function Y(t) {
@@ -6075,22 +6095,22 @@
         function Jt(t) {
             return t.constructor === We || t.constructor === Fe;
         }
-        function Gt(t, r, e, n, o) {
+        function Vt(t, r, e, n, o) {
             if (t.keyHash === n) return new Fe(r, n, [ t.entry, o ]);
-            var i, u = (0 === e ? t.keyHash : t.keyHash >>> e) & Ur, a = (0 === e ? n : n >>> e) & Ur, s = u === a ? [ Gt(t, r, e + Fr, n, o) ] : (i = new We(r, n, o), 
+            var i, u = (0 === e ? t.keyHash : t.keyHash >>> e) & Ur, a = (0 === e ? n : n >>> e) & Ur, s = u === a ? [ Vt(t, r, e + Fr, n, o) ] : (i = new We(r, n, o), 
             u < a ? [ t, i ] : [ i, t ]);
             return new Be(r, 1 << u | 1 << a, s);
         }
-        function Ht(t) {
+        function Gt(t) {
             return t -= t >> 1 & 1431655765, t = (858993459 & t) + (t >> 2 & 858993459), t = t + (t >> 4) & 252645135, 
             t += t >> 8, 127 & (t += t >> 16);
         }
-        function Vt(t, r, e, n) {
+        function Ht(t, r, e, n) {
             var o = n ? t : rt(t);
             return o[r] = e, o;
         }
         function Yt(t) {
-            return !(!t || !t[He]);
+            return !(!t || !t[Ge]);
         }
         function Zt(t, r) {
             function e(t, a, s) {
@@ -6123,7 +6143,7 @@
             return e(t._root, t._level, 0);
         }
         function Xt(t, r, e, n, o, i, u) {
-            var a = Object.create(Ve);
+            var a = Object.create(He);
             return a.size = r - t, a._origin = t, a._capacity = r, a._level = e, a._root = n, 
             a._tail = o, a.__ownerID = i, a.__hash = u, a.__altered = !1, a;
         }
@@ -6413,7 +6433,7 @@
             return Qe;
         }), /* harmony export (binding) */
         e.d(r, "List", function() {
-            return Ge;
+            return Ve;
         }), /* harmony export (binding) */
         e.d(r, "Stack", function() {
             return rn;
@@ -6516,7 +6536,7 @@
             value: !1
         }, $r = {
             value: !1
-        }, Jr = "@@__IMMUTABLE_ITERABLE__@@", Gr = "@@__IMMUTABLE_KEYED__@@", Hr = "@@__IMMUTABLE_INDEXED__@@", Vr = "@@__IMMUTABLE_ORDERED__@@", Yr = "@@__IMMUTABLE_RECORD__@@", Zr = function(t) {
+        }, Jr = "@@__IMMUTABLE_ITERABLE__@@", Vr = "@@__IMMUTABLE_KEYED__@@", Gr = "@@__IMMUTABLE_INDEXED__@@", Hr = "@@__IMMUTABLE_ORDERED__@@", Yr = "@@__IMMUTABLE_RECORD__@@", Zr = function(t) {
             return d(t) ? t : ce(t);
         }, Xr = function(t) {
             function r(t) {
@@ -6679,7 +6699,7 @@
                 });
             }, r;
         }(fe);
-        de.prototype[Vr] = !0;
+        de.prototype[Hr] = !0;
         var ye, _e, ge = function(t) {
             function r(t) {
                 this._collection = t, this.size = t.length || t.size;
@@ -6773,7 +6793,7 @@
                 return this._iter.__iterator(t, r);
             }, r;
         }(fe);
-        ke.prototype[Vr] = !0;
+        ke.prototype[Hr] = !0;
         var Me = function(t) {
             function r(t) {
                 this._iter = t, this.size = t.size;
@@ -6949,12 +6969,12 @@
         Be.prototype.get = function(t, r, e, n) {
             void 0 === r && (r = D(e));
             var o = 1 << ((0 === t ? r : r >>> t) & Ur), i = this.bitmap;
-            return 0 == (i & o) ? n : this.nodes[Ht(i & o - 1)].get(t + Fr, r, e, n);
+            return 0 == (i & o) ? n : this.nodes[Gt(i & o - 1)].get(t + Fr, r, e, n);
         }, Be.prototype.update = function(t, r, e, n, o, i, u) {
             void 0 === e && (e = D(n));
             var a = (0 === r ? e : e >>> r) & Ur, s = 1 << a, c = this.bitmap, f = 0 != (c & s);
             if (!f && o === Nr) return this;
-            var p = Ht(c & s - 1), h = this.nodes, l = f ? h[p] : void 0, v = $t(l, t, r + Fr, e, n, o, i, u);
+            var p = Gt(c & s - 1), h = this.nodes, l = f ? h[p] : void 0, v = $t(l, t, r + Fr, e, n, o, i, u);
             if (v === l) return this;
             if (!f && v && h.length >= $e) return function(t, r, e, n, o) {
                 for (var i = 0, u = new Array(Wr), a = 0; 0 !== e; a++, e >>>= 1) u[a] = 1 & e ? r[i++] : void 0;
@@ -6962,7 +6982,7 @@
             }(t, h, c, a, v);
             if (f && !v && 2 === h.length && Jt(h[1 ^ p])) return h[1 ^ p];
             if (f && v && 1 === h.length && Jt(v)) return v;
-            var d = t && t === this.ownerID, y = f ? v ? c : c ^ s : c | s, _ = f ? v ? Vt(h, p, v, d) : function(t, r, e) {
+            var d = t && t === this.ownerID, y = f ? v ? c : c ^ s : c | s, _ = f ? v ? Ht(h, p, v, d) : function(t, r, e) {
                 var n = t.length - 1;
                 if (e && r === n) return t.pop(), t;
                 for (var o = new Array(n), i = 0, u = 0; u < n; u++) u === r && (i = 1), o[u] = t[u + i];
@@ -6999,7 +7019,7 @@
                     return new Be(t, o, u);
                 }(t, c, h, a);
             } else h++;
-            var l = t && t === this.ownerID, v = Vt(c, a, p, l);
+            var l = t && t === this.ownerID, v = Ht(c, a, p, l);
             return l ? (this.count = h, this.nodes = v, this) : new Ce(t, h, v);
         };
         var Fe = function(t, r, e) {
@@ -7011,7 +7031,7 @@
         }, Fe.prototype.update = function(t, r, e, n, i, u, a) {
             void 0 === e && (e = D(n));
             var s = i === Nr;
-            if (e !== this.keyHash) return s ? this : (o(a), o(u), Gt(this, t, r, e, [ n, i ]));
+            if (e !== this.keyHash) return s ? this : (o(a), o(u), Vt(this, t, r, e, [ n, i ]));
             for (var c = this.entries, f = 0, p = c.length; f < p && !T(n, c[f][0]); f++) ;
             var h = f < p;
             if (h ? c[f][1] === i : s) return this;
@@ -7028,7 +7048,7 @@
         }, We.prototype.update = function(t, r, e, n, i, u, a) {
             var s = i === Nr, c = T(n, this.entry[0]);
             return (c ? i === this.entry[1] : s) ? this : (o(a), s ? void o(u) : c ? t && t === this.ownerID ? (this.entry[1] = i, 
-            this) : new We(t, this.keyHash, [ n, i ]) : (o(u), Gt(this, t, r, D(n), [ n, i ])));
+            this) : new We(t, this.keyHash, [ n, i ]) : (o(u), Vt(this, t, r, D(n), [ n, i ])));
         }, // #pragma Iterators
         qe.prototype.iterate = Fe.prototype.iterate = function(t, r) {
             for (var e = this.entries, n = 0, o = e.length - 1; n <= o; n++) if (!1 === t(e[r ? o - n : n])) return !1;
@@ -7068,7 +7088,7 @@
                     done: !0
                 };
             }, r;
-        }(ae), Ke = Wr / 4, $e = Wr / 2, Je = Wr / 4, Ge = function(t) {
+        }(ae), Ke = Wr / 4, $e = Wr / 2, Je = Wr / 4, Ve = function(t) {
             function r(r) {
                 var e = Qt();
                 if (null === r || void 0 === r) return e;
@@ -7165,14 +7185,14 @@
                 this.__altered = !1, this);
             }, r;
         }(Qr);
-        Ge.isList = Yt;
-        var He = "@@__IMMUTABLE_LIST__@@", Ve = Ge.prototype;
-        Ve[He] = !0, Ve.delete = Ve.remove, Ve.merge = Ve.concat, Ve.setIn = yt, Ve.deleteIn = Ve.removeIn = gt, 
-        Ve.update = xt, Ve.updateIn = bt, Ve.mergeIn = Pt, Ve.mergeDeepIn = Tt, Ve.withMutations = Lt, 
-        Ve.wasAltered = Bt, Ve.asImmutable = qt, Ve["@@transducer/init"] = Ve.asMutable = Dt, 
-        Ve["@@transducer/step"] = function(t, r) {
+        Ve.isList = Yt;
+        var Ge = "@@__IMMUTABLE_LIST__@@", He = Ve.prototype;
+        He[Ge] = !0, He.delete = He.remove, He.merge = He.concat, He.setIn = yt, He.deleteIn = He.removeIn = gt, 
+        He.update = xt, He.updateIn = bt, He.mergeIn = Pt, He.mergeDeepIn = Tt, He.withMutations = Lt, 
+        He.wasAltered = Bt, He.asImmutable = qt, He["@@transducer/init"] = He.asMutable = Dt, 
+        He["@@transducer/step"] = function(t, r) {
             return t.push(r);
-        }, Ve["@@transducer/result"] = function(t) {
+        }, He["@@transducer/result"] = function(t) {
             return t.asImmutable();
         };
         var Ye = function(t, r) {
@@ -7246,7 +7266,7 @@
                 this._map = r, this._list = e, this);
             }, r;
         }(Te);
-        Qe.isOrderedMap = ir, Qe.prototype[Vr] = !0, Qe.prototype.delete = Qe.prototype.remove;
+        Qe.isOrderedMap = ir, Qe.prototype[Hr] = !0, Qe.prototype.delete = Qe.prototype.remove;
         var tn, rn = function(t) {
             function r(t) {
                 return null === t || void 0 === t ? pr() : cr(t) ? t : pr().pushAll(t);
@@ -7533,7 +7553,7 @@
             },
             toList: function() {
                 // Use Late Binding here to solve the circular dependency.
-                return Ge(y(this) ? this.valueSeq() : this);
+                return Ve(y(this) ? this.valueSeq() : this);
             },
             // ### Common JavaScript methods and properties
             toString: function() {
@@ -7545,7 +7565,7 @@
             // ### ES6 Collection methods (ES6 Array and Map)
             concat: function() {
                 for (var t = [], r = arguments.length; r--; ) t[r] = arguments[r];
-                return V(this, function(t, r) {
+                return H(this, function(t, r) {
                     var e = y(t), n = [ t ].concat(r).map(function(t) {
                         return d(t) ? e && (t = Xr(t)) : t = e ? M(t) : R(Array.isArray(t) ? t : [ t ]), 
                         t;
@@ -7582,7 +7602,7 @@
                 }), e;
             },
             filter: function(t, r) {
-                return V(this, W(this, t, r, !0));
+                return H(this, W(this, t, r, !0));
             },
             find: function(t, r, e) {
                 var n = this.findEntry(t, r);
@@ -7602,7 +7622,7 @@
                 return this.__iterator(re);
             },
             map: function(t, r) {
-                return V(this, C(this, t, r));
+                return H(this, C(this, t, r));
             },
             reduce: function(t, r, e) {
                 return jr(this, t, r, e, arguments.length < 2, !1);
@@ -7611,16 +7631,16 @@
                 return jr(this, t, r, e, arguments.length < 2, !0);
             },
             reverse: function() {
-                return V(this, F(this, !0));
+                return H(this, F(this, !0));
             },
             slice: function(t, r) {
-                return V(this, U(this, t, r, !0));
+                return H(this, U(this, t, r, !0));
             },
             some: function(t, r) {
                 return !this.every(Sr(t), r);
             },
             sort: function(t) {
-                return V(this, $(this, t));
+                return H(this, $(this, t));
             },
             values: function() {
                 return this.__iterator(ee);
@@ -7685,7 +7705,7 @@
                 return this.find(s);
             },
             flatMap: function(t, r) {
-                return V(this, function(t, r, e) {
+                return H(this, function(t, r, e) {
                     var n = Z(t);
                     return t.toSeq().map(function(o, i) {
                         return n(r.call(e, o, i, t));
@@ -7693,7 +7713,7 @@
                 }(this, t, r));
             },
             flatten: function(t) {
-                return V(this, K(this, t, !0));
+                return H(this, K(this, t, !0));
             },
             fromEntrySeq: function() {
                 return new Pe(this);
@@ -7714,7 +7734,7 @@
                     });
                     var i = Z(t);
                     return o.map(function(r) {
-                        return V(t, i(r));
+                        return H(t, i(r));
                     });
                 }(this, t, r);
             },
@@ -7768,13 +7788,13 @@
                 return 0 === t ? this : this.slice(0, -Math.max(0, t));
             },
             skipWhile: function(t, r) {
-                return V(this, N(this, t, r, !0));
+                return H(this, N(this, t, r, !0));
             },
             skipUntil: function(t, r) {
                 return this.skipWhile(Sr(t), r);
             },
             sortBy: function(t, r) {
-                return V(this, $(this, r, t));
+                return H(this, $(this, r, t));
             },
             take: function(t) {
                 return this.slice(0, Math.max(0, t));
@@ -7783,7 +7803,7 @@
                 return this.slice(-Math.max(0, t));
             },
             takeWhile: function(t, r) {
-                return V(this, function(t, r, e) {
+                return H(this, function(t, r, e) {
                     var n = X(t);
                     return n.__iterateUncached = function(n, o) {
                         var i = this;
@@ -7833,23 +7853,23 @@
         }, hn.chain = hn.flatMap, hn.contains = hn.includes, lr(Xr, {
             // ### More sequential methods
             flip: function() {
-                return V(this, B(this));
+                return H(this, B(this));
             },
             mapEntries: function(t, r) {
                 var e = this, n = 0;
-                return V(this, this.toSeq().map(function(o, i) {
+                return H(this, this.toSeq().map(function(o, i) {
                     return t.call(r, [ i, o ], n++, e);
                 }).fromEntrySeq());
             },
             mapKeys: function(t, r) {
                 var e = this;
-                return V(this, this.toSeq().flip().map(function(n, o) {
+                return H(this, this.toSeq().flip().map(function(n, o) {
                     return t.call(r, n, o, e);
                 }).flip());
             }
         });
         var ln = Xr.prototype;
-        ln[Gr] = !0, ln[ue] = hn.entries, ln.toJSON = wr, ln.__toStringMapper = function(t, r) {
+        ln[Vr] = !0, ln[ue] = hn.entries, ln.toJSON = wr, ln.__toStringMapper = function(t, r) {
             return at(r) + ": " + at(t);
         }, lr(Qr, {
             // ### Conversion to other types
@@ -7858,7 +7878,7 @@
             },
             // ### ES6 Collection methods (ES6 Array and Map)
             filter: function(t, r) {
-                return V(this, W(this, t, r, !1));
+                return H(this, W(this, t, r, !1));
             },
             findIndex: function(t, r) {
                 var e = this.findEntry(t, r);
@@ -7873,10 +7893,10 @@
                 return void 0 === r ? -1 : r;
             },
             reverse: function() {
-                return V(this, F(this, !1));
+                return H(this, F(this, !1));
             },
             slice: function(t, r) {
-                return V(this, U(this, t, r, !1));
+                return H(this, U(this, t, r, !1));
             },
             splice: function(t, r) {
                 var e = arguments.length;
@@ -7886,7 +7906,7 @@
                 // only call count() if the number is in fact negative.
                 t = f(t, t < 0 ? this.count() : this.size);
                 var n = this.slice(0, t);
-                return V(this, 1 === e ? n : n.concat(rt(arguments, 2), this.slice(t + r)));
+                return H(this, 1 === e ? n : n.concat(rt(arguments, 2), this.slice(t + r)));
             },
             // ### More collection methods
             findLastIndex: function(t, r) {
@@ -7897,7 +7917,7 @@
                 return this.get(0);
             },
             flatten: function(t) {
-                return V(this, K(this, t, !1));
+                return H(this, K(this, t, !1));
             },
             get: function(t, r) {
                 return (t = a(this, t)) < 0 || this.size === 1 / 0 || void 0 !== this.size && t > this.size ? r : this.find(function(r, e) {
@@ -7908,7 +7928,7 @@
                 return (t = a(this, t)) >= 0 && (void 0 !== this.size ? this.size === 1 / 0 || t < this.size : -1 !== this.indexOf(t));
             },
             interpose: function(t) {
-                return V(this, function(t, r) {
+                return H(this, function(t, r) {
                     var e = X(t);
                     return e.size = t.size && 2 * t.size - 1, e.__iterateUncached = function(e, n) {
                         var o = this, i = 0;
@@ -7924,8 +7944,8 @@
                 }(this, t));
             },
             interleave: function() {
-                var t = [ this ].concat(rt(arguments)), r = H(this.toSeq(), pe.of, t), e = r.flatten(!0);
-                return r.size && (e.size = r.size * t.length), V(this, e);
+                var t = [ this ].concat(rt(arguments)), r = G(this.toSeq(), pe.of, t), e = r.flatten(!0);
+                return r.size && (e.size = r.size * t.length), H(this, e);
             },
             keySeq: function() {
                 return pn(0, this.size);
@@ -7934,21 +7954,21 @@
                 return this.get(-1);
             },
             skipWhile: function(t, r) {
-                return V(this, N(this, t, r, !1));
+                return H(this, N(this, t, r, !1));
             },
             zip: function() {
-                return V(this, H(this, Er, [ this ].concat(rt(arguments))));
+                return H(this, G(this, Er, [ this ].concat(rt(arguments))));
             },
             zipAll: function() {
-                return V(this, H(this, Er, [ this ].concat(rt(arguments)), !0));
+                return H(this, G(this, Er, [ this ].concat(rt(arguments)), !0));
             },
             zipWith: function(t) {
                 var r = rt(arguments);
-                return r[0] = this, V(this, H(this, t, r));
+                return r[0] = this, H(this, G(this, t, r));
             }
         });
         var vn = Qr.prototype;
-        vn[Hr] = !0, vn[Vr] = !0, lr(te, {
+        vn[Gr] = !0, vn[Hr] = !0, lr(te, {
             // ### ES6 Collection methods (ES6 Array and Map)
             get: function(t, r) {
                 return this.has(t) ? t : r;
@@ -7983,7 +8003,7 @@
         }(un);
         dn.isOrderedSet = Rr;
         var yn = dn.prototype;
-        yn[Vr] = !0, yn.zip = vn.zip, yn.zipWith = vn.zipWith, yn.__empty = Tr, yn.__make = Pr;
+        yn[Hr] = !0, yn.zip = vn.zip, yn.zipWith = vn.zipWith, yn.__empty = Tr, yn.__make = Pr;
         var _n, gn = function(t, r) {
             var e, n = function(i) {
                 var u = this;
@@ -8010,7 +8030,7 @@
                         }(o, f);
                     }
                 }
-                this.__ownerID = void 0, this._values = Ge().withMutations(function(t) {
+                this.__ownerID = void 0, this._values = Ve().withMutations(function(t) {
                     t.setSize(u._keys.length), Xr(i).forEach(function(r, e) {
                         t.set(u._indices[e], r === u._defaultValues[e] ? void 0 : r);
                     });
@@ -8120,7 +8140,7 @@
             Seq: ce,
             Map: Te,
             OrderedMap: Qe,
-            List: Ge,
+            List: Ve,
             Stack: rn,
             Set: un,
             OrderedSet: dn,

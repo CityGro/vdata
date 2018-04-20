@@ -52,8 +52,6 @@ yarn add @citygro/vdata
 ## Functions
 
 <dl>
-<dt><a href="#isValidId">isValidId(id)</a></dt>
-<dd></dd>
 <dt><a href="#createDataFlowMixin">createDataFlowMixin(valueProp)</a></dt>
 <dd><p>create a dataflow mixin for a given value prop.</p>
 <p>a &#39;value&#39; dataflow implements the <code>v-model</code> interface.</p>
@@ -238,24 +236,25 @@ vdata store constructor
 * [Store](#Store)
     * [.create(options)](#Store.create) ⇒ [<code>Store</code>](#Store)
         * [~Store](#Store.create..Store)
-            * [.createRecord(collection, [data])](#Store.create..Store+createRecord)
-            * [.get(collectionName, pkOrId)](#Store.create..Store+get)
+            * [.createRecord(collection, [data])](#Store.create..Store+createRecord) ⇒ <code>Object</code>
+            * [.get(collectionName, pkOrId)](#Store.create..Store+get) ⇒ <code>Object</code>
             * [.getList(collectionName, [keys])](#Store.create..Store+getList) ⇒ <code>Array.&lt;object&gt;</code>
-            * [.remove(collectionName, pkOrId, options)](#Store.create..Store+remove) ⇒ <code>object</code>
+            * [.remove(collectionName, pkOrId, options)](#Store.create..Store+remove) ⇒ <code>Object</code>
             * [.removeList(collectionName, keys)](#Store.create..Store+removeList) ⇒ <code>Array.&lt;object&gt;</code>
             * [.clear()](#Store.create..Store+clear)
-            * [.rebase(collection, data)](#Store.create..Store+rebase) ⇒ <code>object</code>
-            * [.add(collection, data, options)](#Store.create..Store+add) ⇒ <code>object</code>
-            * [.addList(collectionName, data)](#Store.create..Store+addList) ⇒ <code>Array.&lt;object&gt;</code>
-            * [.hasChanges(collectionName, data)](#Store.create..Store+hasChanges) ⇒ <code>boolean</code>
-            * [.destroy(collectionName, data, options)](#Store.create..Store+destroy)
-            * [.save(collection, data, options)](#Store.create..Store+save)
-            * [.find(collection, [query], [options])](#Store.create..Store+find)
-            * [.findAll(collection, [query], [options])](#Store.create..Store+findAll)
+            * [.rebase(collection, data)](#Store.create..Store+rebase) ⇒ <code>Object</code>
+            * [.add(collection, data, options)](#Store.create..Store+add) ⇒ <code>Object</code>
+            * [.addList(collectionName, data)](#Store.create..Store+addList) ⇒ <code>Array.&lt;Object&gt;</code>
+            * [.hasChanges(collectionName, data)](#Store.create..Store+hasChanges) ⇒ <code>Boolean</code>
+            * [.destroy(collectionName, data, options)](#Store.create..Store+destroy) ⇒ <code>Promise.&lt;Object&gt;</code>
+            * [.save(collection, data, options)](#Store.create..Store+save) ⇒ <code>Promise.&lt;Object&gt;</code>
+            * [.find(collection, [query], [options])](#Store.create..Store+find) ⇒ <code>Promise.&lt;Object&gt;</code>
+            * [.findAll(collection, [query], [options])](#Store.create..Store+findAll) ⇒ <code>Promise.&lt;Array.&lt;Object&gt;&gt;</code>
             * [.on(event, handler)](#Store.create..Store+on)
             * [.off(event, handler)](#Store.create..Store+off)
             * [.emit(event, payload)](#Store.create..Store+emit)
-        * [~getBasePath(collectionName)](#Store.create..getBasePath)
+            * [.getBasePath(collectionName)](#Store.create..Store+getBasePath) ⇒ <code>String</code>
+            * [.isValidId(id)](#Store.create..Store+isValidId) ⇒ <code>Boolean</code>
 
 <a name="Store.create"></a>
 
@@ -265,33 +264,34 @@ vdata store constructor
 
 | Param | Type | Default | Description |
 | --- | --- | --- | --- |
-| options | <code>object</code> |  |  |
-| options.models | <code>object</code> |  |  |
-| [options.basePath] | <code>string</code> | <code>&quot;&#x27;&#x27;&quot;</code> | default prefix for http requests |
+| options | <code>Object</code> |  |  |
+| options.models | <code>Object</code> |  |  |
+| [options.basePath] | <code>String</code> | <code>&#x27;&#x27;</code> | default prefix for http requests |
 | [options.adapter] | <code>function</code> |  | a custom fetch |
 | [options.deserialize] | <code>function</code> |  | request post-processing |
 
 
 * [.create(options)](#Store.create) ⇒ [<code>Store</code>](#Store)
     * [~Store](#Store.create..Store)
-        * [.createRecord(collection, [data])](#Store.create..Store+createRecord)
-        * [.get(collectionName, pkOrId)](#Store.create..Store+get)
+        * [.createRecord(collection, [data])](#Store.create..Store+createRecord) ⇒ <code>Object</code>
+        * [.get(collectionName, pkOrId)](#Store.create..Store+get) ⇒ <code>Object</code>
         * [.getList(collectionName, [keys])](#Store.create..Store+getList) ⇒ <code>Array.&lt;object&gt;</code>
-        * [.remove(collectionName, pkOrId, options)](#Store.create..Store+remove) ⇒ <code>object</code>
+        * [.remove(collectionName, pkOrId, options)](#Store.create..Store+remove) ⇒ <code>Object</code>
         * [.removeList(collectionName, keys)](#Store.create..Store+removeList) ⇒ <code>Array.&lt;object&gt;</code>
         * [.clear()](#Store.create..Store+clear)
-        * [.rebase(collection, data)](#Store.create..Store+rebase) ⇒ <code>object</code>
-        * [.add(collection, data, options)](#Store.create..Store+add) ⇒ <code>object</code>
-        * [.addList(collectionName, data)](#Store.create..Store+addList) ⇒ <code>Array.&lt;object&gt;</code>
-        * [.hasChanges(collectionName, data)](#Store.create..Store+hasChanges) ⇒ <code>boolean</code>
-        * [.destroy(collectionName, data, options)](#Store.create..Store+destroy)
-        * [.save(collection, data, options)](#Store.create..Store+save)
-        * [.find(collection, [query], [options])](#Store.create..Store+find)
-        * [.findAll(collection, [query], [options])](#Store.create..Store+findAll)
+        * [.rebase(collection, data)](#Store.create..Store+rebase) ⇒ <code>Object</code>
+        * [.add(collection, data, options)](#Store.create..Store+add) ⇒ <code>Object</code>
+        * [.addList(collectionName, data)](#Store.create..Store+addList) ⇒ <code>Array.&lt;Object&gt;</code>
+        * [.hasChanges(collectionName, data)](#Store.create..Store+hasChanges) ⇒ <code>Boolean</code>
+        * [.destroy(collectionName, data, options)](#Store.create..Store+destroy) ⇒ <code>Promise.&lt;Object&gt;</code>
+        * [.save(collection, data, options)](#Store.create..Store+save) ⇒ <code>Promise.&lt;Object&gt;</code>
+        * [.find(collection, [query], [options])](#Store.create..Store+find) ⇒ <code>Promise.&lt;Object&gt;</code>
+        * [.findAll(collection, [query], [options])](#Store.create..Store+findAll) ⇒ <code>Promise.&lt;Array.&lt;Object&gt;&gt;</code>
         * [.on(event, handler)](#Store.create..Store+on)
         * [.off(event, handler)](#Store.create..Store+off)
         * [.emit(event, payload)](#Store.create..Store+emit)
-    * [~getBasePath(collectionName)](#Store.create..getBasePath)
+        * [.getBasePath(collectionName)](#Store.create..Store+getBasePath) ⇒ <code>String</code>
+        * [.isValidId(id)](#Store.create..Store+isValidId) ⇒ <code>Boolean</code>
 
 <a name="Store.create..Store"></a>
 
@@ -299,27 +299,29 @@ vdata store constructor
 **Kind**: inner class of [<code>create</code>](#Store.create)  
 
 * [~Store](#Store.create..Store)
-    * [.createRecord(collection, [data])](#Store.create..Store+createRecord)
-    * [.get(collectionName, pkOrId)](#Store.create..Store+get)
+    * [.createRecord(collection, [data])](#Store.create..Store+createRecord) ⇒ <code>Object</code>
+    * [.get(collectionName, pkOrId)](#Store.create..Store+get) ⇒ <code>Object</code>
     * [.getList(collectionName, [keys])](#Store.create..Store+getList) ⇒ <code>Array.&lt;object&gt;</code>
-    * [.remove(collectionName, pkOrId, options)](#Store.create..Store+remove) ⇒ <code>object</code>
+    * [.remove(collectionName, pkOrId, options)](#Store.create..Store+remove) ⇒ <code>Object</code>
     * [.removeList(collectionName, keys)](#Store.create..Store+removeList) ⇒ <code>Array.&lt;object&gt;</code>
     * [.clear()](#Store.create..Store+clear)
-    * [.rebase(collection, data)](#Store.create..Store+rebase) ⇒ <code>object</code>
-    * [.add(collection, data, options)](#Store.create..Store+add) ⇒ <code>object</code>
-    * [.addList(collectionName, data)](#Store.create..Store+addList) ⇒ <code>Array.&lt;object&gt;</code>
-    * [.hasChanges(collectionName, data)](#Store.create..Store+hasChanges) ⇒ <code>boolean</code>
-    * [.destroy(collectionName, data, options)](#Store.create..Store+destroy)
-    * [.save(collection, data, options)](#Store.create..Store+save)
-    * [.find(collection, [query], [options])](#Store.create..Store+find)
-    * [.findAll(collection, [query], [options])](#Store.create..Store+findAll)
+    * [.rebase(collection, data)](#Store.create..Store+rebase) ⇒ <code>Object</code>
+    * [.add(collection, data, options)](#Store.create..Store+add) ⇒ <code>Object</code>
+    * [.addList(collectionName, data)](#Store.create..Store+addList) ⇒ <code>Array.&lt;Object&gt;</code>
+    * [.hasChanges(collectionName, data)](#Store.create..Store+hasChanges) ⇒ <code>Boolean</code>
+    * [.destroy(collectionName, data, options)](#Store.create..Store+destroy) ⇒ <code>Promise.&lt;Object&gt;</code>
+    * [.save(collection, data, options)](#Store.create..Store+save) ⇒ <code>Promise.&lt;Object&gt;</code>
+    * [.find(collection, [query], [options])](#Store.create..Store+find) ⇒ <code>Promise.&lt;Object&gt;</code>
+    * [.findAll(collection, [query], [options])](#Store.create..Store+findAll) ⇒ <code>Promise.&lt;Array.&lt;Object&gt;&gt;</code>
     * [.on(event, handler)](#Store.create..Store+on)
     * [.off(event, handler)](#Store.create..Store+off)
     * [.emit(event, payload)](#Store.create..Store+emit)
+    * [.getBasePath(collectionName)](#Store.create..Store+getBasePath) ⇒ <code>String</code>
+    * [.isValidId(id)](#Store.create..Store+isValidId) ⇒ <code>Boolean</code>
 
 <a name="Store.create..Store+createRecord"></a>
 
-##### store.createRecord(collection, [data])
+##### store.createRecord(collection, [data]) ⇒ <code>Object</code>
 tag a javascript object with metadata that allows it to be tracked by the vdata store.
 `__tmp_id` and the `idAttribute` configured for the given collection are both used to
 identify the object. editing either of these will cause vdata to see the resulting
@@ -329,12 +331,12 @@ object as something new that needs to be tracked separately from the original ob
 
 | Param | Type | Default |
 | --- | --- | --- |
-| collection | <code>string</code> |  | 
-| [data] | <code>object</code> | <code>{}</code> | 
+| collection | <code>String</code> |  | 
+| [data] | <code>Object</code> | <code>{}</code> | 
 
 <a name="Store.create..Store+get"></a>
 
-##### store.get(collectionName, pkOrId)
+##### store.get(collectionName, pkOrId) ⇒ <code>Object</code>
 get a particular object from the store using the primary key provided by
 your api server, or the temporary local id that vdata uses internally to
 track records.
@@ -343,8 +345,8 @@ track records.
 
 | Param | Type |
 | --- | --- |
-| collectionName | <code>string</code> | 
-| pkOrId | <code>string</code> | 
+| collectionName | <code>String</code> | 
+| pkOrId | <code>String</code> | 
 
 <a name="Store.create..Store+getList"></a>
 
@@ -357,12 +359,12 @@ listed.
 
 | Param | Type |
 | --- | --- |
-| collectionName | <code>string</code> | 
+| collectionName | <code>String</code> | 
 | [keys] | <code>Array.&lt;string&gt;</code> | 
 
 <a name="Store.create..Store+remove"></a>
 
-##### store.remove(collectionName, pkOrId, options) ⇒ <code>object</code>
+##### store.remove(collectionName, pkOrId, options) ⇒ <code>Object</code>
 remove a record from the store, identified by public key or temporary id.
 
 **Kind**: instance method of [<code>Store</code>](#Store.create..Store)  
@@ -370,10 +372,10 @@ remove a record from the store, identified by public key or temporary id.
 
 | Param | Type |
 | --- | --- |
-| collectionName | <code>string</code> | 
-| pkOrId | <code>string</code> | 
-| options | <code>object</code> | 
-| options.quiet | <code>boolean</code> | 
+| collectionName | <code>String</code> | 
+| pkOrId | <code>String</code> | 
+| options | <code>Object</code> | 
+| options.quiet | <code>Boolean</code> | 
 
 <a name="Store.create..Store+removeList"></a>
 
@@ -385,7 +387,7 @@ remove all of the records in `collectionName` or all of the records that match t
 
 | Param | Type |
 | --- | --- |
-| collectionName | <code>string</code> | 
+| collectionName | <code>String</code> | 
 | keys | <code>Array.&lt;string&gt;</code> | 
 
 <a name="Store.create..Store+clear"></a>
@@ -397,7 +399,7 @@ remove all records from all collections
 **Emits**: <code>Store#event:remove-list</code>  
 <a name="Store.create..Store+rebase"></a>
 
-##### store.rebase(collection, data) ⇒ <code>object</code>
+##### store.rebase(collection, data) ⇒ <code>Object</code>
 given `data` with a particular `__sym_id` and the current version of the
 same record at `data[idAttribute]`, return a merged record containing all
 changes, applied to the base record at `__sym_id` in the following order,
@@ -410,12 +412,12 @@ diff'd against `base`:
 
 | Param | Type |
 | --- | --- |
-| collection | <code>string</code> | 
-| data | <code>object</code> | 
+| collection | <code>String</code> | 
+| data | <code>Object</code> | 
 
 <a name="Store.create..Store+add"></a>
 
-##### store.add(collection, data, options) ⇒ <code>object</code>
+##### store.add(collection, data, options) ⇒ <code>Object</code>
 add a record to the store. you *do not* need to pass your data to
 `Store.createRecord` before adding it.
 
@@ -430,14 +432,14 @@ all of the changes to a particular record.
 
 | Param | Type | Default | Description |
 | --- | --- | --- | --- |
-| collection | <code>string</code> |  |  |
-| data | <code>object</code> |  |  |
-| options | <code>object</code> |  |  |
-| [options.quiet] | <code>boolean</code> | <code>false</code> | silence store events for this invocation |
+| collection | <code>String</code> |  |  |
+| data | <code>Object</code> |  |  |
+| options | <code>Object</code> |  |  |
+| [options.quiet] | <code>Boolean</code> | <code>false</code> | silence store events for this invocation |
 
 <a name="Store.create..Store+addList"></a>
 
-##### store.addList(collectionName, data) ⇒ <code>Array.&lt;object&gt;</code>
+##### store.addList(collectionName, data) ⇒ <code>Array.&lt;Object&gt;</code>
 add all of the records in `data` to `colectionName` in a single operation.
 
 **Kind**: instance method of [<code>Store</code>](#Store.create..Store)  
@@ -445,12 +447,12 @@ add all of the records in `data` to `colectionName` in a single operation.
 
 | Param | Type |
 | --- | --- |
-| collectionName | <code>string</code> | 
-| data | <code>Array.&lt;object&gt;</code> | 
+| collectionName | <code>String</code> | 
+| data | <code>Array.&lt;Object&gt;</code> | 
 
 <a name="Store.create..Store+hasChanges"></a>
 
-##### store.hasChanges(collectionName, data) ⇒ <code>boolean</code>
+##### store.hasChanges(collectionName, data) ⇒ <code>Boolean</code>
 check if `data` differs from the current version of the corresponding
 record in the store.
 
@@ -458,12 +460,12 @@ record in the store.
 
 | Param | Type |
 | --- | --- |
-| collectionName | <code>string</code> | 
-| data | <code>object</code> | 
+| collectionName | <code>String</code> | 
+| data | <code>Object</code> | 
 
 <a name="Store.create..Store+destroy"></a>
 
-##### store.destroy(collectionName, data, options)
+##### store.destroy(collectionName, data, options) ⇒ <code>Promise.&lt;Object&gt;</code>
 send a `DELETE` request to the endpoint configured for `collectionName`
 and remove the corresponding record from the store.
 
@@ -472,13 +474,13 @@ and remove the corresponding record from the store.
 
 | Param | Type |
 | --- | --- |
-| collectionName | <code>string</code> | 
-| data | <code>object</code> | 
-| options | <code>object</code> | 
+| collectionName | <code>String</code> | 
+| data | <code>Object</code> | 
+| options | <code>Object</code> | 
 
 <a name="Store.create..Store+save"></a>
 
-##### store.save(collection, data, options)
+##### store.save(collection, data, options) ⇒ <code>Promise.&lt;Object&gt;</code>
 persist `data` using the endpoint configured for `collectonName`. if
 `data` is *only* identified by a local temporary id send a `POST` request to
 `/:basePath/:collectionName`. if `data` has a primary key send a `PUT`
@@ -489,13 +491,13 @@ request to `/:basePath/:collectionName/:primaryKey`
 
 | Param | Type |
 | --- | --- |
-| collection | <code>string</code> | 
-| data | <code>object</code> | 
-| options | <code>object</code> | 
+| collection | <code>String</code> | 
+| data | <code>Object</code> | 
+| options | <code>Object</code> | 
 
 <a name="Store.create..Store+find"></a>
 
-##### store.find(collection, [query], [options])
+##### store.find(collection, [query], [options]) ⇒ <code>Promise.&lt;Object&gt;</code>
 fetch a particular record from `/:basePath/:collectionName/:primaryKey`.
 if `force === false` immediately return the cached record if present.
 
@@ -503,14 +505,14 @@ if `force === false` immediately return the cached record if present.
 
 | Param | Type | Default |
 | --- | --- | --- |
-| collection | <code>string</code> |  | 
-| [query] | <code>object</code> |  | 
-| [options] | <code>object</code> |  | 
-| [options.force] | <code>boolean</code> | <code>false</code> | 
+| collection | <code>String</code> |  | 
+| [query] | <code>Object</code> |  | 
+| [options] | <code>Object</code> |  | 
+| [options.force] | <code>Boolean</code> | <code>false</code> | 
 
 <a name="Store.create..Store+findAll"></a>
 
-##### store.findAll(collection, [query], [options])
+##### store.findAll(collection, [query], [options]) ⇒ <code>Promise.&lt;Array.&lt;Object&gt;&gt;</code>
 fetch all of the records from the api that match the parameters specified
 in `query`. these are sent along with the request as query parameters.
 if `force === false` immediately return a cached response if one exists.
@@ -519,9 +521,9 @@ if `force === false` immediately return a cached response if one exists.
 
 | Param | Type |
 | --- | --- |
-| collection | <code>string</code> | 
-| [query] | <code>object</code> | 
-| [options] | <code>object</code> | 
+| collection | <code>String</code> | 
+| [query] | <code>Object</code> | 
+| [options] | <code>Object</code> | 
 
 <a name="Store.create..Store+on"></a>
 
@@ -532,7 +534,7 @@ bind an event listener to the store
 
 | Param | Type |
 | --- | --- |
-| event | <code>string</code> | 
+| event | <code>String</code> | 
 | handler | <code>function</code> | 
 
 <a name="Store.create..Store+off"></a>
@@ -544,7 +546,7 @@ unbind an event listener to the store
 
 | Param | Type |
 | --- | --- |
-| event | <code>string</code> | 
+| event | <code>String</code> | 
 | handler | <code>function</code> | 
 
 <a name="Store.create..Store+emit"></a>
@@ -556,22 +558,26 @@ manually emit a message using the store's event bus
 
 | Param | Type |
 | --- | --- |
-| event | <code>string</code> | 
+| event | <code>String</code> | 
 | payload | <code>\*</code> | 
 
-<a name="Store.create..getBasePath"></a>
+<a name="Store.create..Store+getBasePath"></a>
 
-#### create~getBasePath(collectionName)
-**Kind**: inner method of [<code>create</code>](#Store.create)  
+##### store.getBasePath(collectionName) ⇒ <code>String</code>
+get the base path for `collectionName`
+
+**Kind**: instance method of [<code>Store</code>](#Store.create..Store)  
 
 | Param | Type |
 | --- | --- |
-| collectionName | <code>string</code> | 
+| collectionName | <code>String</code> | 
 
-<a name="isValidId"></a>
+<a name="Store.create..Store+isValidId"></a>
 
-## isValidId(id)
-**Kind**: global function  
+##### store.isValidId(id) ⇒ <code>Boolean</code>
+check if the given value is a valid id
+
+**Kind**: instance method of [<code>Store</code>](#Store.create..Store)  
 
 | Param | Type |
 | --- | --- |

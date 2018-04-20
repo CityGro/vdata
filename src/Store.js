@@ -20,7 +20,7 @@ import {
 } from 'immutable'
 
 /**
- * @param {object} data
+ * @param {Object} data
  * @private
  */
 const convert = (data) => fromJS(data, (key, value) => {
@@ -30,20 +30,13 @@ const convert = (data) => fromJS(data, (key, value) => {
 })
 
 /**
- * @param {*} id
- */
-const isValidId = (id) => {
-  return id !== null && id !== undefined && id !== ''
-}
-
-/**
  * vdata store constructor
  */
 const Store = {
   /**
-   * @param {object} options
-   * @param {object} options.models
-   * @param {string} [options.basePath=''] - default prefix for http requests
+   * @param {Object} options
+   * @param {Object} options.models
+   * @param {String} [options.basePath=''] - default prefix for http requests
    * @param {function} [options.adapter] - a custom fetch
    * @param {function} [options.deserialize] - request post-processing
    * @return {Store} a vdata store instance
@@ -57,8 +50,12 @@ const Store = {
     const keyMap = KeyMap.create()
     let queryCache = {}
     let store = registerSchemas(Map(), options.models)
+    const getBasePath = (collectionName) => {
+      const model = models[collectionName]
+      return model.basePath || options.basePath || ''
+    }
     /**
-     * @param {string} id
+     * @param {String} id
      * @private
      */
     const resolveId = (collectionName, id) => {
@@ -66,7 +63,7 @@ const Store = {
       return (isTmp) ? id : keyMap.get(collectionName, id)
     }
     /**
-     * @param {string} id
+     * @param {String} id
      * @private
      */
     const resolvePk = (collectionName, id) => {
@@ -74,15 +71,8 @@ const Store = {
       return (isTmp) ? keyMap.get(collectionName, id) : id
     }
     /**
-     * @param {string} collectionName
-     */
-    const getBasePath = (collectionName) => {
-      const model = models[collectionName]
-      return model.basePath || options.basePath || ''
-    }
-    /**
-     * @param {string} collectionName
-     * @param {object} data
+     * @param {String} collectionName
+     * @param {Object} data
      * @private
      */
     const getMeta = (collectionName, data) => {
@@ -99,9 +89,9 @@ const Store = {
     /**
      * queue a micro-task to broadcast the given message object
      *
-     * @param {string} message
-     * @param {object} options
-     * @param {boolean} [options.quiet=false]
+     * @param {String} message
+     * @param {Object} options
+     * @param {Boolean} [options.quiet=false]
      * @private
      */
     const emit = (message, options = {}) => {
@@ -125,8 +115,9 @@ const Store = {
      * identify the object. editing either of these will cause vdata to see the resulting
      * object as something new that needs to be tracked separately from the original object.
      *
-     * @param {string} collection
-     * @param {object} [data={}]
+     * @param {String} collection
+     * @param {Object} [data={}]
+     * @return {Object}
      */
     Store.prototype.createRecord = function (collectionName, data = {}) {
       const model = models[collectionName]
@@ -150,8 +141,9 @@ const Store = {
      * your api server, or the temporary local id that vdata uses internally to
      * track records.
      *
-     * @param {string} collectionName
-     * @param {string} pkOrId
+     * @param {String} collectionName
+     * @param {String} pkOrId
+     * @return {Object}
      */
     Store.prototype.get = function (collectionName, pkOrId) {
       const id = resolveId(collectionName, pkOrId)
@@ -173,7 +165,7 @@ const Store = {
      * parameter, this method returns all of the records that match the ids
      * listed.
      *
-     * @param {string} collectionName
+     * @param {String} collectionName
      * @param {string[]} [keys]
      * @return {object[]}
      */
@@ -202,11 +194,11 @@ const Store = {
      * remove a record from the store, identified by public key or temporary id.
      *
      * @emits Store#remove
-     * @param {string} collectionName
-     * @param {string} pkOrId
-     * @param {object} options
-     * @param {boolean} options.quiet
-     * @return {object}
+     * @param {String} collectionName
+     * @param {String} pkOrId
+     * @param {Object} options
+     * @param {Boolean} options.quiet
+     * @return {Object}
      */
     Store.prototype.remove = function (collectionName, pkOrId, options = {}) {
       const id = resolveId(collectionName, pkOrId)
@@ -229,7 +221,7 @@ const Store = {
      * remove all of the records in `collectionName` or all of the records that match the ids passed into `keys`.
      *
      * @emits Store#remove-list
-     * @param {string} collectionName
+     * @param {String} collectionName
      * @param {string[]} keys
      * @return {object[]}
      */
@@ -271,9 +263,9 @@ const Store = {
      * 1. current
      * 2. data
      *
-     * @param {string} collection
-     * @param {object} data
-     * @return {object}
+     * @param {String} collection
+     * @param {Object} data
+     * @return {Object}
      */
     Store.prototype.rebase = function (collectionName, data) {
       const record = (isImmutable(data)) ? data.toJS() : data
@@ -303,11 +295,11 @@ const Store = {
      *
      * @emits Store#add
      * @see {Store.rebase}
-     * @param {string} collection
-     * @param {object} data
-     * @param {object} options
-     * @param {boolean} [options.quiet=false] silence store events for this invocation
-     * @return {object}
+     * @param {String} collection
+     * @param {Object} data
+     * @param {Object} options
+     * @param {Boolean} [options.quiet=false] silence store events for this invocation
+     * @return {Object}
      */
     Store.prototype.add = function (collectionName, data, options = {}) {
       const record = this.createRecord(collectionName, data)
@@ -329,9 +321,9 @@ const Store = {
      * add all of the records in `data` to `colectionName` in a single operation.
      *
      * @emits Store#add-list
-     * @param {string} collectionName
-     * @param {object[]} data
-     * @return {object[]}
+     * @param {String} collectionName
+     * @param {Array<Object>} data
+     * @return {Array<Object>}
      */
     Store.prototype.addList = function (collectionName, data, options = {}) {
       const records = data.map((item) => this.add(collectionName, item, {quiet: true}))
@@ -348,9 +340,9 @@ const Store = {
      * check if `data` differs from the current version of the corresponding
      * record in the store.
      *
-     * @param {string} collectionName
-     * @param {object} data
-     * @return {boolean}
+     * @param {String} collectionName
+     * @param {Object} data
+     * @return {Boolean}
      */
     Store.prototype.hasChanges = function (collectionName, data) {
       if (!data) {
@@ -369,9 +361,10 @@ const Store = {
      *
      * @async
      * @emits Store#remove
-     * @param {string} collectionName
-     * @param {object} data
-     * @param {object} options
+     * @param {String} collectionName
+     * @param {Object} data
+     * @param {Object} options
+     * @return {Promise<Object>}
      */
     Store.prototype.destroy = function (collectionName, data, options = {}) {
       const {id, pk, basePath} = getMeta(collectionName, data)
@@ -390,9 +383,10 @@ const Store = {
      *
      * @async
      * @emits Store#add
-     * @param {string} collection
-     * @param {object} data
-     * @param {object} options
+     * @param {String} collection
+     * @param {Object} data
+     * @param {Object} options
+     * @return {Promise<Object>}
      */
     Store.prototype.save = function (collectionName, data, options = {}) {
       const {id, pk, basePath} = getMeta(collectionName, data)
@@ -400,7 +394,7 @@ const Store = {
         'Content-Type': 'application/json'
       }
       let promise
-      if (isValidId(pk)) {
+      if (this.isValidId(pk)) {
         promise = http({
           url: `${basePath}/${collectionName}/${pk}`,
           method: 'PUT',
@@ -435,20 +429,21 @@ const Store = {
      * if `force === false` immediately return the cached record if present.
      *
      * @async
-     * @param {string} collection
-     * @param {object} [query]
-     * @param {object} [options]
-     * @param {boolean} [options.force=false]
+     * @param {String} collection
+     * @param {Object} [query]
+     * @param {Object} [options]
+     * @param {Boolean} [options.force=false]
+     * @return {Promise<Object>}
      */
     Store.prototype.find = function (collectionName, id, options = {}) {
       let promise
       const force = options.force || false
       const data = this.get(collectionName, id)
-      if (!isValidId(id)) {
+      if (!this.isValidId(id)) {
         promise = Promise.resolve(null)
       } else if (!data || force === true) {
         const pk = resolvePk(collectionName, id)
-        const basePath = getBasePath(collectionName)
+        const basePath = this.getBasePath(collectionName)
         const request = {
           url: `${basePath}/${collectionName}/${pk}`,
           method: 'GET',
@@ -467,14 +462,15 @@ const Store = {
      * if `force === false` immediately return a cached response if one exists.
      *
      * @async
-     * @param {string} collection
-     * @param {object} [query]
-     * @param {object} [options]
+     * @param {String} collection
+     * @param {Object} [query]
+     * @param {Object} [options]
+     * @return {Promise<Array<Object>>}
      */
     Store.prototype.findAll = function (collectionName, query, options = {}) {
       let promise
       const force = options.force || false
-      const basePath = getBasePath(collectionName)
+      const basePath = this.getBasePath(collectionName)
       const key = makeQueryKey(collectionName, query)
       const cachedKeys = queryCache[key]
       const data = this.getAll(collectionName, cachedKeys)
@@ -508,7 +504,7 @@ const Store = {
     /**
      * bind an event listener to the store
      *
-     * @param {string} event
+     * @param {String} event
      * @param {function} handler
      */
     Store.prototype.on = function (event, handler) {
@@ -517,7 +513,7 @@ const Store = {
     /**
      * unbind an event listener to the store
      *
-     * @param {string} event
+     * @param {String} event
      * @param {function} handler
      */
     Store.prototype.off = function (event, handler) {
@@ -526,14 +522,30 @@ const Store = {
     /**
      * manually emit a message using the store's event bus
      *
-     * @param {string} event
+     * @param {String} event
      * @param {*} payload
      */
     Store.prototype.emit = function (event, payload) {
       microTask(() => evt.emit(event, payload))
     }
-    Store.prototype.isValidId = isValidId
-    Store.prototype.getBasePath = getBasePath
+    /**
+     * get the base path for `collectionName`
+     *
+     * @param {String} collectionName
+     * @return {String}
+     */
+    Store.prototype.getBasePath = (collectionName) => {
+      return getBasePath(collectionName)
+    }
+    /**
+     * check if the given value is a valid id
+     *
+     * @param {*} id
+     * @return {Boolean}
+     */
+    Store.prototype.isValidId = (id) => {
+      return id !== null && id !== undefined && id !== ''
+    }
     return new Store()
   }
 }
