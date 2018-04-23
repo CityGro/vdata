@@ -128,6 +128,12 @@ export default {
 }
 </code></pre>
 </dd>
+<dt><a href="#nullify">nullify(object)</a> ⇒ <code>Object</code></dt>
+<dd><p>replace all values in an object with <code>null</code>. used to generate the ORSet for
+diffing operations.</p>
+</dd>
+<dt><a href="#difference">difference(base, object)</a> ⇒ <code>object</code></dt>
+<dd></dd>
 <dt><a href="#flattenMixinTree">flattenMixinTree(mixins)</a></dt>
 <dd></dd>
 <dt><a href="#toQueryString">toQueryString(o, prefix)</a></dt>
@@ -701,6 +707,28 @@ export default {
 | [options.requestOptions.force] | <code>boolean</code> | <code>false</code> | always fetch the latest record |
 | [options.requestOptions.capture] | <code>boolean</code> | <code>false</code> | capture the initial state of the record, implies `force = true` |
 | [options.template] | <code>object</code> | <code>{}</code> | the default template for this query |
+
+<a name="nullify"></a>
+
+## nullify(object) ⇒ <code>Object</code>
+replace all values in an object with `null`. used to generate the ORSet for
+diffing operations.
+
+**Kind**: global function  
+
+| Param | Type |
+| --- | --- |
+| object | <code>Object</code> | 
+
+<a name="difference"></a>
+
+## difference(base, object) ⇒ <code>object</code>
+**Kind**: global function  
+
+| Param | Type |
+| --- | --- |
+| base | <code>object</code> | 
+| object | <code>object</code> | 
 
 <a name="flattenMixinTree"></a>
 

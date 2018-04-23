@@ -8,11 +8,21 @@ describe('rebase', () => {
       a: 'bar'
     }
     const a = {
+      ...base,
       b: 'nani?'
     }
     const b = {
+      ...base,
       c: 'test'
     }
+    expect(a).toEqual({
+      a: 'bar',
+      b: 'nani?'
+    })
+    expect(b).toEqual({
+      a: 'bar',
+      c: 'test'
+    })
     const result = rebase(base, a, b)
     expect(result).toEqual({
       a: 'bar',
@@ -102,6 +112,76 @@ describe('rebase', () => {
           id: 3
         }
       ]
+    })
+  })
+
+  test('rebase deeply nested objects', () => {
+    const base = {
+      props: {
+        options: {
+          a: 'foo',
+          subOption: {
+            baz: true,
+            filter: ['condition1', 'condition2']
+          }
+        },
+        tags: ['one', 'two']
+      }
+    }
+    const a = {
+      props: {
+        options: {
+          a: 'bar',
+          subOption: {
+            baz: true,
+            filter: ['condition1', 'condition2']
+          }
+        }
+      }
+    }
+    const b = {
+      props: {
+        options: {
+          a: 'foo',
+          subOption: {
+            baz: true
+          }
+        },
+        tags: ['one', 'two']
+      }
+    }
+    const result = rebase(base, a, b)
+    expect(result).toEqual({
+      props: {
+        options: {
+          a: 'bar',
+          subOption: {
+            baz: true,
+            filter: null
+          }
+        },
+        tags: null
+      }
+    })
+  })
+
+  test('rebase objects with array keys', () => {
+    const base = {
+      name: 'jeff',
+      tags: ['one', 'two', 'three']
+    }
+    const a = {
+      ...base,
+      tags: ['one', 'two']
+    }
+    expect(a).toEqual({
+      name: 'jeff',
+      tags: ['one', 'two']
+    })
+    const result = rebase(base, a)
+    expect(result).toEqual({
+      name: 'jeff',
+      tags: ['one', 'two']
     })
   })
 })

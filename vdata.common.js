@@ -45,6 +45,7 @@ var immutable = require('immutable');
 var isEqual = _interopDefault(require('lodash/isEqual'));
 var isNil$1 = _interopDefault(require('lodash/isNil'));
 var isObject = _interopDefault(require('lodash/isObject'));
+var mergeWith = _interopDefault(require('lodash/mergeWith'));
 var transform = _interopDefault(require('lodash/transform'));
 var toNumber = _interopDefault(require('lodash/toNumber'));
 
@@ -1290,21 +1291,52 @@ var mget = (function (value, path) {
   }
 });
 
+var merge$1 = function () {
+  var object = arguments[0];
+  var sources = tail(arguments);
+  return mergeWith.apply(undefined, [object].concat(toConsumableArray(sources), [function (objValue, srcValue, key, object, source) {
+    if (isArray(objValue)) {
+      return srcValue;
+    }
+  }]));
+};
+
+/**
+ * replace all values in an object with `null`. used to generate the ORSet for
+ * diffing operations.
+ *
+ * @param {Object} object
+ * @return {Object}
+ */
+var nullify = function nullify(object) {
+  return transform(object, function (result, value, key) {
+    result[key] = isObject(value) && !isArray(value) ? nullify(value) : null;
+  });
+};
+
 /**
  * @param {object} base
  * @param {object} object
- * @return {object} diff
+ * @return {object}
  */
-function difference(base, object) {
-  function changes(object, base) {
+var difference = function difference(base, object) {
+  var changes = function changes(object, base) {
     return transform(object, function (result, value, key) {
       if (!isEqual(value, base[key])) {
-        result[key] = isObject(value) && isObject(base[key]) ? changes(value, base[key]) : value;
+        result[key] = isObject(value) && isObject(base[key]) && !isArray(value) ? changes(value, base[key]) : value;
       }
     });
-  }
+  };
   return isNil$1(base) ? object : changes(object, base);
-}
+};
+
+var observedRemoveDiff = function observedRemoveDiff(base, object) {
+  var diff = difference(base, object);
+  var inverseDiff = difference(object, base);
+  var nullDiff = nullify(inverseDiff);
+  var orDiff = merge$1({}, nullDiff, diff);
+  return orDiff;
+};
 
 var jsonClone = flow(JSON.stringify, JSON.parse);
 
@@ -1316,9 +1348,10 @@ var jsonClone = flow(JSON.stringify, JSON.parse);
 var rebase = function () {
   var base = arguments[0];
   var diffs = tail(arguments).map(function (checkpoint) {
-    return difference(base, checkpoint);
+    return observedRemoveDiff(base, checkpoint);
   });
-  return merge.apply(undefined, [jsonClone(base)].concat(toConsumableArray(diffs)));
+  var patch = merge$1.apply(undefined, [{}].concat(toConsumableArray(diffs)));
+  return merge$1(jsonClone(base), patch);
 };
 
 var registerSchemas = function (store) {
@@ -1403,15 +1436,19 @@ var Store = {
      * @private
      */
     var getMeta = function getMeta(collectionName, data) {
-      var model = models[collectionName];
-      var idAttribute = model.idAttribute;
-      return {
-        basePath: getBasePath(collectionName),
-        id: mget(data, '__tmp_id'),
-        idAttribute: idAttribute,
-        pk: mget(data, idAttribute),
-        symId: mget(data, '__sym_id')
-      };
+      try {
+        var model = models[collectionName];
+        var idAttribute = model.idAttribute;
+        return {
+          basePath: getBasePath(collectionName),
+          id: mget(data, '__tmp_id'),
+          idAttribute: idAttribute,
+          pk: mget(data, idAttribute),
+          symId: mget(data, '__sym_id')
+        };
+      } catch (e) {
+        throw new Error('missing collection: ' + collectionName);
+      }
     };
     /**
      * queue a micro-task to broadcast the given message object
@@ -1629,7 +1666,8 @@ var Store = {
         }
       }
       var current = this.get(collectionName, id);
-      return base || current ? rebase(base, current, record) : record;
+      var object = base || current ? rebase(base, current, record) : record;
+      return object;
     };
     /**
      * add a record to the store. you *do not* need to pass your data to
@@ -1766,30 +1804,27 @@ var Store = {
           pk = _getMeta6.pk,
           basePath = _getMeta6.basePath;
 
-      var headers = {
-        'Content-Type': 'application/json'
-      };
       var promise = void 0;
+      var request = _extends({}, options);
       if (this.isValidId(pk)) {
-        promise = http(_extends({
+        request.method = 'PUT';
+        promise = http(_extends({}, request, {
           url: basePath + '/' + collectionName + '/' + pk,
           method: 'PUT',
           body: _extends({}, this.rebase(collectionName, data), {
             __tmp_id: undefined,
             __sym_id: undefined
-          }),
-          headers: headers
-        }, options));
+          })
+        }));
       } else {
-        promise = http(_extends({
+        promise = http(_extends({}, request, {
           url: basePath + '/' + collectionName,
           method: 'POST',
           body: _extends({}, data, {
             __tmp_id: undefined,
             __sym_id: undefined
-          }),
-          headers: headers
-        }, options));
+          })
+        }));
       }
       return promise.then(function (data) {
         var object = id ? _extends({}, data, { __tmp_id: id }) : data;

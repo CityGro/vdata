@@ -341,6 +341,26 @@ describe('Store', () => {
         key: 'foo'
       })
     })
+
+    test.only('support removing array elements', () => {
+      const record = store.add('myCollection', {
+        id: 1,
+        name: 'jeff',
+        tags: ['one', 'two', 'three']
+      })
+      const lessTags = {
+        ...record,
+        tags: ['one', 'two']
+      }
+      expect(lessTags).toMatchObject({
+        tags: ['one', 'two']
+      })
+      expect(store.rebase('myCollection', lessTags)).toMatchObject({
+        id: 1,
+        name: 'jeff',
+        tags: ['one', 'two']
+      })
+    })
   })
 
   describe('hasChanges', () => {

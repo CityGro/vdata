@@ -65,4 +65,28 @@ describe('diff', () => {
       }
     })
   })
+
+  test('enforce/detect property removal', () => {
+    const a = {
+      name: 'satori',
+      role: 'something'
+    }
+    const b = {
+      name: 'satori'
+    }
+    const result1 = diff(a, b)
+    expect(result1).toEqual({
+      role: null
+    })
+    const withTags = {
+      tags: ['one', 'two', 'three']
+    }
+    const lessTags = {
+      tags: ['one', 'two']
+    }
+    const result2 = diff(withTags, lessTags)
+    expect(result2).toEqual({
+      tags: ['one', 'two']
+    })
+  })
 })

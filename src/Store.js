@@ -76,14 +76,18 @@ const Store = {
      * @private
      */
     const getMeta = (collectionName, data) => {
-      const model = models[collectionName]
-      const idAttribute = model.idAttribute
-      return {
-        basePath: getBasePath(collectionName),
-        id: mget(data, '__tmp_id'),
-        idAttribute,
-        pk: mget(data, idAttribute),
-        symId: mget(data, '__sym_id')
+      try {
+        const model = models[collectionName]
+        const idAttribute = model.idAttribute
+        return {
+          basePath: getBasePath(collectionName),
+          id: mget(data, '__tmp_id'),
+          idAttribute,
+          pk: mget(data, idAttribute),
+          symId: mget(data, '__sym_id')
+        }
+      } catch (e) {
+        throw new Error(`missing collection: ${collectionName}`)
       }
     }
     /**
@@ -280,9 +284,10 @@ const Store = {
         }
       }
       const current = this.get(collectionName, id)
-      return (base || current)
+      const object = (base || current)
         ? rebase(base, current, record)
         : record
+      return object
     }
     /**
      * add a record to the store. you *do not* need to pass your data to
@@ -390,33 +395,30 @@ const Store = {
      */
     Store.prototype.save = function (collectionName, data, options = {}) {
       const {id, pk, basePath} = getMeta(collectionName, data)
-      const headers = {
-        'Content-Type': 'application/json'
-      }
       let promise
+      let request = {...options}
       if (this.isValidId(pk)) {
+        request.method = 'PUT'
         promise = http({
+          ...request,
           url: `${basePath}/${collectionName}/${pk}`,
           method: 'PUT',
           body: {
             ...this.rebase(collectionName, data),
             __tmp_id: undefined,
             __sym_id: undefined
-          },
-          headers,
-          ...options
+          }
         })
       } else {
         promise = http({
+          ...request,
           url: `${basePath}/${collectionName}`,
           method: 'POST',
           body: {
             ...data,
             __tmp_id: undefined,
             __sym_id: undefined
-          },
-          headers,
-          ...options
+          }
         })
       }
       return promise.then((data) => {
