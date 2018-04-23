@@ -1,10 +1,8 @@
-import defaults from 'lodash/defaultsDeep'
 import fetchWrapper from './fetchWrapper'
 import includes from 'lodash/includes'
 import makeRequestKey from './makeRequestKey'
 import microTask from '@r14c/async-utils/microTask'
 import omitNil from './omitNil'
-import pick from 'lodash/pick'
 import stringify from 'json-stable-stringify'
 import toQueryString from './toQueryString'
 
@@ -26,10 +24,6 @@ const getUrl = (options) => {
   return url
 }
 
-const withDefaults = (options) => pick(defaults({}, options, {
-  credentials: 'same-origin'
-}), ['headers', 'body', 'method', 'credentials', 'signal'])
-
 const createHttpAdapter = (options = {}) => {
   let promiseCache = {}
   const adapter = options.adapter || fetchWrapper
@@ -46,9 +40,11 @@ const createHttpAdapter = (options = {}) => {
     let promise
     const force = options.force || false
     const url = getUrl(options)
-    options.headers = normalizeHeaders(options)
-    options.body = (options.body) ? stringify(options.body) : undefined
-    const request = withDefaults(options)
+    const request = {
+      ...options,
+      headers: normalizeHeaders(options),
+      body: (options.body) ? stringify(options.body) : undefined
+    }
     if (options.method === 'GET') {
       const key = makeRequestKey(url, request)
       promise = promiseCache[key]

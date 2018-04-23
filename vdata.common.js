@@ -14,11 +14,12 @@ var camelCase = _interopDefault(require('lodash/camelCase'));
 var concat = _interopDefault(require('lodash/concat'));
 var join = _interopDefault(require('lodash/join'));
 var tail = _interopDefault(require('lodash/tail'));
-var defaults = _interopDefault(require('lodash/defaultsDeep'));
 var whatwgFetch = require('whatwg-fetch');
 var cloneDeep = _interopDefault(require('lodash/cloneDeep'));
+var defaults = _interopDefault(require('lodash/defaultsDeep'));
 var fork = _interopDefault(require('@r14c/async-utils/fork'));
 var isFunction = _interopDefault(require('lodash/isFunction'));
+var pick = _interopDefault(require('lodash/pick'));
 var map = _interopDefault(require('lodash/map'));
 var sum = _interopDefault(require('lodash/sum'));
 var microTask = _interopDefault(require('@r14c/async-utils/microTask'));
@@ -26,7 +27,6 @@ var filter = _interopDefault(require('lodash/fp/filter'));
 var flow = _interopDefault(require('lodash/fp/flow'));
 var isNil = _interopDefault(require('lodash/fp/isNil'));
 var omitBy = _interopDefault(require('lodash/fp/omitBy'));
-var pick = _interopDefault(require('lodash/pick'));
 var stringify = _interopDefault(require('json-stable-stringify'));
 var sort = _interopDefault(require('lodash/sortBy'));
 var get$1 = _interopDefault(require('lodash/get'));
@@ -488,18 +488,24 @@ var createDataFlowMixin = function createDataFlowMixin(valueProp) {
 };
 
 /* global fetch */
+var withDefaults = function withDefaults(options) {
+  return pick(defaults({}, options, {
+    credentials: 'same-origin'
+  }), ['headers', 'body', 'method', 'credentials', 'signal']);
+};
+
 var interceptors = [];
 var onError = void 0;
 
 var fetchWrapper = function fetchWrapper(url, options) {
   return fork(cloneDeep(options), interceptors).then(function (request) {
-    return fetch(url, request).then(function (response) {
+    return fetch(url, withDefaults(request)).then(function (response) {
       if (response.status >= 200 && response.status < 400) {
         return response;
       } else if (isFunction(onError)) {
-        onError(response);
+        onError(response, request);
       } else {
-        throw new Error(response.statusText, response);
+        throw new Error(response.statusText, { response: response, request: request });
       }
     });
   });
@@ -583,12 +589,6 @@ var getUrl = function getUrl(options) {
   return url;
 };
 
-var withDefaults = function withDefaults(options) {
-  return pick(defaults({}, options, {
-    credentials: 'same-origin'
-  }), ['headers', 'body', 'method', 'credentials', 'signal']);
-};
-
 var createHttpAdapter = function createHttpAdapter() {
   var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
 
@@ -613,9 +613,10 @@ var createHttpAdapter = function createHttpAdapter() {
     var promise = void 0;
     var force = options.force || false;
     var url = getUrl(options);
-    options.headers = normalizeHeaders(options);
-    options.body = options.body ? stringify(options.body) : undefined;
-    var request = withDefaults(options);
+    var request = _extends({}, options, {
+      headers: normalizeHeaders(options),
+      body: options.body ? stringify(options.body) : undefined
+    });
     if (options.method === 'GET') {
       var key = makeRequestKey(url, request);
       promise = promiseCache[key];

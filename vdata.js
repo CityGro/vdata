@@ -3123,8 +3123,8 @@
         Object.defineProperty(r, "__esModule", {
             value: !0
         });
-        var m = o(e(395)), x = o(e(0)), b = o(e(396)), w = o(e(399)), j = o(e(181)), O = o(e(420)), A = o(e(372)), S = o(e(376)), I = o(e(402)), E = o(e(415)), z = o(e(380)), k = (e(433), 
-        o(e(375))), M = o(e(188)), R = o(e(31)), P = o(e(403)), T = o(e(414)), L = o(e(46)), D = o(e(388)), q = o(e(389)), B = o(e(391)), C = o(e(392)), F = o(e(408)), W = o(e(260)), U = o(e(412)), N = o(e(177)), K = o(e(405)), $ = o(e(190)), J = o(e(189)), V = o(e(428)), G = o(e(390)), H = o(e(397)), Y = o(e(21)), Z = o(e(393)), X = o(e(187)), Q = o(e(257)), tt = (o(e(22)), 
+        var m = o(e(395)), x = o(e(0)), b = o(e(396)), w = o(e(399)), j = o(e(181)), O = o(e(420)), A = o(e(372)), S = o(e(376)), I = o(e(402)), E = o(e(415)), z = (e(433), 
+        o(e(375))), k = o(e(380)), M = o(e(188)), R = o(e(31)), P = o(e(408)), T = o(e(403)), L = o(e(414)), D = o(e(46)), q = o(e(388)), B = o(e(389)), C = o(e(391)), F = o(e(392)), W = o(e(260)), U = o(e(412)), N = o(e(177)), K = o(e(405)), $ = o(e(190)), J = o(e(189)), V = o(e(428)), G = o(e(390)), H = o(e(397)), Y = o(e(21)), Z = o(e(393)), X = o(e(187)), Q = o(e(257)), tt = (o(e(22)), 
         e(258)), rt = o(e(398)), et = o(e(180)), nt = o(e(2)), ot = o(e(182)), it = o(e(419)), ut = o(e(185)), at = "function" == typeof _.default && "symbol" === (0, 
         g.default)(y.default) ? function(t) {
             return void 0 === t ? "undefined" : (0, g.default)(t);
@@ -3327,11 +3327,18 @@
                 }), r)
             };
         }, Ot = [], At = void 0, St = function(t, r) {
-            return M(k(r), Ot).then(function(r) {
-                return fetch(t, r).then(function(t) {
+            return M(z(r), Ot).then(function(r) {
+                return fetch(t, function(t) {
+                    return P(k({}, t, {
+                        credentials: "same-origin"
+                    }), [ "headers", "body", "method", "credentials", "signal" ]);
+                }(r)).then(function(t) {
                     if (t.status >= 200 && t.status < 400) return t;
-                    if (!R(At)) throw new Error(t.statusText, t);
-                    At(t);
+                    if (!R(At)) throw new Error(t.statusText, {
+                        response: t,
+                        request: r
+                    });
+                    At(t, r);
                 });
             });
         };
@@ -3340,9 +3347,9 @@
         }, St.onError = function(t) {
             At = t;
         };
-        var It = q(D(function(t) {
-            return !B(t);
-        })), Et = q(C(B)), zt = function(t) {
+        var It = B(q(function(t) {
+            return !C(t);
+        })), Et = B(F(C)), zt = function(t) {
             var r = t.url, e = function t() {
                 var r = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : {}, e = arguments[1];
                 return U((0, c.default)(r), function(t) {
@@ -3361,33 +3368,30 @@
             }, o = function(t, r) {
                 return e(t, r).then(function(t) {
                     return t.json().then(function(r) {
-                        return L(function() {
+                        return D(function() {
                             return n(t, r);
                         });
                     });
                 });
             };
             return function() {
-                var t = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : {}, e = void 0, n = t.force || !1, i = zt(t);
-                t.headers = function(t) {
-                    var r = ft({}, t.headers);
-                    return m([ "PUT", "POST" ], t.method) && (r["Content-Type"] = "application/json"), 
-                    r;
-                }(t), t.body = t.body ? W(t.body) : void 0;
-                var u = function(t) {
-                    return F(z({}, t, {
-                        credentials: "same-origin"
-                    }), [ "headers", "body", "method", "credentials", "signal" ]);
-                }(t);
+                var t = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : {}, e = void 0, n = t.force || !1, i = zt(t), u = ft({}, t, {
+                    headers: function(t) {
+                        var r = ft({}, t.headers);
+                        return m([ "PUT", "POST" ], t.method) && (r["Content-Type"] = "application/json"), 
+                        r;
+                    }(t),
+                    body: t.body ? W(t.body) : void 0
+                });
                 if ("GET" === t.method) {
                     var a = function(t, r) {
                         var e = (0, c.default)(r.headers || {}).map(function(t) {
                             var r = pt(t, 2);
                             return r[0] + ":" + r[1];
-                        }), n = P("" + e + t, function(t) {
+                        }), n = T("" + e + t, function(t) {
                             return t.codePointAt(0);
                         });
-                        return r.method + "-" + T(n);
+                        return r.method + "-" + L(n);
                     }(i, u);
                     (e = r[a]) && !0 !== n || (e = r[a] = o(i, u)), setTimeout(function() {
                         delete r[a];
@@ -3409,7 +3413,7 @@
                 }), ct(r, u, {
                     type: Object,
                     default: function() {
-                        return k(a);
+                        return z(a);
                     }
                 }), ct(r, g, {
                     type: Object,
@@ -3418,7 +3422,7 @@
                     }
                 }), r),
                 data: function() {
-                    var t, r = (t = {}, ct(t, o, null), ct(t, y, K({}, k(d), this[g])), t);
+                    var t, r = (t = {}, ct(t, o, null), ct(t, y, K({}, z(d), this[g])), t);
                     return r;
                 },
                 vdata: function(t) {
@@ -3509,7 +3513,7 @@
                 e.mixins && e.mixins.length && (r = [].concat(ht(r), ht(t(e.mixins)))), r.push(e);
             }), r;
         }, Pt = function(t, r) {
-            var e = k(N(t, "$options." + r, {})), n = N(t, "$options.mixins", []);
+            var e = z(N(t, "$options." + r, {})), n = N(t, "$options.mixins", []);
             return Rt(n).filter(function(t) {
                 return t[r];
             }).forEach(function(t) {
@@ -3558,7 +3562,7 @@
                                     });
                                     o.push(c);
                                 }
-                            }), d.default.all(o).then(q(Z(i), G));
+                            }), d.default.all(o).then(B(Z(i), G));
                         }
                         return d.default.resolve({});
                     }.bind(t);
@@ -3621,11 +3625,11 @@
                 });
             }(Ct(r, t));
             return Bt({}, n, e);
-        }, Wt = q(u.default, JSON.parse), Ut = function(t) {
+        }, Wt = B(u.default, JSON.parse), Ut = function(t) {
             var r = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : 9e15, e = parseInt((Math.random() * r).toFixed(0), 10).toString(36);
             return t ? t + "-" + e : e;
         }, Nt = function(t) {
-            var r = new Q(), e = kt(t), n = k(t.models), o = Ut(null, 1e5), u = /^[0-9a-z]+?-[0-9a-z]+$/i, a = a2803.create(), s = {}, c = function(t) {
+            var r = new Q(), e = kt(t), n = z(t.models), o = Ut(null, 1e5), u = /^[0-9a-z]+?-[0-9a-z]+$/i, a = a2803.create(), s = {}, c = function(t) {
                 var r = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : {};
                 return H(r) && console.error("[@citygro/vdata] you have not defined any models!"), 
                 (0, i.default)(r).forEach(function(r) {
@@ -3649,7 +3653,7 @@
                     throw new Error("missing collection: " + t);
                 }
             }, l = function(t) {
-                !1 === ((arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : {}).quiet || !1) && L(function() {
+                !1 === ((arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : {}).quiet || !1) && D(function() {
                     return r.emit("all", t);
                 });
             }, v = function() {
@@ -3963,7 +3967,7 @@
                     url: s + "/" + t + "/" + a,
                     method: "DELETE"
                 }, o)).then(function() {
-                    return L(function() {
+                    return D(function() {
                         return n.remove(t, u);
                     });
                 });
@@ -3987,7 +3991,7 @@
                     var e = u ? ft({}, r, {
                         __tmp_id: u
                     }) : r;
-                    return L(function() {
+                    return D(function() {
                         return n.add(t, e);
                     });
                 });
@@ -4001,7 +4005,7 @@
                         method: "GET"
                     }, o);
                     i = e(h).then(function(r) {
-                        return L(function() {
+                        return D(function() {
                             return n.add(t, r);
                         });
                     });
@@ -4009,10 +4013,10 @@
                 return i;
             }, v.prototype.findAll = function(t, r) {
                 var n = this, o = arguments.length > 2 && void 0 !== arguments[2] ? arguments[2] : {}, i = void 0, u = o.force || !1, a = this.getBasePath(t), c = function(t, r) {
-                    var e = P(W(r), function(t) {
+                    var e = T(W(r), function(t) {
                         return t.codePointAt(0);
                     });
-                    return t + "-" + T(e);
+                    return t + "-" + L(e);
                 }(t, r), f = s[c], p = this.getAll(t, f);
                 if (p.length && !0 !== u) i = d.default.resolve(p); else {
                     var l = ft({
@@ -4021,7 +4025,7 @@
                         params: r
                     }, o);
                     i = e(l).then(function(r) {
-                        return L(function() {
+                        return D(function() {
                             var e = [], o = r.map(function(r) {
                                 var o = n.createRecord(t, r), i = h(t, o).id;
                                 return e.push(i), o;
@@ -4038,7 +4042,7 @@
             }, v.prototype.off = function(t, e) {
                 r.removeListener(t, e);
             }, v.prototype.emit = function(t, e) {
-                L(function() {
+                D(function() {
                     return r.emit(t, e);
                 });
             }, v.prototype.getBasePath = function(t) {
