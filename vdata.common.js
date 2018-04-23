@@ -1291,10 +1291,10 @@ var mget = (function (value, path) {
   }
 });
 
-var merge$1 = function () {
+var merge$1 = function merge$1() {
   var object = arguments[0];
   var sources = tail(arguments);
-  return mergeWith.apply(undefined, [object].concat(toConsumableArray(sources), [function (objValue, srcValue, key, object, source) {
+  return mergeWith.apply(undefined, [object].concat(toConsumableArray(sources), [function (objValue, srcValue) {
     if (isArray(objValue)) {
       return srcValue;
     }
@@ -1634,6 +1634,11 @@ var Store = {
       });
     };
     /**
+     * vdata automatically tracks all of the versions that are created for every
+     * record that it tracks. this version tracking is how `Store#rebase` is able
+     * to implement a simple Observed-Remove Set (ORSet) that enables vdata to
+     * deterministically merge all of the changes to a particular record.
+     *
      * given `data` with a particular `__sym_id` and the current version of the
      * same record at `data[idAttribute]`, return a merged record containing all
      * changes, applied to the base record at `__sym_id` in the following order,
@@ -1641,6 +1646,20 @@ var Store = {
      *
      * 1. current
      * 2. data
+     *
+     * at CityGro we use the ORSet implementation in vdata to power the real-time
+     * features of our customer portal application. in most cases, the core
+     * diffing algorithm is able to generate merged outputs with intuitive
+     * results. however, it is important to note the rules that we use to
+     * resolve certain edge cases.
+     *
+     * 1. Last-write (from the perspective of the writer) wins. in our
+     *    experience, this produces the least surprising results for our users.
+     * 2. Array mutations are all-or-nothing. we currently don't have an
+     *    acceptable solution to merging arrays with arbitrary mutations.
+     *    following rule #1, we opt to *replace* any previous values with the
+     *    latest version of the array. if you have thoughts on this, please open
+     *    a ticket on [GitLab](https://gitlab.com/citygro/vdata/issues).
      *
      * @param {String} collection
      * @param {Object} data
@@ -1671,12 +1690,7 @@ var Store = {
     };
     /**
      * add a record to the store. you *do not* need to pass your data to
-     * `Store.createRecord` before adding it.
-     *
-     * vdata automatically tracks all of the versions that are created for every
-     * record that it tracks. this version tracking is how `store.rebase` is able
-     * to implement a simple `ORSet` that enables vdata to deterministically merge
-     * all of the changes to a particular record.
+     * `Store#createRecord` before adding it.
      *
      * @emits Store#add
      * @see {Store.rebase}
@@ -1786,6 +1800,10 @@ var Store = {
      * `data` is *only* identified by a local temporary id send a `POST` request to
      * `/:basePath/:collectionName`. if `data` has a primary key send a `PUT`
      * request to `/:basePath/:collectionName/:primaryKey`
+     *
+     * when updating an existing record, this methods calls Store#rebase.
+     * this gives vdata some important super-powers that you can use to build
+     * real-time applications. check the method's docs for details.
      *
      * @async
      * @emits Store#add

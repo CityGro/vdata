@@ -75,14 +75,15 @@ describe('rebase', () => {
     })
   })
 
-  test('arrays of objects diff correctly', () => {
+  test('arrays of objects, last write wins', () => {
     const base = {
       refs: [
         {
           id: 1
         },
         {
-          id: 2
+          id: 2,
+          key: 'foo'
         }
       ]
     }
@@ -92,21 +93,37 @@ describe('rebase', () => {
           id: 1
         },
         {
-          id: 2
+          id: 2,
+          key: 'bar'
         },
         {
           id: 3
         }
       ]
     }
-    const result = rebase(base, a)
+    const b = {
+      refs: [
+        {
+          id: 1
+        },
+        {
+          id: 2,
+          key: 'foo'
+        },
+        {
+          id: 3
+        }
+      ]
+    }
+    const result = rebase(base, a, b)
     expect(result).toEqual({
       refs: [
         {
           id: 1
         },
         {
-          id: 2
+          id: 2,
+          key: 'foo'
         },
         {
           id: 3
@@ -115,7 +132,7 @@ describe('rebase', () => {
     })
   })
 
-  test('rebase deeply nested objects', () => {
+  test('deeply nested objects', () => {
     const base = {
       props: {
         options: {
@@ -165,7 +182,7 @@ describe('rebase', () => {
     })
   })
 
-  test('rebase objects with array keys', () => {
+  test('objects with array keys', () => {
     const base = {
       name: 'jeff',
       tags: ['one', 'two', 'three']
