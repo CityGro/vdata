@@ -342,7 +342,7 @@ describe('Store', () => {
       })
     })
 
-    test.only('support removing array elements', () => {
+    test('support removing array elements', () => {
       const record = store.add('myCollection', {
         id: 1,
         name: 'jeff',
