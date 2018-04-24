@@ -8,9 +8,10 @@ import toQueryString from './toQueryString'
 
 const normalizeHeaders = (options) => {
   let headers = {...options.headers}
-  if (includes(['PUT', 'POST'], options.method)) {
+  if (includes(['PUT', 'POST'], options.method.toUpperCase())) {
     headers['Content-Type'] = 'application/json'
   }
+  headers['Accept'] = 'application/json'
   return headers
 }
 

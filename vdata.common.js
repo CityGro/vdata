@@ -573,9 +573,10 @@ var toQueryString = function toQueryString() {
 
 var normalizeHeaders = function normalizeHeaders(options) {
   var headers = _extends({}, options.headers);
-  if (includes(['PUT', 'POST'], options.method)) {
+  if (includes(['PUT', 'POST'], options.method.toUpperCase())) {
     headers['Content-Type'] = 'application/json';
   }
+  headers['Accept'] = 'application/json';
   return headers;
 };
 

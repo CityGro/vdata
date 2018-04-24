@@ -3378,8 +3378,8 @@
                 var t = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : {}, e = void 0, n = t.force || !1, i = zt(t), u = ft({}, t, {
                     headers: function(t) {
                         var r = ft({}, t.headers);
-                        return m([ "PUT", "POST" ], t.method) && (r["Content-Type"] = "application/json"), 
-                        r;
+                        return m([ "PUT", "POST" ], t.method.toUpperCase()) && (r["Content-Type"] = "application/json"), 
+                        r.Accept = "application/json", r;
                     }(t),
                     body: t.body ? W(t.body) : void 0
                 });
