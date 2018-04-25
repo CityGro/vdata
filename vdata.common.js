@@ -598,7 +598,7 @@ var createHttpAdapter = function createHttpAdapter() {
   var deserialize = options.deserialize || function (response, data) {
     return data;
   };
-  var cacheTimeout = 500; // evict promise cache keys after 10s
+  var cacheTimeout = 500; // evict promise cache keys after 500ms
   var createRequest = function createRequest(url, request) {
     return adapter(url, request).then(function (response) {
       return response.json().then(function (data) {
@@ -1477,7 +1477,7 @@ var Store = {
       evt.setMaxListeners(0); // no limit
       this.models = options.models;
       this.storeId = storeId;
-      this.queryCacheTimeout = options.queryCacheTimeout || 1000 * 60 * 5; // evict query cache after 5min
+      this.queryCacheTimeout = options.queryCacheTimeout || 500; // evict query cache after 500ms
     };
     /**
      * tag a javascript object with metadata that allows it to be tracked by the vdata store.

@@ -3658,7 +3658,7 @@
                 });
             }, v = function() {
                 r.setMaxListeners(0), // no limit
-                this.models = t.models, this.storeId = o, this.queryCacheTimeout = t.queryCacheTimeout || 3e5;
+                this.models = t.models, this.storeId = o, this.queryCacheTimeout = t.queryCacheTimeout || 500;
             };
             /**
      * tag a javascript object with metadata that allows it to be tracked by the vdata store.

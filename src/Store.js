@@ -111,7 +111,7 @@ const Store = {
       evt.setMaxListeners(0) // no limit
       this.models = options.models
       this.storeId = storeId
-      this.queryCacheTimeout = options.queryCacheTimeout || 1000 * 60 * 5 // evict query cache after 5min
+      this.queryCacheTimeout = options.queryCacheTimeout || 500 // evict query cache after 500ms
     }
     /**
      * tag a javascript object with metadata that allows it to be tracked by the vdata store.
