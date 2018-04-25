@@ -3395,7 +3395,7 @@
                     }(i, u);
                     (e = r[a]) && !0 !== n || (e = r[a] = o(i, u)), setTimeout(function() {
                         delete r[a];
-                    }, 1e4);
+                    }, 500);
                 } else e = o(i, u);
                 return e;
             };

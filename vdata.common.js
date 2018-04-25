@@ -598,7 +598,7 @@ var createHttpAdapter = function createHttpAdapter() {
   var deserialize = options.deserialize || function (response, data) {
     return data;
   };
-  var cacheTimeout = 1000 * 10; // evict promise cache keys after 10s
+  var cacheTimeout = 500; // evict promise cache keys after 10s
   var createRequest = function createRequest(url, request) {
     return adapter(url, request).then(function (response) {
       return response.json().then(function (data) {

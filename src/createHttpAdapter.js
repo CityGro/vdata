@@ -29,7 +29,7 @@ const createHttpAdapter = (options = {}) => {
   let promiseCache = {}
   const adapter = options.adapter || fetchWrapper
   const deserialize = options.deserialize || ((response, data) => data)
-  const cacheTimeout = 1000 * 10 // evict promise cache keys after 10s
+  const cacheTimeout = 500 // evict promise cache keys after 500ms
   const createRequest = (url, request) => {
     return adapter(url, request)
       .then((response) => {
