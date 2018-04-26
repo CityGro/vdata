@@ -154,6 +154,27 @@ describe('Store', () => {
       const recordB = store.get('myCollection', recordA.__tmp_id)
       expect(recordB).toEqual(recordA)
     })
+
+    test('always return a new object', () => {
+      const object = {
+        id: 1,
+        some: 'prop',
+        data: {
+          key: 'value'
+        }
+      }
+      const recordA = store.add('myCollection', object)
+      const recordB = store.get('myCollection', 1)
+      recordA.some = 'other prop'
+      recordB.some = 'an other prop'
+      expect(object.some).toBe('prop')
+      expect(recordA.some).toBe('other prop')
+      expect(recordB.some).toBe('an other prop')
+      object.some = 'a prop'
+      expect(object.some).toBe('a prop')
+      expect(recordA.some).toBe('other prop')
+      expect(recordB.some).toBe('an other prop')
+    })
   })
 
   describe('getList', () => {
@@ -364,6 +385,11 @@ describe('Store', () => {
   })
 
   describe('hasChanges', () => {
+    test('returns false if data is nil', () => {
+      const result = store.hasChanges('myCollection', null)
+      expect(result).toBe(false)
+    })
+
     test('support change detection', () => {
       const object = {
         id: 1,
@@ -377,6 +403,23 @@ describe('Store', () => {
       store.add('myCollection', record)
       expect(store.hasChanges('myCollection', record)).toBe(false)
       expect(store.hasChanges('myCollection', object)).toBe(true)
+    })
+
+    test('detect removed values', () => {
+      const object = {
+        id: 1,
+        key: 'value'
+      }
+      const record = store.add('myCollection', object)
+      expect(store.hasChanges('myCollection', record)).toBe(false)
+      expect(store.hasChanges('myCollection', {
+        ...record,
+        key: null
+      })).toBe(true)
+      expect(store.hasChanges('myCollection', {
+        ...record,
+        key: 'value'
+      })).toBe(false)
     })
   })
 
@@ -400,8 +443,4 @@ describe('Store', () => {
     })
   })
 
-  test('returns false if data is nil', () => {
-    const result = store.hasChanges('myCollection', null)
-    expect(result).toBe(false)
-  })
 })
