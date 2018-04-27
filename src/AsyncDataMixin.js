@@ -145,7 +145,7 @@ export default {
       names.forEach((name) => {
         const asyncDefault = asyncData[`${name}Default`]
         dataObj[name] = (isFunction(asyncDefault)) ? asyncDefault.apply(this) : asyncDefault
-        dataObj[`${name}Promise`] = null
+        dataObj[`${name}Promise`] = asyncData[name]
         dataObj[`${name}Loading`] = !asyncData[`${name}Lazy`]
       })
       errorNames.forEach((name) => {

@@ -3469,7 +3469,7 @@
                     }))();
                 }),
                 watch: ct({}, i, function() {
-                    (_ || this[g].capture) && this.$asyncReload(o);
+                    _ || this[g].capture || this.$asyncReload(o);
                 }),
                 computed: ct({}, p, function() {
                     return this.$store.hasChanges(n, this[o]);
@@ -3598,7 +3598,7 @@
                     };
                     return e.forEach(function(e) {
                         var n = r[e + "Default"];
-                        o[e] = R(n) ? n.apply(t) : n, o[e + "Promise"] = null, o[e + "Loading"] = !r[e + "Lazy"];
+                        o[e] = R(n) ? n.apply(t) : n, o[e + "Promise"] = r[e], o[e + "Loading"] = !r[e + "Lazy"];
                     }), n.forEach(function(t) {
                         o[t] = void 0;
                     }), o;
@@ -3629,7 +3629,7 @@
             var r = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : 9e15, e = parseInt((Math.random() * r).toFixed(0), 10).toString(36);
             return t ? t + "-" + e : e;
         }, Nt = function(t) {
-            var r = new Q(), e = kt(t), n = z(t.models), o = Ut(null, 1e5), u = /^[0-9a-z]+?-[0-9a-z]+$/i, a = a2803.create(), s = {}, c = function(t) {
+            var r = new Q(), e = kt(t), n = z(t.models), o = Ut(null, 1e5), u = /^[0-9a-z]+?-[0-9a-z]+$/i, a = a2804.create(), s = {}, c = function(t) {
                 var r = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : {};
                 return H(r) && console.error("[@citygro/vdata] you have not defined any models!"), 
                 (0, i.default)(r).forEach(function(r) {

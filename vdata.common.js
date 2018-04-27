@@ -865,7 +865,8 @@ var createMixinForItemById = function createMixinForItemById(options) {
       }))();
     }),
     watch: defineProperty({}, idPropertyName, function () {
-      if (capture || this[requestOptionsOverrideName].capture) {
+      var captureOption = capture || this[requestOptionsOverrideName].capture;
+      if (!captureOption) {
         this.$asyncReload(localPropertyName);
       }
     }),
@@ -1180,7 +1181,7 @@ var AsyncDataMixin = {
       names.forEach(function (name) {
         var asyncDefault = asyncData[name + 'Default'];
         dataObj[name] = isFunction(asyncDefault) ? asyncDefault.apply(_this2) : asyncDefault;
-        dataObj[name + 'Promise'] = null;
+        dataObj[name + 'Promise'] = asyncData[name];
         dataObj[name + 'Loading'] = !asyncData[name + 'Lazy'];
       });
       errorNames.forEach(function (name) {

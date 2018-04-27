@@ -201,7 +201,8 @@ const createMixinForItemById = function (options) {
     },
     watch: {
       [idPropertyName] () {
-        if (capture || this[requestOptionsOverrideName].capture) {
+        const captureOption = capture || this[requestOptionsOverrideName].capture
+        if (!captureOption) {
           this.$asyncReload(localPropertyName)
         }
       }
