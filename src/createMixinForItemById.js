@@ -1,7 +1,6 @@
 import camelCase from 'lodash/camelCase'
 import clone from 'lodash/cloneDeep'
 import get from 'lodash/get'
-import merge from 'lodash/merge'
 import pop from './pop'
 import to from '@r14c/async-utils/to'
 
@@ -138,7 +137,10 @@ const createMixinForItemById = function (options) {
     data () {
       let data = {
         [localPropertyName]: null,
-        [requestOptionsName]: merge({}, clone(requestOptions), this[requestOptionsOverrideName])
+        [requestOptionsName]: {
+          ...clone(requestOptions),
+          ...this[requestOptionsOverrideName]
+        }
       }
       return data
     },
@@ -183,7 +185,10 @@ const createMixinForItemById = function (options) {
             [err, result] = await to(this.$store.find(
               collectionName,
               recordId,
-              this[requestOptionsName]
+              {
+                ...this[requestOptionsOverrideName],
+                ...this[requestOptionsName]
+              }
             ))
           }
         } else {
@@ -233,7 +238,10 @@ const createMixinForItemById = function (options) {
           this.$store.save(
             collectionName,
             this[localPropertyName],
-            this[requestOptionsName]
+            {
+              ...this[requestOptionsOverrideName],
+              ...this[requestOptionsName]
+            }
           )
         )
         if (err) {

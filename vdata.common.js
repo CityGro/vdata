@@ -30,7 +30,6 @@ var omitBy = _interopDefault(require('lodash/fp/omitBy'));
 var stringify = _interopDefault(require('json-stable-stringify'));
 var sort = _interopDefault(require('lodash/sortBy'));
 var get$1 = _interopDefault(require('lodash/get'));
-var merge = _interopDefault(require('lodash/merge'));
 var to = _interopDefault(require('@r14c/async-utils/to'));
 var _r14c_asyncUtils_map = _interopDefault(require('@r14c/async-utils/map'));
 var Any = _interopDefault(require('p-any'));
@@ -790,7 +789,7 @@ var createMixinForItemById = function createMixinForItemById(options) {
     data: function data() {
       var _data;
 
-      var data = (_data = {}, defineProperty(_data, localPropertyName, null), defineProperty(_data, requestOptionsName, merge({}, cloneDeep(requestOptions), this[requestOptionsOverrideName])), _data);
+      var data = (_data = {}, defineProperty(_data, localPropertyName, null), defineProperty(_data, requestOptionsName, _extends({}, cloneDeep(requestOptions), this[requestOptionsOverrideName])), _data);
       return data;
     },
     vdata: function vdata(event) {
@@ -839,7 +838,7 @@ var createMixinForItemById = function createMixinForItemById(options) {
                 }
 
                 _context.next = 11;
-                return to(_this.$store.find(collectionName, recordId, _this[requestOptionsName]));
+                return to(_this.$store.find(collectionName, recordId, _extends({}, _this[requestOptionsOverrideName], _this[requestOptionsName])));
 
               case 11:
                 _ref = _context.sent;
@@ -895,7 +894,7 @@ var createMixinForItemById = function createMixinForItemById(options) {
             switch (_context2.prev = _context2.next) {
               case 0:
                 _context2.next = 2;
-                return to(_this2.$store.save(collectionName, _this2[localPropertyName], _this2[requestOptionsName]));
+                return to(_this2.$store.save(collectionName, _this2[localPropertyName], _extends({}, _this2[requestOptionsOverrideName], _this2[requestOptionsName])));
 
               case 2:
                 _ref3 = _context2.sent;
@@ -1299,7 +1298,7 @@ var mget = (function (value, path) {
   }
 });
 
-var merge$1 = function merge$1() {
+var merge = function merge() {
   var object = arguments[0];
   var sources = tail(arguments);
   return mergeWith.apply(undefined, [object].concat(toConsumableArray(sources), [function (objValue, srcValue) {
@@ -1342,7 +1341,7 @@ var observedRemoveDiff = function observedRemoveDiff(base, object) {
   var diff = difference(base, object);
   var inverseDiff = difference(object, base);
   var nullDiff = nullify(inverseDiff);
-  var orDiff = merge$1({}, nullDiff, diff);
+  var orDiff = merge({}, nullDiff, diff);
   return orDiff;
 };
 
@@ -1358,8 +1357,8 @@ var rebase = function () {
   var diffs = tail(arguments).map(function (checkpoint) {
     return observedRemoveDiff(base, checkpoint);
   });
-  var patch = merge$1.apply(undefined, [{}].concat(toConsumableArray(diffs)));
-  return merge$1(jsonClone(base), patch);
+  var patch = merge.apply(undefined, [{}].concat(toConsumableArray(diffs)));
+  return merge(jsonClone(base), patch);
 };
 
 var registerSchemas = function (store) {
