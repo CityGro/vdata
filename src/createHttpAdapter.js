@@ -8,6 +8,9 @@ import toQueryString from './toQueryString'
 
 const normalizeHeaders = (options) => {
   let headers = {...options.headers}
+  if (!options.method) {
+    throw new Error('options.method must be defined')
+  }
   if (includes(['PUT', 'POST'], options.method.toUpperCase())) {
     headers['Content-Type'] = 'application/json'
   }
@@ -29,7 +32,7 @@ const createHttpAdapter = (options = {}) => {
   let promiseCache = {}
   const adapter = options.adapter || fetchWrapper
   const deserialize = options.deserialize || ((response, data) => data)
-  const cacheTimeout = 500 // evict promise cache keys after 500ms
+  const cacheTimeout = options.cacheTimeout || 500 // evict promise cache keys after 500ms by default
   const createRequest = (url, request) => {
     return adapter(url, request)
       .then((response) => {

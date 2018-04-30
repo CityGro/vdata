@@ -1,8 +1,8 @@
 import AsyncDataMixin from './AsyncDataMixin'
-import get from 'lodash/get'
 import createHandler from './createHandler'
+import createStore from './createStore'
+import get from 'lodash/get'
 import isFunction from 'lodash/isFunction'
-import Store from './Store'
 
 const hasVdata = (o) => !!get(o, '$options.vdata')
 
@@ -15,7 +15,7 @@ export default {
   },
   install (Vue, options) {
     options = (isFunction(options)) ? options(Vue) : options
-    const store = Store.create(options)
+    const store = createStore(options)
     Object.defineProperty(Vue, '$store', {
       get () {
         return store

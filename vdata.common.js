@@ -497,7 +497,9 @@ var withDefaults = function withDefaults(options) {
 var interceptors = [];
 var onError = void 0;
 
-var fetchWrapper = function fetchWrapper(url, options) {
+var fetchWrapper = function fetchWrapper(url) {
+  var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+
   return fork(cloneDeep(options), interceptors).then(function (request) {
     return fetch(url, withDefaults(request)).then(function (response) {
       if (response.status >= 200 && response.status < 400) {
@@ -573,6 +575,9 @@ var toQueryString = function toQueryString() {
 
 var normalizeHeaders = function normalizeHeaders(options) {
   var headers = _extends({}, options.headers);
+  if (!options.method) {
+    throw new Error('options.method must be defined');
+  }
   if (includes(['PUT', 'POST'], options.method.toUpperCase())) {
     headers['Content-Type'] = 'application/json';
   }
@@ -598,7 +603,7 @@ var createHttpAdapter = function createHttpAdapter() {
   var deserialize = options.deserialize || function (response, data) {
     return data;
   };
-  var cacheTimeout = 500; // evict promise cache keys after 500ms
+  var cacheTimeout = options.cacheTimeout || 500; // evict promise cache keys after 500ms by default
   var createRequest = function createRequest(url, request) {
     return adapter(url, request).then(function (response) {
       return response.json().then(function (data) {
@@ -1382,6 +1387,8 @@ var uniqueId = (function (prefix) {
   return prefix ? prefix + "-" + id : id;
 });
 
+var idRegex = /^[0-9a-z]+?-[0-9a-z]+$/i;
+
 /**
  * @param {Object} data
  * @private
@@ -1393,606 +1400,602 @@ var convert = function convert(data) {
 };
 
 /**
- * vdata store constructor
+ * @param {Object} options
+ * @param {Object} options.models
+ * @param {String} [options.basePath=''] - default prefix for http requests
+ * @param {function} [options.adapter] - a custom fetch
+ * @param {function} [options.deserialize] - request post-processing
+ * @return {Store} a vdata store instance
  */
-var Store = {
+var createStore = function createStore() {
+  var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+
+  var evt = new EventEmitter();
+  var http = createHttpAdapter(options);
+  var models = cloneDeep(options.models);
+  var storeId = uniqueId(null, 1e5);
+  var queryCacheTimeout = options.cacheTimeout || 500; // evict query cache after 500ms by default
+  var keyMap = KeyMap.create();
+  var queryCache = {};
+  var store = registerSchemas(immutable.Map(), options.models);
+  var getBasePath = function getBasePath(collectionName) {
+    var model = models[collectionName];
+    return model.basePath || options.basePath || '';
+  };
   /**
-   * @param {Object} options
-   * @param {Object} options.models
-   * @param {String} [options.basePath=''] - default prefix for http requests
-   * @param {function} [options.adapter] - a custom fetch
-   * @param {function} [options.deserialize] - request post-processing
-   * @return {Store} a vdata store instance
-   */
-  create: function create(options) {
-    var evt = new EventEmitter();
-    var http = createHttpAdapter(options);
-    var models = cloneDeep(options.models);
-    var storeId = uniqueId(null, 1e5);
-    var idRegex = /^[0-9a-z]+?-[0-9a-z]+$/i;
-    var keyMap = KeyMap.create();
-    var queryCache = {};
-    var store = registerSchemas(immutable.Map(), options.models);
-    var getBasePath = function getBasePath(collectionName) {
-      var model = models[collectionName];
-      return model.basePath || options.basePath || '';
-    };
-    /**
-     * @param {String} id
-     * @private
-     */
-    var resolveId = function resolveId(collectionName, id) {
-      var isTmp = idRegex.test(id);
-      return isTmp ? id : keyMap.get(collectionName, id);
-    };
-    /**
-     * @param {String} id
-     * @private
-     */
-    var resolvePk = function resolvePk(collectionName, id) {
-      var isTmp = idRegex.test(id);
-      return isTmp ? keyMap.get(collectionName, id) : id;
-    };
-    /**
-     * @param {String} collectionName
-     * @param {Object} data
-     * @private
-     */
-    var getMeta = function getMeta(collectionName, data) {
-      try {
-        var model = models[collectionName];
-        var idAttribute = model.idAttribute;
-        return {
-          basePath: getBasePath(collectionName),
-          id: mget(data, '__tmp_id'),
-          idAttribute: idAttribute,
-          pk: mget(data, idAttribute),
-          symId: mget(data, '__sym_id')
-        };
-      } catch (e) {
-        throw new Error('missing collection: ' + collectionName);
-      }
-    };
-    /**
-     * queue a micro-task to broadcast the given message object
-     *
-     * @param {String} message
-     * @param {Object} options
-     * @param {Boolean} [options.quiet=false]
-     * @private
-     */
-    var emit = function emit(message) {
-      var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-
-      var quiet = options.quiet || false;
-      if (quiet === false) {
-        microTask(function () {
-          return evt.emit('all', message);
-        });
-      }
-    };
-    /**
-     * @constructor
-     */
-    var Store = function Store() {
-      evt.setMaxListeners(0); // no limit
-      this.models = options.models;
-      this.storeId = storeId;
-      this.queryCacheTimeout = options.queryCacheTimeout || 500; // evict query cache after 500ms
-    };
-    /**
-     * tag a javascript object with metadata that allows it to be tracked by the vdata store.
-     * `__tmp_id` and the `idAttribute` configured for the given collection are both used to
-     * identify the object. editing either of these will cause vdata to see the resulting
-     * object as something new that needs to be tracked separately from the original object.
-     *
-     * @param {String} collection
-     * @param {Object} [data={}]
-     * @return {Object}
-     */
-    Store.prototype.createRecord = function (collectionName) {
-      var data = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-
+    * @param {String} id
+    * @private
+    */
+  var resolveId = function resolveId(collectionName, id) {
+    var isTmp = idRegex.test(id);
+    return isTmp ? id : keyMap.get(collectionName, id);
+  };
+  /**
+    * @param {String} id
+    * @private
+    */
+  var resolvePk = function resolvePk(collectionName, id) {
+    var isTmp = idRegex.test(id);
+    return isTmp ? keyMap.get(collectionName, id) : id;
+  };
+  /**
+    * @param {String} collectionName
+    * @param {Object} data
+    * @private
+    */
+  var getMeta = function getMeta(collectionName, data) {
+    try {
       var model = models[collectionName];
       var idAttribute = model.idAttribute;
-      var pk = mget(data, idAttribute);
-      var id = mget(data, '__tmp_id');
-      if (pk && !id) {
-        id = keyMap.get(collectionName, pk) || uniqueId(storeId); // get or gen id
-        keyMap.link(collectionName, pk, id); // 2x link
-      } else if (!pk && id) {
-        // noop
-      } else if (pk && id) {
-        keyMap.link(collectionName, pk, id); // 2x link
-      } else if (!pk && !id) {
-        id = uniqueId(storeId); // gen id
-      }
-      return _extends({}, data, { __tmp_id: id });
-    };
-    /**
-     * get a particular object from the store using the primary key provided by
-     * your api server, or the temporary local id that vdata uses internally to
-     * track records.
-     *
-     * @param {String} collectionName
-     * @param {String} pkOrId
-     * @return {Object}
-     */
-    Store.prototype.get = function (collectionName, pkOrId) {
-      var id = resolveId(collectionName, pkOrId);
-      var versions = store.getIn([collectionName, id], immutable.Stack());
-      var record = versions.first();
-      if (record) {
-        var size = versions.size;
-        var index = 0;
-        return this.createRecord(collectionName, _extends({}, record.toJS(), {
-          __sym_id: index + '-' + size
-        }));
-      } else {
-        return null;
-      }
-    };
-    /**
-     * get all of the records in `collectionName`. if you include a `keys`
-     * parameter, this method returns all of the records that match the ids
-     * listed.
-     *
-     * @param {String} collectionName
-     * @param {string[]} [keys]
-     * @return {object[]}
-     */
-    Store.prototype.getList = function (collectionName, keys$$1) {
-      var _this = this;
+      return {
+        basePath: getBasePath(collectionName),
+        id: mget(data, '__tmp_id'),
+        idAttribute: idAttribute,
+        pk: mget(data, idAttribute),
+        symId: mget(data, '__sym_id')
+      };
+    } catch (e) {
+      throw new Error('missing collection: ' + collectionName);
+    }
+  };
+  /**
+    * queue a micro-task to broadcast the given message object
+    *
+    * @param {String} message
+    * @param {Object} options
+    * @param {Boolean} [options.quiet=false]
+    * @private
+    */
+  var emit = function emit(message) {
+    var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
-      var result = void 0;
-      if (isArray(keys$$1)) {
-        result = keys$$1.length ? keys$$1.map(function (key) {
-          return _this.get(collectionName, key);
-        }) : [];
-      } else {
-        result = store.get(collectionName).keySeq().map(function (key) {
-          return _this.get(collectionName, key);
-        }).toJS();
-      }
-      return result;
-    };
-    /**
-     * @ignore
-     */
-    Store.prototype.getAll = function () {
-      return this.getList.apply(this, arguments);
-    };
-    /**
-     * remove a record from the store, identified by public key or temporary id.
-     *
-     * @emits Store#remove
-     * @param {String} collectionName
-     * @param {String} pkOrId
-     * @param {Object} options
-     * @param {Boolean} options.quiet
-     * @return {Object}
-     */
-    Store.prototype.remove = function (collectionName, pkOrId) {
-      var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
-
-      var id = resolveId(collectionName, pkOrId);
-      var object = this.get(collectionName, id);
-      var meta = getMeta(collectionName, object);
-      store = store.removeIn([collectionName, id]);
-      keyMap.unlink(collectionName, meta.pk, meta.id);
-      delete object.__tmp_id;
-      delete object.__sym_id;
-      emit({
-        collectionName: collectionName,
-        event: 'remove',
-        record: object
-      }, {
-        quiet: options.quiet
-      });
-      return object;
-    };
-    /**
-     * remove all of the records in `collectionName` or all of the records that match the ids passed into `keys`.
-     *
-     * @emits Store#remove-list
-     * @param {String} collectionName
-     * @param {string[]} keys
-     * @return {object[]}
-     */
-    Store.prototype.removeList = function (collectionName, keys$$1) {
-      var _this2 = this;
-
-      var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
-
-      var records = this.getAll(collectionName, keys$$1).map(function (record) {
-        var _getMeta = getMeta(collectionName, record),
-            id = _getMeta.id;
-
-        return _this2.remove(collectionName, id, { quiet: true });
-      });
-      emit({
-        collectionName: collectionName,
-        event: 'remove-list',
-        records: records
-      }, {
-        quiet: options.quiet
-      });
-      return records;
-    };
-    /**
-     * @ignore
-     */
-    Store.prototype.removeAll = function () {
-      return this.removeList.apply(this, arguments);
-    };
-    /**
-     * remove all records from all collections
-     * @emits Store#remove-list
-     */
-    Store.prototype.clear = function () {
-      var _this3 = this;
-
-      store.keySeq().forEach(function (collectionName) {
-        _this3.removeAll(collectionName);
-      });
-    };
-    /**
-     * vdata automatically tracks all of the versions that are created for every
-     * record that it tracks. this version tracking is how `Store#rebase` is able
-     * to implement a simple Observed-Remove Set (ORSet) that enables vdata to
-     * deterministically merge all of the changes to a particular record.
-     *
-     * given `data` with a particular `__sym_id` and the current version of the
-     * same record at `data[idAttribute]`, return a merged record containing all
-     * changes, applied to the base record at `__sym_id` in the following order,
-     * diff'd against `base`:
-     *
-     * 1. current
-     * 2. data
-     *
-     * at CityGro we use the ORSet implementation in vdata to power the real-time
-     * features of our customer portal application. in most cases, the core
-     * diffing algorithm is able to generate merged outputs with intuitive
-     * results. however, it is important to note the rules that we use to
-     * resolve certain edge cases.
-     *
-     * 1. Last-write (from the perspective of the writer) wins. in our
-     *    experience, this produces the least surprising results for our users.
-     * 2. Array mutations are all-or-nothing. we currently don't have an
-     *    acceptable solution to merging arrays with arbitrary mutations.
-     *    following rule #1, we opt to *replace* any previous values with the
-     *    latest version of the array. if you have thoughts on this, please open
-     *    a ticket on [GitLab](https://gitlab.com/citygro/vdata/issues).
-     *
-     * @param {String} collection
-     * @param {Object} data
-     * @return {Object}
-     */
-    Store.prototype.rebase = function (collectionName, data) {
-      var record = immutable.isImmutable(data) ? data.toJS() : data;
-
-      var _getMeta2 = getMeta(collectionName, record),
-          id = _getMeta2.id;
-
-      var base = null;
-      if (record.__sym_id) {
-        var _record$__sym_id$spli = record.__sym_id.split('-').map(toNumber),
-            _record$__sym_id$spli2 = slicedToArray(_record$__sym_id$spli, 2),
-            index = _record$__sym_id$spli2[0],
-            size = _record$__sym_id$spli2[1];
-
-        var offset = index - size;
-        var versions = store.getIn([collectionName, id]);
-        if (versions) {
-          base = versions.get(offset).toJS();
-        }
-      }
-      var current = this.get(collectionName, id);
-      var object = base || current ? rebase(base, current, record) : record;
-      return object;
-    };
-    /**
-     * add a record to the store. you *do not* need to pass your data to
-     * `Store#createRecord` before adding it.
-     *
-     * @emits Store#add
-     * @see {Store.rebase}
-     * @param {String} collection
-     * @param {Object} data
-     * @param {Object} options
-     * @param {Boolean} [options.quiet=false] silence store events for this invocation
-     * @return {Object}
-     */
-    Store.prototype.add = function (collectionName, data) {
-      var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
-
-      var record = this.createRecord(collectionName, data);
-      var latest = convert(record);
-
-      var _getMeta3 = getMeta(collectionName, latest),
-          id = _getMeta3.id;
-
-      var versions = store.getIn([collectionName, id], immutable.Stack());
-      store = store.setIn([collectionName, id], versions.unshift(latest));
-      var object = this.get(collectionName, id);
-      emit({
-        collectionName: collectionName,
-        event: 'add',
-        record: object
-      }, {
-        quiet: options.quiet
-      });
-      return object;
-    };
-    /**
-     * add all of the records in `data` to `colectionName` in a single operation.
-     *
-     * @emits Store#add-list
-     * @param {String} collectionName
-     * @param {Array<Object>} data
-     * @return {Array<Object>}
-     */
-    Store.prototype.addList = function (collectionName, data) {
-      var _this4 = this;
-
-      var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
-
-      var records = data.map(function (item) {
-        return _this4.add(collectionName, item, { quiet: true });
-      });
-      emit({
-        collectionName: collectionName,
-        event: 'add-list',
-        records: records
-      }, {
-        quiet: options.quiet
-      });
-      return records;
-    };
-    /**
-     * check if `data` differs from the current version of the corresponding
-     * record in the store.
-     *
-     * @param {String} collectionName
-     * @param {Object} data
-     * @return {Boolean}
-     */
-    Store.prototype.hasChanges = function (collectionName, data) {
-      if (!data) {
-        return false;
-      } else {
-        var _getMeta4 = getMeta(collectionName, data),
-            id = _getMeta4.id;
-
-        var record = this.get(collectionName, id) || {};
-        return record.__sym_id === data.__sym_id ? fastDiff(record, data) : false;
-      }
-    };
-    /**
-     * send a `DELETE` request to the endpoint configured for `collectionName`
-     * and remove the corresponding record from the store.
-     *
-     * @async
-     * @emits Store#remove
-     * @param {String} collectionName
-     * @param {Object} data
-     * @param {Object} options
-     * @return {Promise<Object>}
-     */
-    Store.prototype.destroy = function (collectionName, data) {
-      var _this5 = this;
-
-      var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
-
-      var _getMeta5 = getMeta(collectionName, data),
-          id = _getMeta5.id,
-          pk = _getMeta5.pk,
-          basePath = _getMeta5.basePath;
-
-      return http(_extends({
-        url: basePath + '/' + collectionName + '/' + pk,
-        method: 'DELETE'
-      }, options)).then(function () {
-        return microTask(function () {
-          return _this5.remove(collectionName, id);
-        });
-      });
-    };
-    /**
-     * persist `data` using the endpoint configured for `collectonName`. if
-     * `data` is *only* identified by a local temporary id send a `POST` request to
-     * `/:basePath/:collectionName`. if `data` has a primary key send a `PUT`
-     * request to `/:basePath/:collectionName/:primaryKey`
-     *
-     * when updating an existing record, this methods calls Store#rebase.
-     * this gives vdata some important super-powers that you can use to build
-     * real-time applications. check the method's docs for details.
-     *
-     * @async
-     * @emits Store#add
-     * @param {String} collection
-     * @param {Object} data
-     * @param {Object} options
-     * @return {Promise<Object>}
-     */
-    Store.prototype.save = function (collectionName, data) {
-      var _this6 = this;
-
-      var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
-
-      var _getMeta6 = getMeta(collectionName, data),
-          id = _getMeta6.id,
-          pk = _getMeta6.pk,
-          basePath = _getMeta6.basePath;
-
-      var promise = void 0;
-      var request = _extends({}, options);
-      if (this.isValidId(pk)) {
-        request.method = 'PUT';
-        promise = http(_extends({}, request, {
-          url: basePath + '/' + collectionName + '/' + pk,
-          method: 'PUT',
-          body: _extends({}, this.rebase(collectionName, data), {
-            __tmp_id: undefined,
-            __sym_id: undefined
-          })
-        }));
-      } else {
-        promise = http(_extends({}, request, {
-          url: basePath + '/' + collectionName,
-          method: 'POST',
-          body: _extends({}, data, {
-            __tmp_id: undefined,
-            __sym_id: undefined
-          })
-        }));
-      }
-      return promise.then(function (data) {
-        var object = id ? _extends({}, data, { __tmp_id: id }) : data;
-        return microTask(function () {
-          return _this6.add(collectionName, object);
-        });
-      });
-    };
-    /**
-     * fetch a particular record from `/:basePath/:collectionName/:primaryKey`.
-     * if `force === false` immediately return the cached record if present.
-     *
-     * @async
-     * @param {String} collection
-     * @param {Object} [query]
-     * @param {Object} [options]
-     * @param {Boolean} [options.force=false]
-     * @return {Promise<Object>}
-     */
-    Store.prototype.find = function (collectionName, id) {
-      var _this7 = this;
-
-      var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
-
-      var promise = void 0;
-      var force = options.force || false;
-      var data = this.get(collectionName, id);
-      if (!this.isValidId(id)) {
-        promise = Promise.resolve(null);
-      } else if (!data || force === true) {
-        var pk = resolvePk(collectionName, id);
-        var basePath = this.getBasePath(collectionName);
-        var request = _extends({
-          url: basePath + '/' + collectionName + '/' + pk,
-          method: 'GET'
-        }, options);
-        promise = http(request).then(function (data) {
-          return microTask(function () {
-            return _this7.add(collectionName, data);
-          });
-        });
-      } else {
-        promise = Promise.resolve(data);
-      }
-      return promise;
-    };
-    /**
-     * fetch all of the records from the api that match the parameters specified
-     * in `query`. these are sent along with the request as query parameters.
-     * if `force === false` immediately return a cached response if one exists.
-     *
-     * @async
-     * @param {String} collection
-     * @param {Object} [query]
-     * @param {Object} [options]
-     * @return {Promise<Array<Object>>}
-     */
-    Store.prototype.findAll = function (collectionName, query) {
-      var _this8 = this;
-
-      var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
-
-      var promise = void 0;
-      var force = options.force || false;
-      var basePath = this.getBasePath(collectionName);
-      var key = makeQueryKey(collectionName, query);
-      var cachedKeys = queryCache[key];
-      var data = this.getAll(collectionName, cachedKeys);
-      if (!data.length || force === true) {
-        var request = _extends({
-          url: basePath + '/' + collectionName,
-          method: 'GET',
-          params: query
-        }, options);
-        promise = http(request).then(function (result) {
-          return microTask(function () {
-            var resultKeys = [];
-            var records = result.map(function (data) {
-              var record = _this8.createRecord(collectionName, data);
-
-              var _getMeta7 = getMeta(collectionName, record),
-                  id = _getMeta7.id;
-
-              resultKeys.push(id);
-              return record;
-            });
-            queryCache[key] = resultKeys;
-            setTimeout(function () {
-              delete queryCache[key];
-            }, _this8.queryCacheTimeout);
-            return _this8.addList(collectionName, records);
-          });
-        });
-      } else {
-        promise = Promise.resolve(data);
-      }
-      return promise;
-    };
-    /**
-     * bind an event listener to the store
-     *
-     * @param {String} event
-     * @param {function} handler
-     */
-    Store.prototype.on = function (event, handler) {
-      evt.addListener(event, handler);
-    };
-    /**
-     * unbind an event listener to the store
-     *
-     * @param {String} event
-     * @param {function} handler
-     */
-    Store.prototype.off = function (event, handler) {
-      evt.removeListener(event, handler);
-    };
-    /**
-     * manually emit a message using the store's event bus
-     *
-     * @param {String} event
-     * @param {*} payload
-     */
-    Store.prototype.emit = function (event, payload) {
+    var quiet = options.quiet || false;
+    if (quiet === false) {
       microTask(function () {
-        return evt.emit(event, payload);
+        return evt.emit('all', message);
       });
-    };
-    /**
-     * get the base path for `collectionName`
-     *
-     * @param {String} collectionName
-     * @return {String}
-     */
-    Store.prototype.getBasePath = function (collectionName) {
-      return getBasePath(collectionName);
-    };
-    /**
-     * check if the given value is a valid id
-     *
-     * @param {*} id
-     * @return {Boolean}
-     */
-    Store.prototype.isValidId = function (id) {
-      return id !== null && id !== undefined && id !== '';
-    };
-    return new Store();
-  }
+    }
+  };
+  /**
+    * @constructor
+    */
+  var Store = function Store() {
+    evt.setMaxListeners(0); // no limit
+    this.models = options.models;
+    this.storeId = storeId;
+  };
+  /**
+    * tag a javascript object with metadata that allows it to be tracked by the vdata store.
+    * `__tmp_id` and the `idAttribute` configured for the given collection are both used to
+    * identify the object. editing either of these will cause vdata to see the resulting
+    * object as something new that needs to be tracked separately from the original object.
+    *
+    * @param {String} collection
+    * @param {Object} [data={}]
+    * @return {Object}
+    */
+  Store.prototype.createRecord = function (collectionName) {
+    var data = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+
+    var model = models[collectionName];
+    var idAttribute = model.idAttribute;
+    var pk = mget(data, idAttribute);
+    var id = mget(data, '__tmp_id');
+    if (pk && !id) {
+      id = keyMap.get(collectionName, pk) || uniqueId(storeId); // get or gen id
+      keyMap.link(collectionName, pk, id); // 2x link
+    } else if (!pk && id) {
+      // noop
+    } else if (pk && id) {
+      keyMap.link(collectionName, pk, id); // 2x link
+    } else if (!pk && !id) {
+      id = uniqueId(storeId); // gen id
+    }
+    return _extends({}, data, { __tmp_id: id });
+  };
+  /**
+    * get a particular object from the store using the primary key provided by
+    * your api server, or the temporary local id that vdata uses internally to
+    * track records.
+    *
+    * @param {String} collectionName
+    * @param {String} pkOrId
+    * @return {Object}
+    */
+  Store.prototype.get = function (collectionName, pkOrId) {
+    var id = resolveId(collectionName, pkOrId);
+    var versions = store.getIn([collectionName, id], immutable.Stack());
+    var record = versions.first();
+    if (record) {
+      var size = versions.size;
+      var index = 0;
+      return this.createRecord(collectionName, _extends({}, record.toJS(), {
+        __sym_id: index + '-' + size
+      }));
+    } else {
+      return null;
+    }
+  };
+  /**
+    * get all of the records in `collectionName`. if you include a `keys`
+    * parameter, this method returns all of the records that match the ids
+    * listed.
+    *
+    * @param {String} collectionName
+    * @param {string[]} [keys]
+    * @return {object[]}
+    */
+  Store.prototype.getList = function (collectionName, keys$$1) {
+    var _this = this;
+
+    var result = void 0;
+    if (isArray(keys$$1)) {
+      result = keys$$1.length ? keys$$1.map(function (key) {
+        return _this.get(collectionName, key);
+      }) : [];
+    } else {
+      result = store.get(collectionName).keySeq().map(function (key) {
+        return _this.get(collectionName, key);
+      }).toJS();
+    }
+    return result;
+  };
+  /**
+    * @ignore
+    */
+  Store.prototype.getAll = function () {
+    return this.getList.apply(this, arguments);
+  };
+  /**
+    * remove a record from the store, identified by public key or temporary id.
+    *
+    * @emits Store#remove
+    * @param {String} collectionName
+    * @param {String} pkOrId
+    * @param {Object} options
+    * @param {Boolean} options.quiet
+    * @return {Object}
+    */
+  Store.prototype.remove = function (collectionName, pkOrId) {
+    var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+
+    var id = resolveId(collectionName, pkOrId);
+    var object = this.get(collectionName, id);
+    var meta = getMeta(collectionName, object);
+    store = store.removeIn([collectionName, id]);
+    keyMap.unlink(collectionName, meta.pk, meta.id);
+    delete object.__tmp_id;
+    delete object.__sym_id;
+    emit({
+      collectionName: collectionName,
+      event: 'remove',
+      record: object
+    }, {
+      quiet: options.quiet
+    });
+    return object;
+  };
+  /**
+    * remove all of the records in `collectionName` or all of the records that match the ids passed into `keys`.
+    *
+    * @emits Store#remove-list
+    * @param {String} collectionName
+    * @param {string[]} keys
+    * @return {object[]}
+    */
+  Store.prototype.removeList = function (collectionName, keys$$1) {
+    var _this2 = this;
+
+    var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+
+    var records = this.getAll(collectionName, keys$$1).map(function (record) {
+      var _getMeta = getMeta(collectionName, record),
+          id = _getMeta.id;
+
+      return _this2.remove(collectionName, id, { quiet: true });
+    });
+    emit({
+      collectionName: collectionName,
+      event: 'remove-list',
+      records: records
+    }, {
+      quiet: options.quiet
+    });
+    return records;
+  };
+  /**
+    * @ignore
+    */
+  Store.prototype.removeAll = function () {
+    return this.removeList.apply(this, arguments);
+  };
+  /**
+    * remove all records from all collections
+    * @emits Store#remove-list
+    */
+  Store.prototype.clear = function () {
+    var _this3 = this;
+
+    store.keySeq().forEach(function (collectionName) {
+      _this3.removeAll(collectionName);
+    });
+  };
+  /**
+    * vdata automatically tracks all of the versions that are created for every
+    * record that it tracks. this version tracking is how `Store#rebase` is able
+    * to implement a simple Observed-Remove Set (ORSet) that enables vdata to
+    * deterministically merge all of the changes to a particular record.
+    *
+    * given `data` with a particular `__sym_id` and the current version of the
+    * same record at `data[idAttribute]`, return a merged record containing all
+    * changes, applied to the base record at `__sym_id` in the following order,
+    * diff'd against `base`:
+    *
+    * 1. current
+    * 2. data
+    *
+    * at CityGro we use the ORSet implementation in vdata to power the real-time
+    * features of our customer portal application. in most cases, the core
+    * diffing algorithm is able to generate merged outputs with intuitive
+    * results. however, it is important to note the rules that we use to
+    * resolve certain edge cases.
+    *
+    * 1. Last-write (from the perspective of the writer) wins. in our
+    *    experience, this produces the least surprising results for our users.
+    * 2. Array mutations are all-or-nothing. we currently don't have an
+    *    acceptable solution to merging arrays with arbitrary mutations.
+    *    following rule #1, we opt to *replace* any previous values with the
+    *    latest version of the array. if you have thoughts on this, please open
+    *    a ticket on [GitLab](https://gitlab.com/citygro/vdata/issues).
+    *
+    * @param {String} collection
+    * @param {Object} data
+    * @return {Object}
+    */
+  Store.prototype.rebase = function (collectionName, data) {
+    var record = immutable.isImmutable(data) ? data.toJS() : data;
+
+    var _getMeta2 = getMeta(collectionName, record),
+        id = _getMeta2.id;
+
+    var base = null;
+    if (record.__sym_id) {
+      var _record$__sym_id$spli = record.__sym_id.split('-').map(toNumber),
+          _record$__sym_id$spli2 = slicedToArray(_record$__sym_id$spli, 2),
+          index = _record$__sym_id$spli2[0],
+          size = _record$__sym_id$spli2[1];
+
+      var offset = index - size;
+      var versions = store.getIn([collectionName, id]);
+      if (versions) {
+        base = versions.get(offset).toJS();
+      }
+    }
+    var current = this.get(collectionName, id);
+    var object = base || current ? rebase(base, current, record) : record;
+    return object;
+  };
+  /**
+    * add a record to the store. you *do not* need to pass your data to
+    * `Store#createRecord` before adding it.
+    *
+    * @emits Store#add
+    * @see {Store.rebase}
+    * @param {String} collection
+    * @param {Object} data
+    * @param {Object} options
+    * @param {Boolean} [options.quiet=false] silence store events for this invocation
+    * @return {Object}
+    */
+  Store.prototype.add = function (collectionName, data) {
+    var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+
+    var record = this.createRecord(collectionName, data);
+    var latest = convert(record);
+
+    var _getMeta3 = getMeta(collectionName, latest),
+        id = _getMeta3.id;
+
+    var versions = store.getIn([collectionName, id], immutable.Stack());
+    store = store.setIn([collectionName, id], versions.unshift(latest));
+    var object = this.get(collectionName, id);
+    emit({
+      collectionName: collectionName,
+      event: 'add',
+      record: object
+    }, {
+      quiet: options.quiet
+    });
+    return object;
+  };
+  /**
+    * add all of the records in `data` to `colectionName` in a single operation.
+    *
+    * @emits Store#add-list
+    * @param {String} collectionName
+    * @param {Array<Object>} data
+    * @return {Array<Object>}
+    */
+  Store.prototype.addList = function (collectionName, data) {
+    var _this4 = this;
+
+    var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+
+    var records = data.map(function (item) {
+      return _this4.add(collectionName, item, { quiet: true });
+    });
+    emit({
+      collectionName: collectionName,
+      event: 'add-list',
+      records: records
+    }, {
+      quiet: options.quiet
+    });
+    return records;
+  };
+  /**
+    * check if `data` differs from the current version of the corresponding
+    * record in the store.
+    *
+    * @param {String} collectionName
+    * @param {Object} data
+    * @return {Boolean}
+    */
+  Store.prototype.hasChanges = function (collectionName, data) {
+    if (!data) {
+      return false;
+    } else {
+      var _getMeta4 = getMeta(collectionName, data),
+          id = _getMeta4.id;
+
+      var record = this.get(collectionName, id) || {};
+      return record.__sym_id === data.__sym_id ? fastDiff(record, data) : false;
+    }
+  };
+  /**
+    * send a `DELETE` request to the endpoint configured for `collectionName`
+    * and remove the corresponding record from the store.
+    *
+    * @async
+    * @emits Store#remove
+    * @param {String} collectionName
+    * @param {Object} data
+    * @param {Object} options
+    * @return {Promise<Object>}
+    */
+  Store.prototype.destroy = function (collectionName, data) {
+    var _this5 = this;
+
+    var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+
+    var _getMeta5 = getMeta(collectionName, data),
+        id = _getMeta5.id,
+        pk = _getMeta5.pk,
+        basePath = _getMeta5.basePath;
+
+    return http(_extends({
+      url: basePath + '/' + collectionName + '/' + pk,
+      method: 'DELETE'
+    }, options)).then(function () {
+      return microTask(function () {
+        return _this5.remove(collectionName, id);
+      });
+    });
+  };
+  /**
+    * persist `data` using the endpoint configured for `collectonName`. if
+    * `data` is *only* identified by a local temporary id send a `POST` request to
+    * `/:basePath/:collectionName`. if `data` has a primary key send a `PUT`
+    * request to `/:basePath/:collectionName/:primaryKey`
+    *
+    * when updating an existing record, this methods calls Store#rebase.
+    * this gives vdata some important super-powers that you can use to build
+    * real-time applications. check the method's docs for details.
+    *
+    * @async
+    * @emits Store#add
+    * @param {String} collection
+    * @param {Object} data
+    * @param {Object} options
+    * @return {Promise<Object>}
+    */
+  Store.prototype.save = function (collectionName, data) {
+    var _this6 = this;
+
+    var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+
+    var _getMeta6 = getMeta(collectionName, data),
+        id = _getMeta6.id,
+        pk = _getMeta6.pk,
+        basePath = _getMeta6.basePath;
+
+    var promise = void 0;
+    var request = _extends({}, options);
+    if (this.isValidId(pk)) {
+      request.method = 'PUT';
+      promise = http(_extends({}, request, {
+        url: basePath + '/' + collectionName + '/' + pk,
+        method: 'PUT',
+        body: _extends({}, this.rebase(collectionName, data), {
+          __tmp_id: undefined,
+          __sym_id: undefined
+        })
+      }));
+    } else {
+      promise = http(_extends({}, request, {
+        url: basePath + '/' + collectionName,
+        method: 'POST',
+        body: _extends({}, data, {
+          __tmp_id: undefined,
+          __sym_id: undefined
+        })
+      }));
+    }
+    return promise.then(function (data) {
+      var object = id ? _extends({}, data, { __tmp_id: id }) : data;
+      return microTask(function () {
+        return _this6.add(collectionName, object);
+      });
+    });
+  };
+  /**
+    * fetch a particular record from `/:basePath/:collectionName/:primaryKey`.
+    * if `force === false` immediately return the cached record if present.
+    *
+    * @async
+    * @param {String} collection
+    * @param {Object} [query]
+    * @param {Object} [options]
+    * @param {Boolean} [options.force=false]
+    * @return {Promise<Object>}
+    */
+  Store.prototype.find = function (collectionName, id) {
+    var _this7 = this;
+
+    var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+
+    var promise = void 0;
+    var force = options.force || false;
+    var data = this.get(collectionName, id);
+    if (!this.isValidId(id)) {
+      promise = Promise.resolve(null);
+    } else if (!data || force === true) {
+      var pk = resolvePk(collectionName, id);
+      var basePath = this.getBasePath(collectionName);
+      var request = _extends({
+        url: basePath + '/' + collectionName + '/' + pk,
+        method: 'GET'
+      }, options);
+      promise = http(request).then(function (data) {
+        return microTask(function () {
+          return _this7.add(collectionName, data);
+        });
+      });
+    } else {
+      promise = Promise.resolve(data);
+    }
+    return promise;
+  };
+  /**
+    * fetch all of the records from the api that match the parameters specified
+    * in `query`. these are sent along with the request as query parameters.
+    * if `force === false` immediately return a cached response if one exists.
+    *
+    * @async
+    * @param {String} collection
+    * @param {Object} [query]
+    * @param {Object} [options]
+    * @return {Promise<Array<Object>>}
+    */
+  Store.prototype.findAll = function (collectionName, query) {
+    var _this8 = this;
+
+    var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+
+    var promise = void 0;
+    var force = options.force || false;
+    var basePath = this.getBasePath(collectionName);
+    var key = makeQueryKey(collectionName, query);
+    var cachedKeys = queryCache[key];
+    var data = this.getAll(collectionName, cachedKeys);
+    if (!data.length || force === true) {
+      var request = _extends({
+        url: basePath + '/' + collectionName,
+        method: 'GET',
+        params: query
+      }, options);
+      promise = http(request).then(function (result) {
+        return microTask(function () {
+          var resultKeys = [];
+          var records = result.map(function (data) {
+            var record = _this8.createRecord(collectionName, data);
+
+            var _getMeta7 = getMeta(collectionName, record),
+                id = _getMeta7.id;
+
+            resultKeys.push(id);
+            return record;
+          });
+          queryCache[key] = resultKeys;
+          setTimeout(function () {
+            delete queryCache[key];
+          }, queryCacheTimeout);
+          return _this8.addList(collectionName, records);
+        });
+      });
+    } else {
+      promise = Promise.resolve(data);
+    }
+    return promise;
+  };
+  /**
+    * bind an event listener to the store
+    *
+    * @param {String} event
+    * @param {function} handler
+    */
+  Store.prototype.on = function (event, handler) {
+    evt.addListener(event, handler);
+  };
+  /**
+    * unbind an event listener to the store
+    *
+    * @param {String} event
+    * @param {function} handler
+    */
+  Store.prototype.off = function (event, handler) {
+    evt.removeListener(event, handler);
+  };
+  /**
+    * manually emit a message using the store's event bus
+    *
+    * @param {String} event
+    * @param {*} payload
+    */
+  Store.prototype.emit = function (event, payload) {
+    microTask(function () {
+      return evt.emit(event, payload);
+    });
+  };
+  /**
+    * get the base path for `collectionName`
+    *
+    * @param {String} collectionName
+    * @return {String}
+    */
+  Store.prototype.getBasePath = function (collectionName) {
+    return getBasePath(collectionName);
+  };
+  /**
+    * check if the given value is a valid id
+    *
+    * @param {*} id
+    * @return {Boolean}
+    */
+  Store.prototype.isValidId = function (id) {
+    return id !== null && id !== undefined && id !== '';
+  };
+  return new Store();
 };
 
 var hasVdata = function hasVdata(o) {
@@ -2010,7 +2013,7 @@ var vdata$1 = {
   },
   install: function install(Vue, options) {
     options = isFunction(options) ? options(Vue) : options;
-    var store = Store.create(options);
+    var store = createStore(options);
     Object.defineProperty(Vue, '$store', {
       get: function get$1() {
         return store;

@@ -3124,14 +3124,13 @@
             value: !0
         });
         var m = o(e(395)), x = o(e(0)), b = o(e(396)), w = o(e(399)), j = o(e(181)), O = o(e(420)), A = o(e(372)), S = o(e(376)), I = o(e(402)), E = o(e(415)), z = (e(433), 
-        o(e(375))), k = o(e(380)), M = o(e(188)), R = o(e(31)), P = o(e(408)), T = o(e(403)), L = o(e(414)), D = o(e(46)), q = o(e(388)), B = o(e(389)), C = o(e(391)), F = o(e(392)), W = o(e(260)), U = o(e(412)), N = o(e(177)), K = o(e(405)), $ = o(e(190)), J = o(e(189)), V = o(e(428)), G = o(e(390)), H = o(e(397)), Y = o(e(21)), Z = o(e(393)), X = o(e(187)), Q = o(e(257)), tt = (o(e(22)), 
-        e(258)), rt = o(e(398)), et = o(e(180)), nt = o(e(2)), ot = o(e(182)), it = o(e(419)), ut = o(e(185)), at = "function" == typeof _.default && "symbol" === (0, 
+        o(e(375))), k = o(e(380)), M = o(e(188)), R = o(e(31)), P = o(e(408)), T = o(e(403)), L = o(e(414)), D = o(e(46)), q = o(e(388)), B = o(e(389)), C = o(e(391)), F = o(e(392)), W = o(e(260)), U = o(e(412)), N = o(e(177)), K = o(e(405)), $ = o(e(190)), J = o(e(189)), V = o(e(428)), G = o(e(390)), H = o(e(397)), Y = o(e(21)), Z = o(e(393)), X = o(e(187)), Q = o(e(257)), tt = o(e(22)), rt = e(258), et = o(e(398)), nt = o(e(180)), ot = o(e(2)), it = o(e(182)), ut = o(e(419)), at = o(e(185)), st = "function" == typeof _.default && "symbol" === (0, 
         g.default)(y.default) ? function(t) {
             return void 0 === t ? "undefined" : (0, g.default)(t);
         } : function(t) {
             return t && "function" == typeof _.default && t.constructor === _.default && t !== _.default.prototype ? "symbol" : void 0 === t ? "undefined" : (0, 
             g.default)(t);
-        }, st = function(t) {
+        }, ct = function(t) {
             return function() {
                 var r = t.apply(this, arguments);
                 return new d.default(function(t, e) {
@@ -3151,20 +3150,20 @@
                     return n("next");
                 });
             };
-        }, ct = function(t, r, e) {
+        }, ft = function(t, r, e) {
             return r in t ? (0, v.default)(t, r, {
                 value: e,
                 enumerable: !0,
                 configurable: !0,
                 writable: !0
             }) : t[r] = e, t;
-        }, ft = l.default || function(t) {
+        }, pt = l.default || function(t) {
             for (var r = 1; r < arguments.length; r++) {
                 var e = arguments[r];
                 for (var n in e) Object.prototype.hasOwnProperty.call(e, n) && (t[n] = e[n]);
             }
             return t;
-        }, pt = function() {
+        }, ht = function() {
             return function(t, r) {
                 if (Array.isArray(t)) return t;
                 if ((0, p.default)(Object(t))) return function(t, r) {
@@ -3185,13 +3184,13 @@
                 }(t, r);
                 throw new TypeError("Invalid attempt to destructure non-iterable instance");
             };
-        }(), ht = function(t) {
+        }(), lt = function(t) {
             if (Array.isArray(t)) {
                 for (var r = 0, e = Array(t.length); r < t.length; r++) e[r] = t[r];
                 return e;
             }
             return (0, f.default)(t);
-        }, lt = function t(r) {
+        }, vt = function t(r) {
             var e = r.store, n = r.record, o = void 0 === n ? {} : n, i = r.omitKeys, u = void 0 === i ? [] : i;
             if (function(t) {
                 return w(t) || j(t) || b(t);
@@ -3205,167 +3204,168 @@
             });
             var a = {};
             return (0, c.default)(o).filter(function(t) {
-                var r = pt(t, 2), e = r[0], n = r[1];
+                var r = ht(t, 2), e = r[0], n = r[1];
                 return !m(u, e) && n;
             }).forEach(function(r) {
-                var n = pt(r, 2), o = n[0], i = n[1];
+                var n = ht(r, 2), o = n[0], i = n[1];
                 x(i) ? a[o] = i.map(function(r) {
                     return t({
                         store: e,
                         record: r,
                         omitKeys: u
                     });
-                }) : "object" === (void 0 === i ? "undefined" : at(i)) ? a[o] = t({
+                }) : "object" === (void 0 === i ? "undefined" : st(i)) ? a[o] = t({
                     store: e,
                     record: i,
                     omitKeys: u
                 }) : a[o] = i;
             }), a;
-        }, vt = function(t) {
-            var r = t.value, e = t.diff;
-            return ft({}, r, e);
         }, dt = function(t) {
-            var r = t.value, e = t.key, n = t.diff, o = vt({
+            var r = t.value, e = t.diff;
+            return pt({}, r, e);
+        }, yt = function(t) {
+            var r = t.value, e = t.key, n = t.diff, o = dt({
                 value: r[e],
                 diff: n
             });
-            return vt({
+            return dt({
                 value: r,
-                diff: ct({}, e, o)
+                diff: ft({}, e, o)
             });
-        }, yt = function(t) {
-            var r = t.value, e = void 0 === r ? [] : r, n = t.index, o = t.diff, i = [].concat(ht(e));
-            return i[n] = ft({}, i[n] || {}, o), i;
         }, _t = function(t) {
-            var r = t.value, e = void 0 === r ? {} : r, n = t.index, o = t.key, i = t.diff, u = yt({
+            var r = t.value, e = void 0 === r ? [] : r, n = t.index, o = t.diff, i = [].concat(lt(e));
+            return i[n] = pt({}, i[n] || {}, o), i;
+        }, gt = function(t) {
+            var r = t.value, e = void 0 === r ? {} : r, n = t.index, o = t.key, i = t.diff, u = _t({
                 value: e[o] || [],
                 index: n,
                 diff: i
             });
-            return vt({
+            return dt({
                 value: e,
-                diff: ct({}, o, u)
+                diff: ft({}, o, u)
             });
-        }, gt = function(t) {
-            var r = t.value, e = void 0 === r ? [] : r, n = t.diff, o = [].concat(ht(e));
-            return o.push(n), o;
         }, mt = function(t) {
-            var r = t.value, e = void 0 === r ? {} : r, n = t.key, o = t.diff, i = [].concat(ht(e[n] || []));
-            return i.push(o), vt({
-                value: e,
-                diff: ct({}, n, i)
-            });
+            var r = t.value, e = void 0 === r ? [] : r, n = t.diff, o = [].concat(lt(e));
+            return o.push(n), o;
         }, xt = function(t) {
-            var r = t.value, e = void 0 === r ? [] : r, n = t.index, o = [].concat(ht(e));
-            return o.splice(n, 1), o;
+            var r = t.value, e = void 0 === r ? {} : r, n = t.key, o = t.diff, i = [].concat(lt(e[n] || []));
+            return i.push(o), dt({
+                value: e,
+                diff: ft({}, n, i)
+            });
         }, bt = function(t) {
-            var r = t.value, e = void 0 === r ? {} : r, n = t.index, o = t.key, i = xt({
+            var r = t.value, e = void 0 === r ? [] : r, n = t.index, o = [].concat(lt(e));
+            return o.splice(n, 1), o;
+        }, wt = function(t) {
+            var r = t.value, e = void 0 === r ? {} : r, n = t.index, o = t.key, i = bt({
                 value: e[o],
                 index: n
             });
-            return vt({
+            return dt({
                 value: e,
-                diff: ct({}, o, i)
+                diff: ft({}, o, i)
             });
-        }, wt = function(t) {
+        }, jt = function(t) {
             var r = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : "";
             return "" === r ? A(t) : "" + A(r) + function(t) {
                 var r = A(t), e = S([], r.charAt(0).toUpperCase(), E(r));
                 return I(e, "");
             }(t);
-        }, jt = function(t) {
+        }, Ot = function(t) {
             var r, e = "value" === t ? "input" : "update:" + t, n = "value" === t ? "" : t;
             return {
-                methods: (r = {}, ct(r, wt("forwardInput", n), function(t) {
+                methods: (r = {}, ft(r, jt("forwardInput", n), function(t) {
                     this.$emit(e, t);
-                }), ct(r, wt("handleChange", n), function(r) {
-                    this.$emit(e, vt({
+                }), ft(r, jt("handleChange", n), function(r) {
+                    this.$emit(e, dt({
                         value: this[t],
                         diff: r
                     }));
-                }), ct(r, wt("handleKeyChange", n), function(r, n) {
-                    this.$emit(e, dt({
+                }), ft(r, jt("handleKeyChange", n), function(r, n) {
+                    this.$emit(e, yt({
                         value: this[t],
                         key: r,
                         diff: n
                     }));
-                }), ct(r, wt("handleArrayKeyChange", n), function(r, n, o) {
-                    this.$emit(e, _t({
+                }), ft(r, jt("handleArrayKeyChange", n), function(r, n, o) {
+                    this.$emit(e, gt({
                         value: this[t],
                         index: r,
                         key: n,
                         diff: o
                     }));
-                }), ct(r, wt("handleArrayChange", n), function(r, n) {
-                    this.$emit(e, yt({
+                }), ft(r, jt("handleArrayChange", n), function(r, n) {
+                    this.$emit(e, _t({
                         value: this[t],
                         index: r,
                         diff: n
                     }));
-                }), ct(r, wt("pushToArray", n), function(r) {
-                    this.$emit(e, gt({
+                }), ft(r, jt("pushToArray", n), function(r) {
+                    this.$emit(e, mt({
                         value: this[t],
                         diff: r
                     }));
-                }), ct(r, wt("pushToArrayKey", n), function(r, n) {
-                    this.$emit(e, mt({
+                }), ft(r, jt("pushToArrayKey", n), function(r, n) {
+                    this.$emit(e, xt({
                         value: this[t],
                         key: r,
                         diff: n
                     }));
-                }), ct(r, wt("removeFromArray", n), function(r) {
-                    this.$emit(e, xt({
+                }), ft(r, jt("removeFromArray", n), function(r) {
+                    this.$emit(e, bt({
                         value: this[t],
                         index: r
                     }));
-                }), ct(r, wt("removeFromArrayKey", n), function(r, n) {
-                    this.$emit(e, bt({
+                }), ft(r, jt("removeFromArrayKey", n), function(r, n) {
+                    this.$emit(e, wt({
                         value: this[t],
                         index: r,
                         key: n
                     }));
                 }), r)
             };
-        }, Ot = [], At = void 0, St = function(t, r) {
-            return M(z(r), Ot).then(function(r) {
+        }, At = [], St = void 0, It = function(t) {
+            var r = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : {};
+            return M(z(r), At).then(function(r) {
                 return fetch(t, function(t) {
                     return P(k({}, t, {
                         credentials: "same-origin"
                     }), [ "headers", "body", "method", "credentials", "signal" ]);
                 }(r)).then(function(t) {
                     if (t.status >= 200 && t.status < 400) return t;
-                    if (!R(At)) throw new Error(t.statusText, {
+                    if (!R(St)) throw new Error(t.statusText, {
                         response: t,
                         request: r
                     });
-                    At(t, r);
+                    St(t, r);
                 });
             });
         };
-        St.addInterceptor = function(t) {
-            Ot.push(t);
-        }, St.onError = function(t) {
-            At = t;
+        It.addInterceptor = function(t) {
+            At.push(t);
+        }, It.onError = function(t) {
+            St = t;
         };
-        var It = B(q(function(t) {
+        var Et = B(q(function(t) {
             return !C(t);
-        })), Et = B(F(C)), zt = function(t) {
+        })), zt = B(F(C)), kt = function(t) {
             var r = t.url, e = function t() {
                 var r = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : {}, e = arguments[1];
                 return U((0, c.default)(r), function(t) {
                     return t[0];
                 }).map(function(r) {
-                    var n = pt(r, 2), o = n[0], i = n[1], u = e ? e + "[" + o + "]" : o;
-                    return "object" === (void 0 === i ? "undefined" : at(i)) ? t(i, u) : encodeURIComponent(u) + "=" + encodeURIComponent(i);
+                    var n = ht(r, 2), o = n[0], i = n[1], u = e ? e + "[" + o + "]" : o;
+                    return "object" === (void 0 === i ? "undefined" : st(i)) ? t(i, u) : encodeURIComponent(u) + "=" + encodeURIComponent(i);
                 }).join("&");
             }(function(t) {
-                return x(t) ? It(t) : Et(t);
+                return x(t) ? Et(t) : zt(t);
             }(t.params || {}));
             return e && (r += "?" + e), r;
-        }, kt = function() {
-            var t = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : {}, r = {}, e = t.adapter || St, n = t.deserialize || function(t, r) {
+        }, Mt = function() {
+            var t = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : {}, r = {}, e = t.adapter || It, n = t.deserialize || function(t, r) {
                 return r;
-            }, o = function(t, r) {
+            }, o = t.cacheTimeout || 500, i = function(t, r) {
                 return e(t, r).then(function(t) {
                     return t.json().then(function(r) {
                         return D(function() {
@@ -3375,31 +3375,32 @@
                 });
             };
             return function() {
-                var t = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : {}, e = void 0, n = t.force || !1, i = zt(t), u = ft({}, t, {
+                var t = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : {}, e = void 0, n = t.force || !1, u = kt(t), a = pt({}, t, {
                     headers: function(t) {
-                        var r = ft({}, t.headers);
+                        var r = pt({}, t.headers);
+                        if (!t.method) throw new Error("options.method must be defined");
                         return m([ "PUT", "POST" ], t.method.toUpperCase()) && (r["Content-Type"] = "application/json"), 
                         r.Accept = "application/json", r;
                     }(t),
                     body: t.body ? W(t.body) : void 0
                 });
                 if ("GET" === t.method) {
-                    var a = function(t, r) {
+                    var s = function(t, r) {
                         var e = (0, c.default)(r.headers || {}).map(function(t) {
-                            var r = pt(t, 2);
+                            var r = ht(t, 2);
                             return r[0] + ":" + r[1];
                         }), n = T("" + e + t, function(t) {
                             return t.codePointAt(0);
                         });
                         return r.method + "-" + L(n);
-                    }(i, u);
-                    (e = r[a]) && !0 !== n || (e = r[a] = o(i, u)), setTimeout(function() {
-                        delete r[a];
-                    }, 500);
-                } else e = o(i, u);
+                    }(u, a);
+                    (e = r[s]) && !0 !== n || (e = r[s] = i(u, a)), setTimeout(function() {
+                        delete r[s];
+                    }, o);
+                } else e = i(u, a);
                 return e;
             };
-        }, Mt = function(t) {
+        }, Rt = function(t) {
             var r, e, n = t.collectionName, o = t.localPropertyName || A(n).slice(0, -1), i = t.idPropertyName || "id", u = t.templateName || o + "Template", a = t.template || {}, c = t.recordPrimaryKey || "_id", f = o + "RecordId", p = o + "HasChanges", h = o + "Save", l = o + "Loading", v = t.idType || String, d = t.requestOptions || {}, y = o + "RequestOptions", _ = function(t, r, e) {
                 var n = t[r];
                 return delete t[r], void 0 === n ? e : n;
@@ -3407,32 +3408,32 @@
             if (!n) throw new Error("[@citygro/vdata#createMixinForItemById] options.collectionName is required");
             return t.idPropertyName || console.warn("[@citygro/vdata#createMixinForItemById]", "options.idPropertyName will default to `${localPropertyName}Id` in future versions of vdata"), 
             {
-                props: (r = {}, ct(r, i, {
+                props: (r = {}, ft(r, i, {
                     type: v,
                     default: null
-                }), ct(r, u, {
+                }), ft(r, u, {
                     type: Object,
                     default: function() {
                         return z(a);
                     }
-                }), ct(r, g, {
+                }), ft(r, g, {
                     type: Object,
                     default: function() {
                         return {};
                     }
                 }), r),
                 data: function() {
-                    var t, r = (t = {}, ct(t, o, null), ct(t, y, K({}, z(d), this[g])), t);
+                    var t, r = (t = {}, ft(t, o, null), ft(t, y, K({}, z(d), this[g])), t);
                     return r;
                 },
                 vdata: function(t) {
                     var r = this[f]();
                     this[l] || null === r || t.collectionName !== n || (_ || this[g].capture ? this[o] = this.$store.rebase(n, this[o]) : this[o] = this.$store.get(n, r) || null);
                 },
-                asyncData: ct({}, o, function() {
+                asyncData: ft({}, o, function() {
                     var t = this;
                     /*#__PURE__*/
-                    return st(s.default.mark(function r() {
+                    return ct(s.default.mark(function r() {
                         var e, o, i, a, c, p, h, l;
                         return s.default.wrap(function(r) {
                             for (;;) switch (r.prev = r.next) {
@@ -3449,7 +3450,7 @@
                                 return r.next = 11, $(t.$store.find(n, a, t[y]));
 
                               case 11:
-                                h = r.sent, l = pt(h, 2), c = l[0], p = l[1];
+                                h = r.sent, l = ht(h, 2), c = l[0], p = l[1];
 
                               case 15:
                                 r.next = 18;
@@ -3468,21 +3469,21 @@
                         }, r, t);
                     }))();
                 }),
-                watch: ct({}, i, function() {
+                watch: ft({}, i, function() {
                     _ || this[g].capture || this.$asyncReload(o);
                 }),
-                computed: ct({}, p, function() {
+                computed: ft({}, p, function() {
                     return this.$store.hasChanges(n, this[o]);
                 }),
-                methods: (e = {}, ct(e, m, function(t) {
+                methods: (e = {}, ft(e, m, function(t) {
                     n = t, this.$asyncReload(o);
-                }), ct(e, f, function() {
+                }), ft(e, f, function() {
                     var t = this[i] || N(this, o + "." + c, null);
                     return this.$store.isValidId(t) ? t : null;
-                }), ct(e, h, function() {
+                }), ft(e, h, function() {
                     var t = this;
                     /*#__PURE__*/
-                    return st(s.default.mark(function r() {
+                    return ct(s.default.mark(function r() {
                         var e, u, a, f;
                         return s.default.wrap(function(r) {
                             for (;;) switch (r.prev = r.next) {
@@ -3490,7 +3491,7 @@
                                 return r.next = 2, $(t.$store.save(n, t[o], t[y]));
 
                               case 2:
-                                if (e = r.sent, u = pt(e, 2), a = u[0], f = u[1], !a) {
+                                if (e = r.sent, u = ht(e, 2), a = u[0], f = u[1], !a) {
                                     r.next = 8;
                                     break;
                                 }
@@ -3507,30 +3508,30 @@
                     }))();
                 }), e)
             };
-        }, Rt = function t() {
+        }, Pt = function t() {
             var r = [];
             return (arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : []).forEach(function(e) {
-                e.mixins && e.mixins.length && (r = [].concat(ht(r), ht(t(e.mixins)))), r.push(e);
+                e.mixins && e.mixins.length && (r = [].concat(lt(r), lt(t(e.mixins)))), r.push(e);
             }), r;
-        }, Pt = function(t, r) {
+        }, Tt = function(t, r) {
             var e = z(N(t, "$options." + r, {})), n = N(t, "$options.mixins", []);
-            return Rt(n).filter(function(t) {
+            return Pt(n).filter(function(t) {
                 return t[r];
             }).forEach(function(t) {
                 e = (0, l.default)(e, t[r]);
             }), H(e) ? null : e;
-        }, Tt = [ "Default", "Lazy" ], Lt = function(t) {
-            return (arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : Tt).find(function(r) {
+        }, Lt = [ "Default", "Lazy" ], Dt = function(t) {
+            return (arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : Lt).find(function(r) {
                 return t.endsWith(r);
             });
-        }, Dt = {
+        }, qt = {
             beforeCreate: function() {
                 this._asyncReload = function(t) {
                     return function(t) {
-                        var r = this, e = arguments.length > 1 && void 0 !== arguments[1] && arguments[1], n = Pt(this, "asyncData");
+                        var r = this, e = arguments.length > 1 && void 0 !== arguments[1] && arguments[1], n = Tt(this, "asyncData");
                         if (n) {
                             var o = [], i = Y(n).filter(function(t) {
-                                return !Lt(t);
+                                return !Dt(t);
                             }).filter(function(r) {
                                 return void 0 === t || r === t;
                             }).filter(function(t) {
@@ -3580,10 +3581,10 @@
                 }
             },
             data: function() {
-                var t = this, r = Pt(this, "asyncData");
+                var t = this, r = Tt(this, "asyncData");
                 if (r) {
                     var e = Y(r).filter(function(t) {
-                        return !Lt(t);
+                        return !Dt(t);
                     }), n = e.map(function(t) {
                         return t + "Error";
                     }), o = {
@@ -3605,49 +3606,62 @@
                 }
                 return {};
             }
-        }, qt = function(t, r) {
-            return tt.isImmutable(t) ? t.getIn(r.split(".")) : N(t, r);
         }, Bt = function() {
+            var t = {};
+            return {
+                get: function(r, e) {
+                    return e = r + "-" + tt(e), t[e];
+                },
+                link: function(r, e, n) {
+                    e = tt(e), n = tt(n), t[r + "-" + e] = n, t[r + "-" + n] = e;
+                },
+                unlink: function(r, e, n) {
+                    e = r + "-" + tt(e), n = r + "-" + tt(n), delete t[e], delete t[n];
+                }
+            };
+        }, Ct = function(t, r) {
+            return rt.isImmutable(t) ? t.getIn(r.split(".")) : N(t, r);
+        }, Ft = function() {
             var t = arguments[0], r = E(arguments);
-            return ot.apply(void 0, [ t ].concat(ht(r), [ function(t, r) {
+            return it.apply(void 0, [ t ].concat(lt(r), [ function(t, r) {
                 if (x(t)) return r;
             } ]));
-        }, Ct = function(t, r) {
-            return et(t) ? r : function t(r, e) {
-                return it(r, function(r, n, o) {
-                    rt(n, e[o]) || (r[o] = nt(n) && nt(e[o]) && !x(n) ? t(n, e[o]) : n);
+        }, Wt = function(t, r) {
+            return nt(t) ? r : function t(r, e) {
+                return ut(r, function(r, n, o) {
+                    et(n, e[o]) || (r[o] = ot(n) && ot(e[o]) && !x(n) ? t(n, e[o]) : n);
                 });
             }(r, t);
-        }, Ft = function(t, r) {
-            var e = Ct(t, r), n = function t(r) {
-                return it(r, function(r, e, n) {
-                    r[n] = nt(e) && !x(e) ? t(e) : null;
+        }, Ut = function(t, r) {
+            var e = Wt(t, r), n = function t(r) {
+                return ut(r, function(r, e, n) {
+                    r[n] = ot(e) && !x(e) ? t(e) : null;
                 });
-            }(Ct(r, t));
-            return Bt({}, n, e);
-        }, Wt = B(u.default, JSON.parse), Ut = function(t) {
+            }(Wt(r, t));
+            return Ft({}, n, e);
+        }, Nt = B(u.default, JSON.parse), Kt = function(t) {
             var r = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : 9e15, e = parseInt((Math.random() * r).toFixed(0), 10).toString(36);
             return t ? t + "-" + e : e;
-        }, Nt = function(t) {
-            var r = new Q(), e = kt(t), n = z(t.models), o = Ut(null, 1e5), u = /^[0-9a-z]+?-[0-9a-z]+$/i, a = a2804.create(), s = {}, c = function(t) {
+        }, $t = /^[0-9a-z]+?-[0-9a-z]+$/i, Jt = function() {
+            var t = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : {}, r = new Q(), e = Mt(t), n = z(t.models), o = Kt(null, 1e5), u = t.cacheTimeout || 500, a = Bt(), s = {}, c = function(t) {
                 var r = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : {};
                 return H(r) && console.error("[@citygro/vdata] you have not defined any models!"), 
                 (0, i.default)(r).forEach(function(r) {
-                    t = t.set(r, tt.Map());
+                    t = t.set(r, rt.Map());
                 }), t;
-            }(tt.Map(), t.models), f = function(r) {
+            }(rt.Map(), t.models), f = function(r) {
                 return n[r].basePath || t.basePath || "";
             }, p = function(t, r) {
-                return u.test(r) ? r : a.get(t, r);
+                return $t.test(r) ? r : a.get(t, r);
             }, h = function(t, r) {
                 try {
                     var e = n[t].idAttribute;
                     return {
                         basePath: f(t),
-                        id: qt(r, "__tmp_id"),
+                        id: Ct(r, "__tmp_id"),
                         idAttribute: e,
-                        pk: qt(r, e),
-                        symId: qt(r, "__sym_id")
+                        pk: Ct(r, e),
+                        symId: Ct(r, "__sym_id")
                     };
                 } catch (r) {
                     throw new Error("missing collection: " + t);
@@ -3658,216 +3672,216 @@
                 });
             }, v = function() {
                 r.setMaxListeners(0), // no limit
-                this.models = t.models, this.storeId = o, this.queryCacheTimeout = t.queryCacheTimeout || 500;
+                this.models = t.models, this.storeId = o;
             };
             /**
-     * tag a javascript object with metadata that allows it to be tracked by the vdata store.
-     * `__tmp_id` and the `idAttribute` configured for the given collection are both used to
-     * identify the object. editing either of these will cause vdata to see the resulting
-     * object as something new that needs to be tracked separately from the original object.
-     *
-     * @param {String} collection
-     * @param {Object} [data={}]
-     * @return {Object}
-     */
+    * tag a javascript object with metadata that allows it to be tracked by the vdata store.
+    * `__tmp_id` and the `idAttribute` configured for the given collection are both used to
+    * identify the object. editing either of these will cause vdata to see the resulting
+    * object as something new that needs to be tracked separately from the original object.
+    *
+    * @param {String} collection
+    * @param {Object} [data={}]
+    * @return {Object}
+    */
             /**
-     * get a particular object from the store using the primary key provided by
-     * your api server, or the temporary local id that vdata uses internally to
-     * track records.
-     *
-     * @param {String} collectionName
-     * @param {String} pkOrId
-     * @return {Object}
-     */
+    * get a particular object from the store using the primary key provided by
+    * your api server, or the temporary local id that vdata uses internally to
+    * track records.
+    *
+    * @param {String} collectionName
+    * @param {String} pkOrId
+    * @return {Object}
+    */
             /**
-     * get all of the records in `collectionName`. if you include a `keys`
-     * parameter, this method returns all of the records that match the ids
-     * listed.
-     *
-     * @param {String} collectionName
-     * @param {string[]} [keys]
-     * @return {object[]}
-     */
+    * get all of the records in `collectionName`. if you include a `keys`
+    * parameter, this method returns all of the records that match the ids
+    * listed.
+    *
+    * @param {String} collectionName
+    * @param {string[]} [keys]
+    * @return {object[]}
+    */
             /**
-     * @ignore
-     */
+    * @ignore
+    */
             /**
-     * remove a record from the store, identified by public key or temporary id.
-     *
-     * @emits Store#remove
-     * @param {String} collectionName
-     * @param {String} pkOrId
-     * @param {Object} options
-     * @param {Boolean} options.quiet
-     * @return {Object}
-     */
+    * remove a record from the store, identified by public key or temporary id.
+    *
+    * @emits Store#remove
+    * @param {String} collectionName
+    * @param {String} pkOrId
+    * @param {Object} options
+    * @param {Boolean} options.quiet
+    * @return {Object}
+    */
             /**
-     * remove all of the records in `collectionName` or all of the records that match the ids passed into `keys`.
-     *
-     * @emits Store#remove-list
-     * @param {String} collectionName
-     * @param {string[]} keys
-     * @return {object[]}
-     */
+    * remove all of the records in `collectionName` or all of the records that match the ids passed into `keys`.
+    *
+    * @emits Store#remove-list
+    * @param {String} collectionName
+    * @param {string[]} keys
+    * @return {object[]}
+    */
             /**
-     * @ignore
-     */
+    * @ignore
+    */
             /**
-     * remove all records from all collections
-     * @emits Store#remove-list
-     */
+    * remove all records from all collections
+    * @emits Store#remove-list
+    */
             /**
-     * vdata automatically tracks all of the versions that are created for every
-     * record that it tracks. this version tracking is how `Store#rebase` is able
-     * to implement a simple Observed-Remove Set (ORSet) that enables vdata to
-     * deterministically merge all of the changes to a particular record.
-     *
-     * given `data` with a particular `__sym_id` and the current version of the
-     * same record at `data[idAttribute]`, return a merged record containing all
-     * changes, applied to the base record at `__sym_id` in the following order,
-     * diff'd against `base`:
-     *
-     * 1. current
-     * 2. data
-     *
-     * at CityGro we use the ORSet implementation in vdata to power the real-time
-     * features of our customer portal application. in most cases, the core
-     * diffing algorithm is able to generate merged outputs with intuitive
-     * results. however, it is important to note the rules that we use to
-     * resolve certain edge cases.
-     *
-     * 1. Last-write (from the perspective of the writer) wins. in our
-     *    experience, this produces the least surprising results for our users.
-     * 2. Array mutations are all-or-nothing. we currently don't have an
-     *    acceptable solution to merging arrays with arbitrary mutations.
-     *    following rule #1, we opt to *replace* any previous values with the
-     *    latest version of the array. if you have thoughts on this, please open
-     *    a ticket on [GitLab](https://gitlab.com/citygro/vdata/issues).
-     *
-     * @param {String} collection
-     * @param {Object} data
-     * @return {Object}
-     */
+    * vdata automatically tracks all of the versions that are created for every
+    * record that it tracks. this version tracking is how `Store#rebase` is able
+    * to implement a simple Observed-Remove Set (ORSet) that enables vdata to
+    * deterministically merge all of the changes to a particular record.
+    *
+    * given `data` with a particular `__sym_id` and the current version of the
+    * same record at `data[idAttribute]`, return a merged record containing all
+    * changes, applied to the base record at `__sym_id` in the following order,
+    * diff'd against `base`:
+    *
+    * 1. current
+    * 2. data
+    *
+    * at CityGro we use the ORSet implementation in vdata to power the real-time
+    * features of our customer portal application. in most cases, the core
+    * diffing algorithm is able to generate merged outputs with intuitive
+    * results. however, it is important to note the rules that we use to
+    * resolve certain edge cases.
+    *
+    * 1. Last-write (from the perspective of the writer) wins. in our
+    *    experience, this produces the least surprising results for our users.
+    * 2. Array mutations are all-or-nothing. we currently don't have an
+    *    acceptable solution to merging arrays with arbitrary mutations.
+    *    following rule #1, we opt to *replace* any previous values with the
+    *    latest version of the array. if you have thoughts on this, please open
+    *    a ticket on [GitLab](https://gitlab.com/citygro/vdata/issues).
+    *
+    * @param {String} collection
+    * @param {Object} data
+    * @return {Object}
+    */
             /**
-     * add a record to the store. you *do not* need to pass your data to
-     * `Store#createRecord` before adding it.
-     *
-     * @emits Store#add
-     * @see {Store.rebase}
-     * @param {String} collection
-     * @param {Object} data
-     * @param {Object} options
-     * @param {Boolean} [options.quiet=false] silence store events for this invocation
-     * @return {Object}
-     */
+    * add a record to the store. you *do not* need to pass your data to
+    * `Store#createRecord` before adding it.
+    *
+    * @emits Store#add
+    * @see {Store.rebase}
+    * @param {String} collection
+    * @param {Object} data
+    * @param {Object} options
+    * @param {Boolean} [options.quiet=false] silence store events for this invocation
+    * @return {Object}
+    */
             /**
-     * add all of the records in `data` to `colectionName` in a single operation.
-     *
-     * @emits Store#add-list
-     * @param {String} collectionName
-     * @param {Array<Object>} data
-     * @return {Array<Object>}
-     */
+    * add all of the records in `data` to `colectionName` in a single operation.
+    *
+    * @emits Store#add-list
+    * @param {String} collectionName
+    * @param {Array<Object>} data
+    * @return {Array<Object>}
+    */
             /**
-     * check if `data` differs from the current version of the corresponding
-     * record in the store.
-     *
-     * @param {String} collectionName
-     * @param {Object} data
-     * @return {Boolean}
-     */
+    * check if `data` differs from the current version of the corresponding
+    * record in the store.
+    *
+    * @param {String} collectionName
+    * @param {Object} data
+    * @return {Boolean}
+    */
             /**
-     * send a `DELETE` request to the endpoint configured for `collectionName`
-     * and remove the corresponding record from the store.
-     *
-     * @async
-     * @emits Store#remove
-     * @param {String} collectionName
-     * @param {Object} data
-     * @param {Object} options
-     * @return {Promise<Object>}
-     */
+    * send a `DELETE` request to the endpoint configured for `collectionName`
+    * and remove the corresponding record from the store.
+    *
+    * @async
+    * @emits Store#remove
+    * @param {String} collectionName
+    * @param {Object} data
+    * @param {Object} options
+    * @return {Promise<Object>}
+    */
             /**
-     * persist `data` using the endpoint configured for `collectonName`. if
-     * `data` is *only* identified by a local temporary id send a `POST` request to
-     * `/:basePath/:collectionName`. if `data` has a primary key send a `PUT`
-     * request to `/:basePath/:collectionName/:primaryKey`
-     *
-     * when updating an existing record, this methods calls Store#rebase.
-     * this gives vdata some important super-powers that you can use to build
-     * real-time applications. check the method's docs for details.
-     *
-     * @async
-     * @emits Store#add
-     * @param {String} collection
-     * @param {Object} data
-     * @param {Object} options
-     * @return {Promise<Object>}
-     */
+    * persist `data` using the endpoint configured for `collectonName`. if
+    * `data` is *only* identified by a local temporary id send a `POST` request to
+    * `/:basePath/:collectionName`. if `data` has a primary key send a `PUT`
+    * request to `/:basePath/:collectionName/:primaryKey`
+    *
+    * when updating an existing record, this methods calls Store#rebase.
+    * this gives vdata some important super-powers that you can use to build
+    * real-time applications. check the method's docs for details.
+    *
+    * @async
+    * @emits Store#add
+    * @param {String} collection
+    * @param {Object} data
+    * @param {Object} options
+    * @return {Promise<Object>}
+    */
             /**
-     * fetch a particular record from `/:basePath/:collectionName/:primaryKey`.
-     * if `force === false` immediately return the cached record if present.
-     *
-     * @async
-     * @param {String} collection
-     * @param {Object} [query]
-     * @param {Object} [options]
-     * @param {Boolean} [options.force=false]
-     * @return {Promise<Object>}
-     */
+    * fetch a particular record from `/:basePath/:collectionName/:primaryKey`.
+    * if `force === false` immediately return the cached record if present.
+    *
+    * @async
+    * @param {String} collection
+    * @param {Object} [query]
+    * @param {Object} [options]
+    * @param {Boolean} [options.force=false]
+    * @return {Promise<Object>}
+    */
             /**
-     * fetch all of the records from the api that match the parameters specified
-     * in `query`. these are sent along with the request as query parameters.
-     * if `force === false` immediately return a cached response if one exists.
-     *
-     * @async
-     * @param {String} collection
-     * @param {Object} [query]
-     * @param {Object} [options]
-     * @return {Promise<Array<Object>>}
-     */
+    * fetch all of the records from the api that match the parameters specified
+    * in `query`. these are sent along with the request as query parameters.
+    * if `force === false` immediately return a cached response if one exists.
+    *
+    * @async
+    * @param {String} collection
+    * @param {Object} [query]
+    * @param {Object} [options]
+    * @return {Promise<Array<Object>>}
+    */
             /**
-     * bind an event listener to the store
-     *
-     * @param {String} event
-     * @param {function} handler
-     */
+    * bind an event listener to the store
+    *
+    * @param {String} event
+    * @param {function} handler
+    */
             /**
-     * unbind an event listener to the store
-     *
-     * @param {String} event
-     * @param {function} handler
-     */
+    * unbind an event listener to the store
+    *
+    * @param {String} event
+    * @param {function} handler
+    */
             /**
-     * manually emit a message using the store's event bus
-     *
-     * @param {String} event
-     * @param {*} payload
-     */
+    * manually emit a message using the store's event bus
+    *
+    * @param {String} event
+    * @param {*} payload
+    */
             /**
-     * get the base path for `collectionName`
-     *
-     * @param {String} collectionName
-     * @return {String}
-     */
+    * get the base path for `collectionName`
+    *
+    * @param {String} collectionName
+    * @return {String}
+    */
             /**
-     * check if the given value is a valid id
-     *
-     * @param {*} id
-     * @return {Boolean}
-     */
+    * check if the given value is a valid id
+    *
+    * @param {*} id
+    * @return {Boolean}
+    */
             return v.prototype.createRecord = function(t) {
-                var r = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : {}, e = n[t].idAttribute, i = qt(r, e), u = qt(r, "__tmp_id");
+                var r = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : {}, e = n[t].idAttribute, i = Ct(r, e), u = Ct(r, "__tmp_id");
                 // get or gen id
-                return i && !u ? (u = a.get(t, i) || Ut(o), a.link(t, i, u)) : !i && u || (i && u ? a.link(t, i, u) : i || u || (u = Ut(o))), 
-                ft({}, r, {
+                return i && !u ? (u = a.get(t, i) || Kt(o), a.link(t, i, u)) : !i && u || (i && u ? a.link(t, i, u) : i || u || (u = Kt(o))), 
+                pt({}, r, {
                     __tmp_id: u
                 });
             }, v.prototype.get = function(t, r) {
-                var e = p(t, r), n = c.getIn([ t, e ], tt.Stack()), o = n.first();
+                var e = p(t, r), n = c.getIn([ t, e ], rt.Stack()), o = n.first();
                 if (o) {
                     var i = n.size;
-                    return this.createRecord(t, ft({}, o.toJS(), {
+                    return this.createRecord(t, pt({}, o.toJS(), {
                         __sym_id: "0-" + i
                     }));
                 }
@@ -3913,24 +3927,24 @@
                     t.removeAll(r);
                 });
             }, v.prototype.rebase = function(t, r) {
-                var e = tt.isImmutable(r) ? r.toJS() : r, n = h(t, e).id, o = null;
+                var e = rt.isImmutable(r) ? r.toJS() : r, n = h(t, e).id, o = null;
                 if (e.__sym_id) {
-                    var i = e.__sym_id.split("-").map(ut), u = pt(i, 2), a = u[0] - u[1], s = c.getIn([ t, n ]);
+                    var i = e.__sym_id.split("-").map(at), u = ht(i, 2), a = u[0] - u[1], s = c.getIn([ t, n ]);
                     s && (o = s.get(a).toJS());
                 }
                 var f = this.get(t, n);
                 return o || f ? function() {
                     var t = arguments[0], r = E(arguments).map(function(r) {
-                        return Ft(t, r);
-                    }), e = Bt.apply(void 0, [ {} ].concat(ht(r)));
-                    return Bt(Wt(t), e);
+                        return Ut(t, r);
+                    }), e = Ft.apply(void 0, [ {} ].concat(lt(r)));
+                    return Ft(Nt(t), e);
                 }(o, f, e) : e;
             }, v.prototype.add = function(t, r) {
                 var e = arguments.length > 2 && void 0 !== arguments[2] ? arguments[2] : {}, n = function(t) {
-                    return tt.fromJS(t, function(t, r) {
-                        return tt.isKeyed(r) ? r.toMap() : r.toList();
+                    return rt.fromJS(t, function(t, r) {
+                        return rt.isKeyed(r) ? r.toMap() : r.toList();
                     });
-                }(this.createRecord(t, r)), o = h(t, n).id, i = c.getIn([ t, o ], tt.Stack());
+                }(this.createRecord(t, r)), o = h(t, n).id, i = c.getIn([ t, o ], rt.Stack());
                 c = c.setIn([ t, o ], i.unshift(n));
                 var u = this.get(t, o);
                 return l({
@@ -3963,7 +3977,7 @@
                 return !1;
             }, v.prototype.destroy = function(t, r) {
                 var n = this, o = arguments.length > 2 && void 0 !== arguments[2] ? arguments[2] : {}, i = h(t, r), u = i.id, a = i.pk, s = i.basePath;
-                return e(ft({
+                return e(pt({
                     url: s + "/" + t + "/" + a,
                     method: "DELETE"
                 }, o)).then(function() {
@@ -3972,23 +3986,23 @@
                     });
                 });
             }, v.prototype.save = function(t, r) {
-                var n = this, o = arguments.length > 2 && void 0 !== arguments[2] ? arguments[2] : {}, i = h(t, r), u = i.id, a = i.pk, s = i.basePath, c = void 0, f = ft({}, o);
-                return this.isValidId(a) ? (f.method = "PUT", c = e(ft({}, f, {
+                var n = this, o = arguments.length > 2 && void 0 !== arguments[2] ? arguments[2] : {}, i = h(t, r), u = i.id, a = i.pk, s = i.basePath, c = void 0, f = pt({}, o);
+                return this.isValidId(a) ? (f.method = "PUT", c = e(pt({}, f, {
                     url: s + "/" + t + "/" + a,
                     method: "PUT",
-                    body: ft({}, this.rebase(t, r), {
+                    body: pt({}, this.rebase(t, r), {
                         __tmp_id: void 0,
                         __sym_id: void 0
                     })
-                }))) : c = e(ft({}, f, {
+                }))) : c = e(pt({}, f, {
                     url: s + "/" + t,
                     method: "POST",
-                    body: ft({}, r, {
+                    body: pt({}, r, {
                         __tmp_id: void 0,
                         __sym_id: void 0
                     })
                 })), c.then(function(r) {
-                    var e = u ? ft({}, r, {
+                    var e = u ? pt({}, r, {
                         __tmp_id: u
                     }) : r;
                     return D(function() {
@@ -3996,15 +4010,15 @@
                     });
                 });
             }, v.prototype.find = function(t, r) {
-                var n = this, o = arguments.length > 2 && void 0 !== arguments[2] ? arguments[2] : {}, i = void 0, s = o.force || !1, c = this.get(t, r);
-                if (this.isValidId(r)) if (c && !0 !== s) i = d.default.resolve(c); else {
-                    var f = function(t, r) {
-                        return u.test(r) ? a.get(t, r) : r;
-                    }(t, r), p = this.getBasePath(t), h = ft({
-                        url: p + "/" + t + "/" + f,
+                var n = this, o = arguments.length > 2 && void 0 !== arguments[2] ? arguments[2] : {}, i = void 0, u = o.force || !1, s = this.get(t, r);
+                if (this.isValidId(r)) if (s && !0 !== u) i = d.default.resolve(s); else {
+                    var c = function(t, r) {
+                        return $t.test(r) ? a.get(t, r) : r;
+                    }(t, r), f = this.getBasePath(t), p = pt({
+                        url: f + "/" + t + "/" + c,
                         method: "GET"
                     }, o);
-                    i = e(h).then(function(r) {
+                    i = e(p).then(function(r) {
                         return D(function() {
                             return n.add(t, r);
                         });
@@ -4012,27 +4026,27 @@
                 } else i = d.default.resolve(null);
                 return i;
             }, v.prototype.findAll = function(t, r) {
-                var n = this, o = arguments.length > 2 && void 0 !== arguments[2] ? arguments[2] : {}, i = void 0, u = o.force || !1, a = this.getBasePath(t), c = function(t, r) {
+                var n = this, o = arguments.length > 2 && void 0 !== arguments[2] ? arguments[2] : {}, i = void 0, a = o.force || !1, c = this.getBasePath(t), f = function(t, r) {
                     var e = T(W(r), function(t) {
                         return t.codePointAt(0);
                     });
                     return t + "-" + L(e);
-                }(t, r), f = s[c], p = this.getAll(t, f);
-                if (p.length && !0 !== u) i = d.default.resolve(p); else {
-                    var l = ft({
-                        url: a + "/" + t,
+                }(t, r), p = s[f], l = this.getAll(t, p);
+                if (l.length && !0 !== a) i = d.default.resolve(l); else {
+                    var v = pt({
+                        url: c + "/" + t,
                         method: "GET",
                         params: r
                     }, o);
-                    i = e(l).then(function(r) {
+                    i = e(v).then(function(r) {
                         return D(function() {
                             var e = [], o = r.map(function(r) {
                                 var o = n.createRecord(t, r), i = h(t, o).id;
                                 return e.push(i), o;
                             });
-                            return s[c] = e, setTimeout(function() {
-                                delete s[c];
-                            }, n.queryCacheTimeout), n.addList(t, o);
+                            return s[f] = e, setTimeout(function() {
+                                delete s[f];
+                            }, u), n.addList(t, o);
                         });
                     });
                 }
@@ -4050,9 +4064,9 @@
             }, v.prototype.isValidId = function(t) {
                 return null !== t && void 0 !== t && "" !== t;
             }, new v();
-        }, Kt = function(t) {
+        }, Vt = function(t) {
             return !!N(t, "$options.vdata");
-        }, $t = {
+        }, Gt = {
             createConfig: function(t) {
                 return function(r) {
                     return t(r);
@@ -4060,7 +4074,7 @@
             },
             install: function(t, r) {
                 r = R(r) ? r(t) : r;
-                var e = Nt(r);
+                var e = Jt(r);
                 Object.defineProperty(t, "$store", {
                     get: function() {
                         return e;
@@ -4095,7 +4109,7 @@
      * @param {Vue.Component} vm
      */
                         add: function(t) {
-                            var r = Rt(t.$options.mixins).filter(function(t) {
+                            var r = Pt(t.$options.mixins).filter(function(t) {
                                 return !!t.vdata;
                             }).map(function(t) {
                                 return t.vdata;
@@ -4118,57 +4132,57 @@
                 t.mixin({
                     methods: {
                         $vdata: function(t) {
-                            Kt(this) && this._vdataHandler.run(t);
+                            Vt(this) && this._vdataHandler.run(t);
                         }
                     },
                     beforeCreate: function() {
-                        Kt(this) && (this._vdataHandler = n.add(this));
+                        Vt(this) && (this._vdataHandler = n.add(this));
                     },
                     beforeDestroy: function() {
-                        Kt(this) && this._vdataHandler.destroy();
+                        Vt(this) && this._vdataHandler.destroy();
                     }
-                }), t.mixin(Dt), console.log("[@citygro/vdata] $store ready!", e, r);
+                }), t.mixin(qt), console.log("[@citygro/vdata] $store ready!", e, r);
             }
-        }, Jt = jt("value");
-        r.DataFlowMixin = Jt, r.asyncMap = J, r.cleanRecord = function(t) {
-            var r = t.record, e = t.store, n = O([].concat(ht(t.omitKeys || []), [ "_id" ])), o = lt({
+        }, Ht = Ot("value");
+        r.DataFlowMixin = Ht, r.asyncMap = J, r.cleanRecord = function(t) {
+            var r = t.record, e = t.store, n = O([].concat(lt(t.omitKeys || []), [ "_id" ])), o = vt({
                 store: e,
                 record: r,
                 omitKeys: n
             });
             return e.createRecord(r._collection || t.collectionName, o);
-        }, r.createDataFlowMixin = jt, r.createHttpAdapter = kt, r.createIndex = function(t, r) {
+        }, r.createDataFlowMixin = Ot, r.createHttpAdapter = Mt, r.createIndex = function(t, r) {
             var e = {};
             return t.forEach(function(t) {
                 e[t[r]] = t;
             }), e;
-        }, r.createMixinForItemById = Mt, r.createMixinForItemByResourceAndId = function(t) {
+        }, r.createMixinForItemById = Rt, r.createMixinForItemByResourceAndId = function(t) {
             return console.warn("[@citygro/vdata] rename createMixinForItemByResourceAndId -> createMixinForItemById", '"createMixinForItemByResourceAndId" is DEPRECATED and will be removed in a future release'), 
-            Mt(t);
+            Rt(t);
         }, r.createMixinForListByResource = function(t) {
             var r = t.collectionName, e = t.localPropertyName || A(r), n = e + "Force", o = t.queryOptions || {}, i = t.requestOptions;
             return {
                 data: function() {
                     var t;
-                    return t = {}, ct(t, e, []), ct(t, n, !1), t;
+                    return t = {}, ft(t, e, []), ft(t, n, !1), t;
                 },
                 vdata: function(t) {
                     this.asyncLoading || t.collectionName !== r || (this[e] = this.$store.getAll(r) || []);
                 },
-                asyncData: ct({}, e, function() {
+                asyncData: ft({}, e, function() {
                     var t = this;
                     /*#__PURE__*/
-                    return st(s.default.mark(function e() {
+                    return ct(s.default.mark(function e() {
                         var u, a, c, f;
                         return s.default.wrap(function(e) {
                             for (;;) switch (e.prev = e.next) {
                               case 0:
-                                return e.next = 2, $(t.$store.findAll(r, o, ft({}, i, {
+                                return e.next = 2, $(t.$store.findAll(r, o, pt({}, i, {
                                     force: t[n]
                                 })));
 
                               case 2:
-                                return u = e.sent, a = pt(u, 2), c = a[0], f = a[1], c && (console.error(c), f = []), 
+                                return u = e.sent, a = ht(u, 2), c = a[0], f = a[1], c && (console.error(c), f = []), 
                                 e.abrupt("return", f);
 
                               case 8:
@@ -4179,9 +4193,9 @@
                     }))();
                 })
             };
-        }, r.fetchWrapper = St, r.to = $, r.vdata = $t, r.handleChange = vt, r.handleKeyChange = dt, 
-        r.handleArrayChange = yt, r.handleArrayKeyChange = _t, r.pushToArray = gt, r.pushToArrayKey = mt, 
-        r.removeFromArray = xt, r.removeFromArrayKey = bt;
+        }, r.fetchWrapper = It, r.to = $, r.vdata = Gt, r.handleChange = dt, r.handleKeyChange = yt, 
+        r.handleArrayChange = _t, r.handleArrayKeyChange = gt, r.pushToArray = mt, r.pushToArrayKey = xt, 
+        r.removeFromArray = bt, r.removeFromArrayKey = wt;
     }, /* 187 */
     /***/
     function(t, r, e) {

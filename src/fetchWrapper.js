@@ -13,7 +13,7 @@ const withDefaults = (options) => pick(defaults({}, options, {
 let interceptors = []
 let onError
 
-let fetchWrapper = (url, options) => {
+let fetchWrapper = (url, options = {}) => {
   return fork(cloneDeep(options), interceptors).then((request) => {
     return fetch(url, withDefaults(request))
       .then((response) => {

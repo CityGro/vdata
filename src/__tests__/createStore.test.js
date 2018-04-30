@@ -1,6 +1,6 @@
 /* global jest, describe, expect, test, beforeEach, beforeAll, afterAll */
 
-import Store from '../Store'
+import createStore from '../createStore'
 import fetchMock from 'fetch-mock'
 import range from 'lodash/range'
 
@@ -49,7 +49,7 @@ describe('Store', () => {
     fetchMock.restore()
   })
   beforeEach(() => {
-    store = Store.create({
+    store = createStore({
       basePath: '/api',
       models: {
         myCollection: {
