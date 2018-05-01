@@ -1,4 +1,5 @@
 import camelCase from 'lodash/camelCase'
+import clone from 'lodash/cloneDeep'
 import to from '@r14c/async-utils/to'
 
 /**
@@ -15,12 +16,24 @@ export default function (options) {
   const localPropertyForceName = `${localPropertyName}Force`
   const queryOptions = options.queryOptions || {}
   const requestOptions = options.requestOptions
+  const requestOptionsName = `${localPropertyName}RequestOptions`
+  const requestOptionsOverrideName = `${localPropertyName}RequestOptionsOverride`
 
   return {
+    props: {
+      [requestOptionsOverrideName]: {
+        type: Object,
+        default: () => ({})
+      }
+    },
     data () {
       return {
         [localPropertyName]: [],
-        [localPropertyForceName]: false
+        [localPropertyForceName]: false,
+        [requestOptionsName]: {
+          ...clone(requestOptions),
+          ...this[requestOptionsOverrideName]
+        }
       }
     },
     vdata (event) {
@@ -34,6 +47,7 @@ export default function (options) {
           collectionName,
           queryOptions,
           {
+            ...this[requestOptionsOverrideName],
             ...requestOptions,
             force: this[localPropertyForceName]
           }

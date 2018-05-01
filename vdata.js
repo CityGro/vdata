@@ -4138,11 +4138,17 @@
             return console.warn("[@citygro/vdata] rename createMixinForItemByResourceAndId -> createMixinForItemById", '"createMixinForItemByResourceAndId" is DEPRECATED and will be removed in a future release'), 
             Mt(t);
         }, r.createMixinForListByResource = function(t) {
-            var r = t.collectionName, e = t.localPropertyName || A(r), n = e + "Force", o = t.queryOptions || {}, i = t.requestOptions;
+            var r = t.collectionName, e = t.localPropertyName || A(r), n = e + "Force", o = t.queryOptions || {}, i = t.requestOptions, u = e + "RequestOptions", a = e + "RequestOptionsOverride";
             return {
+                props: ct({}, a, {
+                    type: Object,
+                    default: function() {
+                        return {};
+                    }
+                }),
                 data: function() {
                     var t;
-                    return t = {}, ct(t, e, []), ct(t, n, !1), t;
+                    return t = {}, ct(t, e, []), ct(t, n, !1), ct(t, u, ft({}, z(i), this[a])), t;
                 },
                 vdata: function(t) {
                     this.asyncLoading || t.collectionName !== r || (this[e] = this.$store.getAll(r) || []);
@@ -4151,17 +4157,17 @@
                     var t = this;
                     /*#__PURE__*/
                     return st(s.default.mark(function e() {
-                        var u, a, c, f;
+                        var u, c, f, p;
                         return s.default.wrap(function(e) {
                             for (;;) switch (e.prev = e.next) {
                               case 0:
-                                return e.next = 2, K(t.$store.findAll(r, o, ft({}, i, {
+                                return e.next = 2, K(t.$store.findAll(r, o, ft({}, t[a], i, {
                                     force: t[n]
                                 })));
 
                               case 2:
-                                return u = e.sent, a = pt(u, 2), c = a[0], f = a[1], c && (console.error(c), f = []), 
-                                e.abrupt("return", f);
+                                return u = e.sent, c = pt(u, 2), f = c[0], p = c[1], f && (console.error(f), p = []), 
+                                e.abrupt("return", p);
 
                               case 8:
                               case "end":

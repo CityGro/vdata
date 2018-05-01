@@ -15,7 +15,7 @@ var concat = _interopDefault(require('lodash/concat'));
 var join = _interopDefault(require('lodash/join'));
 var tail = _interopDefault(require('lodash/tail'));
 var whatwgFetch = require('whatwg-fetch');
-var cloneDeep = _interopDefault(require('lodash/cloneDeep'));
+var clone = _interopDefault(require('lodash/cloneDeep'));
 var defaults = _interopDefault(require('lodash/defaultsDeep'));
 var fork = _interopDefault(require('@r14c/async-utils/fork'));
 var isFunction = _interopDefault(require('lodash/isFunction'));
@@ -499,7 +499,7 @@ var onError = void 0;
 var fetchWrapper = function fetchWrapper(url) {
   var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
-  return fork(cloneDeep(options), interceptors).then(function (request) {
+  return fork(clone(options), interceptors).then(function (request) {
     return fetch(url, withDefaults(request)).then(function (response) {
       if (response.status >= 200 && response.status < 400) {
         return response;
@@ -778,7 +778,7 @@ var createMixinForItemById = function createMixinForItemById(options) {
     }), defineProperty(_props, templateName, {
       type: Object,
       default: function _default() {
-        return cloneDeep(template);
+        return clone(template);
       }
     }), defineProperty(_props, requestOptionsOverrideName, {
       type: Object,
@@ -789,7 +789,7 @@ var createMixinForItemById = function createMixinForItemById(options) {
     data: function data() {
       var _data;
 
-      var data = (_data = {}, defineProperty(_data, localPropertyName, null), defineProperty(_data, requestOptionsName, _extends({}, cloneDeep(requestOptions), this[requestOptionsOverrideName])), _data);
+      var data = (_data = {}, defineProperty(_data, localPropertyName, null), defineProperty(_data, requestOptionsName, _extends({}, clone(requestOptions), this[requestOptionsOverrideName])), _data);
       return data;
     },
     vdata: function vdata(event) {
@@ -941,12 +941,20 @@ var createMixinForListByResource = function (options) {
   var localPropertyForceName = localPropertyName + 'Force';
   var queryOptions = options.queryOptions || {};
   var requestOptions = options.requestOptions;
+  var requestOptionsName = localPropertyName + 'RequestOptions';
+  var requestOptionsOverrideName = localPropertyName + 'RequestOptionsOverride';
 
   return {
+    props: defineProperty({}, requestOptionsOverrideName, {
+      type: Object,
+      default: function _default() {
+        return {};
+      }
+    }),
     data: function data() {
       var _ref;
 
-      return _ref = {}, defineProperty(_ref, localPropertyName, []), defineProperty(_ref, localPropertyForceName, false), _ref;
+      return _ref = {}, defineProperty(_ref, localPropertyName, []), defineProperty(_ref, localPropertyForceName, false), defineProperty(_ref, requestOptionsName, _extends({}, clone(requestOptions), this[requestOptionsOverrideName])), _ref;
     },
     vdata: function vdata(event) {
       if (!this.asyncLoading && event.collectionName === collectionName) {
@@ -965,7 +973,7 @@ var createMixinForListByResource = function (options) {
             switch (_context.prev = _context.next) {
               case 0:
                 _context.next = 2;
-                return to(_this.$store.findAll(collectionName, queryOptions, _extends({}, requestOptions, {
+                return to(_this.$store.findAll(collectionName, queryOptions, _extends({}, _this[requestOptionsOverrideName], requestOptions, {
                   force: _this[localPropertyForceName]
                 })));
 
@@ -1013,7 +1021,7 @@ var flattenMixinTree = function flattenMixinTree() {
  * @param {string} prop - option name
  */
 var getMergedOptions = (function (vm, prop) {
-  var options = cloneDeep(get$1(vm, '$options.' + prop, {}));
+  var options = clone(get$1(vm, '$options.' + prop, {}));
   var mixins = get$1(vm, '$options.mixins', []);
   flattenMixinTree(mixins).filter(function (mixin) {
     return mixin[prop];
@@ -1411,7 +1419,7 @@ var createStore = function createStore() {
 
   var evt = new EventEmitter();
   var http = createHttpAdapter(options);
-  var models = cloneDeep(options.models);
+  var models = clone(options.models);
   var storeId = uniqueId(null, 1e5);
   var queryCacheTimeout = options.cacheTimeout || 500; // evict query cache after 500ms by default
   var keyMap = KeyMap.create();
