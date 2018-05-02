@@ -10,7 +10,7 @@ describe('makeRequestKey', () => {
         'X-CLACKS-OVERHEAD': 'GNU Terry Pratchett'
       }
     })
-    expect(key).toBe('GET-4883')
+    expect(key).toBe('GET-223285')
   })
 
   test('deterministic, unique keys', () => {

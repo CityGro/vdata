@@ -3102,7 +3102,7 @@
             value: !0
         });
         var m = o(e(395)), x = o(e(0)), b = o(e(396)), w = o(e(399)), j = o(e(180)), O = o(e(419)), A = o(e(372)), S = o(e(376)), I = o(e(402)), E = o(e(414)), z = (e(432), 
-        o(e(375))), k = o(e(380)), M = o(e(187)), R = o(e(31)), P = o(e(407)), T = o(e(403)), L = o(e(413)), D = o(e(46)), q = o(e(388)), B = o(e(389)), C = o(e(391)), F = o(e(392)), W = o(e(259)), U = o(e(411)), N = o(e(176)), K = o(e(189)), $ = o(e(188)), J = o(e(427)), V = o(e(390)), G = o(e(397)), H = o(e(21)), Y = o(e(393)), Z = o(e(186)), X = o(e(256)), Q = o(e(22)), tt = e(257), rt = o(e(398)), et = o(e(179)), nt = o(e(2)), ot = o(e(181)), it = o(e(418)), ut = o(e(184)), at = "function" == typeof _.default && "symbol" === (0, 
+        o(e(375))), k = o(e(380)), M = o(e(187)), R = o(e(31)), P = o(e(407)), T = o(e(403)), L = o(e(259)), D = o(e(413)), q = o(e(46)), B = o(e(388)), C = o(e(389)), F = o(e(391)), W = o(e(392)), U = o(e(411)), N = o(e(176)), K = o(e(189)), $ = o(e(188)), J = o(e(427)), V = o(e(390)), G = o(e(397)), H = o(e(21)), Y = o(e(393)), Z = o(e(186)), X = o(e(256)), Q = o(e(22)), tt = e(257), rt = o(e(398)), et = o(e(179)), nt = o(e(2)), ot = o(e(181)), it = o(e(418)), ut = o(e(184)), at = "function" == typeof _.default && "symbol" === (0, 
         g.default)(y.default) ? function(t) {
             return void 0 === t ? "undefined" : (0, g.default)(t);
         } : function(t) {
@@ -3325,9 +3325,14 @@
         }, St.onError = function(t) {
             At = t;
         };
-        var It = B(q(function(t) {
-            return !C(t);
-        })), Et = B(F(C)), zt = function(t) {
+        var It = function() {
+            var t = T(arguments, L), r = T(L(t), function(t, r) {
+                return t.codePointAt(0) * r;
+            });
+            return "" + D(r);
+        }, Et = C(B(function(t) {
+            return !F(t);
+        })), zt = C(W(F)), kt = function(t) {
             var r = t.url, e = function t() {
                 var r = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : {}, e = arguments[1];
                 return U((0, c.default)(r), function(t) {
@@ -3337,40 +3342,38 @@
                     return "object" === (void 0 === i ? "undefined" : at(i)) ? t(i, u) : encodeURIComponent(u) + "=" + encodeURIComponent(i);
                 }).join("&");
             }(function(t) {
-                return x(t) ? It(t) : Et(t);
+                return x(t) ? Et(t) : zt(t);
             }(t.params || {}));
             return e && (r += "?" + e), r;
-        }, kt = function() {
+        }, Mt = function() {
             var t = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : {}, r = {}, e = t.adapter || St, n = t.deserialize || function(t, r) {
                 return r;
             }, o = t.cacheTimeout || 500, i = function(t, r) {
                 return e(t, r).then(function(t) {
                     return t.json().then(function(r) {
-                        return D(function() {
+                        return q(function() {
                             return n(t, r);
                         });
                     });
                 });
             };
             return function() {
-                var t = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : {}, e = void 0, n = t.force || !1, u = zt(t), a = ft({}, t, {
+                var t = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : {}, e = void 0, n = t.force || !1, u = kt(t), a = ft({}, t, {
                     headers: function(t) {
                         var r = ft({}, t.headers);
                         if (!t.method) throw new Error("options.method must be defined");
                         return m([ "PUT", "POST" ], t.method.toUpperCase()) && (r["Content-Type"] = "application/json"), 
                         r.Accept = "application/json", r;
                     }(t),
-                    body: t.body ? W(t.body) : void 0
+                    body: t.body ? L(t.body) : void 0
                 });
                 if ("GET" === t.method) {
                     var s = function(t, r) {
                         var e = (0, c.default)(r.headers || {}).map(function(t) {
                             var r = pt(t, 2);
                             return r[0] + ":" + r[1];
-                        }), n = T("" + e + t, function(t) {
-                            return t.codePointAt(0);
                         });
-                        return r.method + "-" + L(n);
+                        return r.method + "-" + It(e, t);
                     }(u, a);
                     (e = r[s]) && !0 !== n || (e = r[s] = i(u, a)), setTimeout(function() {
                         delete r[s];
@@ -3378,7 +3381,7 @@
                 } else e = i(u, a);
                 return e;
             };
-        }, Mt = function(t) {
+        }, Rt = function(t) {
             var r, e, n = t.collectionName, o = t.localPropertyName || A(n).slice(0, -1), i = t.idPropertyName || "id", u = t.templateName || o + "Template", a = t.template || {}, c = t.recordPrimaryKey || "_id", f = o + "RecordId", p = o + "HasChanges", h = o + "Save", l = o + "Loading", v = t.idType || String, d = t.requestOptions || {}, y = o + "RequestOptions", _ = function(t, r, e) {
                 var n = t[r];
                 return delete t[r], void 0 === n ? e : n;
@@ -3486,30 +3489,30 @@
                     }))();
                 }), e)
             };
-        }, Rt = function t() {
+        }, Pt = function t() {
             var r = [];
             return (arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : []).forEach(function(e) {
                 e.mixins && e.mixins.length && (r = [].concat(ht(r), ht(t(e.mixins)))), r.push(e);
             }), r;
-        }, Pt = function(t, r) {
+        }, Tt = function(t, r) {
             var e = z(N(t, "$options." + r, {})), n = N(t, "$options.mixins", []);
-            return Rt(n).filter(function(t) {
+            return Pt(n).filter(function(t) {
                 return t[r];
             }).forEach(function(t) {
                 e = (0, l.default)(e, t[r]);
             }), G(e) ? null : e;
-        }, Tt = [ "Default", "Lazy" ], Lt = function(t) {
-            return (arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : Tt).find(function(r) {
+        }, Lt = [ "Default", "Lazy" ], Dt = function(t) {
+            return (arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : Lt).find(function(r) {
                 return t.endsWith(r);
             });
-        }, Dt = {
+        }, qt = {
             beforeCreate: function() {
                 this._asyncReload = function(t) {
                     return function(t) {
-                        var r = this, e = arguments.length > 1 && void 0 !== arguments[1] && arguments[1], n = Pt(this, "asyncData");
+                        var r = this, e = arguments.length > 1 && void 0 !== arguments[1] && arguments[1], n = Tt(this, "asyncData");
                         if (n) {
                             var o = [], i = H(n).filter(function(t) {
-                                return !Lt(t);
+                                return !Dt(t);
                             }).filter(function(r) {
                                 return void 0 === t || r === t;
                             }).filter(function(t) {
@@ -3541,7 +3544,7 @@
                                     });
                                     o.push(c);
                                 }
-                            }), d.default.all(o).then(B(Y(i), V));
+                            }), d.default.all(o).then(C(Y(i), V));
                         }
                         return d.default.resolve({});
                     }.bind(t);
@@ -3559,10 +3562,10 @@
                 }
             },
             data: function() {
-                var t = this, r = Pt(this, "asyncData");
+                var t = this, r = Tt(this, "asyncData");
                 if (r) {
                     var e = H(r).filter(function(t) {
-                        return !Lt(t);
+                        return !Dt(t);
                     }), n = e.map(function(t) {
                         return t + "Error";
                     }), o = {
@@ -3584,7 +3587,7 @@
                 }
                 return {};
             }
-        }, qt = function() {
+        }, Bt = function() {
             var t = {};
             return {
                 get: function(r, e) {
@@ -3597,31 +3600,31 @@
                     e = r + "-" + Q(e), n = r + "-" + Q(n), delete t[e], delete t[n];
                 }
             };
-        }, Bt = function(t, r) {
+        }, Ct = function(t, r) {
             return tt.isImmutable(t) ? t.getIn(r.split(".")) : N(t, r);
-        }, Ct = function() {
+        }, Ft = function() {
             var t = arguments[0], r = E(arguments);
             return ot.apply(void 0, [ t ].concat(ht(r), [ function(t, r) {
                 if (x(t)) return r;
             } ]));
-        }, Ft = function(t, r) {
+        }, Wt = function(t, r) {
             return et(t) ? r : function t(r, e) {
                 return it(r, function(r, n, o) {
                     rt(n, e[o]) || (r[o] = nt(n) && nt(e[o]) && !x(n) ? t(n, e[o]) : n);
                 });
             }(r, t);
-        }, Wt = function(t, r) {
-            var e = Ft(t, r), n = function t(r) {
+        }, Ut = function(t, r) {
+            var e = Wt(t, r), n = function t(r) {
                 return it(r, function(r, e, n) {
                     r[n] = nt(e) && !x(e) ? t(e) : null;
                 });
-            }(Ft(r, t));
-            return Ct({}, n, e);
-        }, Ut = B(u.default, JSON.parse), Nt = function(t) {
+            }(Wt(r, t));
+            return Ft({}, n, e);
+        }, Nt = C(u.default, JSON.parse), Kt = function(t) {
             var r = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : 9e15, e = parseInt((Math.random() * r).toFixed(0), 10).toString(36);
             return t ? t + "-" + e : e;
-        }, Kt = /^[0-9a-z]+?-[0-9a-z]+$/i, $t = function() {
-            var t = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : {}, r = new X(), e = kt(t), n = z(t.models), o = Nt(null, 1e5), u = t.cacheTimeout || 500, a = qt(), s = {}, c = function(t) {
+        }, $t = /^[0-9a-z]+?-[0-9a-z]+$/i, Jt = function() {
+            var t = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : {}, r = new X(), e = Mt(t), n = z(t.models), o = Kt(null, 1e5), u = t.cacheTimeout || 500, a = Bt(), s = {}, c = function(t) {
                 var r = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : {};
                 return G(r) && console.error("[@citygro/vdata] you have not defined any models!"), 
                 (0, i.default)(r).forEach(function(r) {
@@ -3630,22 +3633,22 @@
             }(tt.Map(), t.models), f = function(r) {
                 return n[r].basePath || t.basePath || "";
             }, p = function(t, r) {
-                return Kt.test(r) ? r : a.get(t, r);
+                return $t.test(r) ? r : a.get(t, r);
             }, h = function(t, r) {
                 try {
                     var e = n[t].idAttribute;
                     return {
                         basePath: f(t),
-                        id: Bt(r, "__tmp_id"),
+                        id: Ct(r, "__tmp_id"),
                         idAttribute: e,
-                        pk: Bt(r, e),
-                        symId: Bt(r, "__sym_id")
+                        pk: Ct(r, e),
+                        symId: Ct(r, "__sym_id")
                     };
                 } catch (r) {
                     throw new Error("missing collection: " + t);
                 }
             }, l = function(t) {
-                !1 === ((arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : {}).quiet || !1) && D(function() {
+                !1 === ((arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : {}).quiet || !1) && q(function() {
                     return r.emit("all", t);
                 });
             }, v = function() {
@@ -3849,9 +3852,9 @@
     * @return {Boolean}
     */
             return v.prototype.createRecord = function(t) {
-                var r = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : {}, e = n[t].idAttribute, i = Bt(r, e), u = Bt(r, "__tmp_id");
+                var r = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : {}, e = n[t].idAttribute, i = Ct(r, e), u = Ct(r, "__tmp_id");
                 // get or gen id
-                return i && !u ? (u = a.get(t, i) || Nt(o), a.link(t, i, u)) : !i && u || (i && u ? a.link(t, i, u) : i || u || (u = Nt(o))), 
+                return i && !u ? (u = a.get(t, i) || Kt(o), a.link(t, i, u)) : !i && u || (i && u ? a.link(t, i, u) : i || u || (u = Kt(o))), 
                 ft({}, r, {
                     __tmp_id: u
                 });
@@ -3913,9 +3916,9 @@
                 var f = this.get(t, n);
                 return o || f ? function() {
                     var t = arguments[0], r = E(arguments).map(function(r) {
-                        return Wt(t, r);
-                    }), e = Ct.apply(void 0, [ {} ].concat(ht(r)));
-                    return Ct(Ut(t), e);
+                        return Ut(t, r);
+                    }), e = Ft.apply(void 0, [ {} ].concat(ht(r)));
+                    return Ft(Nt(t), e);
                 }(o, f, e) : e;
             }, v.prototype.add = function(t, r) {
                 var e = arguments.length > 2 && void 0 !== arguments[2] ? arguments[2] : {}, n = function(t) {
@@ -3949,7 +3952,7 @@
                 if (r) {
                     var e = h(t, r).id, n = this.get(t, e) || {};
                     return n.__sym_id === r.__sym_id && function(t, r) {
-                        return W(t) !== W(r);
+                        return L(t) !== L(r);
                     }(n, r);
                 }
                 return !1;
@@ -3959,7 +3962,7 @@
                     url: s + "/" + t + "/" + a,
                     method: "DELETE"
                 }, o)).then(function() {
-                    return D(function() {
+                    return q(function() {
                         return n.remove(t, u);
                     });
                 });
@@ -3983,7 +3986,7 @@
                     var e = u ? ft({}, r, {
                         __tmp_id: u
                     }) : r;
-                    return D(function() {
+                    return q(function() {
                         return n.add(t, e);
                     });
                 });
@@ -3991,13 +3994,13 @@
                 var n = this, o = arguments.length > 2 && void 0 !== arguments[2] ? arguments[2] : {}, i = void 0, u = o.force || !1, s = this.get(t, r);
                 if (this.isValidId(r)) if (s && !0 !== u) i = d.default.resolve(s); else {
                     var c = function(t, r) {
-                        return Kt.test(r) ? a.get(t, r) : r;
+                        return $t.test(r) ? a.get(t, r) : r;
                     }(t, r), f = this.getBasePath(t), p = ft({
                         url: f + "/" + t + "/" + c,
                         method: "GET"
                     }, o);
                     i = e(p).then(function(r) {
-                        return D(function() {
+                        return q(function() {
                             return n.add(t, r);
                         });
                     });
@@ -4005,10 +4008,8 @@
                 return i;
             }, v.prototype.findAll = function(t, r) {
                 var n = this, o = arguments.length > 2 && void 0 !== arguments[2] ? arguments[2] : {}, i = void 0, a = o.force || !1, c = this.getBasePath(t), f = function(t) {
-                    var r = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : {}, e = arguments.length > 2 && void 0 !== arguments[2] ? arguments[2] : {}, n = T(W(r) + W(e), function(t) {
-                        return t.codePointAt(0);
-                    });
-                    return t + "-" + L(n);
+                    var r = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : {}, e = arguments.length > 2 && void 0 !== arguments[2] ? arguments[2] : {};
+                    return t + "-" + It(r, e);
                 }(t, r, o), p = s[f] || [], l = this.getList(t, p).filter(function(t) {
                     return !!t;
                 });
@@ -4019,7 +4020,7 @@
                         params: r
                     }, o);
                     i = e(v).then(function(r) {
-                        return D(function() {
+                        return q(function() {
                             var e = [], o = r.map(function(r) {
                                 var o = n.createRecord(t, r), i = h(t, o).id;
                                 return e.push(i), o;
@@ -4036,7 +4037,7 @@
             }, v.prototype.off = function(t, e) {
                 r.removeListener(t, e);
             }, v.prototype.emit = function(t, e) {
-                D(function() {
+                q(function() {
                     return r.emit(t, e);
                 });
             }, v.prototype.getBasePath = function(t) {
@@ -4044,9 +4045,9 @@
             }, v.prototype.isValidId = function(t) {
                 return null !== t && void 0 !== t && "" !== t;
             }, new v();
-        }, Jt = function(t) {
+        }, Vt = function(t) {
             return !!N(t, "$options.vdata");
-        }, Vt = {
+        }, Gt = {
             createConfig: function(t) {
                 return function(r) {
                     return t(r);
@@ -4054,7 +4055,7 @@
             },
             install: function(t, r) {
                 r = R(r) ? r(t) : r;
-                var e = $t(r);
+                var e = Jt(r);
                 Object.defineProperty(t, "$store", {
                     get: function() {
                         return e;
@@ -4089,7 +4090,7 @@
      * @param {Vue.Component} vm
      */
                         add: function(t) {
-                            var r = Rt(t.$options.mixins).filter(function(t) {
+                            var r = Pt(t.$options.mixins).filter(function(t) {
                                 return !!t.vdata;
                             }).map(function(t) {
                                 return t.vdata;
@@ -4112,33 +4113,33 @@
                 t.mixin({
                     methods: {
                         $vdata: function(t) {
-                            Jt(this) && this._vdataHandler.run(t);
+                            Vt(this) && this._vdataHandler.run(t);
                         }
                     },
                     beforeCreate: function() {
-                        Jt(this) && (this._vdataHandler = n.add(this));
+                        Vt(this) && (this._vdataHandler = n.add(this));
                     },
                     beforeDestroy: function() {
-                        Jt(this) && this._vdataHandler.destroy();
+                        Vt(this) && this._vdataHandler.destroy();
                     }
-                }), t.mixin(Dt), console.log("[@citygro/vdata] $store ready!", e, r);
+                }), t.mixin(qt), console.log("[@citygro/vdata] $store ready!", e, r);
             }
-        }, Gt = jt("value");
-        r.DataFlowMixin = Gt, r.asyncMap = $, r.cleanRecord = function(t) {
+        }, Ht = jt("value");
+        r.DataFlowMixin = Ht, r.asyncMap = $, r.cleanRecord = function(t) {
             var r = t.record, e = t.store, n = O([].concat(ht(t.omitKeys || []), [ "_id" ])), o = lt({
                 store: e,
                 record: r,
                 omitKeys: n
             });
             return e.createRecord(r._collection || t.collectionName, o);
-        }, r.createDataFlowMixin = jt, r.createHttpAdapter = kt, r.createIndex = function(t, r) {
+        }, r.createDataFlowMixin = jt, r.createHttpAdapter = Mt, r.createIndex = function(t, r) {
             var e = {};
             return t.forEach(function(t) {
                 e[t[r]] = t;
             }), e;
-        }, r.createMixinForItemById = Mt, r.createMixinForItemByResourceAndId = function(t) {
+        }, r.createMixinForItemById = Rt, r.createMixinForItemByResourceAndId = function(t) {
             return console.warn("[@citygro/vdata] rename createMixinForItemByResourceAndId -> createMixinForItemById", '"createMixinForItemByResourceAndId" is DEPRECATED and will be removed in a future release'), 
-            Mt(t);
+            Rt(t);
         }, r.createMixinForListByResource = function(t) {
             var r = t.collectionName, e = t.localPropertyName || A(r), n = e + "Force", o = t.queryOptions || {}, i = t.requestOptions, u = e + "RequestOptions", a = e + "RequestOptionsOverride";
             return {
@@ -4179,7 +4180,7 @@
                     }))();
                 })
             };
-        }, r.fetchWrapper = St, r.to = K, r.vdata = Vt, r.handleChange = vt, r.handleKeyChange = dt, 
+        }, r.fetchWrapper = St, r.to = K, r.vdata = Gt, r.handleChange = vt, r.handleKeyChange = dt, 
         r.handleArrayChange = yt, r.handleArrayKeyChange = _t, r.pushToArray = gt, r.pushToArrayKey = mt, 
         r.removeFromArray = xt, r.removeFromArrayKey = bt;
     }, /* 186 */

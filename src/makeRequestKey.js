@@ -1,10 +1,8 @@
-import map from 'lodash/map'
-import sum from 'lodash/sum'
+import checksum from './checksum'
 
 const makeRequestKey = (url, options) => {
   const headers = Object.entries(options.headers || {}).map(([key, val]) => `${key}:${val}`)
-  const values = map(`${headers}${url}`, (c) => c.codePointAt(0))
-  return `${options.method}-${sum(values)}`
+  return `${options.method}-${checksum(headers, url)}`
 }
 
 export default makeRequestKey

@@ -21,13 +21,13 @@ var fork = _interopDefault(require('@r14c/async-utils/fork'));
 var isFunction = _interopDefault(require('lodash/isFunction'));
 var pick = _interopDefault(require('lodash/pick'));
 var map = _interopDefault(require('lodash/map'));
+var stringify = _interopDefault(require('json-stable-stringify'));
 var sum = _interopDefault(require('lodash/sum'));
 var microTask = _interopDefault(require('@r14c/async-utils/microTask'));
 var filter = _interopDefault(require('lodash/fp/filter'));
 var flow = _interopDefault(require('lodash/fp/flow'));
 var isNil = _interopDefault(require('lodash/fp/isNil'));
 var omitBy = _interopDefault(require('lodash/fp/omitBy'));
-var stringify = _interopDefault(require('json-stable-stringify'));
 var sort = _interopDefault(require('lodash/sortBy'));
 var get$1 = _interopDefault(require('lodash/get'));
 var to = _interopDefault(require('@r14c/async-utils/to'));
@@ -520,6 +520,14 @@ fetchWrapper.onError = function (fn) {
   onError = fn;
 };
 
+var stringSum = function stringSum() {
+  var s = map(arguments, stringify);
+  var values = map(stringify(s), function (c, i) {
+    return c.codePointAt(0) * i;
+  });
+  return '' + sum(values);
+};
+
 var makeRequestKey = function makeRequestKey(url, options) {
   var headers = Object.entries(options.headers || {}).map(function (_ref) {
     var _ref2 = slicedToArray(_ref, 2),
@@ -528,10 +536,7 @@ var makeRequestKey = function makeRequestKey(url, options) {
 
     return key + ':' + val;
   });
-  var values = map('' + headers + url, function (c) {
-    return c.codePointAt(0);
-  });
-  return options.method + '-' + sum(values);
+  return options.method + '-' + stringSum(headers, url);
 };
 
 // @flow
@@ -1295,10 +1300,7 @@ var makeQueryKey = function makeQueryKey(collectionName) {
   var query = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
   var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
 
-  var values = map(stringify(query) + stringify(options), function (c) {
-    return c.codePointAt(0);
-  });
-  return collectionName + '-' + sum(values);
+  return collectionName + '-' + stringSum(query, options);
 };
 
 var mget = (function (value, path) {

@@ -1,10 +1,7 @@
-import map from 'lodash/map'
-import stringify from 'json-stable-stringify'
-import sum from 'lodash/sum'
+import checksum from './checksum'
 
 const makeQueryKey = (collectionName, query = {}, options = {}) => {
-  const values = map(stringify(query) + stringify(options), (c) => c.codePointAt(0))
-  return `${collectionName}-${sum(values)}`
+  return `${collectionName}-${checksum(query, options)}`
 }
 
 export default makeQueryKey
