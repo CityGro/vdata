@@ -1291,8 +1291,11 @@ var fastDiff = (function (a, b) {
   return stringify(a) !== stringify(b);
 });
 
-var makeQueryKey = function makeQueryKey(collectionName, query) {
-  var values = map(stringify(query), function (c) {
+var makeQueryKey = function makeQueryKey(collectionName) {
+  var query = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+  var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+
+  var values = map(stringify(query) + stringify(options), function (c) {
     return c.codePointAt(0);
   });
   return collectionName + '-' + sum(values);
@@ -1922,9 +1925,15 @@ var createStore = function createStore() {
     var promise = void 0;
     var force = options.force || false;
     var basePath = this.getBasePath(collectionName);
-    var key = makeQueryKey(collectionName, query);
-    var cachedKeys = queryCache[key];
-    var data = this.getAll(collectionName, cachedKeys);
+    var key = makeQueryKey(collectionName, query, options);
+    var cachedKeys = queryCache[key] || [];
+    var data = this.getList(collectionName, cachedKeys).filter(function (record) {
+      return !!record;
+    });
+    if (data.length !== cachedKeys.length) {
+      delete queryCache[key];
+      data = [];
+    }
     if (!data.length || force === true) {
       var request = _extends({
         url: basePath + '/' + collectionName,

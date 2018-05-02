@@ -11,6 +11,21 @@ describe('makeQueryKey', () => {
     }
     const key = makeQueryKey(collectionName, query)
     expect(key).toBe(makeQueryKey(collectionName, query))
-    expect(key).toBe('myCollection-4026')
+    expect(key).toBe('myCollection-4274')
+  })
+
+  test('factor in request options that may alter the response', () => {
+    const collectionName = 'myCollection'
+    const query = {
+      q: 'my search term'
+    }
+    const options = {
+      headers: {
+        'X-My-Header-Is': 'the best'
+      }
+    }
+    const keyA = makeQueryKey(collectionName, query)
+    const keyB = makeQueryKey(collectionName, query, options)
+    expect(keyA).not.toBe(keyB)
   })
 })

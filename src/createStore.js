@@ -488,9 +488,13 @@ const createStore = (options = {}) => {
     let promise
     const force = options.force || false
     const basePath = this.getBasePath(collectionName)
-    const key = makeQueryKey(collectionName, query)
-    const cachedKeys = queryCache[key]
-    const data = this.getAll(collectionName, cachedKeys)
+    const key = makeQueryKey(collectionName, query, options)
+    const cachedKeys = queryCache[key] || []
+    let data = this.getList(collectionName, cachedKeys).filter((record) => !!record)
+    if (data.length !== cachedKeys.length) {
+      delete queryCache[key]
+      data = []
+    }
     if (!data.length || force === true) {
       const request = {
         url: `${basePath}/${collectionName}`,

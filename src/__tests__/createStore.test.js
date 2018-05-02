@@ -7,12 +7,12 @@ import range from 'lodash/range'
 describe('Store', () => {
   let store
   beforeAll(() => {
-    fetchMock.get('/api/myCollection?name=jeff', [
-      {
-        id: 1,
+    fetchMock.get('/api/myCollection?name=jeff', () => {
+      return range(0, 10).map((i) => ({
+        id: i + 1,
         name: 'jeff'
-      }
-    ])
+      }))
+    })
     fetchMock.get('/api/myCollection?results=yes', [
       {
         id: 30,
@@ -295,7 +295,7 @@ describe('Store', () => {
       const result = await store.findAll('myCollection', {
         name: 'jeff'
       })
-      expect(result).toHaveLength(1)
+      expect(result).toHaveLength(10)
     })
 
     test('handles multiple results', async () => {
@@ -318,17 +318,31 @@ describe('Store', () => {
     })
 
     test('query cache returns correct results', async () => {
+      const unTagRecords = (collection) => collection.map((record) => {
+        let unTaggedRecord = {...record}
+        delete unTaggedRecord.__sym_id
+        return unTaggedRecord
+      })
+      store.add('myCollection', {
+        id: 9991,
+        name: 'jeff'
+      })
       const resultA = await store.findAll('myCollection', {
         name: 'jeff'
       })
+      store.remove('myCollection', resultA[0].__tmp_id)
       store.add('myCollection', {
         id: 999,
-        name: 'chef'
+        name: 'jeff'
       })
       const resultB = await store.findAll('myCollection', {
         name: 'jeff'
       })
-      expect(resultA).toEqual(resultB)
+      expect(resultA).toMatchObject(unTagRecords(resultA))
+      expect(resultB).toMatchObject(unTagRecords(resultB))
+      // this record was removed locally, so the __tmp_id won't match
+      expect(unTagRecords(resultA)[0]).not.toMatchObject(unTagRecords(resultB)[0])
+      expect(unTagRecords(resultA).slice(1)).toMatchObject(unTagRecords(resultB).slice(1))
     })
   })
 

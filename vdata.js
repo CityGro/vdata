@@ -4004,13 +4004,15 @@
                 } else i = d.default.resolve(null);
                 return i;
             }, v.prototype.findAll = function(t, r) {
-                var n = this, o = arguments.length > 2 && void 0 !== arguments[2] ? arguments[2] : {}, i = void 0, a = o.force || !1, c = this.getBasePath(t), f = function(t, r) {
-                    var e = T(W(r), function(t) {
+                var n = this, o = arguments.length > 2 && void 0 !== arguments[2] ? arguments[2] : {}, i = void 0, a = o.force || !1, c = this.getBasePath(t), f = function(t) {
+                    var r = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : {}, e = arguments.length > 2 && void 0 !== arguments[2] ? arguments[2] : {}, n = T(W(r) + W(e), function(t) {
                         return t.codePointAt(0);
                     });
-                    return t + "-" + L(e);
-                }(t, r), p = s[f], l = this.getAll(t, p);
-                if (l.length && !0 !== a) i = d.default.resolve(l); else {
+                    return t + "-" + L(n);
+                }(t, r, o), p = s[f] || [], l = this.getList(t, p).filter(function(t) {
+                    return !!t;
+                });
+                if (l.length !== p.length && (delete s[f], l = []), l.length && !0 !== a) i = d.default.resolve(l); else {
                     var v = ft({
                         url: c + "/" + t,
                         method: "GET",
