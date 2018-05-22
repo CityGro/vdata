@@ -42,8 +42,7 @@ let optionNames = [
 const isOptionName = (key, names = optionNames) => names.find((n) => key.endsWith(n))
 
 // name args optional
-const createAsyncReload = (thisArg) => function (propertyName, skipLazy = false) {
-  const asyncData = getMergedOptions(this, 'asyncData')
+const createAsyncReload = (thisArg, asyncData) => function (propertyName, skipLazy = false) {
   if (asyncData) {
     let promises = []
     let names = keys(asyncData)
@@ -114,7 +113,10 @@ const createAsyncReload = (thisArg) => function (propertyName, skipLazy = false)
 
 export default {
   beforeCreate () {
-    this._asyncReload = createAsyncReload(this)
+    const asyncData = getMergedOptions(this, 'asyncData')
+    if (asyncData) {
+      this._asyncReload = createAsyncReload(this, asyncData)
+    }
   },
   created () {
     this.$asyncReload(undefined, true)
@@ -126,7 +128,6 @@ export default {
           .apply(this, arguments)
           .then((result) => (propertyName) ? result[propertyName] : result)
       } else {
-        console.info(`[@citygro/vdata<${this._uid}>] vm.asyncReload is not available until the component is created!`)
         return Promise.resolve(null)
       }
     }

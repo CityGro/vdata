@@ -3507,40 +3507,41 @@
             });
         }, qt = {
             beforeCreate: function() {
-                this._asyncReload = function(t) {
+                var t = Tt(this, "asyncData");
+                t && (this._asyncReload = function(t, r) {
                     return function(t) {
-                        var r = this, e = arguments.length > 1 && void 0 !== arguments[1] && arguments[1], n = Tt(this, "asyncData");
-                        if (n) {
-                            var o = [], i = H(n).filter(function(t) {
+                        var e = this, n = arguments.length > 1 && void 0 !== arguments[1] && arguments[1];
+                        if (r) {
+                            var o = [], i = H(r).filter(function(t) {
                                 return !Dt(t);
                             }).filter(function(r) {
                                 return void 0 === t || r === t;
                             }).filter(function(t) {
-                                return !1 === e || !n[t + "Lazy"];
+                                return !1 === n || !r[t + "Lazy"];
                             });
                             if (void 0 !== t && 0 === i.length) throw new Error('asyncData cannot find "' + t, this);
                             return i.forEach(function(t) {
                                 // helpers
-                                var e = function(e) {
-                                    r[t + "Error"] = e, e ? (console.error("[@citygro/vdata<" + r._uid + ">]", e), r.asyncError = !0) : r.asyncError = !!i.find(function(t) {
-                                        return r[t + "Error"];
+                                var n = function(r) {
+                                    e[t + "Error"] = r, r ? (console.error("[@citygro/vdata<" + e._uid + ">]", r), e.asyncError = !0) : e.asyncError = !!i.find(function(t) {
+                                        return e[t + "Error"];
                                     });
-                                }, u = function(e) {
-                                    r[t + "Loading"] = e, r.asyncLoading = !!e || !!i.find(function(t) {
-                                        return r[t + "Loading"];
+                                }, u = function(r) {
+                                    e[t + "Loading"] = r, e.asyncLoading = !!r || !!i.find(function(t) {
+                                        return e[t + "Loading"];
                                     });
                                 }, a = function() {
-                                    r["_" + t + "Timer"] && clearTimeout(r["_" + t + "Timer"]);
+                                    e["_" + t + "Timer"] && clearTimeout(e["_" + t + "Timer"]);
                                 };
-                                u(!0), e(void 0);
-                                var s = n[t + "Timeout"] || -1;
-                                if (s > 0 && (clearTimeout(r["_" + t + "Timer"]), r["_" + t + "Timer"] = setTimeout(function() {
-                                    r._asyncReload.cancel();
-                                }, s)), "function" != typeof n[t]) console.error("asyncData." + t + " must be funtion. actual: " + n[t], r); else {
-                                    var c = n[t].apply(r).then(function(e) {
-                                        return r[t] = e, r[t + "Promise"] = c, u(!1), a(), e;
+                                u(!0), n(void 0);
+                                var s = r[t + "Timeout"] || -1;
+                                if (s > 0 && (clearTimeout(e["_" + t + "Timer"]), e["_" + t + "Timer"] = setTimeout(function() {
+                                    e._asyncReload.cancel();
+                                }, s)), "function" != typeof r[t]) console.error("asyncData." + t + " must be funtion. actual: " + r[t], e); else {
+                                    var c = r[t].apply(e).then(function(r) {
+                                        return e[t] = r, e[t + "Promise"] = c, u(!1), a(), r;
                                     }).catch(function(t) {
-                                        e(t), u(!1), a();
+                                        n(t), u(!1), a();
                                     });
                                     o.push(c);
                                 }
@@ -3548,7 +3549,7 @@
                         }
                         return d.default.resolve({});
                     }.bind(t);
-                }(this);
+                }(this, t));
             },
             created: function() {
                 this.$asyncReload(void 0, !0);
@@ -3557,8 +3558,7 @@
                 $asyncReload: function(t) {
                     return R(this._asyncReload) ? this._asyncReload.apply(this, arguments).then(function(r) {
                         return t ? r[t] : r;
-                    }) : (console.info("[@citygro/vdata<" + this._uid + ">] vm.asyncReload is not available until the component is created!"), 
-                    d.default.resolve(null));
+                    }) : d.default.resolve(null);
                 }
             },
             data: function() {
@@ -4160,17 +4160,17 @@
                     var t = this;
                     /*#__PURE__*/
                     return st(s.default.mark(function e() {
-                        var u, c, f, p;
+                        var i, u, c, f;
                         return s.default.wrap(function(e) {
                             for (;;) switch (e.prev = e.next) {
                               case 0:
-                                return e.next = 2, K(t.$store.findAll(r, o, ft({}, t[a], i, {
+                                return e.next = 2, K(t.$store.findAll(r, o, ft({}, t[a], t.requestOptions, {
                                     force: t[n]
                                 })));
 
                               case 2:
-                                return u = e.sent, c = pt(u, 2), f = c[0], p = c[1], f && (console.error(f), p = []), 
-                                e.abrupt("return", p);
+                                return i = e.sent, u = pt(i, 2), c = u[0], f = u[1], c && (console.error(c), f = []), 
+                                e.abrupt("return", f);
 
                               case 8:
                               case "end":

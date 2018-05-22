@@ -520,7 +520,7 @@ fetchWrapper.onError = function (fn) {
   onError = fn;
 };
 
-var stringSum = function stringSum() {
+var checksum = function checksum() {
   var s = map(arguments, stringify);
   var values = map(stringify(s), function (c, i) {
     return c.codePointAt(0) * i;
@@ -536,7 +536,7 @@ var makeRequestKey = function makeRequestKey(url, options) {
 
     return key + ':' + val;
   });
-  return options.method + '-' + stringSum(headers, url);
+  return options.method + '-' + checksum(headers, url);
 };
 
 // @flow
@@ -978,7 +978,7 @@ var createMixinForListByResource = function (options) {
             switch (_context.prev = _context.next) {
               case 0:
                 _context.next = 2;
-                return to(_this.$store.findAll(collectionName, queryOptions, _extends({}, _this[requestOptionsOverrideName], requestOptions, {
+                return to(_this.$store.findAll(collectionName, queryOptions, _extends({}, _this[requestOptionsOverrideName], _this.requestOptions, {
                   force: _this[localPropertyForceName]
                 })));
 
@@ -1074,13 +1074,12 @@ var isOptionName = function isOptionName(key) {
 };
 
 // name args optional
-var createAsyncReload = function createAsyncReload(thisArg) {
+var createAsyncReload = function createAsyncReload(thisArg, asyncData) {
   return function (propertyName) {
     var _this = this;
 
     var skipLazy = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
 
-    var asyncData = getMergedOptions(this, 'asyncData');
     if (asyncData) {
       var promises = [];
       var names = keys(asyncData).filter(function (s) {
@@ -1156,7 +1155,10 @@ var createAsyncReload = function createAsyncReload(thisArg) {
 
 var AsyncDataMixin = {
   beforeCreate: function beforeCreate() {
-    this._asyncReload = createAsyncReload(this);
+    var asyncData = getMergedOptions(this, 'asyncData');
+    if (asyncData) {
+      this._asyncReload = createAsyncReload(this, asyncData);
+    }
   },
   created: function created() {
     this.$asyncReload(undefined, true);
@@ -1169,7 +1171,6 @@ var AsyncDataMixin = {
           return propertyName ? result[propertyName] : result;
         });
       } else {
-        console.info('[@citygro/vdata<' + this._uid + '>] vm.asyncReload is not available until the component is created!');
         return Promise.resolve(null);
       }
     }
@@ -1300,7 +1301,7 @@ var makeQueryKey = function makeQueryKey(collectionName) {
   var query = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
   var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
 
-  return collectionName + '-' + stringSum(query, options);
+  return collectionName + '-' + checksum(query, options);
 };
 
 var mget = (function (value, path) {
