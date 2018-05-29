@@ -4160,17 +4160,17 @@
                     var t = this;
                     /*#__PURE__*/
                     return st(s.default.mark(function e() {
-                        var i, u, c, f;
+                        var i, c, f, p;
                         return s.default.wrap(function(e) {
                             for (;;) switch (e.prev = e.next) {
                               case 0:
-                                return e.next = 2, K(t.$store.findAll(r, o, ft({}, t[a], t.requestOptions, {
+                                return e.next = 2, K(t.$store.findAll(r, o, ft({}, t[a], t[u], {
                                     force: t[n]
                                 })));
 
                               case 2:
-                                return i = e.sent, u = pt(i, 2), c = u[0], f = u[1], c && (console.error(c), f = []), 
-                                e.abrupt("return", f);
+                                return i = e.sent, c = pt(i, 2), f = c[0], p = c[1], f && (console.error(f), p = []), 
+                                e.abrupt("return", p);
 
                               case 8:
                               case "end":

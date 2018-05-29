@@ -978,7 +978,7 @@ var createMixinForListByResource = function (options) {
             switch (_context.prev = _context.next) {
               case 0:
                 _context.next = 2;
-                return to(_this.$store.findAll(collectionName, queryOptions, _extends({}, _this[requestOptionsOverrideName], _this.requestOptions, {
+                return to(_this.$store.findAll(collectionName, queryOptions, _extends({}, _this[requestOptionsOverrideName], _this[requestOptionsName], {
                   force: _this[localPropertyForceName]
                 })));
 

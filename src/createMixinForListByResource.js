@@ -48,7 +48,7 @@ export default function (options) {
           queryOptions,
           {
             ...this[requestOptionsOverrideName],
-            ...this.requestOptions,
+            ...this[requestOptionsName],
             force: this[localPropertyForceName]
           }
         ))
