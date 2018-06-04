@@ -3877,15 +3877,23 @@
             }, v.prototype.getAll = function() {
                 return this.getList.apply(this, arguments);
             }, v.prototype.remove = function(t, r) {
-                var e = arguments.length > 2 && void 0 !== arguments[2] ? arguments[2] : {}, n = p(t, r), o = this.get(t, n), i = h(t, o);
-                return c = c.removeIn([ t, n ]), a.unlink(t, i.pk, i.id), delete o.__tmp_id, delete o.__sym_id, 
-                l({
+                var e = arguments.length > 2 && void 0 !== arguments[2] ? arguments[2] : {}, n = p(t, r), i = this.get(t, n);
+                if (i) {
+                    var u = h(t, i);
+                    c = c.removeIn([ t, n ]), a.unlink(t, u.pk, u.id), delete i.__tmp_id, delete i.__sym_id, 
+                    l({
+                        collectionName: t,
+                        event: "remove",
+                        record: i
+                    }, {
+                        quiet: e.quiet
+                    });
+                } else console.warn("[@citygro/vdata] attempting to remove a record that is not tracked by Store#" + o, {
                     collectionName: t,
-                    event: "remove",
-                    record: o
-                }, {
-                    quiet: e.quiet
-                }), o;
+                    pkOrId: r,
+                    options: e
+                });
+                return i;
             }, v.prototype.removeList = function(t, r) {
                 var e = this, n = arguments.length > 2 && void 0 !== arguments[2] ? arguments[2] : {}, o = this.getAll(t, r).map(function(r) {
                     var n = h(t, r).id;

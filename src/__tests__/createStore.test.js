@@ -220,6 +220,27 @@ describe('Store', () => {
       expect(data.__tmp_id).not.toBeDefined()
       expect(data.__sym_id).not.toBeDefined()
     })
+
+    test('remove a record by __tmp_id', () => {
+      const record = store.add('myCollection', {
+        name: 'anon'
+      })
+      const tmpId = record.__tmp_id
+      const data = store.remove('myCollection', tmpId)
+      expect(store.get('myCollection', tmpId)).toBe(null)
+      expect(data.__tmp_id).not.toBeDefined()
+      expect(data.__sym_id).not.toBeDefined()
+    })
+
+    test('remove a record by __tmp_id that is not tracked by the store', () => {
+      const record = store.createRecord('myCollection', {
+        name: 'anon'
+      })
+      const tmpId = record.__tmp_id
+      const data = store.remove('myCollection', tmpId)
+      expect(store.get('myCollection', tmpId)).toBe(null)
+      expect(data).toBe(null)
+    })
   })
 
   describe('save', async () => {

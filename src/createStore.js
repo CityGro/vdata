@@ -203,19 +203,26 @@ const createStore = (options = {}) => {
     */
   Store.prototype.remove = function (collectionName, pkOrId, options = {}) {
     const id = resolveId(collectionName, pkOrId)
-    const object = this.get(collectionName, id)
-    const meta = getMeta(collectionName, object)
-    store = store.removeIn([collectionName, id])
-    keyMap.unlink(collectionName, meta.pk, meta.id)
-    delete object.__tmp_id
-    delete object.__sym_id
-    emit({
-      collectionName,
-      event: 'remove',
-      record: object
-    }, {
-      quiet: options.quiet
-    })
+    let object = this.get(collectionName, id)
+    if (object) {
+      const meta = getMeta(collectionName, object)
+      store = store.removeIn([collectionName, id])
+      keyMap.unlink(collectionName, meta.pk, meta.id)
+      delete object.__tmp_id
+      delete object.__sym_id
+      emit({
+        collectionName,
+        event: 'remove',
+        record: object
+      }, {
+        quiet: options.quiet
+      })
+    } else {
+      console.warn(
+        `[@citygro/vdata] attempting to remove a record that is not tracked by Store#${storeId}`,
+        {collectionName, pkOrId, options}
+      )
+    }
     return object
   }
   /**

@@ -1594,18 +1594,22 @@ var createStore = function createStore() {
 
     var id = resolveId(collectionName, pkOrId);
     var object = this.get(collectionName, id);
-    var meta = getMeta(collectionName, object);
-    store = store.removeIn([collectionName, id]);
-    keyMap.unlink(collectionName, meta.pk, meta.id);
-    delete object.__tmp_id;
-    delete object.__sym_id;
-    emit({
-      collectionName: collectionName,
-      event: 'remove',
-      record: object
-    }, {
-      quiet: options.quiet
-    });
+    if (object) {
+      var meta = getMeta(collectionName, object);
+      store = store.removeIn([collectionName, id]);
+      keyMap.unlink(collectionName, meta.pk, meta.id);
+      delete object.__tmp_id;
+      delete object.__sym_id;
+      emit({
+        collectionName: collectionName,
+        event: 'remove',
+        record: object
+      }, {
+        quiet: options.quiet
+      });
+    } else {
+      console.warn('[@citygro/vdata] attempting to remove a record that is not tracked by Store#' + storeId, { collectionName: collectionName, pkOrId: pkOrId, options: options });
+    }
     return object;
   };
   /**
