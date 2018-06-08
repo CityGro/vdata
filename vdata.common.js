@@ -4,6 +4,7 @@ Object.defineProperty(exports, '__esModule', { value: true });
 
 function _interopDefault (ex) { return (ex && (typeof ex === 'object') && 'default' in ex) ? ex['default'] : ex; }
 
+var _r14c_asyncUtils_map = _interopDefault(require('@r14c/async-utils/map'));
 var includes = _interopDefault(require('lodash/includes'));
 var isArray = _interopDefault(require('lodash/isArray'));
 var isBoolean = _interopDefault(require('lodash/isBoolean'));
@@ -31,13 +32,6 @@ var omitBy = _interopDefault(require('lodash/fp/omitBy'));
 var sort = _interopDefault(require('lodash/sortBy'));
 var get$1 = _interopDefault(require('lodash/get'));
 var to = _interopDefault(require('@r14c/async-utils/to'));
-var _r14c_asyncUtils_map = _interopDefault(require('@r14c/async-utils/map'));
-var Any = _interopDefault(require('p-any'));
-var fromPairs = _interopDefault(require('lodash/fp/fromPairs'));
-var isEmpty = _interopDefault(require('lodash/isEmpty'));
-var keys = _interopDefault(require('lodash/keys'));
-var zip = _interopDefault(require('lodash/fp/zip'));
-var Queue = _interopDefault(require('@r14c/async-utils/Queue'));
 var EventEmitter = _interopDefault(require('events'));
 var toString = _interopDefault(require('lodash/toString'));
 var immutable = require('immutable');
@@ -46,7 +40,44 @@ var isNil$1 = _interopDefault(require('lodash/isNil'));
 var isObject = _interopDefault(require('lodash/isObject'));
 var mergeWith = _interopDefault(require('lodash/mergeWith'));
 var transform = _interopDefault(require('lodash/transform'));
+var isEmpty = _interopDefault(require('lodash/isEmpty'));
 var toNumber = _interopDefault(require('lodash/toNumber'));
+var Any = _interopDefault(require('p-any'));
+var fromPairs = _interopDefault(require('lodash/fp/fromPairs'));
+var keys = _interopDefault(require('lodash/keys'));
+var zip = _interopDefault(require('lodash/fp/zip'));
+var Queue = _interopDefault(require('@r14c/async-utils/Queue'));
+
+var stores = {};
+
+var register = function register(store) {
+  stores[store.storeId] = store;
+  return store;
+};
+
+var getStoreById = function getStoreById(storeId) {
+  return stores[storeId] || null;
+};
+
+var ReplaceStoreFromPropsMixin = {
+  mounted: function mounted() {
+    console.log('[@citygro/vdata] replace store from props', this.$store);
+  },
+
+  props: {
+    vdataStoreId: {
+      type: String,
+      required: true
+    }
+  },
+  computed: {
+    '$store': {
+      get: function get() {
+        return getStoreById(this.vdataStoreId);
+      }
+    }
+  }
+};
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) {
   return typeof obj;
@@ -1005,263 +1036,6 @@ var createMixinForListByResource = function (options) {
   };
 };
 
-/**
- * @param {Object[]} mixins
- */
-var flattenMixinTree = function flattenMixinTree() {
-  var mixins = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
-
-  var arr = [];
-  mixins.forEach(function (mixin) {
-    if (mixin.mixins && mixin.mixins.length) {
-      arr = [].concat(toConsumableArray(arr), toConsumableArray(flattenMixinTree(mixin.mixins)));
-    }
-    arr.push(mixin);
-  });
-  return arr;
-};
-
-/**
- * @param {Vue} vm - vue instance
- * @param {string} prop - option name
- */
-var getMergedOptions = (function (vm, prop) {
-  var options = clone(get$1(vm, '$options.' + prop, {}));
-  var mixins = get$1(vm, '$options.mixins', []);
-  flattenMixinTree(mixins).filter(function (mixin) {
-    return mixin[prop];
-  }).forEach(function (mixin) {
-    options = Object.assign(options, mixin[prop]);
-  });
-  return isEmpty(options) ? null : options;
-});
-
-/** !
- * vue-async-data
- *
- * includes modifications which are subject to the terms outlined in LICENSE
- *
- * The MIT License (MIT)
- *
- * Copyright (c) 2017 kamijin-fanta
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- */
-
-var optionNames = ['Default', 'Lazy'];
-
-var isOptionName = function isOptionName(key) {
-  var names = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : optionNames;
-  return names.find(function (n) {
-    return key.endsWith(n);
-  });
-};
-
-// name args optional
-var createAsyncReload = function createAsyncReload(thisArg, asyncData) {
-  return function (propertyName) {
-    var _this = this;
-
-    var skipLazy = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
-
-    if (asyncData) {
-      var promises = [];
-      var names = keys(asyncData).filter(function (s) {
-        return !isOptionName(s);
-      }).filter(function (s) {
-        return propertyName === undefined || s === propertyName;
-      }).filter(function (s) {
-        return skipLazy === false || !asyncData[s + 'Lazy'];
-      });
-      if (propertyName !== undefined && names.length === 0) {
-        throw new Error('asyncData cannot find "' + propertyName, this);
-      }
-      names.forEach(function (prop) {
-        // helpers
-        var setError = function setError(err) {
-          _this[prop + 'Error'] = err;
-          if (err) {
-            console.error('[@citygro/vdata<' + _this._uid + '>]', err);
-            _this.asyncError = true;
-          } else {
-            _this.asyncError = !!names.find(function (n) {
-              return _this[n + 'Error'];
-            });
-          }
-        };
-        var setLoading = function setLoading(flag) {
-          _this[prop + 'Loading'] = flag;
-          if (flag) {
-            _this.asyncLoading = true;
-          } else {
-            _this.asyncLoading = !!names.find(function (n) {
-              return _this[n + 'Loading'];
-            });
-          }
-        };
-        var cancelTimer = function cancelTimer() {
-          if (_this['_' + prop + 'Timer']) {
-            clearTimeout(_this['_' + prop + 'Timer']);
-          }
-        };
-        setLoading(true);
-        setError(undefined);
-        var timeout = asyncData[prop + 'Timeout'] || -1;
-        if (timeout > 0) {
-          clearTimeout(_this['_' + prop + 'Timer']);
-          _this['_' + prop + 'Timer'] = setTimeout(function () {
-            _this._asyncReload.cancel();
-          }, timeout);
-        }
-        if (typeof asyncData[prop] !== 'function') {
-          console.error('asyncData.' + prop + ' must be funtion. actual: ' + asyncData[prop], _this);
-        } else {
-          var promise = asyncData[prop].apply(_this).then(function (data) {
-            _this[prop] = data;
-            _this[prop + 'Promise'] = promise;
-            setLoading(false);
-            cancelTimer();
-            return data;
-          }).catch(function (err) {
-            setError(err);
-            setLoading(false);
-            cancelTimer();
-          });
-          promises.push(promise);
-        }
-      });
-      return Promise.all(promises).then(flow(zip(names), fromPairs));
-    } else {
-      return Promise.resolve({});
-    }
-  }.bind(thisArg);
-};
-
-var AsyncDataMixin = {
-  beforeCreate: function beforeCreate() {
-    var asyncData = getMergedOptions(this, 'asyncData');
-    if (asyncData) {
-      this._asyncReload = createAsyncReload(this, asyncData);
-    }
-  },
-  created: function created() {
-    this.$asyncReload(undefined, true);
-  },
-
-  methods: {
-    $asyncReload: function $asyncReload(propertyName) {
-      if (isFunction(this._asyncReload)) {
-        return this._asyncReload.apply(this, arguments).then(function (result) {
-          return propertyName ? result[propertyName] : result;
-        });
-      } else {
-        return Promise.resolve(null);
-      }
-    }
-  },
-  data: function data() {
-    var _this2 = this;
-
-    var asyncData = getMergedOptions(this, 'asyncData');
-    if (asyncData) {
-      var names = keys(asyncData).filter(function (s) {
-        return !isOptionName(s);
-      });
-      var errorNames = names.map(function (s) {
-        return s + 'Error';
-      });
-      var dataObj = {
-        asyncLoading: true,
-        asyncError: false,
-        asyncAll: Promise.all(names.map(function (name) {
-          return asyncData[name];
-        })),
-        asyncAny: Any(names.map(function (name) {
-          return asyncData[name];
-        }))
-      };
-      names.forEach(function (name) {
-        var asyncDefault = asyncData[name + 'Default'];
-        dataObj[name] = isFunction(asyncDefault) ? asyncDefault.apply(_this2) : asyncDefault;
-        dataObj[name + 'Promise'] = asyncData[name];
-        dataObj[name + 'Loading'] = !asyncData[name + 'Lazy'];
-      });
-      errorNames.forEach(function (name) {
-        dataObj[name] = undefined;
-      });
-      return dataObj;
-    }
-    return {};
-  }
-};
-
-var createHandler = (function (Vue, store) {
-  var queue = Queue.create({
-    concurrency: 2,
-    next: function next() {
-      return new Promise(function (resolve) {
-        return Vue.nextTick(function () {
-          return resolve();
-        });
-      });
-    }
-  });
-  var handlers = {};
-  store.on('all', function (message) {
-    // enqueue a task to handle the vdata listeners for a particular vm
-    queue.push(function () {
-      Object.values(handlers).forEach(function (vmHandler) {
-        vmHandler.run(message);
-      });
-    });
-  });
-  return {
-    /**
-     * register handlers that will run on datastore events
-     *
-     * @param {Vue.Component} vm
-     */
-    add: function add(vm) {
-      var listeners = flattenMixinTree(vm.$options.mixins).filter(function (mixin) {
-        return !!mixin.vdata;
-      }).map(function (mixin) {
-        return mixin.vdata;
-      });
-      if (vm.$options.vdata) {
-        listeners.push(vm.$options.vdata);
-      }
-      var handler = {
-        run: function run(message) {
-          listeners.forEach(function (fn) {
-            fn.call(vm, message);
-          });
-        },
-        destroy: function destroy() {
-          delete handlers[vm._uid];
-        }
-      };
-      handlers[vm._uid] = handler;
-      return handler;
-    }
-  };
-});
-
 var KeyMap = {
   create: function create() {
     var map$$1 = {};
@@ -1607,7 +1381,7 @@ var createStore = function createStore() {
       }, {
         quiet: options.quiet
       });
-    } else {
+    } else if (process.env.NODE_ENV !== 'test') {
       console.warn('[@citygro/vdata] attempting to remove a record that is not tracked by Store#' + storeId, { collectionName: collectionName, pkOrId: pkOrId, options: options });
     }
     return object;
@@ -2018,11 +1792,286 @@ var createStore = function createStore() {
   Store.prototype.isValidId = function (id) {
     return id !== null && id !== undefined && id !== '';
   };
-  return new Store();
+  var storeInstance = new Store();
+  if (process.env.NODE_ENV !== 'test') {
+    console.log('[@citygro/vdata] store ready!', storeInstance, options);
+  }
+  return register(storeInstance);
 };
 
-var hasVdata = function hasVdata(o) {
-  return !!get$1(o, '$options.vdata');
+var replaceStore = (function (store) {
+  return {
+    created: function created() {
+      console.log('[@citygro/vdata] replaceStore', store);
+    },
+
+    computed: {
+      '$store': function $store() {
+        return store;
+      }
+    }
+  };
+});
+
+/**
+ * @param {Object[]} mixins
+ */
+var flattenMixinTree = function flattenMixinTree() {
+  var mixins = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
+
+  var arr = [];
+  mixins.forEach(function (mixin) {
+    if (mixin.mixins && mixin.mixins.length) {
+      arr = [].concat(toConsumableArray(arr), toConsumableArray(flattenMixinTree(mixin.mixins)));
+    }
+    arr.push(mixin);
+  });
+  return arr;
+};
+
+/**
+ * @param {Vue} vm - vue instance
+ * @param {string} prop - option name
+ */
+var getMergedOptions = (function (vm, prop) {
+  var options = clone(get$1(vm, '$options.' + prop, {}));
+  var mixins = get$1(vm, '$options.mixins', []);
+  flattenMixinTree(mixins).filter(function (mixin) {
+    return mixin[prop];
+  }).forEach(function (mixin) {
+    options = Object.assign(options, mixin[prop]);
+  });
+  return isEmpty(options) ? null : options;
+});
+
+/** !
+ * vue-async-data
+ *
+ * includes modifications which are subject to the terms outlined in LICENSE
+ *
+ * The MIT License (MIT)
+ *
+ * Copyright (c) 2017 kamijin-fanta
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ */
+
+var optionNames = ['Default', 'Lazy'];
+
+var isOptionName = function isOptionName(key) {
+  var names = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : optionNames;
+  return names.find(function (n) {
+    return key.endsWith(n);
+  });
+};
+
+// name args optional
+var createAsyncReload = function createAsyncReload(thisArg, asyncData) {
+  return function (propertyName) {
+    var _this = this;
+
+    var skipLazy = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
+
+    if (asyncData) {
+      var promises = [];
+      var names = keys(asyncData).filter(function (s) {
+        return !isOptionName(s);
+      }).filter(function (s) {
+        return propertyName === undefined || s === propertyName;
+      }).filter(function (s) {
+        return skipLazy === false || !asyncData[s + 'Lazy'];
+      });
+      if (propertyName !== undefined && names.length === 0) {
+        throw new Error('asyncData cannot find "' + propertyName, this);
+      }
+      names.forEach(function (prop) {
+        // helpers
+        var setError = function setError(err) {
+          _this[prop + 'Error'] = err;
+          if (err) {
+            console.error('[@citygro/vdata<' + _this._uid + '>]', err);
+            _this.asyncError = true;
+          } else {
+            _this.asyncError = !!names.find(function (n) {
+              return _this[n + 'Error'];
+            });
+          }
+        };
+        var setLoading = function setLoading(flag) {
+          _this[prop + 'Loading'] = flag;
+          if (flag) {
+            _this.asyncLoading = true;
+          } else {
+            _this.asyncLoading = !!names.find(function (n) {
+              return _this[n + 'Loading'];
+            });
+          }
+        };
+        var cancelTimer = function cancelTimer() {
+          if (_this['_' + prop + 'Timer']) {
+            clearTimeout(_this['_' + prop + 'Timer']);
+          }
+        };
+        setLoading(true);
+        setError(undefined);
+        var timeout = asyncData[prop + 'Timeout'] || -1;
+        if (timeout > 0) {
+          clearTimeout(_this['_' + prop + 'Timer']);
+          _this['_' + prop + 'Timer'] = setTimeout(function () {
+            _this._asyncReload.cancel();
+          }, timeout);
+        }
+        if (typeof asyncData[prop] !== 'function') {
+          console.error('asyncData.' + prop + ' must be funtion. actual: ' + asyncData[prop], _this);
+        } else {
+          var promise = asyncData[prop].apply(_this).then(function (data) {
+            _this[prop] = data;
+            _this[prop + 'Promise'] = promise;
+            setLoading(false);
+            cancelTimer();
+            return data;
+          }).catch(function (err) {
+            setError(err);
+            setLoading(false);
+            cancelTimer();
+          });
+          promises.push(promise);
+        }
+      });
+      return Promise.all(promises).then(flow(zip(names), fromPairs));
+    } else {
+      return Promise.resolve({});
+    }
+  }.bind(thisArg);
+};
+
+var AsyncDataMixin = {
+  beforeCreate: function beforeCreate() {
+    var asyncData = getMergedOptions(this, 'asyncData');
+    if (asyncData) {
+      this._asyncReload = createAsyncReload(this, asyncData);
+    }
+  },
+  created: function created() {
+    this.$asyncReload(undefined, true);
+  },
+
+  methods: {
+    $asyncReload: function $asyncReload(propertyName) {
+      if (isFunction(this._asyncReload)) {
+        return this._asyncReload.apply(this, arguments).then(function (result) {
+          return propertyName ? result[propertyName] : result;
+        });
+      } else {
+        return Promise.resolve(null);
+      }
+    }
+  },
+  data: function data() {
+    var _this2 = this;
+
+    var asyncData = getMergedOptions(this, 'asyncData');
+    if (asyncData) {
+      var names = keys(asyncData).filter(function (s) {
+        return !isOptionName(s);
+      });
+      var errorNames = names.map(function (s) {
+        return s + 'Error';
+      });
+      var dataObj = {
+        asyncLoading: true,
+        asyncError: false,
+        asyncAll: Promise.all(names.map(function (name) {
+          return asyncData[name];
+        })),
+        asyncAny: Any(names.map(function (name) {
+          return asyncData[name];
+        }))
+      };
+      names.forEach(function (name) {
+        var asyncDefault = asyncData[name + 'Default'];
+        dataObj[name] = isFunction(asyncDefault) ? asyncDefault.apply(_this2) : asyncDefault;
+        dataObj[name + 'Promise'] = asyncData[name];
+        dataObj[name + 'Loading'] = !asyncData[name + 'Lazy'];
+      });
+      errorNames.forEach(function (name) {
+        dataObj[name] = undefined;
+      });
+      return dataObj;
+    }
+    return {};
+  }
+};
+
+var createHandler = (function (Vue, store) {
+  var queue = Queue.create({
+    concurrency: 2,
+    next: function next() {
+      return new Promise(function (resolve) {
+        return Vue.nextTick(function () {
+          return resolve();
+        });
+      });
+    }
+  });
+  var handlers = {};
+  store.on('all', function (message) {
+    // enqueue a task to handle the vdata listeners for a particular vm
+    queue.push(function () {
+      Object.values(handlers).forEach(function (vmHandler) {
+        vmHandler.run(message);
+      });
+    });
+  });
+  return {
+    /**
+     * register handlers that will run on datastore events
+     *
+     * @param {Vue.Component} vm
+     */
+    add: function add(vm) {
+      var listeners = flattenMixinTree(vm.$options.mixins).filter(function (mixin) {
+        return !!mixin.vdata;
+      }).map(function (mixin) {
+        return mixin.vdata;
+      });
+      if (vm.$options.vdata) {
+        listeners.push(vm.$options.vdata);
+      }
+      var handler = {
+        run: function run(message) {
+          listeners.forEach(function (fn) {
+            fn.call(vm, message);
+          });
+        },
+        destroy: function destroy() {
+          delete handlers[vm._uid];
+        }
+      };
+      handlers[vm._uid] = handler;
+      return handler;
+    }
+  };
+});
+
+var hasVdata = function hasVdata(vm) {
+  return !!get$1(vm, '$options.vdata');
 };
 
 /**
@@ -2035,16 +2084,25 @@ var vdata$1 = {
     };
   },
   install: function install(Vue, options) {
-    options = isFunction(options) ? options(Vue) : options;
-    var store = createStore(options);
+    var store = createStore(isFunction(options) ? options(Vue) : options);
     Object.defineProperty(Vue, '$store', {
-      get: function get$1() {
-        return store;
+      get: function get() {
+        var parentStore = get$1(this, '$parent.$store');
+        if (parentStore) {
+          return parentStore;
+        } else {
+          return store;
+        }
       }
     });
     Object.defineProperty(Vue.prototype, '$store', {
-      get: function get$1() {
-        return store;
+      get: function get() {
+        var parentStore = get$1(this, '$parent.$store');
+        if (parentStore) {
+          return parentStore;
+        } else {
+          return store;
+        }
       }
     });
     var vmHandler = createHandler(Vue, store);
@@ -2068,9 +2126,6 @@ var vdata$1 = {
       }
     });
     Vue.mixin(AsyncDataMixin);
-    if (process.env.NODE_ENV !== 'test') {
-      console.log('[@citygro/vdata] $store ready!', store, options);
-    }
   }
 };
 
@@ -2082,6 +2137,7 @@ var createMixinForItemByResourceAndId = function createMixinForItemByResourceAnd
 };
 
 exports.DataFlowMixin = DataFlowMixin;
+exports.ReplaceStoreFromPropsMixin = ReplaceStoreFromPropsMixin;
 exports.asyncMap = _r14c_asyncUtils_map;
 exports.cleanRecord = cleanRecord$1;
 exports.createDataFlowMixin = createDataFlowMixin;
@@ -2090,7 +2146,9 @@ exports.createIndex = createIndex;
 exports.createMixinForItemById = createMixinForItemById;
 exports.createMixinForItemByResourceAndId = createMixinForItemByResourceAndId;
 exports.createMixinForListByResource = createMixinForListByResource;
+exports.createStore = createStore;
 exports.fetchWrapper = fetchWrapper;
+exports.replaceStore = replaceStore;
 exports.to = to;
 exports.vdata = vdata$1;
 exports.handleChange = handleChange;

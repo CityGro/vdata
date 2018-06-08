@@ -11,6 +11,7 @@ import rebase from './rebase'
 import registerSchemas from './registerSchemas'
 import toNumber from 'lodash/toNumber'
 import uniqueId from './uniqueId'
+import {register} from './registry'
 import {
   Map,
   Stack,
@@ -217,7 +218,7 @@ const createStore = (options = {}) => {
       }, {
         quiet: options.quiet
       })
-    } else {
+    } else if (process.env.NODE_ENV !== 'test') {
       console.warn(
         `[@citygro/vdata] attempting to remove a record that is not tracked by Store#${storeId}`,
         {collectionName, pkOrId, options}
@@ -574,7 +575,11 @@ const createStore = (options = {}) => {
   Store.prototype.isValidId = (id) => {
     return id !== null && id !== undefined && id !== ''
   }
-  return new Store()
+  const storeInstance = new Store()
+  if (process.env.NODE_ENV !== 'test') {
+    console.log('[@citygro/vdata] store ready!', storeInstance, options)
+  }
+  return register(storeInstance)
 }
 
 /**

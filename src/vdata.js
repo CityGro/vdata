@@ -4,7 +4,7 @@ import createStore from './createStore'
 import get from 'lodash/get'
 import isFunction from 'lodash/isFunction'
 
-const hasVdata = (o) => !!get(o, '$options.vdata')
+const hasVdata = (vm) => !!get(vm, '$options.vdata')
 
 /**
  * vdata plugin
@@ -14,16 +14,27 @@ export default {
     return (V) => fn(V)
   },
   install (Vue, options) {
-    options = (isFunction(options)) ? options(Vue) : options
-    const store = createStore(options)
+    const store = createStore(
+      (isFunction(options)) ? options(Vue) : options
+    )
     Object.defineProperty(Vue, '$store', {
       get () {
-        return store
+        const parentStore = get(this, '$parent.$store')
+        if (parentStore) {
+          return parentStore
+        } else {
+          return store
+        }
       }
     })
     Object.defineProperty(Vue.prototype, '$store', {
       get () {
-        return store
+        const parentStore = get(this, '$parent.$store')
+        if (parentStore) {
+          return parentStore
+        } else {
+          return store
+        }
       }
     })
     const vmHandler = createHandler(Vue, store)
@@ -47,8 +58,5 @@ export default {
       }
     })
     Vue.mixin(AsyncDataMixin)
-    if (process.env.NODE_ENV !== 'test') {
-      console.log('[@citygro/vdata] $store ready!', store, options)
-    }
   }
 }
