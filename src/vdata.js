@@ -13,10 +13,15 @@ export default {
   createConfig (fn) {
     return (V) => fn(V)
   },
+  /**
+   * @param {object} Vue
+   * @param {object} options - options are passed into `createStore`
+   * @param {number} [options.queueConcurrency=2]
+   */
   install (Vue, options) {
-    const store = createStore(
-      (isFunction(options)) ? options(Vue) : options
-    )
+    const vdataOptions = (isFunction(options)) ? options(Vue) : options
+    const store = createStore(vdataOptions)
+    const concurrency = vdataOptions.queueConcurrency || 2
     Object.defineProperty(Vue, '$store', {
       get () {
         const parentStore = get(this, '$parent.$store')
@@ -37,7 +42,7 @@ export default {
         }
       }
     })
-    const vmHandler = createHandler(Vue, store)
+    const vmHandler = createHandler(Vue, {concurrency})
     Vue.mixin({
       methods: {
         $vdata (message) {
@@ -46,7 +51,7 @@ export default {
           }
         }
       },
-      beforeCreate () {
+      created () {
         if (hasVdata(this)) {
           this._vdataHandler = vmHandler.add(this)
         }

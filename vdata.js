@@ -1466,9 +1466,9 @@
             if (x(r)) return r.forEach(function(n, o) {
                 D.set(o, t(n, e, P, o, r, T));
             }), D;
-            var K = C ? B ? l : h : B ? keysIn : j, $ = F ? void 0 : K(r);
-            return o($ || r, function(n, o) {
-                $ && (n = r[o = n]), 
+            var $ = C ? B ? l : h : B ? keysIn : j, K = F ? void 0 : $(r);
+            return o(K || r, function(n, o) {
+                K && (n = r[o = n]), 
                 // Recursively populate clone (susceptible to call stack limits).
                 i(D, o, t(n, e, P, o, r, T));
             }), D;
@@ -3274,7 +3274,7 @@
             value: !0
         });
         var m = g(e(193)), x = g(e(400)), b = g(e(0)), w = g(e(401)), j = g(e(406)), O = g(e(185)), S = g(e(427)), A = g(e(377)), E = g(e(381)), I = g(e(410)), z = g(e(422)), k = (e(440), 
-        g(e(380))), M = g(e(385)), P = g(e(192)), R = g(e(33)), L = g(e(415)), T = g(e(411)), D = g(e(265)), q = g(e(421)), B = g(e(48)), C = g(e(393)), F = g(e(394)), W = g(e(396)), U = g(e(397)), N = g(e(419)), K = g(e(180)), $ = g(e(194)), V = g(e(262)), J = g(e(22)), G = e(263), H = g(e(403)), Z = g(e(183)), Y = g(e(2)), X = g(e(186)), Q = g(e(426)), tt = g(e(402)), rt = g(e(189)), et = g(e(435)), nt = g(e(395)), ot = g(e(21)), it = g(e(398)), ut = g(e(191)), at = {}, st = {
+        g(e(380))), M = g(e(385)), P = g(e(192)), R = g(e(33)), L = g(e(415)), T = g(e(411)), D = g(e(265)), q = g(e(421)), B = g(e(48)), C = g(e(393)), F = g(e(394)), W = g(e(396)), U = g(e(397)), N = g(e(419)), $ = g(e(180)), K = g(e(194)), V = g(e(262)), J = g(e(22)), G = e(263), H = g(e(403)), Z = g(e(183)), Y = g(e(2)), X = g(e(186)), Q = g(e(426)), tt = g(e(402)), rt = g(e(189)), et = g(e(435)), nt = g(e(395)), ot = g(e(21)), it = g(e(398)), ut = g(e(191)), at = {}, st = {
             mounted: function() {
                 console.log("[@citygro/vdata] replace store from props", this.$store);
             },
@@ -3606,7 +3606,7 @@
                                     r.next = 15;
                                     break;
                                 }
-                                return r.next = 11, $(t.$store.find(s, i, ht({}, t[w], t[x])));
+                                return r.next = 11, K(t.$store.find(s, i, ht({}, t[w], t[x])));
 
                               case 11:
                                 f = r.sent, h = lt(f, 2), a = h[0], c = h[1];
@@ -3637,7 +3637,7 @@
                 methods: (e = {}, pt(e, j, function(t) {
                     s = t, this.$asyncReload(c);
                 }), pt(e, v, function() {
-                    var t = this[f] || K(this, c + "." + l, null);
+                    var t = this[f] || $(this, c + "." + l, null);
                     return this.$store.isValidId(t) ? t : null;
                 }), pt(e, y, function() {
                     var t = this;
@@ -3646,7 +3646,7 @@
                         return u.default.wrap(function(r) {
                             for (;;) switch (r.prev = r.next) {
                               case 0:
-                                return r.next = 2, $(t.$store.save(s, t[c], ht({}, t[w], t[x])));
+                                return r.next = 2, K(t.$store.save(s, t[c], ht({}, t[w], t[x])));
 
                               case 2:
                                 if (e = r.sent, n = lt(e, 2), o = n[0], i = n[1], !o) {
@@ -3680,7 +3680,7 @@
                 }
             };
         }, Dt = function(t, r) {
-            return G.isImmutable(t) ? t.getIn(r.split(".")) : K(t, r);
+            return G.isImmutable(t) ? t.getIn(r.split(".")) : $(t, r);
         }, qt = function() {
             var t = arguments[0], r = z(arguments);
             return X.apply(void 0, [ t ].concat(vt(r), [ function(t, r) {
@@ -4155,14 +4155,14 @@
             return console.log("[@citygro/vdata] store ready!", y, t), function(t) {
                 return at[t.storeId] = t, t;
             }(y);
-        }, Kt = function t() {
+        }, $t = function t() {
             var r = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : [], e = [];
             return r.forEach(function(r) {
                 r.mixins && r.mixins.length && (e = [].concat(vt(e), vt(t(r.mixins)))), e.push(r);
             }), e;
-        }, $t = function(t, r) {
-            var e = k(K(t, "$options." + r, {})), n = K(t, "$options.mixins", []);
-            return Kt(n).filter(function(t) {
+        }, Kt = function(t, r) {
+            var e = k($(t, "$options." + r, {})), n = $(t, "$options.mixins", []);
+            return $t(n).filter(function(t) {
                 return t[r];
             }).forEach(function(t) {
                 e = (0, p.default)(e, t[r]);
@@ -4173,7 +4173,7 @@
             });
         }, Gt = {
             beforeCreate: function() {
-                var t = $t(this, "asyncData");
+                var t = Kt(this, "asyncData");
                 t && (this._asyncReload = function(t, r) {
                     return function(t) {
                         var e = this, n = arguments.length > 1 && void 0 !== arguments[1] && arguments[1];
@@ -4228,7 +4228,7 @@
                 }
             },
             data: function() {
-                var t = this, r = $t(this, "asyncData");
+                var t = this, r = Kt(this, "asyncData");
                 if (r) {
                     var e = ot(r).filter(function(t) {
                         return !Jt(t);
@@ -4253,30 +4253,35 @@
                 }
                 return {};
             }
-        }, Ht = function(t) {
-            return !!K(t, "$options.vdata");
-        }, Zt = {
+        }, Ht = [], Zt = function(t) {
+            return !!$(t, "$options.vdata");
+        }, Yt = {
             createConfig: function(t) {
                 return function(r) {
                     return t(r);
                 };
             },
+            /**
+   * @param {object} Vue
+   * @param {object} options - options are passed into `createStore`
+   * @param {number} [options.queueConcurrency=2]
+   */
             install: function(t, r) {
-                var e = Nt(R(r) ? r(t) : r);
+                var e = R(r) ? r(t) : r, o = Nt(e), i = e.queueConcurrency || 2;
                 Object.defineProperty(t, "$store", {
                     get: function() {
-                        var t = K(this, "$parent.$store");
-                        return t || e;
+                        var t = $(this, "$parent.$store");
+                        return t || o;
                     }
                 }), Object.defineProperty(t.prototype, "$store", {
                     get: function() {
-                        var t = K(this, "$parent.$store");
-                        return t || e;
+                        var t = $(this, "$parent.$store");
+                        return t || o;
                     }
                 });
-                var o = function(t, r) {
-                    var e = ut.create({
-                        concurrency: 2,
+                var u = function(t) {
+                    var r = (arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : {}).concurrency, e = ut.create({
+                        concurrency: r,
                         next: function() {
                             return new l.default(function(r) {
                                 return t.nextTick(function() {
@@ -4285,56 +4290,62 @@
                             });
                         }
                     }), o = {};
-                    return r.on("all", function(t) {
-                        // enqueue a task to handle the vdata listeners for a particular vm
-                        e.push(function() {
-                            (0, n.default)(o).forEach(function(r) {
-                                r.run(t);
-                            });
-                        });
-                    }), {
+                    return {
                         /**
      * register handlers that will run on datastore events
      *
      * @param {Vue.Component} vm
      */
                         add: function(t) {
-                            var r = Kt(t.$options.mixins).filter(function(t) {
+                            var r = t.$store.storeId;
+                            x(Ht, r) || (
+                            // only sub to `Store#all` once
+                            t.$store.on("all", function(t) {
+                                // enqueue a task to handle the vdata listeners for a particular vm
+                                e.push(function() {
+                                    (0, n.default)(o).forEach(function(r) {
+                                        r.run(t);
+                                    });
+                                });
+                            }), Ht.push(r));
+                            var i = $t(t.$options.mixins).filter(function(t) {
                                 return !!t.vdata;
                             }).map(function(t) {
                                 return t.vdata;
                             });
-                            t.$options.vdata && r.push(t.$options.vdata);
-                            var e = {
-                                run: function(e) {
-                                    r.forEach(function(r) {
-                                        r.call(t, e);
+                            t.$options.vdata && i.push(t.$options.vdata);
+                            var u = {
+                                run: function(r) {
+                                    i.forEach(function(e) {
+                                        e.call(t, r);
                                     });
                                 },
                                 destroy: function() {
                                     delete o[t._uid];
                                 }
                             };
-                            return o[t._uid] = e, e;
+                            return o[t._uid] = u, u;
                         }
                     };
-                }(t, e);
+                }(t, {
+                    concurrency: i
+                });
                 t.mixin({
                     methods: {
                         $vdata: function(t) {
-                            Ht(this) && this._vdataHandler.run(t);
+                            Zt(this) && this._vdataHandler.run(t);
                         }
                     },
-                    beforeCreate: function() {
-                        Ht(this) && (this._vdataHandler = o.add(this));
+                    created: function() {
+                        Zt(this) && (this._vdataHandler = u.add(this));
                     },
                     beforeDestroy: function() {
-                        Ht(this) && this._vdataHandler.destroy();
+                        Zt(this) && this._vdataHandler.destroy();
                     }
                 }), t.mixin(Gt);
             }
-        }, Yt = St("value");
-        r.DataFlowMixin = Yt, r.ReplaceStoreFromPropsMixin = st, r.asyncMap = m, r.cleanRecord = function(t) {
+        }, Xt = St("value");
+        r.DataFlowMixin = Xt, r.ReplaceStoreFromPropsMixin = st, r.asyncMap = m, r.cleanRecord = function(t) {
             var r = t.record, e = t.store, n = S([].concat(vt(t.omitKeys || []), [ "_id" ])), o = dt({
                 store: e,
                 record: r,
@@ -4372,7 +4383,7 @@
                         return u.default.wrap(function(e) {
                             for (;;) switch (e.prev = e.next) {
                               case 0:
-                                return e.next = 2, $(t.$store.findAll(r, o, ht({}, t[s], t[a], {
+                                return e.next = 2, K(t.$store.findAll(r, o, ht({}, t[s], t[a], {
                                     force: t[n]
                                 })));
 
@@ -4399,7 +4410,7 @@
                     }
                 }
             };
-        }, r.to = $, r.vdata = Zt, r.handleChange = yt, r.handleKeyChange = _t, r.handleArrayChange = gt, 
+        }, r.to = K, r.vdata = Yt, r.handleChange = yt, r.handleKeyChange = _t, r.handleArrayChange = gt, 
         r.handleArrayKeyChange = mt, r.pushToArray = xt, r.pushToArrayKey = bt, r.removeFromArray = wt, 
         r.removeFromArrayKey = jt;
     }, 
@@ -5255,7 +5266,7 @@
     /***/ function(t, r, e) {
         "use strict";
         // ECMAScript 6 symbols shim
-                var n = e(4), o = e(14), i = e(11), u = e(7), a = e(126), s = e(235).KEY, c = e(23), f = e(76), p = e(50), h = e(51), l = e(5), v = e(81), d = e(80), y = e(229), _ = e(232), g = e(9), m = e(16), x = e(12), b = e(79), w = e(39), j = e(118), O = e(239), S = e(119), A = e(10), E = e(25), I = S.f, z = A.f, k = O.f, M = n.Symbol, P = n.JSON, R = P && P.stringify, L = l("_hidden"), T = l("toPrimitive"), D = {}.propertyIsEnumerable, q = f("symbol-registry"), B = f("symbols"), C = f("op-symbols"), F = Object.prototype, W = "function" == typeof M, U = n.QObject, N = !U || !U.prototype || !U.prototype.findChild, K = i && c(function() {
+                var n = e(4), o = e(14), i = e(11), u = e(7), a = e(126), s = e(235).KEY, c = e(23), f = e(76), p = e(50), h = e(51), l = e(5), v = e(81), d = e(80), y = e(229), _ = e(232), g = e(9), m = e(16), x = e(12), b = e(79), w = e(39), j = e(118), O = e(239), S = e(119), A = e(10), E = e(25), I = S.f, z = A.f, k = O.f, M = n.Symbol, P = n.JSON, R = P && P.stringify, L = l("_hidden"), T = l("toPrimitive"), D = {}.propertyIsEnumerable, q = f("symbol-registry"), B = f("symbols"), C = f("op-symbols"), F = Object.prototype, W = "function" == typeof M, U = n.QObject, N = !U || !U.prototype || !U.prototype.findChild, $ = i && c(function() {
             return 7 != j(z({}, "a", {
                 get: function() {
                     return z(this, "a", {
@@ -5266,7 +5277,7 @@
         }) ? function(t, r, e) {
             var n = I(F, r);
             n && delete F[r], z(t, r, e), n && t !== F && z(F, r, n);
-        } : z, $ = function(t) {
+        } : z, K = function(t) {
             var r = B[t] = j(M.prototype);
             return r._k = t, r;
         }, V = W && "symbol" == typeof M.iterator ? function(t) {
@@ -5277,7 +5288,7 @@
             return t === F && J(C, r, e), g(t), r = b(r, !0), g(e), o(B, r) ? (e.enumerable ? (o(t, L) && t[L][r] && (t[L][r] = !1), 
             e = j(e, {
                 enumerable: w(0, !1)
-            })) : (o(t, L) || z(t, L, w(1, {})), t[L][r] = !0), K(t, r, e)) : z(t, r, e);
+            })) : (o(t, L) || z(t, L, w(1, {})), t[L][r] = !0), $(t, r, e)) : z(t, r, e);
         }, G = function(t, r) {
             g(t);
             for (var e, n = y(r = x(r)), o = 0, i = n.length; i > o; ) J(t, e = n[o++], r[e]);
@@ -5301,17 +5312,17 @@
         W || (a((M = function() {
             if (this instanceof M) throw TypeError("Symbol is not a constructor!");
             var t = h(arguments.length > 0 ? arguments[0] : void 0), r = function(e) {
-                this === F && r.call(C, e), o(this, L) && o(this[L], t) && (this[L][t] = !1), K(this, t, w(1, e));
+                this === F && r.call(C, e), o(this, L) && o(this[L], t) && (this[L][t] = !1), $(this, t, w(1, e));
             };
-            return i && N && K(F, t, {
+            return i && N && $(F, t, {
                 configurable: !0,
                 set: r
-            }), $(t);
+            }), K(t);
         }).prototype, "toString", function() {
             return this._k;
         }), S.f = Z, A.f = J, e(120).f = O.f = Y, e(38).f = H, e(73).f = X, i && !e(37) && a(F, "propertyIsEnumerable", H, !0), 
         v.f = function(t) {
-            return $(l(t));
+            return K(l(t));
         }), u(u.G + u.W + u.F * !W, {
             Symbol: M
         });
@@ -5670,7 +5681,7 @@
             return er;
         }), 
         /* harmony export (binding) */ e.d(r, "hasIn", function() {
-            return $e;
+            return Ke;
         }), 
         /* harmony export (binding) */ e.d(r, "merge", function() {
             return gr;
@@ -5814,14 +5825,14 @@
         var q = 0, B = 1, C = 2, F = "function" == typeof Symbol && Symbol.iterator, W = "@@iterator", U = F || W, N = function(t) {
             this.next = t;
         };
-        function K(t, r, e, n) {
+        function $(t, r, e, n) {
             var o = 0 === t ? r : 1 === t ? e : [ r, e ];
             return n ? n.value = o : n = {
                 value: o,
                 done: !1
             }, n;
         }
-        function $() {
+        function K() {
             return {
                 value: void 0,
                 done: !0
@@ -5893,7 +5904,7 @@
                             done: !0
                         };
                         var i = e[r ? n - ++o : o++];
-                        return K(t, i[0], i[1]);
+                        return $(t, i[0], i[1]);
                     });
                 }
                 return this.__iteratorUncached(t, r);
@@ -5954,7 +5965,7 @@
                         done: !0
                     };
                     var i = r ? n - ++o : o++;
-                    return K(t, i, e[i]);
+                    return $(t, i, e[i]);
                 });
             }, r;
         }(tt), ot = function(t) {
@@ -5981,7 +5992,7 @@
                         done: !0
                     };
                     var u = n[r ? o - ++i : i++];
-                    return K(t, u, e[u]);
+                    return $(t, u, e[u]);
                 });
             }, r;
         }(Q);
@@ -5999,11 +6010,11 @@
             }, r.prototype.__iteratorUncached = function(t, r) {
                 if (r) return this.cacheResult().__iterator(t, r);
                 var e = G(this._collection);
-                if (!J(e)) return new N($);
+                if (!J(e)) return new N(K);
                 var n = 0;
                 return new N(function() {
                     var r = e.next();
-                    return r.done ? r : K(t, n++, r.value);
+                    return r.done ? r : $(t, n++, r.value);
                 });
             }, r;
         }(tt), at = function(t) {
@@ -6028,7 +6039,7 @@
                         if (r.done) return r;
                         n[o] = r.value;
                     }
-                    return K(t, o, n[o++]);
+                    return $(t, o, n[o++]);
                 });
             }, r;
         }(tt);
@@ -6275,7 +6286,7 @@
                 var e = this, n = this._iter.__iterator(B, r), o = 0;
                 return r && h(this), new N(function() {
                     var i = n.next();
-                    return i.done ? i : K(t, r ? e.size - ++o : o++, i.value, i);
+                    return i.done ? i : $(t, r ? e.size - ++o : o++, i.value, i);
                 });
             }, r;
         }(tt), kt = function(t) {
@@ -6294,7 +6305,7 @@
                 var e = this._iter.__iterator(B, r);
                 return new N(function() {
                     var r = e.next();
-                    return r.done ? r : K(t, r.value, r.value, r);
+                    return r.done ? r : $(t, r.value, r.value, r);
                 });
             }, r;
         }(rt), Mt = function(t) {
@@ -6310,7 +6321,7 @@
                     // Check if entry exists first so array access doesn't throw for holes
                     // in the parent iteration.
                     if (r) {
-                        Kt(r);
+                        $t(r);
                         var n = b(r);
                         return t(n ? r.get(1) : r[1], n ? r.get(0) : r[0], e);
                     }
@@ -6325,9 +6336,9 @@
                         // Check if entry exists first so array access doesn't throw for holes
                         // in the parent iteration.
                                                 if (n) {
-                            Kt(n);
+                            $t(n);
                             var o = b(n);
-                            return K(t, o ? n.get(0) : n[0], o ? n.get(1) : n[1], r);
+                            return $(t, o ? n.get(0) : n[0], o ? n.get(1) : n[1], r);
                         }
                     }
                 });
@@ -6385,7 +6396,7 @@
                     var o = i.next();
                     if (o.done) return o;
                     var u = o.value, a = u[0];
-                    return K(n, a, r.call(e, u[1], a, t), o);
+                    return $(n, a, r.call(e, u[1], a, t), o);
                 });
             }, n;
         }
@@ -6417,7 +6428,7 @@
                     var t = u.next();
                     if (t.done) return t;
                     var a = t.value;
-                    return K(n, r ? a[0] : o ? e.size - ++i : i++, a[1], t);
+                    return $(n, r ? a[0] : o ? e.size - ++i : i++, a[1], t);
                 });
             }, n;
         }
@@ -6441,7 +6452,7 @@
                         var i = u.next();
                         if (i.done) return i;
                         var s = i.value, c = s[0], f = s[1];
-                        if (r.call(e, f, c, t)) return K(o, n ? c : a++, f, i);
+                        if (r.call(e, f, c, t)) return $(o, n ? c : a++, f, i);
                     }
                 });
             }, o;
@@ -6476,7 +6487,7 @@
             }, c.__iteratorUncached = function(r, e) {
                 if (0 !== a && e) return this.cacheResult().__iterator(r, e);
                 // Don't bother instantiating parent iterator if taking 0.
-                                if (0 === a) return new N($);
+                                if (0 === a) return new N(K);
                 var o = t.__iterator(r, e), u = 0, s = 0;
                 return new N(function() {
                     for (;u++ < i; ) o.next();
@@ -6485,7 +6496,7 @@
                         done: !0
                     };
                     var t = o.next();
-                    return n || r === B || t.done ? t : K(r, s - 1, r === q ? void 0 : t.value[1], t);
+                    return n || r === B || t.done ? t : $(r, s - 1, r === q ? void 0 : t.value[1], t);
                 });
             }, c;
         }
@@ -6505,11 +6516,11 @@
                 return new N(function() {
                     var t, i, f;
                     do {
-                        if ((t = a.next()).done) return n || o === B ? t : K(o, c++, o === q ? void 0 : t.value[1], t);
+                        if ((t = a.next()).done) return n || o === B ? t : $(o, c++, o === q ? void 0 : t.value[1], t);
                         var p = t.value;
                         i = p[0], f = p[1], s && (s = r.call(e, f, i, u));
                     } while (s);
-                    return o === C ? t : K(o, i, f, t);
+                    return o === C ? t : $(o, i, f, t);
                 });
             }, o;
         }
@@ -6532,7 +6543,7 @@
                         var t = i.next();
                         if (!1 === t.done) {
                             var s = t.value;
-                            if (n === C && (s = s[1]), r && !(u.length < r) || !b(s)) return e ? t : K(n, a++, s, t);
+                            if (n === C && (s = s[1]), r && !(u.length < r) || !b(s)) return e ? t : $(n, a++, s, t);
                             u.push(i), i = s.__iterator(n, o);
                         } else i = u.pop();
                     }
@@ -6614,7 +6625,7 @@
                     })), a ? {
                         value: void 0,
                         done: !0
-                    } : K(t, u++, r.apply(null, e.map(function(t) {
+                    } : $(t, u++, r.apply(null, e.map(function(t) {
                         return t.value;
                     })));
                 });
@@ -6624,10 +6635,10 @@
                 function Nt(t, r) {
             return t === r ? t : st(t) ? r : t.constructor(r);
         }
-        function Kt(t) {
+        function $t(t) {
             if (t !== Object(t)) throw new TypeError("Expected [K, V] tuple: " + t);
         }
-        function $t(t) {
+        function Kt(t) {
             return w(t) ? L : j(t) ? T : D;
         }
         function Vt(t) {
@@ -6900,7 +6911,7 @@
                     return n++, t(r[1], r[0], e);
                 }, r), n;
             }, r.prototype.__ensureOwner = function(t) {
-                return t === this.__ownerID ? this : t ? $r(this.size, this._root, t, this.__hash) : 0 === this.size ? Vr() : (this.__ownerID = t, 
+                return t === this.__ownerID ? this : t ? Kr(this.size, this._root, t, this.__hash) : 0 === this.size ? Vr() : (this.__ownerID = t, 
                 this.__altered = !1, this);
             }, r;
         }(L);
@@ -7045,7 +7056,7 @@
         };
         var Wr, Ur = function(t) {
             function r(t, r, e) {
-                this._type = r, this._reverse = e, this._stack = t._root && Kr(t._root);
+                this._type = r, this._reverse = e, this._stack = t._root && $r(t._root);
             }
             return t && (r.__proto__ = t), r.prototype = Object.create(t && t.prototype), r.prototype.constructor = r, 
             r.prototype.next = function() {
@@ -7059,7 +7070,7 @@
                         var i = e.nodes[this._reverse ? o - n : n];
                         if (i) {
                             if (i.entry) return Nr(t, i.entry);
-                            r = this._stack = Kr(i, r);
+                            r = this._stack = $r(i, r);
                         }
                         continue;
                     }
@@ -7072,22 +7083,22 @@
             }, r;
         }(N);
         function Nr(t, r) {
-            return K(t, r[0], r[1]);
+            return $(t, r[0], r[1]);
         }
-        function Kr(t, r) {
+        function $r(t, r) {
             return {
                 node: t,
                 index: 0,
                 __prev: r
             };
         }
-        function $r(t, r, e, n) {
+        function Kr(t, r, e, n) {
             var o = Object.create(Tr);
             return o.size = t, o._root = r, o.__ownerID = e, o.__hash = n, o.__altered = !1, 
             o;
         }
         function Vr() {
-            return Wr || (Wr = $r(0));
+            return Wr || (Wr = Kr(0));
         }
         function Jr(t, r, e) {
             var n, o;
@@ -7100,7 +7111,7 @@
                 o = 1, n = new Dr(t.__ownerID, [ [ r, e ] ]);
             }
             return t.__ownerID ? (t.size = o, t._root = n, t.__hash = void 0, t.__altered = !0, 
-            t) : n ? $r(o, n) : Vr();
+            t) : n ? Kr(o, n) : Vr();
         }
         function Gr(t, r, e, n, o, i, a, s) {
             return t ? t.update(r, e, n, o, i, a, s) : i === u ? t : (f(s), f(a), new Fr(r, n, [ o, i ]));
@@ -7215,7 +7226,7 @@
                     return o === se ? {
                         value: void 0,
                         done: !0
-                    } : K(t, r ? --e : e++, o);
+                    } : $(t, r ? --e : e++, o);
                 });
             }, r.prototype.__iterate = function(t, r) {
                 for (var e, n = r ? this.size : 0, o = ce(this, r); (e = o()) !== se && !1 !== t(e, r ? --n : n++, this); ) ;
@@ -7517,7 +7528,7 @@
                 return new N(function() {
                     if (n) {
                         var r = n.value;
-                        return n = n.next, K(t, e++, r);
+                        return n = n.next, $(t, e++, r);
                     }
                     return {
                         value: void 0,
@@ -7744,7 +7755,7 @@
                         done: !0
                     };
                     var u = o;
-                    return o += r ? -n : n, K(t, r ? e - ++i : i++, u);
+                    return o += r ? -n : n, $(t, r ? e - ++i : i++, u);
                 });
             }, r.prototype.equals = function(t) {
                 return t instanceof r ? this._start === t._start && this._end === t._end && this._step === t._step : ke(this, t);
@@ -7754,10 +7765,10 @@
             for (var n = Xt(r), o = 0; o !== n.length; ) if ((t = nr(t, n[o++], u)) === u) return e;
             return t;
         }
-        function Ke(t, r) {
+        function $e(t, r) {
             return Ne(this, t, r);
         }
-        function $e(t, r) {
+        function Ke(t, r) {
             return Ne(t, r, u) !== u;
         }
         function Ve() {
@@ -7971,7 +7982,7 @@
             },
             flatMap: function(t, r) {
                 return Nt(this, function(t, r, e) {
-                    var n = $t(t);
+                    var n = Kt(t);
                     return t.toSeq().map(function(o, i) {
                         return n(r.call(e, o, i, t));
                     }).flatten(!0);
@@ -7988,7 +7999,7 @@
                     return lt(e, t);
                 }, void 0, r);
             },
-            getIn: Ke,
+            getIn: $e,
             groupBy: function(t, r) {
                 return function(t, r, e) {
                     var n = w(t), o = (S(t) ? ge() : Pr()).asMutable();
@@ -7997,7 +8008,7 @@
                             return (t = t || []).push(n ? [ u, i ] : i), t;
                         });
                     });
-                    var i = $t(t);
+                    var i = Kt(t);
                     return o.map(function(r) {
                         return Nt(t, i(r));
                     });
@@ -8007,7 +8018,7 @@
                 return this.get(t, u) !== u;
             },
             hasIn: function(t) {
-                return $e(this, t);
+                return Ke(this, t);
             },
             isSubset: function(t) {
                 return t = "function" == typeof t.includes ? t : R(t), this.every(function(r) {
@@ -8089,7 +8100,7 @@
                             var t = u.next();
                             if (t.done) return t;
                             var o = t.value, s = o[0], c = o[1];
-                            return r.call(e, c, s, i) ? n === C ? t : K(n, s, c, t) : (a = !1, {
+                            return r.call(e, c, s, i) ? n === C ? t : $(n, s, c, t) : (a = !1, {
                                 value: void 0,
                                 done: !0
                             });
@@ -8221,7 +8232,7 @@
                     }, e.__iteratorUncached = function(e, n) {
                         var o, i = t.__iterator(B, n), u = 0;
                         return new N(function() {
-                            return (!o || u % 2) && (o = i.next()).done ? o : u % 2 ? K(e, u++, r) : K(e, u++, o.value, o);
+                            return (!o || u % 2) && (o = i.next()).done ? o : u % 2 ? $(e, u++, r) : $(e, u++, o.value, o);
                         });
                     }, e;
                 }(this, t));
@@ -8428,7 +8439,7 @@
         /**
  * Returns a lazy Seq of `value` repeated `times` times. When `times` is
  * undefined, returns an infinite sequence of `value`.
- */        hn[P] = !0, hn.delete = hn.remove, hn.deleteIn = hn.removeIn = pr, hn.getIn = Ke, 
+ */        hn[P] = !0, hn.delete = hn.remove, hn.deleteIn = hn.removeIn = pr, hn.getIn = $e, 
         hn.hasIn = Je.hasIn, hn.merge = dr, hn.mergeWith = yr, hn.mergeIn = Ar, hn.mergeDeep = Or, 
         hn.mergeDeepWith = Sr, hn.mergeDeepIn = Er, hn.setIn = cr, hn.update = lr, hn.updateIn = vr, 
         hn.withMutations = Ir, hn.asMutable = zr, hn.asImmutable = kr, hn[U] = hn.entries, 
@@ -8468,7 +8479,7 @@
                     return o === n ? {
                         value: void 0,
                         done: !0
-                    } : K(t, r ? n - ++o : o++, e._value);
+                    } : $(t, r ? n - ++o : o++, e._value);
                 });
             }, r.prototype.equals = function(t) {
                 return t instanceof r ? lt(this._value, t._value) : ke(t);
@@ -8521,7 +8532,7 @@
             get: nr,
             getIn: Ne,
             has: er,
-            hasIn: $e,
+            hasIn: Ke,
             merge: gr,
             mergeDeep: xr,
             mergeWith: mr,
@@ -11772,24 +11783,24 @@
                 e;
             }
             /*--------------------------------------------------------------------------*/            if (!l) return U(e, c);
-            var N = c, K = [];
+            var N = c, $ = [];
             // Convert methods by ary cap.
                         return S(L, function(t) {
                 S(n.aryMethod[t], function(t) {
                     var r = N[n.remap[t] || t];
-                    r && K.push([ t, U(t, r) ]);
+                    r && $.push([ t, U(t, r) ]);
                 });
             }), 
             // Convert remaining methods.
             S(k(N), function(t) {
                 var r = N[t];
                 if ("function" == typeof r) {
-                    for (var e = K.length; e--; ) if (K[e][0] == t) return;
-                    r.convert = F(t, r), K.push([ t, r ]);
+                    for (var e = $.length; e--; ) if ($[e][0] == t) return;
+                    r.convert = F(t, r), $.push([ t, r ]);
                 }
             }), 
             // Assign to `_` leaving `_.prototype` unchanged to allow chaining.
-            S(K, function(t) {
+            S($, function(t) {
                 N[t[0]] = t[1];
             }), N.convert = function(t) {
                 return N.runInContext.convert(t)(void 0);

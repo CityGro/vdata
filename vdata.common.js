@@ -2019,9 +2019,14 @@ var AsyncDataMixin = {
   }
 };
 
-var createHandler = (function (Vue, store) {
+var storeSubs = [];
+
+var createHandler = (function (Vue) {
+  var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+
+  var concurrency = options.concurrency;
   var queue = Queue.create({
-    concurrency: 2,
+    concurrency: concurrency,
     next: function next() {
       return new Promise(function (resolve) {
         return Vue.nextTick(function () {
@@ -2031,14 +2036,6 @@ var createHandler = (function (Vue, store) {
     }
   });
   var handlers = {};
-  store.on('all', function (message) {
-    // enqueue a task to handle the vdata listeners for a particular vm
-    queue.push(function () {
-      Object.values(handlers).forEach(function (vmHandler) {
-        vmHandler.run(message);
-      });
-    });
-  });
   return {
     /**
      * register handlers that will run on datastore events
@@ -2046,6 +2043,19 @@ var createHandler = (function (Vue, store) {
      * @param {Vue.Component} vm
      */
     add: function add(vm) {
+      var storeId = vm.$store.storeId;
+      if (!includes(storeSubs, storeId)) {
+        // only sub to `Store#all` once
+        vm.$store.on('all', function (message) {
+          // enqueue a task to handle the vdata listeners for a particular vm
+          queue.push(function () {
+            Object.values(handlers).forEach(function (vmHandler) {
+              vmHandler.run(message);
+            });
+          });
+        });
+        storeSubs.push(storeId);
+      }
       var listeners = flattenMixinTree(vm.$options.mixins).filter(function (mixin) {
         return !!mixin.vdata;
       }).map(function (mixin) {
@@ -2083,8 +2093,16 @@ var vdata$1 = {
       return fn(V);
     };
   },
+
+  /**
+   * @param {object} Vue
+   * @param {object} options - options are passed into `createStore`
+   * @param {number} [options.queueConcurrency=2]
+   */
   install: function install(Vue, options) {
-    var store = createStore(isFunction(options) ? options(Vue) : options);
+    var vdataOptions = isFunction(options) ? options(Vue) : options;
+    var store = createStore(vdataOptions);
+    var concurrency = vdataOptions.queueConcurrency || 2;
     Object.defineProperty(Vue, '$store', {
       get: function get() {
         var parentStore = get$1(this, '$parent.$store');
@@ -2105,7 +2123,7 @@ var vdata$1 = {
         }
       }
     });
-    var vmHandler = createHandler(Vue, store);
+    var vmHandler = createHandler(Vue, { concurrency: concurrency });
     Vue.mixin({
       methods: {
         $vdata: function $vdata(message) {
@@ -2114,7 +2132,7 @@ var vdata$1 = {
           }
         }
       },
-      beforeCreate: function beforeCreate() {
+      created: function created() {
         if (hasVdata(this)) {
           this._vdataHandler = vmHandler.add(this);
         }
