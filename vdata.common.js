@@ -1161,6 +1161,17 @@ var registerSchemas = function (store) {
   return store;
 };
 
+var LCG = function LCG(seed) {
+  var lcg = function lcg(a) {
+    return a * 48271 % 2147483647;
+  };
+  seed = seed ? lcg(seed) : lcg(Math.random());
+  return function () {
+    seed = lcg(seed);
+    return seed / 2147483648;
+  };
+};
+
 /**
  * uniqueId
  *
@@ -1170,7 +1181,8 @@ var registerSchemas = function (store) {
 var uniqueId = (function (prefix) {
   var ex = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 9e15;
 
-  var id = parseInt((Math.random() * ex).toFixed(0), 10).toString(36);
+  var random = LCG();
+  var id = parseInt((random() * ex).toFixed(0), 10).toString(36);
   return prefix ? prefix + "-" + id : id;
 });
 
@@ -2172,6 +2184,7 @@ exports.createStore = createStore;
 exports.fetchWrapper = fetchWrapper;
 exports.replaceStore = replaceStore;
 exports.to = to;
+exports.uniqueId = uniqueId;
 exports.vdata = vdata$1;
 exports.handleChange = handleChange;
 exports.handleKeyChange = handleKeyChange;

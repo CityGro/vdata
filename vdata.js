@@ -3700,8 +3700,12 @@
             }(Bt(r, t));
             return qt({}, n, e);
         }, Ft = F(i.default, JSON.parse), Wt = function(t) {
-            var r = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : 9e15, e = parseInt((Math.random() * r).toFixed(0), 10).toString(36);
-            return t ? t + "-" + e : e;
+            var r, e, n = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : 9e15, o = (r = (e = function(t) {
+                return 48271 * t % 2147483647;
+            })(r || Math.random()), function() {
+                return (r = e(r)) / 2147483648;
+            }), i = parseInt((o() * n).toFixed(0), 10).toString(36);
+            return t ? t + "-" + i : i;
         }, Ut = /^[0-9a-z]+?-[0-9a-z]+$/i, Nt = function() {
             var t = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : {}, r = new V(), e = Rt(t), n = k(t.models), i = Wt(null, 1e5), u = t.cacheTimeout || 500, a = Tt(), s = {}, c = function(t) {
                 var r = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : {};
@@ -4414,9 +4418,9 @@
                     }
                 }
             };
-        }, r.to = K, r.vdata = Yt, r.handleChange = yt, r.handleKeyChange = _t, r.handleArrayChange = gt, 
-        r.handleArrayKeyChange = mt, r.pushToArray = xt, r.pushToArrayKey = bt, r.removeFromArray = wt, 
-        r.removeFromArrayKey = jt;
+        }, r.to = K, r.uniqueId = Wt, r.vdata = Yt, r.handleChange = yt, r.handleKeyChange = _t, 
+        r.handleArrayChange = gt, r.handleArrayKeyChange = mt, r.pushToArray = xt, r.pushToArrayKey = bt, 
+        r.removeFromArray = wt, r.removeFromArrayKey = jt;
     }, 
     /* 191 */
     /***/ function(t, r, e) {

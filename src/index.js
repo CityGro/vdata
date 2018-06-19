@@ -10,6 +10,7 @@ import createStore from './createStore'
 import fetchWrapper from './fetchWrapper'
 import replaceStore from './replaceStore'
 import to from '@r14c/async-utils/to'
+import uniqueId from './uniqueId'
 import vdata from './vdata'
 
 const DataFlowMixin = createDataFlowMixin('value')
@@ -39,5 +40,6 @@ export {
   fetchWrapper,
   replaceStore,
   to,
+  uniqueId,
   vdata
 }
