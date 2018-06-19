@@ -374,9 +374,16 @@ const createStore = (options = {}) => {
     } else {
       const {id} = getMeta(collectionName, data)
       const record = this.get(collectionName, id) || {}
-      return (record.__sym_id === data.__sym_id)
-        ? fastDiff(record, data)
-        : false
+      return fastDiff(
+        {
+          ...record,
+          __sym_id: null
+        },
+        {
+          ...data,
+          __sym_id: null
+        }
+      )
     }
   }
   /**

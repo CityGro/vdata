@@ -1560,7 +1560,11 @@ var createStore = function createStore() {
           id = _getMeta4.id;
 
       var record = this.get(collectionName, id) || {};
-      return record.__sym_id === data.__sym_id ? fastDiff(record, data) : false;
+      return fastDiff(_extends({}, record, {
+        __sym_id: null
+      }), _extends({}, data, {
+        __sym_id: null
+      }));
     }
   };
   /**

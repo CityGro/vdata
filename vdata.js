@@ -3969,10 +3969,14 @@
             d.prototype.hasChanges = function(t, r) {
                 if (r) {
                     var e = h(t, r).id, n = this.get(t, e) || {};
-                    return n.__sym_id === r.__sym_id && (o = r, D(n) !== D(o));
+                    return o = ht({}, n, {
+                        __sym_id: null
+                    }), i = ht({}, r, {
+                        __sym_id: null
+                    }), D(o) !== D(i);
                 }
                 return !1;
-                var o;
+                var o, i;
             }, 
             /**
     * send a `DELETE` request to the endpoint configured for `collectionName`
