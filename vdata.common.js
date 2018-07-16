@@ -969,10 +969,12 @@ var createMixinForItemById = function createMixinForItemById(options) {
  * @param {string} options.localPropertyName
  * @param {object} options.queryOptions
  * @param {object} options.requestOptions
+ * @param {string} [options.ttl] - optional query-specific cache timeout
  * @return {object}
  */
 var createMixinForListByResource = function (options) {
   var collectionName = options.collectionName;
+  var ttl = options.ttl;
   var localPropertyName = options.localPropertyName || camelCase(collectionName);
   var localPropertyForceName = localPropertyName + 'Force';
   var queryOptions = options.queryOptions || {};
@@ -1010,7 +1012,8 @@ var createMixinForListByResource = function (options) {
               case 0:
                 _context.next = 2;
                 return to(_this.$store.findAll(collectionName, queryOptions, _extends({}, _this[requestOptionsOverrideName], _this[requestOptionsName], {
-                  force: _this[localPropertyForceName]
+                  force: _this[localPropertyForceName],
+                  ttl: ttl
                 })));
 
               case 2:
@@ -1721,6 +1724,7 @@ var createStore = function createStore() {
 
     var promise = void 0;
     var force = options.force || false;
+    var ttl = options.ttl || queryCacheTimeout;
     var basePath = this.getBasePath(collectionName);
     var key = makeQueryKey(collectionName, query, options);
     var cachedKeys = queryCache[key] || [];
@@ -1752,7 +1756,7 @@ var createStore = function createStore() {
           queryCache[key] = resultKeys;
           setTimeout(function () {
             delete queryCache[key];
-          }, queryCacheTimeout);
+          }, ttl);
           return _this8.addList(collectionName, records);
         });
       });

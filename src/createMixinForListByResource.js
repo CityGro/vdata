@@ -8,10 +8,12 @@ import to from '@r14c/async-utils/to'
  * @param {string} options.localPropertyName
  * @param {object} options.queryOptions
  * @param {object} options.requestOptions
+ * @param {string} [options.ttl] - optional query-specific cache timeout
  * @return {object}
  */
 export default function (options) {
   const collectionName = options.collectionName
+  const ttl = options.ttl
   const localPropertyName = options.localPropertyName || camelCase(collectionName)
   const localPropertyForceName = `${localPropertyName}Force`
   const queryOptions = options.queryOptions || {}
@@ -49,7 +51,8 @@ export default function (options) {
           {
             ...this[requestOptionsOverrideName],
             ...this[requestOptionsName],
-            force: this[localPropertyForceName]
+            force: this[localPropertyForceName],
+            ttl
           }
         ))
         if (err) {

@@ -4086,27 +4086,27 @@
     * @return {Promise<Array<Object>>}
     */
             d.prototype.findAll = function(t, r) {
-                var n = this, o = arguments.length > 2 && void 0 !== arguments[2] ? arguments[2] : {}, i = void 0, a = o.force || !1, c = this.getBasePath(t), f = function(t) {
+                var n = this, o = arguments.length > 2 && void 0 !== arguments[2] ? arguments[2] : {}, i = void 0, a = o.force || !1, c = o.ttl || u, f = this.getBasePath(t), p = function(t) {
                     var r = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : {}, e = arguments.length > 2 && void 0 !== arguments[2] ? arguments[2] : {};
                     return t + "-" + zt(r, e);
-                }(t, r, o), p = s[f] || [], v = this.getList(t, p).filter(function(t) {
+                }(t, r, o), v = s[p] || [], d = this.getList(t, v).filter(function(t) {
                     return !!t;
                 });
-                if (v.length !== p.length && (delete s[f], v = []), v.length && !0 !== a) i = l.default.resolve(v); else {
-                    var d = ht({
-                        url: c + "/" + t,
+                if (d.length !== v.length && (delete s[p], d = []), d.length && !0 !== a) i = l.default.resolve(d); else {
+                    var y = ht({
+                        url: f + "/" + t,
                         method: "GET",
                         params: r
                     }, o);
-                    i = e(d).then(function(r) {
+                    i = e(y).then(function(r) {
                         return B(function() {
                             var e = [], o = r.map(function(r) {
                                 var o = n.createRecord(t, r), i = h(t, o).id;
                                 return e.push(i), o;
                             });
-                            return s[f] = e, setTimeout(function() {
-                                delete s[f];
-                            }, u), n.addList(t, o);
+                            return s[p] = e, setTimeout(function() {
+                                delete s[p];
+                            }, c), n.addList(t, o);
                         });
                     });
                 }
@@ -4369,9 +4369,9 @@
             return console.warn("[@citygro/vdata] rename createMixinForItemByResourceAndId -> createMixinForItemById", '"createMixinForItemByResourceAndId" is DEPRECATED and will be removed in a future release'), 
             Lt(t);
         }, r.createMixinForListByResource = function(t) {
-            var r = t.collectionName, e = t.localPropertyName || A(r), n = e + "Force", o = t.queryOptions || {}, i = t.requestOptions, a = e + "RequestOptions", s = e + "RequestOptionsOverride";
+            var r = t.collectionName, e = t.ttl, n = t.localPropertyName || A(r), o = n + "Force", i = t.queryOptions || {}, a = t.requestOptions, s = n + "RequestOptions", c = n + "RequestOptionsOverride";
             return {
-                props: pt({}, s, {
+                props: pt({}, c, {
                     type: Object,
                     default: function() {
                         return {};
@@ -4379,31 +4379,32 @@
                 }),
                 data: function() {
                     var t;
-                    return pt(t = {}, e, []), pt(t, n, !1), pt(t, a, ht({}, k(i), this[s])), t;
+                    return pt(t = {}, n, []), pt(t, o, !1), pt(t, s, ht({}, k(a), this[c])), t;
                 },
                 vdata: function(t) {
-                    this.asyncLoading || t.collectionName !== r || (this[e] = this.$store.getAll(r) || []);
+                    this.asyncLoading || t.collectionName !== r || (this[n] = this.$store.getAll(r) || []);
                 },
-                asyncData: pt({}, e, function() {
+                asyncData: pt({}, n, function() {
                     var t = this;
-                    return ft(/* */ u.default.mark(function e() {
-                        var i, c, f, p;
-                        return u.default.wrap(function(e) {
-                            for (;;) switch (e.prev = e.next) {
+                    return ft(/* */ u.default.mark(function n() {
+                        var a, f, p, h;
+                        return u.default.wrap(function(n) {
+                            for (;;) switch (n.prev = n.next) {
                               case 0:
-                                return e.next = 2, K(t.$store.findAll(r, o, ht({}, t[s], t[a], {
-                                    force: t[n]
+                                return n.next = 2, K(t.$store.findAll(r, i, ht({}, t[c], t[s], {
+                                    force: t[o],
+                                    ttl: e
                                 })));
 
                               case 2:
-                                return i = e.sent, c = lt(i, 2), f = c[0], p = c[1], f && (console.error(f), p = []), 
-                                e.abrupt("return", p);
+                                return a = n.sent, f = lt(a, 2), p = f[0], h = f[1], p && (console.error(p), h = []), 
+                                n.abrupt("return", h);
 
                               case 8:
                               case "end":
-                                return e.stop();
+                                return n.stop();
                             }
-                        }, e, t);
+                        }, n, t);
                     }))();
                 })
             };

@@ -502,6 +502,7 @@ const createStore = (options = {}) => {
   Store.prototype.findAll = function (collectionName, query, options = {}) {
     let promise
     const force = options.force || false
+    const ttl = options.ttl || queryCacheTimeout
     const basePath = this.getBasePath(collectionName)
     const key = makeQueryKey(collectionName, query, options)
     const cachedKeys = queryCache[key] || []
@@ -529,7 +530,7 @@ const createStore = (options = {}) => {
           queryCache[key] = resultKeys
           setTimeout(() => {
             delete queryCache[key]
-          }, queryCacheTimeout)
+          }, ttl)
           return this.addList(collectionName, records)
         }))
     } else {
