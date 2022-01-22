@@ -98,7 +98,7 @@
     "jsdoc-to-markdown": "^4.0.1",
     "jsdom": "^9.8.3",
     "json-server": "^0.9.5",
-    "node-fetch": "^2.1.2",
+    "node-fetch": "^3.1.1",
     "rollup": "^0.36.3",
     "rollup-plugin-babel": "^2.3.9",
     "rollup-plugin-commonjs": "^7.0.0",
